@@ -1,2 +1,3 @@
-# interaction-kit
+# Interaction Kit
+
 Interaction Kit is a framework for creating Discord slash command bots over the HTTP API
