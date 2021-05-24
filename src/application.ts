@@ -1,6 +1,6 @@
-import fastify, {FastifyRequest, FastifyResponse} from 'fastify';
+import fastify, {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify';
 import rawBody from 'fastify-raw-body';
-import type Command from './command';
+import Command from './command';
 import {
   InteractionType,
   InteractionCallbackType } from './api/api'
@@ -14,7 +14,7 @@ type ApplicationArgs = {
   port?: number,
 }
 
-type ServerCallback = (app) => (request: Request, response: Response) => unknown
+type ServerCallback = (app: FastifyInstance) => (request: FastifyRequest, response: FastifyReply) => unknown
 
 export default class Application {
   #applicationID;
@@ -43,6 +43,15 @@ export default class Application {
     commands.forEach(command => this.addCommand(command));
   }
 
+  // TODO: Should this be moved into Command?
+  updateCommand() {
+
+  }
+
+  updateCommands() {
+    // TODO: Get list of commands, update as necessary
+  }
+
   // loadDirectory(path: string) {
     // TODO: Load all JS files from path
     // TODO: Create map of file/commandData
@@ -59,7 +68,7 @@ export default class Application {
       runFirst: true,
     });
 
-    server.addHook('preHandler', async (request: FastifyRequest, response: FastifyResponse) => {
+    server.addHook('preHandler', async (request: FastifyRequest, response: FastifyReply) => {
       if (request.method === 'POST') {
         if (!validateRequest(request, this.#publicKey)) {
           server.log.info('Invalid Request');
@@ -68,8 +77,8 @@ export default class Application {
       }
     });
 
-    server.post('/', async (request: FastifyRequest, response: FastifyResponse) => {
-      const interaction = new Interaction(request);
+    server.post('/', async (request: FastifyRequest, response: FastifyReply) => {
+      const interaction = new Interaction(request, response);
 
       if (interaction == null || interaction.type === InteractionType.PING) {
         server.log.info('Handling Ping request');
@@ -84,7 +93,7 @@ export default class Application {
           response.status(400).send({ error: 'Unknown Type' });
         }
       } else {
-        // TODO:
+        // TODO: figure out what would lead to this state, and how to handle it.
       }
     });
 
@@ -92,7 +101,7 @@ export default class Application {
     if (callback != null) {
       callback(server);
     } else {
-      server.listen(3000, async (error, address) => {
+      server.listen(this.#port, async (error, address) => {
         if (error) {
           server.log.error(error);
           process.exit(1);
@@ -100,5 +109,7 @@ export default class Application {
         server.log.info(`server listening on ${address}`);
       });
     }
+
+    this.updateCommands();
   }
 }
