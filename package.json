@@ -1,6 +1,6 @@
 {
   "name": "interaction-kit",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Ian Mitchell",
   "description": "TODO",
   "license": "MIT",
@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^15.6.0",
+    "@types/node-fetch": "^2.5.10",
     "tsdx": "^0.14.1",
     "tslib": "^2.2.0",
     "typescript": "^4.2.4"

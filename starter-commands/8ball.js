@@ -35,6 +35,6 @@ export default new Command({
   ],
   handler: interaction => {
     const option = responses[Math.floor(Math.random() * responses.length)];
-    interaction.reply(`🎱 | ${option}`);
+    interaction.reply({ message: `🎱 | ${option}` });
   }
 });

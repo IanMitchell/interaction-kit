@@ -171,7 +171,7 @@ export default class Application {
         console.log({ interaction });
         if (this.#commands.has(interaction.name)) {
           console.log(`Handling ${interaction.name}`);
-          return this.#commands.get(interaction.name)?.handler(interaction);
+          return this.#commands.get(interaction.name)?.handler(interaction, this);
         } else {
           console.error(`Unknown Command: ${interaction.name}`);
           response.status(400).send({ error: 'Unknown Type' });

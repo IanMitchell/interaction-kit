@@ -1,4 +1,5 @@
 import type { ApplicationCommand} from './api/api'
+import Application from './application';
 import { Input } from './components/inputs';
 import Interaction from './interaction'
 
@@ -15,7 +16,7 @@ export default class Command {
   #description: string;
   #defaultPermission: boolean;
   #options: Map<string, Input>;
-  handler: (interaction: Interaction) => unknown;
+  handler: (interaction: Interaction, application: Application) => unknown;
 
   constructor({ name, description, options, handler, defaultPermission = true }: CommandArgs) {
     this.name = name;
