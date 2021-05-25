@@ -1,3 +1,5 @@
+import type {Snowflake} from '../data/snowflake';
+
 type Attachment = {
   id: Snowflake;
   filename: string;

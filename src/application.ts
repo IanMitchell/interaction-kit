@@ -3,8 +3,10 @@ import rawBody from 'fastify-raw-body';
 import Command from './command';
 import {
   InteractionType,
-  InteractionCallbackType } from './api/api'
-  import { validateRequest } from './api/validate'
+  InteractionCallbackType,
+  ApplicationCommand,
+} from './api/api';
+import { validateRequest } from './api/validate'
 import Interaction from './interaction'
 
 type ApplicationArgs = {
@@ -36,6 +38,7 @@ export default class Application {
       throw new Error(`Error registering ${command.name.toLowerCase()}: Duplicate names are not allowed`);
     }
 
+    console.log(`Registering the ${command.name.toLowerCase()} command`);
     this.#commands.set(command.name.toLowerCase(), command);
   }
 
@@ -44,12 +47,63 @@ export default class Application {
   }
 
   // TODO: Should this be moved into Command?
-  updateCommand() {
+  async updateCommands() {
+    console.log('Updating Commands in Development Server');
 
-  }
+    // TODO: Move this into an API module
+    const request = await fetch(`https://discord.com/api/v8/applications/${this.#applicationID}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bot ${this.#token}`,
+        'User-Agent': 'InteractionKit (https://interactionkit.dev, 0.0.1)'
+      },
+    });
 
-  updateCommands() {
-    // TODO: Get list of commands, update as necessary
+    const json: ApplicationCommand[] = await request.json();
+
+    this.#commands.forEach(async (command) => {
+      const signature = json.find(cmd => cmd.name === command.name);
+
+      if (signature == null) {
+        console.log(`\tCreating ${command.name}`);
+
+        const createResponse = await fetch(
+          `https://discord.com/api/v8/applications/${this.#applicationID}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bot ${this.#token}`,
+              'User-Agent': 'InteractionKit (https://interactionkit.dev, 0.0.1)'
+            },
+            method: 'POST',
+            body: command.toJSON(),
+          }
+        );
+
+        if (!createResponse.ok) {
+          console.error(`Problem updating ${command.name}`);
+        }
+      } else if (!command.isEqualTo(signature)) {
+        console.log(`\tUpdating ${command.name}`);
+
+        const updateResponse = await fetch(
+          `https://discord.com/api/v8/applications/${this.#applicationID}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands/${signature.id}`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bot ${this.#token}`,
+              'User-Agent': 'InteractionKit (https://interactionkit.dev, 0.0.1)'
+            },
+            method: 'PUT',
+            body: command.toJSON(),
+          }
+        );
+
+        if (!updateResponse.ok) {
+          console.error(`Problem updating ${command.name}`);
+        }
+      }
+    })
   }
 
   // loadDirectory(path: string) {
@@ -60,28 +114,27 @@ export default class Application {
   // }
 
   startServer(callback?: ServerCallback) {
-    const server = fastify({
-      logger: true,
-    });
+    console.log('Starting server...');
+    const server = fastify();
 
     server.register(rawBody, {
       runFirst: true,
     });
 
-    server.addHook('preHandler', async (request: FastifyRequest, response: FastifyReply) => {
+    server.addHook('preHandler', async (request, response) => {
       if (request.method === 'POST') {
         if (!validateRequest(request, this.#publicKey)) {
-          server.log.info('Invalid Request');
+          console.log('Invalid Discord Request');
           return response.status(401).send({ error: 'Bad request signature ' });
         }
       }
     });
 
-    server.post('/', async (request: FastifyRequest, response: FastifyReply) => {
+    server.post('/', async (request, response) => {
       const interaction = new Interaction(request, response);
 
       if (interaction == null || interaction.type === InteractionType.PING) {
-        server.log.info('Handling Ping request');
+        console.log('Handling Discord Ping');
         response.send({
           type: InteractionCallbackType.PONG,
         });
@@ -89,11 +142,12 @@ export default class Application {
         if (this.#commands.has(interaction.name)) {
           return this.#commands.get(interaction.name)?.handler(interaction);
         } else {
-          server.log.error('Unknown Type');
+          console.error(`Unknown Command: ${interaction.name}`);
           response.status(400).send({ error: 'Unknown Type' });
         }
       } else {
         // TODO: figure out what would lead to this state, and how to handle it.
+        console.error(`Unknown Type: ${interaction.type}`);
       }
     });
 
@@ -103,13 +157,14 @@ export default class Application {
     } else {
       server.listen(this.#port, async (error, address) => {
         if (error) {
-          server.log.error(error);
+          console.error(error);
           process.exit(1);
         }
-        server.log.info(`server listening on ${address}`);
+        console.log(`Server listening on ${address}`);
       });
     }
 
+    // TODO: Move this into a dev env check.
     this.updateCommands();
   }
 }

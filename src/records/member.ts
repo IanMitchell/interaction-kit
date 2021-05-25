@@ -1,3 +1,1 @@
-export type GuildMember {
-
-}
+export type GuildMember = {};

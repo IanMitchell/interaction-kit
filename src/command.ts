@@ -51,4 +51,8 @@ export default class Command {
     //   option.options
     // })
   }
+
+  toJSON() {
+
+  }
 }

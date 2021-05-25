@@ -1,3 +1,1 @@
-export type Channel {
-
-}
+export type Channel = {};

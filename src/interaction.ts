@@ -1,4 +1,6 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
+import { RouteGenericInterface } from 'fastify/types/route';
+import { IncomingMessage, Server, ServerResponse } from 'http';
 import {
   Interaction as InteractionBody,
   InteractionType,
@@ -6,6 +8,7 @@ import {
   ApplicationCommandInteractionDataOption,
 } from './api/api';
 import type { Embed } from './components/embed'
+import { PermissionFlags } from './data/messages';
 
 export default class Interaction {
   type: InteractionType;
@@ -13,7 +16,7 @@ export default class Interaction {
   response: FastifyReply;
   #options: Map<string, ApplicationCommandInteractionDataOption>;
 
-  constructor(request: FastifyRequest, response: FastifyReply) {
+  constructor(request: FastifyRequest<RouteGenericInterface, Server, IncomingMessage>, response: FastifyReply<Server, IncomingMessage, ServerResponse, RouteGenericInterface, unknown>) {
     this.response = response;
     this.type = request.body.type;
     this.name = request.body?.data?.name?.toLowerCase();
@@ -26,11 +29,13 @@ export default class Interaction {
 
   reply({
     message,
-    embeds,
+    // embeds,
+    // components,
     ephemeral = false,
   }: {
     message: string;
-    embeds?: Embed[];
+    // embeds?: Embed[];
+    // components?: Component[];
     ephemeral: boolean;
   }) {
     const payload: InteractionResponse = {
@@ -41,24 +46,24 @@ export default class Interaction {
     };
 
     if (ephemeral && payload?.data != null) {
-      payload.data.flags = 64;
+      payload.data.flags = PermissionFlags.EPHEMERAL;
     }
 
     return this.response.status(200).send(payload);
   }
 
-  get options() {
-    return new Proxy(
-      {},
-      {
-        get: (target, property, receiver) => {
-          if (this.#options?.has(property)) {
-            return this.#options.get(property).value;
-          }
+  // get options() {
+  //   return new Proxy(
+  //     {},
+  //     {
+  //       get: (target, property, receiver) => {
+  //         if (this.#options?.has(property)) {
+  //           return this.#options.get(property).value;
+  //         }
 
-          return null;
-        },
-      }
-    );
+  //         return null;
+  //       },
+  //     }
+  //   );
   }
 }

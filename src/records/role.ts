@@ -1,3 +1,1 @@
-export type Role {
-
-}
+export type Role = {};
