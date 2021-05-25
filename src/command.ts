@@ -6,7 +6,7 @@ type CommandArgs = {
   name: string,
   description: string,
   defaultPermission?: boolean,
-  options: Input[],
+  options?: Input[],
   handler: (interaction: Interaction) => unknown
 }
 
@@ -14,15 +14,18 @@ export default class Command {
   name: string;
   #description: string;
   #defaultPermission: boolean;
-  #options: Input[];
+  #options: Map<string, Input>;
   handler: (interaction: Interaction) => unknown;
 
-  constructor({ name, description, options, handler, defaultPermission = false }: CommandArgs) {
+  constructor({ name, description, options, handler, defaultPermission = true }: CommandArgs) {
     this.name = name;
     this.#description = description;
-    this.#options = options;
     this.#defaultPermission = defaultPermission;
     this.handler = handler;
+    this.#options = new Map();
+
+
+    options?.forEach(option => this.#options.set(option.name.toLowerCase(), option))
   }
 
   group() {
@@ -53,6 +56,20 @@ export default class Command {
   }
 
   toJSON() {
+    const payload = {
+      name: this.name,
+      description: this.#description
+    }
 
+    if (this.#defaultPermission == false) {
+      payload.default_permission = this.#defaultPermission
+    }
+
+    if (this.#options.length > 0) {
+      // TODO: Implement this
+      // ApplicationCommandOption[]
+    }
+
+    return payload;
   }
 }

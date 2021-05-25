@@ -38,6 +38,7 @@ export default class Interaction {
     // components?: Component[];
     ephemeral: boolean;
   }) {
+    console.log('Replying!')
     const payload: InteractionResponse = {
       type: 4,
       data: {

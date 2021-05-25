@@ -1,4 +1,6 @@
+import dotenv from 'dotenv';
 import fastify, {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify';
+import fetch from 'node-fetch';
 import rawBody from 'fastify-raw-body';
 import Command from './command';
 import {
@@ -18,6 +20,8 @@ type ApplicationArgs = {
 
 type ServerCallback = (app: FastifyInstance) => (request: FastifyRequest, response: FastifyReply) => unknown
 
+dotenv.config();
+
 export default class Application {
   #applicationID;
   #publicKey;
@@ -26,6 +30,18 @@ export default class Application {
   #port;
 
   constructor({applicationID, publicKey, token, port }: ApplicationArgs) {
+    if (applicationID == null) {
+      throw new Error('Please provide an Application ID. You can find this value <here>');
+    }
+
+    if (publicKey == null) {
+      throw new Error('Please provide a Public Key. You can find this value <here>');
+    }
+
+    if (token == null) {
+        throw new Error('Please provide a Token. You can find this value <here>');
+    }
+
     this.#applicationID = applicationID;
     this.#publicKey = publicKey;
     this.#token = token;
@@ -40,10 +56,12 @@ export default class Application {
 
     console.log(`Registering the ${command.name.toLowerCase()} command`);
     this.#commands.set(command.name.toLowerCase(), command);
+    return this;
   }
 
   addCommands(...commands: Command[]) {
     commands.forEach(command => this.addCommand(command));
+    return this;
   }
 
   // TODO: Should this be moved into Command?
@@ -61,6 +79,12 @@ export default class Application {
 
     const json: ApplicationCommand[] = await request.json();
 
+    // TODO: Handle errors
+    /**
+     * Not in development server:
+     *  { message: 'Missing Access', code: 50001 }
+     */
+
     this.#commands.forEach(async (command) => {
       const signature = json.find(cmd => cmd.name === command.name);
 
@@ -76,12 +100,14 @@ export default class Application {
               'User-Agent': 'InteractionKit (https://interactionkit.dev, 0.0.1)'
             },
             method: 'POST',
-            body: command.toJSON(),
+            body: JSON.stringify(command.toJSON()),
           }
         );
 
         if (!createResponse.ok) {
-          console.error(`Problem updating ${command.name}`);
+          console.error(`\tProblem updating ${command.name}`);
+          const createJSON = await createResponse.json();
+          console.error(createJSON)
         }
       } else if (!command.isEqualTo(signature)) {
         console.log(`\tUpdating ${command.name}`);
@@ -103,7 +129,9 @@ export default class Application {
           console.error(`Problem updating ${command.name}`);
         }
       }
-    })
+    });
+
+    return this;
   }
 
   // loadDirectory(path: string) {
@@ -131,6 +159,7 @@ export default class Application {
     });
 
     server.post('/', async (request, response) => {
+      console.log('REQUEST');
       const interaction = new Interaction(request, response);
 
       if (interaction == null || interaction.type === InteractionType.PING) {
@@ -139,7 +168,9 @@ export default class Application {
           type: InteractionCallbackType.PONG,
         });
       } else if (interaction.type === InteractionType.APPLICATION_COMMAND) {
+        console.log({ interaction });
         if (this.#commands.has(interaction.name)) {
+          console.log(`Handling ${interaction.name}`);
           return this.#commands.get(interaction.name)?.handler(interaction);
         } else {
           console.error(`Unknown Command: ${interaction.name}`);
