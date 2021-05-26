@@ -4,15 +4,13 @@
   "author": "Ian Mitchell",
   "description": "TODO",
   "license": "MIT",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
-  "module": "dist/mylib.esm.js",
-  "type": "module",
+  "main": "dist/src/index.js",
+  "typings": "dist/src/index.d.ts",
   "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test",
-    "lint": "tsdx lint"
+    "start": "node .",
+    "build": "tsc",
+    "clean": "rm -r dist/",
+    "test": "tsc --noEmit"
   },
   "files": [
     "dist",
