@@ -1,0 +1,16 @@
+{
+  "name": "{{name}}",
+  "version": "0.0.1",
+  "private": true,
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node --es-module-specifier-resolution=node src/index.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {
+    "interaction-kit": "^{{version}}"
+  }
+}
