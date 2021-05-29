@@ -1,4 +1,4 @@
-class Queue {
+export default class Queue {
   promises: Array<{promise: Promise<void>, resolve: Function}> = []
 
   get remaining (): number {
@@ -25,5 +25,3 @@ class Queue {
     if (typeof deferred !== 'undefined') deferred.resolve()
   }
 }
-
-export default Queue

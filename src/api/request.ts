@@ -2,7 +2,7 @@ import fetch, { Response } from 'node-fetch'
 import { GatewayURI } from './api'
 import { Method } from './client'
 
-class APIRequest {
+export default class APIRequest {
   path: string
   route: string
   method: Method
@@ -48,5 +48,3 @@ class APIRequest {
     })
   }
 }
-
-export default APIRequest

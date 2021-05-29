@@ -1,3 +1,4 @@
+import Bucket from "./bucket"
 import APIRequest from "./request"
 
 export enum Method {
@@ -8,7 +9,16 @@ export enum Method {
   patch = 'PATCH'
 }
 
-class APIClient {
+export function getAPIOffset (serverDate: string): number {
+  return new Date(serverDate).getTime() - Date.now()
+}
+
+export function calculateAPIReset (reset: string, serverDate: string): number {
+  return new Date(Number(reset) * 1000).getTime() - getAPIOffset(serverDate)
+}
+
+export default class APIClient {
+  buckets: Map<string, Bucket> = new Map()
   authorization: string
   globalLimit: number = 50
   globalRemaining: number = this.globalLimit
@@ -66,5 +76,3 @@ class APIClient {
     }))
   }
 }
-
-export default APIClient
