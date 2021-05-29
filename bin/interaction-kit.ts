@@ -1,12 +1,15 @@
 #!/usr/bin/env node
+
 import prompts from "prompts";
 import arg from "arg";
 import fs from "fs";
-import path from 'path';
-import copy from 'copy-template-dir';
+import path from "path";
+import package from "../package.json";
+import { ApplicationCommand } from "../src/api/api";
+import { Snowflake } from "../src/data/snowflake";
+import Command from "../src/command";
 
-
-async function create(name) {
+async function create(name: string) {
   const questions = [
     {
       type: "text",
@@ -17,12 +20,12 @@ async function create(name) {
       type: "text",
       name: "publicKey",
       message: "Public Key?"
-    }
+    },
     {
       type: "text",
       name: "token",
       message: "Token?"
-    }
+    },
     {
       type: "text",
       name: "devServerID",
@@ -30,7 +33,8 @@ async function create(name) {
     }
   ];
 
-  const promptName = name == null || fs.existsSync(path.join(process.cwd(), name));
+  const promptName =
+    name == null || fs.existsSync(path.join(process.cwd(), name));
 
   const response = await prompts(
     promptName
@@ -39,14 +43,90 @@ async function create(name) {
             type: "text",
             name: "name",
             message: "Project Name?",
-            validate: value => fs.existsSync(path.join(process.cwd(), value)) ? "A folder with that name already exists" : true
+            validate: value =>
+              fs.existsSync(path.join(process.cwd(), value))
+                ? "A folder with that name already exists"
+                : true
           }
         ].concat(questions)
       : questions
   );
 
-  // TODO: Parse response into variables, add version, and run `copy`
-  console.log({ response });
+  const values = {
+    ...response,
+    directory: path.join(process.cwd(), response.name ?? name),
+    version: package.version
+  };
+
+  console.log({ values });
+}
+
+async function deploy() {
+  const deletedCommands: ApplicationCommand[] = [];
+  const updatedCommands: Map<Snowflake, Command> = new Map();
+  // Load application file, import app
+  const application = {};
+  // Get list of commands
+
+  // TODO: Error handling
+  let response = await fetch(
+    `https://discord.com/api/v8/applications/${process.env.APPLICATION_ID}/commands`
+  );
+  const json: ApplicationCommand[] = await response.json();
+
+  // TODO: register unaccounted for commands
+  // we need to think about a clean way of examining all commands
+  json.forEach(registeredCommand => {
+    const command = application.getCommand(name);
+
+    if (command == null /* || TODO: skipCheck on name */) {
+      deletedCommands.push(registeredCommand);
+      // TODO: skipCheck or remove
+    } else {
+      if (!command.isEqualTo(registeredCommand)) {
+        updatedCommands.set(registeredCommand.id, command);
+      }
+    }
+  });
+
+  // TODO: Create new commands
+
+  // Update modified commands
+  response = await fetch(
+    `https://discord.com/api/v8/applications/${process.env.APPLICATION_ID}/commands`,
+    {
+      method: "PUT",
+      body: JSON.stringify(
+        Array.from(updatedCommands.entries()).map(([key, value]) => ({
+          id: key,
+          ...value.serialize()
+        }))
+      )
+    }
+  );
+
+  if (response.ok) {
+    console.log(`Updated the following commands:`);
+    updatedCommands.forEach(cmd => {
+      console.log(`\t${cmd.name}`);
+    });
+  }
+
+  // Delete removed commands
+  for (const command of deletedCommands) {
+    response = await fetch(
+      `https://discord.com/api/v8/applications/${process.env.APPLICATION_ID}/commands/${command.id}`,
+      {
+        method: "DELETE"
+      }
+    );
+
+    if (response.ok) {
+      console.log(`Deleted ${command.name}`);
+    }
+  }
+
+  console.log("Done updating Discord API");
 }
 
 process.on("SIGTERM", () => process.exit(0));
@@ -72,22 +152,27 @@ const args = arg(
 
 const command = args._[0];
 
-console.log({ args, command })
+console.log({ args, command });
 
 if (args["--version"]) {
   console.log("Not verison 1, I'll tell ya that one for free buddy");
+  // TODO: Some standard message with package.version
+  return;
 }
 
 if (args["--help"] && !(command in commands)) {
   // TODO: General help
-  console.log("Help")
+  console.log("Help");
+  return;
 }
 
 if (command === "new") {
-  console.log({ args })
+  console.log({ args });
   create(args._[1]);
+  return;
 } else {
-  console.log('No')
+  console.log("No");
+  return;
 }
 
 // import { Command } from "commander";

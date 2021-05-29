@@ -56,7 +56,7 @@ export default class Command {
     // })
   }
 
-  toJSON() {
+  serialize() {
     const payload = {
       name: this.name,
       description: this.#description

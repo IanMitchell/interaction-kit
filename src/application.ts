@@ -45,6 +45,7 @@ export default class Application {
     this.#applicationID = applicationID;
     this.#publicKey = publicKey;
     this.#token = token;
+    // TODO: Make public?
     this.#commands = new Map<string, Command>();
     this.#port = port ?? 3000;
   }
@@ -62,6 +63,10 @@ export default class Application {
   addCommands(...commands: Command[]) {
     commands.forEach(command => this.addCommand(command));
     return this;
+  }
+
+  getCommand(name: string) {
+    return this.#commands.get(name);
   }
 
   // TODO: Should this be moved into Command?
@@ -100,7 +105,7 @@ export default class Application {
               'User-Agent': 'InteractionKit (https://interactionkit.dev, 0.0.1)'
             },
             method: 'POST',
-            body: JSON.stringify(command.toJSON()),
+            body: JSON.stringify(command.serialize()),
           }
         );
 
@@ -121,7 +126,7 @@ export default class Application {
               'User-Agent': 'InteractionKit (https://interactionkit.dev, 0.0.1)'
             },
             method: 'PUT',
-            body: command.toJSON(),
+            body: command.serialize(),
           }
         );
 
