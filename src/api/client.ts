@@ -30,8 +30,10 @@ export default class APIClient {
   }
 
   async enqueue (request: APIRequest): Promise<object | Buffer | undefined> {
-    // TOOD: implement buckets
-    return
+    if (!this.buckets.has(request.route)) {
+      this.buckets.set(request.route, new Bucket(this, request.route))
+    }
+    return this.buckets.get(request.route)?.push(request)
   }
 
   async get (path: string): Promise<object | Buffer | undefined> {
