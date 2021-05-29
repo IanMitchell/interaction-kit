@@ -5,7 +5,7 @@ import type {Channel} from '../records/channel';
 import type {Role} from '../records/role';
 import type {Embed} from '../components/embed';
 
-export const GatewayURI = 'https://discord.com/api/v9/'
+export const GatewayURI = 'https://discord.com/api/v9'
 
 export type ApplicationCommand = {
   id: Snowflake,

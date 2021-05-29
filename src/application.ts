@@ -10,6 +10,7 @@ import {
 } from './api/api';
 import { validateRequest } from './api/validate'
 import Interaction from './interaction'
+import APIClient from './api/client';
 
 type ApplicationArgs = {
   applicationID: string,
@@ -28,6 +29,7 @@ export default class Application {
   #token;
   #commands;
   #port;
+  apiClient: APIClient;
 
   constructor({applicationID, publicKey, token, port }: ApplicationArgs) {
     if (applicationID == null) {
@@ -47,6 +49,7 @@ export default class Application {
     this.#token = token;
     this.#commands = new Map<string, Command>();
     this.#port = port ?? 3000;
+    this.apiClient = new APIClient(this.#token)
   }
 
   addCommand(command: Command) {
@@ -69,15 +72,8 @@ export default class Application {
     console.log('Updating Commands in Development Server');
 
     // TODO: Move this into an API module
-    const request = await fetch(`https://discord.com/api/v8/applications/${this.#applicationID}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bot ${this.#token}`,
-        'User-Agent': 'InteractionKit (https://interactionkit.dev, 0.0.1)'
-      },
-    });
-
-    const json: ApplicationCommand[] = await request.json();
+    // (also, an example of using the api client)
+    const json = await this.apiClient.get(`/applications/${this.#applicationID}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands`) as ApplicationCommand[]
 
     // TODO: Handle errors
     /**
@@ -92,7 +88,7 @@ export default class Application {
         console.log(`\tCreating ${command.name}`);
 
         const createResponse = await fetch(
-          `https://discord.com/api/v8/applications/${this.#applicationID}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands`,
+          `https://discord.com/api/v8`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -104,29 +100,20 @@ export default class Application {
           }
         );
 
-        if (!createResponse.ok) {
+        try {
+          await this.apiClient.post(`/applications/${this.#applicationID}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands`, command.toJSON())
+        } catch(e) {
           console.error(`\tProblem updating ${command.name}`);
-          const createJSON = await createResponse.json();
-          console.error(createJSON)
+          console.error(e)
         }
       } else if (!command.isEqualTo(signature)) {
         console.log(`\tUpdating ${command.name}`);
 
-        const updateResponse = await fetch(
-          `https://discord.com/api/v8/applications/${this.#applicationID}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands/${signature.id}`,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bot ${this.#token}`,
-              'User-Agent': 'InteractionKit (https://interactionkit.dev, 0.0.1)'
-            },
-            method: 'PUT',
-            body: command.toJSON(),
-          }
-        );
-
-        if (!updateResponse.ok) {
-          console.error(`Problem updating ${command.name}`);
+        try {
+          await this.apiClient.put(`/applications/${this.#applicationID}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands/${signature.id}`, command.toJSON())
+        } catch(e) {
+          console.error(`\tProblem updating ${command.name}`);
+          console.error(e)
         }
       }
     });

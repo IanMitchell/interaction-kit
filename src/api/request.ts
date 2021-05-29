@@ -36,7 +36,10 @@ export default class APIRequest {
 
   async execute (): Promise<Response> {
     let body
-    const headers = { ...this.headers }
+    const headers = {
+      'user-agent': 'InteractionKit (https://interactionkit.dev, 0.0.1)',
+      ...this.headers
+    } as {[key: string]: string}
     if (this.body) {
       body = JSON.stringify(this.body)
       headers['content-type'] = 'application/json'

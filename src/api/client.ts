@@ -44,11 +44,12 @@ export default class APIClient {
     }))
   }
 
-  async put (path: string): Promise<object | Buffer | undefined> {
+  async put (path: string, body?: any): Promise<object | Buffer | undefined> {
     return this.enqueue(new APIRequest({
       path,
       method: Method.put,
-      headers: { authorization: this.authorization }
+      headers: { authorization: this.authorization },
+      body
     }))
   }
 
