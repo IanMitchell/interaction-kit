@@ -87,19 +87,6 @@ export default class Application {
       if (signature == null) {
         console.log(`\tCreating ${command.name}`);
 
-        const createResponse = await fetch(
-          `https://discord.com/api/v8`,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bot ${this.#token}`,
-              'User-Agent': 'InteractionKit (https://interactionkit.dev, 0.0.1)'
-            },
-            method: 'POST',
-            body: JSON.stringify(command.toJSON()),
-          }
-        );
-
         try {
           await this.apiClient.post(`/applications/${this.#applicationID}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands`, command.toJSON())
         } catch(e) {
