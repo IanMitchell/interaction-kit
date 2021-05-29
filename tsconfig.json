@@ -1,17 +1,37 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
-    "target": "es6",
-    "sourceMap": true,
-    "strict": true,
-    "moduleResolution": "node",
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "rootDir": "src",
-    "outDir": "dist",
+    // sets the baseUrl to the current folder for if `paths` are ever added.
+    "baseUrl": ".",
+    // emits type declaration files
     "declaration": true,
-    "declarationMap": true,
-    "resolveJsonModule": true
+    // allow properly importing commonjs files
+    "esModuleInterop": true,
+    // imports are case sensitive
+    "forceConsistentCasingInFileNames": true,
+    // do not emit any generated code on error
+    "noEmitOnError": true,
+    // output to dist/
+    "outDir": "dist",
+    // pretty error messages
+    "pretty": true,
+    // set the typescript root dir to the project root
+    "rootDir": ".",
+    // ignore typescript errors in dependencies
+    "skipLibCheck": true,
+    // emit source maps
+    "sourceMap": true,
+    // force "use strict"
+    "strict": true,
+
+    // use es2018 standard libraries
+    "lib": ["es2018"],
+    // emit commonjs. this allows for nodejs and typescript compatibility with the lib
+    "module": "commonjs",
+    // target es2018
+    "target": "es2018"
   },
+  // build all typescript files recursively inside src/
+  "include": ["src/**/*.ts", "bin/**/*.ts"],
+  // ignore node_modules and dist
   "exclude": ["node_modules", "dist"]
 }
