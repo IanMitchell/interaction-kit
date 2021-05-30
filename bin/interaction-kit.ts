@@ -9,58 +9,6 @@ import { ApplicationCommand } from "../src/api/api";
 import { Snowflake } from "../src/data/snowflake";
 import Command from "../src/command";
 
-async function create(name: string) {
-  const questions = [
-    {
-      type: "text",
-      name: "projectID",
-      message: "Application ID?"
-    },
-    {
-      type: "text",
-      name: "publicKey",
-      message: "Public Key?"
-    },
-    {
-      type: "text",
-      name: "token",
-      message: "Token?"
-    },
-    {
-      type: "text",
-      name: "devServerID",
-      message: "Development Server ID?"
-    }
-  ];
-
-  const promptName =
-    name == null || fs.existsSync(path.join(process.cwd(), name));
-
-  const response = await prompts(
-    promptName
-      ? [
-          {
-            type: "text",
-            name: "name",
-            message: "Project Name?",
-            validate: value =>
-              fs.existsSync(path.join(process.cwd(), value))
-                ? "A folder with that name already exists"
-                : true
-          }
-        ].concat(questions)
-      : questions
-  );
-
-  const values = {
-    ...response,
-    directory: path.join(process.cwd(), response.name ?? name),
-    version: package.version
-  };
-
-  console.log({ values });
-}
-
 async function deploy() {
   const deletedCommands: ApplicationCommand[] = [];
   const updatedCommands: Map<Snowflake, Command> = new Map();
@@ -133,7 +81,7 @@ process.on("SIGTERM", () => process.exit(0));
 process.on("SIGINT", () => process.exit(0));
 
 const commands = {
-  new: "",
+  new: import("./new").then(mod => mod.default),
   dev: "",
   deploy: "",
   start: ""
@@ -167,9 +115,7 @@ if (args["--help"] && !(command in commands)) {
 }
 
 if (command === "new") {
-  console.log({ args });
-  create(args._[1]);
-  return;
+  return commands.new(args._[1]);
 } else {
   console.log("No");
   return;
