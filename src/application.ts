@@ -2,7 +2,6 @@
 
 import dotenv from 'dotenv';
 import fastify, {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify';
-import fetch from 'node-fetch';
 import rawBody from 'fastify-raw-body';
 import Command from './command';
 import {
@@ -11,8 +10,9 @@ import {
 	Interaction as IInteraction,
 	InteractionType,
 } from './api/api';
-import {validateRequest} from './api/validate';
-import Interaction from './interaction';
+import { validateRequest } from './api/validate'
+import Interaction from './interaction'
+import APIClient from './api/client';
 
 type ApplicationArgs = {
 	applicationID: string;
@@ -28,11 +28,12 @@ type ServerCallback = (
 dotenv.config();
 
 export default class Application {
-	#applicationID;
-	#publicKey;
-	#token;
-	#commands;
-	#port;
+  #applicationID;
+  #publicKey;
+  #token;
+  #commands;
+  #port;
+  apiClient: APIClient;
 
 	constructor({applicationID, publicKey, token, port}: ApplicationArgs) {
 		if (!applicationID) {
@@ -51,12 +52,13 @@ export default class Application {
 			throw new Error('Please provide a Token. You can find this value <here>');
 		}
 
-		this.#applicationID = applicationID;
-		this.#publicKey = publicKey;
-		this.#token = token;
-		this.#commands = new Map<string, Command>();
-		this.#port = port ?? 3000;
-	}
+    this.#applicationID = applicationID;
+    this.#publicKey = publicKey;
+    this.#token = token;
+    this.#commands = new Map<string, Command>();
+    this.#port = port ?? 3000;
+    this.apiClient = new APIClient(this.#token)
+  }
 
 	addCommand(command: Command) {
 		if (this.#commands.has(command.name.toLowerCase())) {
@@ -79,31 +81,15 @@ export default class Application {
 	async updateCommands() {
 		console.log('Updating Commands in Development Server');
 
-		if (!process.env.DEVELOPMENT_SERVER_ID) {
-			throw new NoDevelopmentServerEnvironmentVariableError();
-		}
+    // TODO: Move this into an API module
+    // (also, an example of using the api client)
+    const json = await this.apiClient.get(`/applications/${this.#applicationID}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands`) as ApplicationCommand[]
 
-		// TODO: Move this into an API module
-		const request = await fetch(
-			`https://discord.com/api/v8/applications/${this.#applicationID}/guilds/${
-				process.env.DEVELOPMENT_SERVER_ID
-			}/commands`,
-			{
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bot ${this.#token}`,
-					'User-Agent': 'InteractionKit (https://interactionkit.dev, 0.0.1)',
-				},
-			}
-		);
-
-		const json = (await request.json()) as ApplicationCommand[];
-
-		// TODO: Handle errors
-		/**
-		 * Not in development server:
-		 *  { message: 'Missing Access', code: 50001 }
-		 */
+    // TODO: Handle errors
+    /**
+     * Not in development server:
+     *  { message: 'Missing Access', code: 50001 }
+     */
 
 		for (const [name, command] of this.#commands) {
 			const signature = json.find(cmd => cmd.name === name);
@@ -115,65 +101,33 @@ export default class Application {
 					throw new NoDevelopmentServerEnvironmentVariableError();
 				}
 
-				const createResponse = await fetch(
-					`https://discord.com/api/v8/applications/${
-						this.#applicationID
-					}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands`,
-					{
-						headers: {
-							'Content-Type': 'application/json',
-							'Authorization': `Bot ${this.#token}`,
-							'User-Agent':
-								'InteractionKit (https://interactionkit.dev, 0.0.1)',
-						},
-						method: 'POST',
-						body: JSON.stringify(command.toJSON()),
-					}
-				);
+        try {
+          await this.apiClient.post(`/applications/${this.#applicationID}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands`, command.toJSON())
+        } catch(e) {
+          console.error(`\tProblem updating ${command.name}`);
+          console.error(e)
+        }
+      } else if (!command.isEqualTo(signature)) {
+        console.log(`\tUpdating ${command.name}`);
 
-				if (!createResponse.ok) {
-					console.error(`\tProblem updating ${command.name}`);
-				}
-			} else if (!command.is(signature)) {
-				console.log(`\tUpdating ${command.name}`);
-
-				if (!process.env.DEVELOPMENT_SERVER_ID) {
-					throw new NoDevelopmentServerEnvironmentVariableError();
-				}
-
-				const updateResponse = await fetch(
-					`https://discord.com/api/v8/applications/${
-						this.#applicationID
-					}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands/${
-						signature.id
-					}`,
-					{
-						headers: {
-							'Content-Type': 'application/json',
-							'Authorization': `Bot ${this.#token}`,
-							'User-Agent':
-								'InteractionKit (https://interactionkit.dev, 0.0.1)',
-						},
-						method: 'PUT',
-						body: JSON.stringify(command.toJSON()),
-					}
-				);
-
-				if (!updateResponse.ok) {
-					console.error(`Problem updating ${command.name}`);
-				}
-			}
-		}
+        try {
+          await this.apiClient.put(`/applications/${this.#applicationID}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands/${signature.id}`, command.toJSON())
+        } catch(e) {
+          console.error(`\tProblem updating ${command.name}`);
+          console.error(e)
+        }
+      }
+    }
 
 		return this;
 	}
 
-	// LoadDirectory(path: string) {
-	// TODO: Load all JS files from path
-	// TODO: Create map of file/commandData
-	// TODO: Create file listener on change
-	// TODO: onChange, reload file and maybe emit command change events
-	// }
+  // loadDirectory(path: string) {
+    // TODO: Load all JS files from path
+    // TODO: Create map of file/commandData
+    // TODO: Create file listener on change
+    // TODO: onChange, reload file and maybe emit command change events
+  // }
 
 	startServer(callback?: ServerCallback) {
 		console.log('Starting server...');
