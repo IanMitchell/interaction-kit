@@ -1,27 +1,36 @@
 export default class Queue {
-  promises: Array<{promise: Promise<void>, resolve: Function}> = []
+	promises: Array<{promise: Promise<void>; resolve: Function}> = [];
 
-  get remaining (): number {
-    return this.promises.length
-  }
+	get remaining(): number {
+		return this.promises.length;
+	}
 
-  async wait (): Promise<void> {
-    const next = this.promises.length ? this.promises[this.promises.length - 1].promise : Promise.resolve()
-    let resolve: Function = () => {}
-    const promise: Promise<void> = new Promise(res => {
-      resolve = res
-    })
+	async wait(): Promise<void> {
+		const next = this.promises.length
+			? this.promises[this.promises.length - 1].promise
+			: Promise.resolve();
 
-    this.promises.push({
-      resolve,
-      promise
-    })
+		let resolve = () => {
+			// Nothing to see here...
+		};
 
-    return next
-  }
+		const promise = new Promise<void>(res => {
+			resolve = res;
+		});
 
-  shift (): void {
-    const deferred = this.promises.shift()
-    if (typeof deferred !== 'undefined') deferred.resolve()
-  }
+		this.promises.push({
+			resolve,
+			promise,
+		});
+
+		return next;
+	}
+
+	shift(): void {
+		const deferred = this.promises.shift();
+
+		if (typeof deferred !== 'undefined') {
+			deferred.resolve();
+		}
+	}
 }

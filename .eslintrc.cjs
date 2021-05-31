@@ -16,6 +16,7 @@ module.exports = {
 		'@typescript-eslint/comma-dangle': 0,
 		'@typescript-eslint/quotes': 0,
 		'quote-props': 0,
+		'operator-linebreak': 0,
 
 		// Too strict
 		'@typescript-eslint/ban-types': 0,
