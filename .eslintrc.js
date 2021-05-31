@@ -1,33 +1,25 @@
 module.exports = {
-  env: {
-    "node": true,
-    "jest/globals": true,
-  },
-  extends: [
-    "airbnb-base",
-    "plugin:jest/recommended",
-    "plugin:prettier/recommended",
-  ],
-  parser: "babel-eslint",
-  plugins: ["jest"],
-  rules: {
-    "class-methods-use-this": 0,
-    "import/prefer-default-export": 0,
-    "import/no-cycle": 0,
-    "import/no-extraneous-dependencies": [
-      "error",
-      {
-        devDependencies: [
-          // repos with a single test file
-          "test.{cjs,js,jsx}",
-          // tests where the extension denotes that it is a test
-          "**/*.test.{cjs,js,jsx}",
-          // config files
-          "**/jest.config.{cjs,js}",
-          "**/jest.setup.{cjs,js}",
-        ],
-        optionalDependencies: false,
-      },
-    ],
-  },
+	env: {
+		es2021: true,
+		node: true,
+	},
+	extends: ['xo', 'xo-typescript'],
+	parser: '@typescript-eslint/parser',
+	parserOptions: {
+		ecmaVersion: 12,
+		sourceType: 'module',
+	},
+	plugins: ['@typescript-eslint'],
+	rules: {
+		// Managed by Prettier
+		'@typescript-eslint/indent': 0,
+		'@typescript-eslint/comma-dangle': 0,
+		'@typescript-eslint/quotes': 0,
+		'quote-props': 0,
+
+		// Too strict
+		'@typescript-eslint/ban-types': 0,
+		'@typescript-eslint/prefer-literal-enum-member': 0,
+	},
+	ignorePatterns: ['**/*.js'],
 };
