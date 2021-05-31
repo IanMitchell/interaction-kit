@@ -1,5 +1,5 @@
 import fetch, { Response } from 'node-fetch'
-import { GatewayURI } from './api'
+import { API_URL } from './api'
 import { Method } from './client'
 
 export default class APIRequest {
@@ -44,7 +44,7 @@ export default class APIRequest {
       body = JSON.stringify(this.body)
       headers['content-type'] = 'application/json'
     }
-    return fetch(`${GatewayURI}${this.path}`, {
+    return fetch(`${API_URL}${this.path}`, {
       headers: Object.keys(headers).map((key: string) => ([key, headers[key]])),
       method: this.method,
       body
