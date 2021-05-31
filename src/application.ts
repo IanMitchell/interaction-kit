@@ -121,7 +121,7 @@ export default class Application {
               'User-Agent': 'InteractionKit (https://interactionkit.dev, 0.0.1)'
             },
             method: 'PUT',
-            body: command.toJSON(),
+            body: JSON.stringify(command.toJSON()),
           }
         );
 

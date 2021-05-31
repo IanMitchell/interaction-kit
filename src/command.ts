@@ -57,7 +57,7 @@ export default class Command {
   }
 
   toJSON() {
-    const payload = {
+    const payload: Omit<ApplicationCommand, 'id' | 'application_id'> = {
       name: this.name,
       description: this.#description
     }
@@ -66,7 +66,7 @@ export default class Command {
       payload.default_permission = this.#defaultPermission
     }
 
-    if (this.#options.length > 0) {
+    if (this.#options.size > 0) {
       // TODO: Implement this
       // ApplicationCommandOption[]
     }

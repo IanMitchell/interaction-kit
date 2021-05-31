@@ -66,18 +66,18 @@ export class Embed {
   #video?: EmbedVideo;
   #provider?: EmbedProvider;
   #author?: EmbedAuthor;
-  #fields: EmbedField[];
+  #fields?: EmbedField[];
 
-  constructor(options) {}
+  constructor() {}
 
-  get title(): string {
+  get title(): string | undefined {
     return this.#title;
   }
 
-  set title(value: string) {
-    if (value?.length > 256) {
-      throw new Error('Title must be less than 256 characters');
-    }
+  set title(value: string | undefined) {
+    // if (value?.length > 256) {
+    //   throw new Error('Title must be less than 256 characters');
+    // }
 
     this.#title = value;
   }
