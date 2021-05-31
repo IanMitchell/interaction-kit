@@ -46,4 +46,4 @@ jobs:
           npm install
       - name: Lint
         run: |
-          prettier --check 'src/**/*.ts'
+          npm run prettier
