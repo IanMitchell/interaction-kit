@@ -41,16 +41,23 @@ export default class Bucket {
   }
 
   async awaitRatelimit() {
-    const isGlobal = this.globalLimited
-    if (isGlobal) {
-      if (!this.client.globalDelay) {
-        // Wait for the global ratelimit to clear up with an extra 100ms of padding
-        this.client.globalDelay = this.globalDelayFor((this.client.globalReset ?? 0) + 100 - Date.now())
-        await this.client.globalDelay
-      }
-    } else {
-      await new Promise(resolve => setTimeout(resolve, this.reset - Date.now()))
+    // If a promis already exists for the global ratelimit,
+    // return that instead as we don't want to create multiple promises.
+    if (this.client.globalDelay) {
+      return this.client.globalDelay
     }
+
+    if (!this.globalLimited) {
+      return new Promise(resolve => setTimeout(resolve, this.reset - Date.now()))
+    }
+
+    if (this.globalLimited) {
+      this.client.globalDelay = this.globalDelayFor((this.client.globalReset ?? 0) + 100 - Date.now())
+      return this.client.globalDelay
+    }
+
+    // Unhandled ratelimit reason
+    return Promise.resolve()
   }
 
   async push (request: APIRequest): Promise<object | Buffer | undefined> {
