@@ -43,5 +43,14 @@
 		"fastify-raw-body": "^3.1.0",
 		"node-fetch": "^2.6.1",
 		"tweetnacl": "^1.0.3"
-	}
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/IanMitchell/interaction-kit.git"
+	},
+	"keywords": [],
+	"bugs": {
+		"url": "https://github.com/IanMitchell/interaction-kit/issues"
+	},
+	"homepage": "https://github.com/IanMitchell/interaction-kit#readme"
 }
