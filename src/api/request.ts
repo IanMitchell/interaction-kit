@@ -45,8 +45,8 @@ export default class APIRequest {
       headers['content-type'] = 'application/json'
     }
     return fetch(`${API_URL}${this.path}`, {
-      headers: Object.keys(headers).map((key: string) => ([key, headers[key]])),
       method: this.method,
+      headers,
       body
     })
   }
