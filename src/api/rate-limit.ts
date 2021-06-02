@@ -1,21 +1,23 @@
 // https://discord.com/developers/docs/topics/rate-limits
-export function isRatelimited(response: Response) {
-
-}
+import {FastifyRequest} from 'fastify';
 
 // TODO: what is this value set to?
-export function isGlobalRateLimit(response: Response) {
-  return response.headers.has('X-RateLimit-Global');
+export function isGlobalRateLimit(response: FastifyRequest) {
+	return Boolean(response.headers['X-RateLimit-Global']);
 }
 
-export function getRemainingRequests(response: Response) {
-
+export function isRatelimited(_response: FastifyRequest) {
+	throw new Error('Function not implemented.');
 }
 
-export function getRateLimitReset(response: Response) {
-
+export function getRemainingRequests(_response: FastifyRequest) {
+	throw new Error('Function not implemented.');
 }
 
-export function getRateLimitBucket(response: Response) {
+export function getRateLimitReset(_response: FastifyRequest) {
+	throw new Error('Function not implemented.');
+}
 
+export function getRateLimitBucket(_response: FastifyRequest) {
+	throw new Error('Function not implemented.');
 }

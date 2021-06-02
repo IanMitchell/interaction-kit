@@ -1,175 +1,226 @@
+/* eslint-disable no-await-in-loop */
+
 import dotenv from 'dotenv';
 import fastify, {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify';
-import fetch from 'node-fetch';
 import rawBody from 'fastify-raw-body';
 import Command from './command';
 import {
-  InteractionType,
-  InteractionCallbackType,
-  ApplicationCommand,
+	InteractionCallbackType,
+	ApplicationCommand,
+	Interaction as IInteraction,
+	InteractionType,
 } from './api/api';
-import { validateRequest } from './api/validate'
-import Interaction from './interaction'
+import {validateRequest} from './api/validate';
+import Interaction from './interaction';
 import APIClient from './api/client';
 
 type ApplicationArgs = {
-  applicationID: string,
-  publicKey: string,
-  token: string,
-  port?: number,
-}
+	applicationID: string;
+	publicKey: string;
+	token: string;
+	port?: number;
+};
 
-type ServerCallback = (app: FastifyInstance) => (request: FastifyRequest, response: FastifyReply) => unknown
+type ServerCallback = (
+	app: FastifyInstance
+) => (request: FastifyRequest, response: FastifyReply) => unknown;
 
 dotenv.config();
 
 export default class Application {
-  #applicationID;
-  #publicKey;
-  #token;
-  #commands;
-  #port;
-  apiClient: APIClient;
+	#applicationID;
+	#publicKey;
+	#token;
+	#commands;
+	#port;
+	apiClient: APIClient;
 
-  constructor({applicationID, publicKey, token, port }: ApplicationArgs) {
-    if (applicationID == null) {
-      throw new Error('Please provide an Application ID. You can find this value <here>');
-    }
+	constructor({applicationID, publicKey, token, port}: ApplicationArgs) {
+		if (!applicationID) {
+			throw new Error(
+				'Please provide an Application ID. You can find this value <here>'
+			);
+		}
 
-    if (publicKey == null) {
-      throw new Error('Please provide a Public Key. You can find this value <here>');
-    }
+		if (!publicKey) {
+			throw new Error(
+				'Please provide a Public Key. You can find this value <here>'
+			);
+		}
 
-    if (token == null) {
-        throw new Error('Please provide a Token. You can find this value <here>');
-    }
+		if (!token) {
+			throw new Error('Please provide a Token. You can find this value <here>');
+		}
 
-    this.#applicationID = applicationID;
-    this.#publicKey = publicKey;
-    this.#token = token;
-    this.#commands = new Map<string, Command>();
-    this.#port = port ?? 3000;
-    this.apiClient = new APIClient(this.#token)
-  }
+		this.#applicationID = applicationID;
+		this.#publicKey = publicKey;
+		this.#token = token;
+		this.#commands = new Map<string, Command>();
+		this.#port = port ?? 3000;
+		this.apiClient = new APIClient(this.#token);
+	}
 
-  addCommand(command: Command) {
-    if (this.#commands.has(command.name.toLowerCase())) {
-      throw new Error(`Error registering ${command.name.toLowerCase()}: Duplicate names are not allowed`);
-    }
+	addCommand(command: Command) {
+		if (this.#commands.has(command.name.toLowerCase())) {
+			throw new Error(
+				`Error registering ${command.name.toLowerCase()}: Duplicate names are not allowed`
+			);
+		}
 
-    console.log(`Registering the ${command.name.toLowerCase()} command`);
-    this.#commands.set(command.name.toLowerCase(), command);
-    return this;
-  }
+		console.log(`Registering the ${command.name.toLowerCase()} command`);
+		this.#commands.set(command.name.toLowerCase(), command);
+		return this;
+	}
 
-  addCommands(...commands: Command[]) {
-    commands.forEach(command => this.addCommand(command));
-    return this;
-  }
+	addCommands(...commands: Command[]) {
+		commands.forEach(command => this.addCommand(command));
+		return this;
+	}
 
-  // TODO: Should this be moved into Command?
-  async updateCommands() {
-    console.log('Updating Commands in Development Server');
+	// TODO: Should this be moved into Command?
+	async updateCommands() {
+		console.log('Updating Commands in Development Server');
 
-    // TODO: Move this into an API module
-    // (also, an example of using the api client)
-    const json = await this.apiClient.get(`/applications/${this.#applicationID}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands`) as ApplicationCommand[]
+		if (!process.env.DEVELOPMENT_SERVER_ID) {
+			throw new NoDevelopmentServerEnvironmentVariableError();
+		}
 
-    // TODO: Handle errors
-    /**
-     * Not in development server:
-     *  { message: 'Missing Access', code: 50001 }
-     */
+		// TODO: Move this into an API module
+		// (also, an example of using the api client)
+		const json = (await this.apiClient.get(
+			`/applications/${this.#applicationID}/guilds/${
+				process.env.DEVELOPMENT_SERVER_ID
+			}/commands`
+		)) as ApplicationCommand[];
 
-    this.#commands.forEach(async (command) => {
-      const signature = json.find(cmd => cmd.name === command.name);
+		// TODO: Handle errors
+		/**
+		 * Not in development server:
+		 *  { message: 'Missing Access', code: 50001 }
+		 */
 
-      if (signature == null) {
-        console.log(`\tCreating ${command.name}`);
+		for (const [name, command] of this.#commands) {
+			const signature = json.find(cmd => cmd.name === name);
 
-        try {
-          await this.apiClient.post(`/applications/${this.#applicationID}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands`, command.toJSON())
-        } catch(e) {
-          console.error(`\tProblem updating ${command.name}`);
-          console.error(e)
-        }
-      } else if (!command.isEqualTo(signature)) {
-        console.log(`\tUpdating ${command.name}`);
+			if (!signature) {
+				console.log(`\tCreating ${name}`);
 
-        try {
-          await this.apiClient.put(`/applications/${this.#applicationID}/guilds/${process.env.DEVELOPMENT_SERVER_ID}/commands/${signature.id}`, command.toJSON())
-        } catch(e) {
-          console.error(`\tProblem updating ${command.name}`);
-          console.error(e)
-        }
-      }
-    });
+				try {
+					await this.apiClient.post(
+						`/applications/${this.#applicationID}/guilds/${
+							process.env.DEVELOPMENT_SERVER_ID
+						}/commands`,
+						command.toJSON()
+					);
+				} catch (e: unknown) {
+					console.error(`\tProblem updating ${command.name}`);
+					console.error(e);
+				}
+			} else if (!command.isEqualTo(signature)) {
+				console.log(`\tUpdating ${command.name}`);
 
-    return this;
-  }
+				try {
+					await this.apiClient.put(
+						`/applications/${this.#applicationID}/guilds/${
+							process.env.DEVELOPMENT_SERVER_ID
+						}/commands/${signature.id}`,
+						command.toJSON()
+					);
+				} catch (e: unknown) {
+					console.error(`\tProblem updating ${command.name}`);
+					console.error(e);
+				}
+			}
+		}
 
-  // loadDirectory(path: string) {
-    // TODO: Load all JS files from path
-    // TODO: Create map of file/commandData
-    // TODO: Create file listener on change
-    // TODO: onChange, reload file and maybe emit command change events
-  // }
+		return this;
+	}
 
-  startServer(callback?: ServerCallback) {
-    console.log('Starting server...');
-    const server = fastify();
+	// LoadDirectory(path: string) {
+	// TODO: Load all JS files from path
+	// TODO: Create map of file/commandData
+	// TODO: Create file listener on change
+	// TODO: onChange, reload file and maybe emit command change events
+	// }
 
-    server.register(rawBody, {
-      runFirst: true,
-    });
+	startServer(callback?: ServerCallback) {
+		console.log('Starting server...');
+		const server = fastify();
 
-    server.addHook('preHandler', async (request, response) => {
-      if (request.method === 'POST') {
-        if (!validateRequest(request, this.#publicKey)) {
-          console.log('Invalid Discord Request');
-          return response.status(401).send({ error: 'Bad request signature ' });
-        }
-      }
-    });
+		void server.register(rawBody, {
+			runFirst: true,
+		});
 
-    server.post('/', async (request, response) => {
-      console.log('REQUEST');
-      const interaction = new Interaction(request, response);
+		server.addHook('preHandler', async (request, response) => {
+			if (request.method === 'POST') {
+				if (!validateRequest(request, this.#publicKey)) {
+					console.log('Invalid Discord Request');
+					return response.status(401).send({error: 'Bad request signature '});
+				}
+			}
+		});
 
-      if (interaction == null || interaction.type === InteractionType.PING) {
-        console.log('Handling Discord Ping');
-        response.send({
-          type: InteractionCallbackType.PONG,
-        });
-      } else if (interaction.type === InteractionType.APPLICATION_COMMAND) {
-        console.log({ interaction });
-        if (this.#commands.has(interaction.name)) {
-          console.log(`Handling ${interaction.name}`);
-          return this.#commands.get(interaction.name)?.handler(interaction, this);
-        } else {
-          console.error(`Unknown Command: ${interaction.name}`);
-          response.status(400).send({ error: 'Unknown Type' });
-        }
-      } else {
-        // TODO: figure out what would lead to this state, and how to handle it.
-        console.error(`Unknown Type: ${interaction.type}`);
-      }
-    });
+		server.post<{Body: IInteraction}>('/', async (request, response) => {
+			console.log('REQUEST');
+			const interaction = new Interaction(request, response);
 
+			if (!interaction || interaction.type === InteractionType.PING) {
+				console.log('Handling Discord Ping');
+				void response.send({
+					type: InteractionCallbackType.PONG,
+				});
+			} else if (interaction.type === InteractionType.APPLICATION_COMMAND) {
+				if (!interaction.name) {
+					console.error(
+						`Received Command but with no name: ${JSON.stringify({
+							type: interaction.type,
+							name: interaction.name,
+						})}`
+					);
 
-    if (callback != null) {
-      callback(server);
-    } else {
-      server.listen(this.#port, async (error, address) => {
-        if (error) {
-          console.error(error);
-          process.exit(1);
-        }
-        console.log(`Server listening on ${address}`);
-      });
-    }
+					return;
+				}
 
-    // TODO: Move this into a dev env check.
-    this.updateCommands();
-  }
+				if (this.#commands.has(interaction.name)) {
+					console.log(`Handling ${interaction.name}`);
+					return this.#commands
+						.get(interaction.name)
+						?.handler(interaction, this);
+				}
+
+				console.error(`Unknown Command: ${interaction.name}`);
+				void response.status(400).send({
+					error: 'Unknown Type',
+				});
+			} else {
+				// TODO: figure out what would lead to this state, and how to handle it.
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+				console.error(`Unknown Type: ${interaction.type}`);
+			}
+		});
+
+		if (callback) {
+			callback(server);
+		} else {
+			server.listen(this.#port, async (error, address) => {
+				if (error) {
+					console.error(error);
+					process.exit(1);
+				}
+
+				console.log(`Server listening on ${address}`);
+			});
+		}
+
+		// TODO: Move this into a dev env check.
+		void this.updateCommands();
+	}
+}
+
+class NoDevelopmentServerEnvironmentVariableError extends Error {
+	constructor() {
+		super(
+			"interaction-kit requires the environment variable DEVELOPMENT_SERVER_ID to update a single server's commands."
+		);
+	}
 }

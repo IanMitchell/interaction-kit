@@ -1,0 +1,33 @@
+name: Lint & typecheck
+on:
+  - push
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup node 15.x
+        run: actions/setup-node@v1
+        with:
+          node-version: 15.x
+
+      - name: Use cached node_modules
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: nodeModules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            nodeModules-
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          CI: true
+
+      - name: Lint project
+        run: npm run lint
+
+      - name: Typecheck project
+        run: npm run typecheck
