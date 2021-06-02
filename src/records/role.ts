@@ -1,1 +1,1 @@
-export type Role = {};
+export type Role = Record<string, unknown>;

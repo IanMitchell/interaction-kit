@@ -3,7 +3,8 @@ import type { GuildMember } from "../records/member";
 import type { User } from "../records/user";
 import type { Channel } from "../records/channel";
 import type { Role } from "../records/role";
-import type { Embed } from "../components/embed";
+// import type { Embed } from "../components/embed";
+type Enum = {};
 
 export const API_URL = "https://discord.com/api/v9";
 
@@ -104,10 +105,10 @@ export type ApplicationCommandInteractionDataOption = {
 };
 
 // TODO: Check?
-export type InteractionResponse = {
+export interface InteractionCallbackResponse {
 	type: InteractionCallbackType;
 	data?: InteractionApplicationCommandCallbackData;
-};
+}
 
 export enum InteractionCallbackType {
 	PONG = 1,
@@ -115,13 +116,14 @@ export enum InteractionCallbackType {
 	DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE = 5,
 }
 
-export type InteractionApplicationCommandCallbackData = {
+export interface InteractionApplicationCommandCallbackData {
 	tts?: boolean;
 	content?: string;
 	embeds?: Embed[];
 	allowed_mentions?: AllowedMentions;
 	flags?: number;
-};
+	name?: string;
+}
 
 export enum AllowedMentionTypes {
 	ROLE = "roles",
@@ -129,16 +131,16 @@ export enum AllowedMentionTypes {
 	EVERYONE = "everyone",
 }
 
-export type AllowedMentions = {
+export interface AllowedMentions {
 	parse: AllowedMentionTypes[];
 	roles: Snowflake[];
 	users: Snowflake[];
 	replied_user: boolean;
-};
+}
 
-export type MessageInteraction = {
+export interface MessageInteraction {
 	id: Snowflake;
 	type: InteractionType;
 	name: string;
 	user: User;
-};
+}
