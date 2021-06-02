@@ -1,4 +1,4 @@
 {
-  "parser": "typescript",
-  "quoteProps": "consistent"
+	"quoteProps": "consistent",
+	"useTabs": true
 }

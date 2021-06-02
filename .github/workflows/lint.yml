@@ -1,49 +1,60 @@
 name: Lint
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   Lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: Use Node.js 16.x
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js 16.x
+        run: actions/setup-node@v2
         with:
           node-version: 16.2
-      - name: Cache dependencies
+
+      - name: Cache Dependencies
         uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+           restore-keys: |
+             ${{ runner.os }}-node-
+
       - name: Install
+        env:
+          CI: true
         run: |
           npm install
+
       - name: Lint
         run: |
           npm run lint
 
-  # TODO: Can we combine some of the setup steps?
-  Prettier:
+  Formatting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: Use Node.js 16.x
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js 16.x
+        run: actions/setup-node@v2
         with:
           node-version: 16.2
-      - name: Cache dependencies
+
+      - name: Cache Dependencies
         uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+           restore-keys: |
+             ${{ runner.os }}-node-
+
       - name: Install
+        env:
+          CI: true
         run: |
           npm install
-      - name: Lint
+
+      - name: Formatting
         run: |
           npm run prettier
