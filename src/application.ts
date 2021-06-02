@@ -7,7 +7,7 @@ import {
   InteractionType,
   InteractionCallbackType,
   ApplicationCommand,
-} from './api/api';
+} from './api/definitions';
 import { validateRequest } from './api/validate'
 import Interaction from './interaction'
 import APIClient from './api/client';

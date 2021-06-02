@@ -6,7 +6,7 @@ import {
   InteractionType,
   InteractionResponse,
   ApplicationCommandInteractionDataOption,
-} from './api/api';
+} from './api/definitions';
 import type { Embed } from './components/embed'
 import { PermissionFlags } from './data/messages';
 
