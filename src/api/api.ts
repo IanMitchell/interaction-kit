@@ -4,7 +4,7 @@ import type { User } from "../records/user";
 import type { Channel } from "../records/channel";
 import type { Role } from "../records/role";
 // import type { Embed } from "../components/embed";
-type Enum = {};
+type Embed = {};
 
 export const API_URL = "https://discord.com/api/v9";
 
