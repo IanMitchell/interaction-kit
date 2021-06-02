@@ -8,10 +8,10 @@ type InputArgs = {
 };
 
 export class Input {
-	type: ApplicationCommandOptionType;
-	name: string;
-	description: string;
-	required?: boolean;
+	public readonly type;
+	public readonly name;
+	public readonly description;
+	public readonly required;
 
 	constructor({ type, name, description, required = false }: InputArgs) {
 		this.type = type;
