@@ -1,11 +1,12 @@
-import type {Snowflake} from '../data/snowflake';
-import type {GuildMember} from '../records/member';
-import type {User} from '../records/user';
-import type {Channel} from '../records/channel';
-import type {Role} from '../records/role';
-import type {Embed} from '../components/embed';
+import type { Snowflake } from "../data/snowflake";
+import type { GuildMember } from "../records/member";
+import type { User } from "../records/user";
+import type { Channel } from "../records/channel";
+import type { Role } from "../records/role";
+// import type { Embed } from "../components/embed";
+type Embed = {};
 
-export const API_URL = 'https://discord.com/api/v9';
+export const API_URL = "https://discord.com/api/v9";
 
 export type ApplicationCommand = {
 	id: Snowflake;
@@ -87,11 +88,11 @@ export type ApplicationCommandInteractionData = {
 
 export type ApplicationCommandInteractionDataResolved = {
 	users?: Record<Snowflake, User>;
-	members?: Record<Snowflake, Omit<GuildMember, 'user' | 'deaf' | 'mute'>>;
+	members?: Record<Snowflake, Omit<GuildMember, "user" | "deaf" | "mute">>;
 	roles?: Record<Snowflake, Role>;
 	channels?: Record<
 		Snowflake,
-		Pick<Channel, 'id' | 'name' | 'type' | 'permissions'>
+		Pick<Channel, "id" | "name" | "type" | "permissions">
 	>;
 };
 
@@ -125,9 +126,9 @@ export interface InteractionApplicationCommandCallbackData {
 }
 
 export enum AllowedMentionTypes {
-	ROLE = 'roles',
-	USER = 'users',
-	EVERYONE = 'everyone',
+	ROLE = "roles",
+	USER = "users",
+	EVERYONE = "everyone",
 }
 
 export interface AllowedMentions {

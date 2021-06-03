@@ -1,5 +1,5 @@
 export default class Queue {
-	promises: Array<{promise: Promise<void>; resolve: Function}> = [];
+	promises: Array<{ promise: Promise<void>; resolve: Function }> = [];
 
 	get remaining(): number {
 		return this.promises.length;
@@ -14,7 +14,7 @@ export default class Queue {
 			// Nothing to see here...
 		};
 
-		const promise = new Promise<void>(res => {
+		const promise = new Promise<void>((res) => {
 			resolve = res;
 		});
 
@@ -29,7 +29,7 @@ export default class Queue {
 	shift(): void {
 		const deferred = this.promises.shift();
 
-		if (typeof deferred !== 'undefined') {
+		if (typeof deferred !== "undefined") {
 			deferred.resolve();
 		}
 	}

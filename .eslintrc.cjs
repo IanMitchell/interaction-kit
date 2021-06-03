@@ -1,26 +1,16 @@
 module.exports = {
+	parser: "@typescript-eslint/parser",
 	env: {
-		es2021: true,
 		node: true,
 	},
-	extends: ['xo', 'xo-typescript'],
-	parser: '@typescript-eslint/parser',
-	parserOptions: {
-		ecmaVersion: 12,
-		sourceType: 'module',
-	},
-	plugins: ['@typescript-eslint'],
+	plugins: ["@typescript-eslint"],
+	extends: ["xo", "xo-typescript", "prettier"],
 	rules: {
-		// Managed by Prettier
-		'@typescript-eslint/indent': 0,
-		'@typescript-eslint/comma-dangle': 0,
-		'@typescript-eslint/quotes': 0,
-		'quote-props': 0,
-		'operator-linebreak': 0,
-
-		// Too strict
-		'@typescript-eslint/ban-types': 0,
-		'@typescript-eslint/prefer-literal-enum-member': 0,
+		"@typescript-eslint/ban-types": 0,
+		"@typescript-eslint/prefer-literal-enum-member": 0,
+		"no-eq-null": 0,
+		"eqeqeq": ["error", "smart"],
+		"capitalized-comments": 0,
 	},
-	ignorePatterns: ['**/*.js'],
+	ignorePatterns: ["**/*.js"],
 };

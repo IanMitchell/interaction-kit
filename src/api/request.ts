@@ -1,6 +1,6 @@
-import fetch, {Response} from 'node-fetch';
-import {API_URL} from './api';
-import {Method} from './client';
+import fetch, { Response } from "node-fetch";
+import { API_URL } from "./api";
+import { Method } from "./client";
 
 export default class APIRequest {
 	path: string;
@@ -29,12 +29,12 @@ export default class APIRequest {
 	}
 
 	static pathToRoute(path: string): string {
-		const parts = path.split('/');
+		const parts = path.split("/");
 		const route: string[] = [];
 
 		for (let i = 0; i < parts.length; i++) {
 			// Reaction routes share the same bucket
-			if (parts[i - 1] === 'reactions') {
+			if (parts[i - 1] === "reactions") {
 				break;
 			}
 
@@ -43,25 +43,25 @@ export default class APIRequest {
 				/\d{16,19}/g.test(parts[i]) &&
 				!/channels|guilds/.test(parts[i - 1])
 			) {
-				route.push(':id');
+				route.push(":id");
 			} else {
 				route.push(parts[i]);
 			}
 		}
 
-		return route.join('/');
+		return route.join("/");
 	}
 
 	async execute(): Promise<Response> {
 		let body;
 		const headers: Record<string, string> = {
-			'user-agent': 'InteractionKit (https://interactionkit.dev, 0.0.1)',
+			"user-agent": "InteractionKit (https://interactionkit.dev, 0.0.1)",
 			...this.headers,
 		};
 
 		if (this.body) {
 			body = JSON.stringify(this.body);
-			headers['content-type'] = 'application/json';
+			headers["content-type"] = "application/json";
 		}
 
 		return fetch(`${API_URL}${this.path}`, {

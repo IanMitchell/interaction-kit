@@ -1,33 +1,60 @@
-name: Lint & typecheck
-on:
-  - push
+name: Lint
+
+on: [push, pull_request]
+
 jobs:
-  lint:
+  Lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: Setup node 15.x
-        run: actions/setup-node@v1
+      - name: Install Node.js 16.x
+        uses: actions/setup-node@v2
         with:
-          node-version: 15.x
+          node-version: 16.2
 
-      - name: Use cached node_modules
+      - name: Cache Dependencies
         uses: actions/cache@v2
         with:
-          path: node_modules
-          key: nodeModules-${{ hashFiles('**/package-lock.json') }}
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            nodeModules-
+            ${{ runner.os }}-node-
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Install
         env:
           CI: true
+        run: |
+          npm install
 
-      - name: Lint project
-        run: npm run lint
+      - name: Lint
+        run: |
+          npm run lint
 
-      - name: Typecheck project
-        run: npm run typecheck
+  Formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js 16.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.2
+
+      - name: Cache Dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install
+        env:
+          CI: true
+        run: |
+          npm install
+
+      - name: Formatting
+        run: |
+          npm run prettier

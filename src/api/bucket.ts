@@ -1,7 +1,7 @@
-import {Response} from 'node-fetch';
-import APIClient, {calculateAPIReset, getAPIOffset} from './client';
-import Queue from './queue';
-import APIRequest from './request';
+import { Response } from "node-fetch";
+import APIClient, { calculateAPIReset, getAPIOffset } from "./client";
+import Queue from "./queue";
+import APIRequest from "./request";
 
 export default class Bucket {
 	client: APIClient;
@@ -33,7 +33,7 @@ export default class Bucket {
 	}
 
 	async globalDelayFor(ms: number): Promise<void> {
-		return new Promise(resolve => {
+		return new Promise((resolve) => {
 			setTimeout(() => {
 				this.client.globalDelay = undefined;
 				resolve();
@@ -49,7 +49,7 @@ export default class Bucket {
 		}
 
 		if (!this.globalLimited) {
-			return new Promise(resolve => {
+			return new Promise((resolve) => {
 				setTimeout(resolve, this.reset - Date.now());
 			});
 		}
@@ -110,10 +110,10 @@ export default class Bucket {
 		}
 
 		if (res?.headers) {
-			const serverDate = res.headers.get('date') ?? new Date().toString();
-			const limit = res.headers.get('x-ratelimit-limit');
-			const remaining = res.headers.get('x-ratelimit-remaining');
-			const reset = res.headers.get('x-ratelimit-reset');
+			const serverDate = res.headers.get("date") ?? new Date().toString();
+			const limit = res.headers.get("x-ratelimit-limit");
+			const remaining = res.headers.get("x-ratelimit-remaining");
+			const reset = res.headers.get("x-ratelimit-reset");
 
 			// Update ratelimit usage
 			this.limit = limit ? Number(limit) : Infinity;
@@ -121,33 +121,33 @@ export default class Bucket {
 			this.reset = reset ? calculateAPIReset(reset, serverDate) : Date.now();
 
 			// https://github.com/discordapp/discord-api-docs/issues/182
-			if (request.route.includes('reactions')) {
+			if (request.route.includes("reactions")) {
 				this.reset =
 					new Date(serverDate).getTime() - getAPIOffset(serverDate) + 250;
 			}
 
 			// Handle retryAfter, which means we somehow hit a rate limit
-			const retryAfter = res.headers.get('retry-after')
-				? Number(res.headers.get('retry-after')) * 1000
+			const retryAfter = res.headers.get("retry-after")
+				? Number(res.headers.get("retry-after")) * 1000
 				: -1;
 			if (retryAfter > 0) {
 				// If the global ratelimit header is set, we hit the global rate limit (uh oh)
-				if (res.headers.get('x-ratelimit-global')) {
+				if (res.headers.get("x-ratelimit-global")) {
 					this.client.globalRemaining = 0;
 					this.client.globalReset = Date.now() + retryAfter;
 				}
 
 				// Wait then retry the request
-				await new Promise(pr => {
+				await new Promise((pr) => {
 					setTimeout(pr, retryAfter);
 				});
 
-				return retryRequest(new Error('ratelimit hit'));
+				return retryRequest(new Error("ratelimit hit"));
 			}
 
 			if (res.ok) {
 				// Request succeeded, continue with the next one
-				if (res.headers.get('content-type')?.startsWith('application/json')) {
+				if (res.headers.get("content-type")?.startsWith("application/json")) {
 					return (await res.json()) as object | Buffer | undefined;
 				}
 
@@ -158,14 +158,14 @@ export default class Bucket {
 			if (res.status >= 400 && res.status < 500) {
 				// Ratelimited, retry
 				if (res.status === 429) {
-					return retryRequest(new Error('unexpected ratelimit encountered'));
+					return retryRequest(new Error("unexpected ratelimit encountered"));
 				}
 
 				// Throw an error with the error received from the API
 				const data = (
-					res.headers.get('content-type')?.startsWith('application/json')
+					res.headers.get("content-type")?.startsWith("application/json")
 						? await res.json()
-						: {message: 'Error was not JSON encoded.', code: 0}
+						: { message: "Error was not JSON encoded.", code: 0 }
 				) as Record<string, string>;
 
 				throw new Error(

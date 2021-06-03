@@ -1,8 +1,8 @@
-import type {ApplicationCommand} from './api/api';
-import Application from './application';
-import {Input} from './components/inputs';
-import Interaction from './interaction';
-import {JSONAble} from './interfaces';
+import type { ApplicationCommand } from "./api/api";
+import Application from "./application";
+import { Input } from "./components/inputs";
+import Interaction from "./interaction";
+import { JSONAble } from "./interfaces";
 
 type CommandArgs = {
 	name: string;
@@ -32,17 +32,17 @@ export default class Command implements JSONAble {
 		this.handler = handler;
 		this.#options = new Map();
 
-		options?.forEach(option =>
+		options?.forEach((option) =>
 			this.#options.set(option.name.toLowerCase(), option)
 		);
 	}
 
 	group() {
-		throw new Error('Unimplemented');
+		throw new Error("Unimplemented");
 	}
 
 	subcommand() {
-		throw new Error('Unimplemented');
+		throw new Error("Unimplemented");
 	}
 
 	/**
@@ -74,7 +74,7 @@ export default class Command implements JSONAble {
 	 */
 	isEqualTo(_schema: ApplicationCommand): boolean {
 		throw new Error(
-			'Command#isEqualTo is deprecated. Please use Command#equals instead.'
+			"Command#isEqualTo is deprecated. Please use Command#equals instead."
 		);
 	}
 

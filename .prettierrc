@@ -1,8 +1,4 @@
 {
 	"quoteProps": "consistent",
-	"useTabs": true,
-	"semi": true,
-	"singleQuote": true,
-	"bracketSpacing": false,
-	"arrowParens": "avoid"
+	"useTabs": true
 }

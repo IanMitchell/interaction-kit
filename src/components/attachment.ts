@@ -1,4 +1,4 @@
-import type {Snowflake} from '../data/snowflake';
+import type { Snowflake } from "../data/snowflake";
 
 export interface Attachment {
 	id: Snowflake;

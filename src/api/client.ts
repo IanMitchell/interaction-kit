@@ -1,12 +1,12 @@
-import Bucket from './bucket';
-import APIRequest from './request';
+import Bucket from "./bucket";
+import APIRequest from "./request";
 
 export enum Method {
-	get = 'GET',
-	put = 'PUT',
-	post = 'POST',
-	delete = 'DELETE',
-	patch = 'PATCH',
+	get = "GET",
+	put = "PUT",
+	post = "POST",
+	delete = "DELETE",
+	patch = "PATCH",
 }
 
 export function getAPIOffset(serverDate: string): number {
@@ -42,7 +42,7 @@ export default class APIClient {
 			new APIRequest({
 				path,
 				method: Method.get,
-				headers: {authorization: this.authorization},
+				headers: { authorization: this.authorization },
 			})
 		);
 	}
@@ -55,7 +55,7 @@ export default class APIClient {
 			new APIRequest({
 				path,
 				method: Method.put,
-				headers: {authorization: this.authorization},
+				headers: { authorization: this.authorization },
 				body,
 			})
 		);
@@ -69,7 +69,7 @@ export default class APIClient {
 			new APIRequest({
 				path,
 				method: Method.post,
-				headers: {authorization: this.authorization},
+				headers: { authorization: this.authorization },
 				body,
 			})
 		);
@@ -83,7 +83,7 @@ export default class APIClient {
 			new APIRequest({
 				path,
 				method: Method.patch,
-				headers: {authorization: this.authorization},
+				headers: { authorization: this.authorization },
 				body,
 			})
 		);
@@ -94,7 +94,7 @@ export default class APIClient {
 			new APIRequest({
 				path,
 				method: Method.delete,
-				headers: {authorization: this.authorization},
+				headers: { authorization: this.authorization },
 			})
 		);
 	}

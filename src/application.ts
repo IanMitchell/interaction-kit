@@ -1,18 +1,22 @@
 /* eslint-disable no-await-in-loop */
 
-import dotenv from 'dotenv';
-import fastify, {FastifyInstance, FastifyRequest, FastifyReply} from 'fastify';
-import rawBody from 'fastify-raw-body';
-import Command from './command';
+import dotenv from "dotenv";
+import fastify, {
+	FastifyInstance,
+	FastifyRequest,
+	FastifyReply,
+} from "fastify";
+import rawBody from "fastify-raw-body";
+import Command from "./command";
 import {
 	InteractionCallbackType,
 	ApplicationCommand,
 	Interaction as IInteraction,
 	InteractionType,
-} from './api/api';
-import {validateRequest} from './api/validate';
-import Interaction from './interaction';
-import APIClient from './api/client';
+} from "./api/api";
+import { validateRequest } from "./api/validate";
+import Interaction from "./interaction";
+import APIClient from "./api/client";
 
 type ApplicationArgs = {
 	applicationID: string;
@@ -35,21 +39,21 @@ export default class Application {
 	#port;
 	apiClient: APIClient;
 
-	constructor({applicationID, publicKey, token, port}: ApplicationArgs) {
+	constructor({ applicationID, publicKey, token, port }: ApplicationArgs) {
 		if (!applicationID) {
 			throw new Error(
-				'Please provide an Application ID. You can find this value <here>'
+				"Please provide an Application ID. You can find this value <here>"
 			);
 		}
 
 		if (!publicKey) {
 			throw new Error(
-				'Please provide a Public Key. You can find this value <here>'
+				"Please provide a Public Key. You can find this value <here>"
 			);
 		}
 
 		if (!token) {
-			throw new Error('Please provide a Token. You can find this value <here>');
+			throw new Error("Please provide a Token. You can find this value <here>");
 		}
 
 		this.#applicationID = applicationID;
@@ -73,13 +77,13 @@ export default class Application {
 	}
 
 	addCommands(...commands: Command[]) {
-		commands.forEach(command => this.addCommand(command));
+		commands.forEach((command) => this.addCommand(command));
 		return this;
 	}
 
 	// TODO: Should this be moved into Command?
 	async updateCommands() {
-		console.log('Updating Commands in Development Server');
+		console.log("Updating Commands in Development Server");
 
 		if (!process.env.DEVELOPMENT_SERVER_ID) {
 			throw new NoDevelopmentServerEnvironmentVariableError();
@@ -100,7 +104,7 @@ export default class Application {
 		 */
 
 		for (const [name, command] of this.#commands) {
-			const signature = json.find(cmd => cmd.name === name);
+			const signature = json.find((cmd) => cmd.name === name);
 
 			if (!signature) {
 				console.log(`\tCreating ${name}`);
@@ -144,28 +148,28 @@ export default class Application {
 	// }
 
 	startServer(callback?: ServerCallback) {
-		console.log('Starting server...');
+		console.log("Starting server...");
 		const server = fastify();
 
 		void server.register(rawBody, {
 			runFirst: true,
 		});
 
-		server.addHook('preHandler', async (request, response) => {
-			if (request.method === 'POST') {
+		server.addHook("preHandler", async (request, response) => {
+			if (request.method === "POST") {
 				if (!validateRequest(request, this.#publicKey)) {
-					console.log('Invalid Discord Request');
-					return response.status(401).send({error: 'Bad request signature '});
+					console.log("Invalid Discord Request");
+					return response.status(401).send({ error: "Bad request signature " });
 				}
 			}
 		});
 
-		server.post<{Body: IInteraction}>('/', async (request, response) => {
-			console.log('REQUEST');
+		server.post<{ Body: IInteraction }>("/", async (request, response) => {
+			console.log("REQUEST");
 			const interaction = new Interaction(request, response);
 
 			if (!interaction || interaction.type === InteractionType.PING) {
-				console.log('Handling Discord Ping');
+				console.log("Handling Discord Ping");
 				void response.send({
 					type: InteractionCallbackType.PONG,
 				});
@@ -190,7 +194,7 @@ export default class Application {
 
 				console.error(`Unknown Command: ${interaction.name}`);
 				void response.status(400).send({
-					error: 'Unknown Type',
+					error: "Unknown Type",
 				});
 			} else {
 				// TODO: figure out what would lead to this state, and how to handle it.
