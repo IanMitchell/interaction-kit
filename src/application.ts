@@ -114,13 +114,13 @@ export default class Application {
 						`/applications/${this.#applicationID}/guilds/${
 							process.env.DEVELOPMENT_SERVER_ID
 						}/commands`,
-						command.toJSON()
+						command.serialize()
 					);
 				} catch (e: unknown) {
 					console.error(`\tProblem updating ${command.name}`);
 					console.error(e);
 				}
-			} else if (!command.isEqualTo(signature)) {
+			} else if (!command.equals(signature)) {
 				console.log(`\tUpdating ${command.name}`);
 
 				try {
@@ -128,7 +128,7 @@ export default class Application {
 						`/applications/${this.#applicationID}/guilds/${
 							process.env.DEVELOPMENT_SERVER_ID
 						}/commands/${signature.id}`,
-						command.toJSON()
+						command.serialize()
 					);
 				} catch (e: unknown) {
 					console.error(`\tProblem updating ${command.name}`);

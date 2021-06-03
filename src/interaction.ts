@@ -1,11 +1,12 @@
-import type {FastifyReply, FastifyRequest} from 'fastify';
+import type { FastifyReply, FastifyRequest } from "fastify";
 import {
 	ApplicationCommandInteractionDataOption,
 	Interaction as IInteraction,
 	InteractionCallbackResponse,
 	InteractionType,
-} from './api/api';
-import {PermissionFlags} from './data/messages';
+	OptionType,
+} from "./api/api";
+import { PermissionFlags } from "./data/messages";
 
 export default class Interaction {
 	public readonly type: InteractionType;
@@ -14,7 +15,7 @@ export default class Interaction {
 	readonly #options: Map<string, ApplicationCommandInteractionDataOption>;
 
 	constructor(
-		request: FastifyRequest<{Body: IInteraction}>,
+		request: FastifyRequest<{ Body: IInteraction }>,
 		response: FastifyReply
 	) {
 		this.response = response;
@@ -24,15 +25,33 @@ export default class Interaction {
 
 		this.#options = new Map();
 
-		request.body?.data?.options?.forEach(option => {
+		request.body?.data?.options?.forEach((option) => {
 			this.#options.set(option.name.toLowerCase(), option);
 		});
 	}
 
-	reply({message, ephemeral = false}: {message: string; ephemeral: boolean}) {
+	// TODO: Type? Should return an object where keys = #options keys, and value = ApplicationCommandInteractionDataOption
+	get options() {
+		return new Proxy(
+			{},
+			{
+				get: (target, property): OptionType | null => {
+					return this.#options.get(property.toString())?.value ?? null;
+				},
+			}
+		);
+	}
+
+	reply({
+		message,
+		ephemeral = false,
+	}: {
+		message: string;
+		ephemeral: boolean;
+	}) {
 		const payload: InteractionCallbackResponse = {
 			type: 4,
-			data: {content: message},
+			data: { content: message },
 		};
 
 		if (ephemeral && payload.data) {

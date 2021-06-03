@@ -104,6 +104,9 @@ export type ApplicationCommandInteractionDataOption = {
 	options?: ApplicationCommandInteractionDataOption[];
 };
 
+// TODO: This is a hack
+export type OptionType = string;
+
 // TODO: Check?
 export interface InteractionCallbackResponse {
 	type: InteractionCallbackType;

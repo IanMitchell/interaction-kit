@@ -1,3 +1,3 @@
-export interface JSONAble {
-	toJSON(): Record<string, unknown>;
+export interface Serializable {
+	serialize(): unknown;
 }

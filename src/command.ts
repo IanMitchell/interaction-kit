@@ -2,7 +2,7 @@ import type { ApplicationCommand } from "./api/api";
 import Application from "./application";
 import { Input } from "./components/inputs";
 import Interaction from "./interaction";
-import { JSONAble } from "./interfaces";
+import { Serializable } from "./interfaces";
 
 type CommandArgs = {
 	name: string;
@@ -12,7 +12,7 @@ type CommandArgs = {
 	handler: (interaction: Interaction) => unknown;
 };
 
-export default class Command implements JSONAble {
+export default class Command implements Serializable {
 	name: string;
 	#description: string;
 	#defaultPermission: boolean;
@@ -32,9 +32,16 @@ export default class Command implements JSONAble {
 		this.handler = handler;
 		this.#options = new Map();
 
-		options?.forEach((option) =>
-			this.#options.set(option.name.toLowerCase(), option)
-		);
+		options?.forEach((option) => {
+			const key = option.name.toLowerCase();
+			if (this.#options.has(key)) {
+				throw new Error(
+					`Option names must be unique (case insensitive). Duplicate name detected: ${key}`
+				);
+			}
+
+			this.#options.set(option.name.toLowerCase(), option);
+		});
 	}
 
 	group() {
@@ -49,7 +56,7 @@ export default class Command implements JSONAble {
 	 * Compares if a command is equal to a given command.
 	 * @param schema
 	 */
-	is(schema: ApplicationCommand): boolean {
+	equals(schema: ApplicationCommand): boolean {
 		// TODO: Also check the below
 		// return schema.options?.every(option => {
 		//   option.name
@@ -67,19 +74,8 @@ export default class Command implements JSONAble {
 		);
 	}
 
-	/**
-	 * Compares if a command is equal to this command.
-	 * @deprecated use Command#equals
-	 * @param _schema
-	 */
-	isEqualTo(_schema: ApplicationCommand): boolean {
-		throw new Error(
-			"Command#isEqualTo is deprecated. Please use Command#equals instead."
-		);
-	}
-
-	toJSON() {
-		const payload: Record<string, unknown> = {
+	serialize(): Omit<ApplicationCommand, "id" | "application_id"> {
+		const payload: Omit<ApplicationCommand, "id" | "application_id"> = {
 			name: this.name,
 			description: this.#description,
 		};
@@ -88,9 +84,13 @@ export default class Command implements JSONAble {
 			payload.default_permission = this.#defaultPermission;
 		}
 
-		// TODO: Implement this
 		if (this.#options.size > 0) {
-			// ApplicationCommandOption[]
+			payload.options = [];
+
+			Array.from(this.#options.entries()).forEach(([key, value]) => {
+				// TODO: Why does this error?!?
+				payload.options.push(value.serialize());
+			});
 		}
 
 		return payload;
