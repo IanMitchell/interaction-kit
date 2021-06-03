@@ -1,15 +1,15 @@
-name: Lint
+name: Typecheck
 
 on: [push, pull_request]
 
 jobs:
-  Lint:
+  Typecheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
       - name: Install Node.js 16.x
-        run: actions/setup-node@v2
+        uses: actions/setup-node@v2
         with:
           node-version: 16.2
 
@@ -17,9 +17,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.npm
-           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-           restore-keys: |
-             ${{ runner.os }}-node-
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install
         env:
