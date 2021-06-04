@@ -1,1 +1,1 @@
-export type Channel = {};
+export type Channel = Record<string, unknown>;

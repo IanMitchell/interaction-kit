@@ -1,70 +1,50 @@
-import type { FastifyRequest, FastifyReply } from 'fastify';
-import { RouteGenericInterface } from 'fastify/types/route';
-import { IncomingMessage, Server, ServerResponse } from 'http';
+import type { FastifyReply, FastifyRequest } from "fastify";
 import {
-  Interaction as InteractionBody,
-  InteractionType,
-  InteractionResponse,
-  ApplicationCommandInteractionDataOption,
-} from './api/definitions';
-import type { Embed } from './components/embed'
-import { PermissionFlags } from './data/messages';
+	ApplicationCommandInteractionDataOption,
+	Interaction as IInteraction,
+	InteractionCallbackResponse,
+	InteractionType,
+} from "./api/api";
+import { PermissionFlags } from "./data/messages";
 
 export default class Interaction {
-  type: InteractionType;
-  name: string;
-  response: FastifyReply;
-  #options: Map<string, ApplicationCommandInteractionDataOption>;
+	public readonly type: InteractionType;
+	public readonly name: string | undefined;
+	public readonly response: FastifyReply;
+	readonly #options: Map<string, ApplicationCommandInteractionDataOption>;
 
-  constructor(request: FastifyRequest<RouteGenericInterface, Server, IncomingMessage>, response: FastifyReply<Server, IncomingMessage, ServerResponse, RouteGenericInterface, unknown>) {
-    this.response = response;
-    this.type = request.body.type;
-    this.name = request.body?.data?.name?.toLowerCase();
-    this.#options = new Map();
+	constructor(
+		request: FastifyRequest<{ Body: IInteraction }>,
+		response: FastifyReply
+	) {
+		this.response = response;
 
-    request.body?.data?.options?.forEach(option => {
-      this.#options.set(option.name.toLowerCase(), option);
-    });
-  }
+		this.type = request.body.type;
+		this.name = request.body.data?.name?.toLowerCase();
 
-  reply({
-    message,
-    // embeds,
-    // components,
-    ephemeral = false,
-  }: {
-    message: string;
-    // embeds?: Embed[];
-    // components?: Component[];
-    ephemeral: boolean;
-  }) {
-    console.log('Replying!')
-    const payload: InteractionResponse = {
-      type: 4,
-      data: {
-        content: message,
-      },
-    };
+		this.#options = new Map();
 
-    if (ephemeral && payload?.data != null) {
-      payload.data.flags = PermissionFlags.EPHEMERAL;
-    }
+		request.body?.data?.options?.forEach((option) => {
+			this.#options.set(option.name.toLowerCase(), option);
+		});
+	}
 
-    return this.response.status(200).send(payload);
-  }
+	reply({
+		message,
+		ephemeral = false,
+	}: {
+		message: string;
+		ephemeral: boolean;
+	}) {
+		const payload: InteractionCallbackResponse = {
+			type: 4,
+			data: { content: message },
+		};
 
-  // get options() {
-  //   return new Proxy(
-  //     {},
-  //     {
-  //       get: (target, property, receiver) => {
-  //         if (this.#options?.has(property)) {
-  //           return this.#options.get(property).value;
-  //         }
+		if (ephemeral && payload.data) {
+			payload.data.flags = PermissionFlags.EPHEMERAL;
+		}
 
-  //         return null;
-  //       },
-  //     }
-  //   );
-  }
+		return this.response.status(200).send(payload);
+	}
 }
