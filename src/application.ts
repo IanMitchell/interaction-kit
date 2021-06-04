@@ -13,7 +13,7 @@ import {
 	ApplicationCommand,
 	Interaction as IInteraction,
 	InteractionType,
-} from "./api/api";
+} from "./definitions";
 import { validateRequest } from "./api/validate";
 import Interaction from "./interaction";
 import APIClient from "./api/client";

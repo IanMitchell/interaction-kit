@@ -1,4 +1,4 @@
-import type { ApplicationCommand } from "./api/api";
+import type { ApplicationCommand } from "./definitions";
 import Application from "./application";
 import { Input } from "./components/inputs";
 import Interaction from "./interaction";

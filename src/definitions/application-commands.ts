@@ -1,13 +1,16 @@
-import type { Snowflake } from "../data/snowflake";
-import type { GuildMember } from "../records/member";
-import type { User } from "../records/user";
-import type { Channel } from "../records/channel";
-import type { Role } from "../records/role";
-// import type { Embed } from "../components/embed";
-type Embed = {};
+/**
+ * These type definitions come from the official Discord API docs. They should
+ * be defined with references back to the documentation section.
+ */
 
-export const API_URL = "https://discord.com/api/v9";
+import type { Snowflake } from "./snowflakes";
+import type { GuildMember } from "./guild-members";
+import { User } from "./users";
+import { AllowedMentions, Channel } from "./channels";
+import { Embed } from "./embeds";
+import { Role } from "./roles";
 
+// https://discord.com/developers/docs/interactions/slash-commands#applicationcommand
 export type ApplicationCommand = {
 	id: Snowflake;
 	application_id: Snowflake;
@@ -17,6 +20,7 @@ export type ApplicationCommand = {
 	default_permission?: boolean;
 };
 
+// https://discord.com/developers/docs/interactions/slash-commands#applicationcommandoption
 export type ApplicationCommandOption = {
 	type: ApplicationCommandOptionType;
 	name: string;
@@ -26,6 +30,7 @@ export type ApplicationCommandOption = {
 	options?: ApplicationCommandOption[];
 };
 
+// https://discord.com/developers/docs/interactions/slash-commands#applicationcommandoptiontype
 export enum ApplicationCommandOptionType {
 	SUB_COMMAND = 1,
 	SUB_COMMAND_GROUP = 2,
@@ -38,11 +43,13 @@ export enum ApplicationCommandOptionType {
 	MENTIONABLE = 9,
 }
 
+// https://discord.com/developers/docs/interactions/slash-commands#applicationcommandoptionchoice
 export type ApplicationCommandOptionChoice = {
 	name: string;
 	value: string | number;
 };
 
+// https://discord.com/developers/docs/interactions/slash-commands#guildapplicationcommandpermissions
 export type GuildApplicationCommandPermissions = {
 	id: Snowflake;
 	application_id: Snowflake;
@@ -50,17 +57,20 @@ export type GuildApplicationCommandPermissions = {
 	permissions: ApplicationCommandPermissions[];
 };
 
+// https://discord.com/developers/docs/interactions/slash-commands#applicationcommandpermissions
 export type ApplicationCommandPermissions = {
 	id: Snowflake;
 	type: ApplicationCommandPermissionType;
 	permission: boolean;
 };
 
+// https://discord.com/developers/docs/interactions/slash-commands#applicationcommandpermissiontype
 export enum ApplicationCommandPermissionType {
 	ROLE = 1,
 	USER = 2,
 }
 
+// https://discord.com/developers/docs/interactions/slash-commands#interaction
 export type Interaction = {
 	id: Snowflake;
 	application_id: Snowflake;
@@ -74,11 +84,13 @@ export type Interaction = {
 	version: number;
 };
 
+// https://discord.com/developers/docs/interactions/slash-commands#interaction-interactiontype
 export enum InteractionType {
 	PING = 1,
 	APPLICATION_COMMAND = 2,
 }
 
+// https://discord.com/developers/docs/interactions/slash-commands#interaction-applicationcommandinteractiondata
 export type ApplicationCommandInteractionData = {
 	id: Snowflake;
 	name: string;
@@ -86,6 +98,7 @@ export type ApplicationCommandInteractionData = {
 	options?: ApplicationCommandInteractionDataOption[];
 };
 
+// https://discord.com/developers/docs/interactions/slash-commands#interaction-applicationcommandinteractiondataresolved
 export type ApplicationCommandInteractionDataResolved = {
 	users?: Record<Snowflake, User>;
 	members?: Record<Snowflake, Omit<GuildMember, "user" | "deaf" | "mute">>;
@@ -96,54 +109,45 @@ export type ApplicationCommandInteractionDataResolved = {
 	>;
 };
 
+// https://discord.com/developers/docs/interactions/slash-commands#interaction-applicationcommandinteractiondataoption
 // TODO: Mutually exclusive, also what is option type?
 export type ApplicationCommandInteractionDataOption = {
 	name: string;
 	type: ApplicationCommandOptionType;
-	value?: OptionType;
+	value?: OptionType; // FIXME: This needs to be set correctly
 	options?: ApplicationCommandInteractionDataOption[];
 };
 
-// TODO: This is a hack
-export type OptionType = string;
+// HACK: This is to fix typechecking
+export type OptionType = unknown;
 
+// https://discord.com/developers/docs/interactions/slash-commands#interaction-response
 // TODO: Check?
-export interface InteractionCallbackResponse {
+export type InteractionResponse = {
 	type: InteractionCallbackType;
 	data?: InteractionApplicationCommandCallbackData;
-}
+};
 
+// https://discord.com/developers/docs/interactions/slash-commands#interaction-response-interactioncallbacktype
 export enum InteractionCallbackType {
 	PONG = 1,
 	CHANNEL_MESSAGE_WITH_SOURCE = 4,
 	DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE = 5,
 }
 
-export interface InteractionApplicationCommandCallbackData {
+// https://discord.com/developers/docs/interactions/slash-commands#interaction-response-interactionapplicationcommandcallbackdata
+export type InteractionApplicationCommandCallbackData = {
 	tts?: boolean;
 	content?: string;
 	embeds?: Embed[];
 	allowed_mentions?: AllowedMentions;
 	flags?: number;
-	name?: string;
-}
+};
 
-export enum AllowedMentionTypes {
-	ROLE = "roles",
-	USER = "users",
-	EVERYONE = "everyone",
-}
-
-export interface AllowedMentions {
-	parse: AllowedMentionTypes[];
-	roles: Snowflake[];
-	users: Snowflake[];
-	replied_user: boolean;
-}
-
-export interface MessageInteraction {
+// https://discord.com/developers/docs/interactions/slash-commands#messageinteraction
+export type MessageInteraction = {
 	id: Snowflake;
 	type: InteractionType;
 	name: string;
 	user: User;
-}
+};

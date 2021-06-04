@@ -2,10 +2,10 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import {
 	ApplicationCommandInteractionDataOption,
 	Interaction as IInteraction,
-	InteractionCallbackResponse,
+	InteractionResponse,
 	InteractionType,
 	OptionType,
-} from "./api/api";
+} from "./definitions";
 import { PermissionFlags } from "./data/messages";
 
 export default class Interaction {
@@ -49,7 +49,7 @@ export default class Interaction {
 		message: string;
 		ephemeral: boolean;
 	}) {
-		const payload: InteractionCallbackResponse = {
+		const payload: InteractionResponse = {
 			type: 4,
 			data: { content: message },
 		};

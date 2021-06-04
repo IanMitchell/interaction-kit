@@ -1,6 +1,5 @@
-export const EPOCH = 1420070400000;
-
-export type Snowflake = `${bigint}`;
+import type { Snowflake } from "../definitions";
+import { EPOCH } from "../definitions";
 
 export function getTimestamp(snowflake: Snowflake): Date {
 	return new Date(Number(BigInt(snowflake) >> (BigInt(22) + BigInt(EPOCH))));

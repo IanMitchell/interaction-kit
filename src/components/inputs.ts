@@ -3,7 +3,7 @@ import {
 	ApplicationCommandOption,
 	ApplicationCommandOptionChoice,
 	ApplicationCommandOptionType,
-} from "../api/api";
+} from "../definitions";
 
 type InputArgs = {
 	type: ApplicationCommandOptionType;
