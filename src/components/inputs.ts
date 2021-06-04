@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from "../api/definitions";
+import { ApplicationCommandOptionType } from "../definitions";
 
 type InputArgs = {
 	type: ApplicationCommandOptionType;

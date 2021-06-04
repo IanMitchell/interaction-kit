@@ -1,5 +1,5 @@
-import type { Snowflake } from '../api/definitions';
-import { EPOCH } from '../api/definitions';
+import type { Snowflake } from "../definitions";
+import { EPOCH } from "../definitions";
 
 export function getTimestamp(snowflake: Snowflake): Date {
 	return new Date(Number(BigInt(snowflake) >> (BigInt(22) + BigInt(EPOCH))));
