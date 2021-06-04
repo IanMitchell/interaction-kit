@@ -1,5 +1,5 @@
 import fetch, { Response } from "node-fetch";
-import { API_URL } from "./api";
+import { API_URL } from "../definitions";
 import { Method } from "./client";
 
 export default class APIRequest {
