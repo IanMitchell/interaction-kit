@@ -10,7 +10,7 @@ type InputArgs = {
 	name: string;
 	description: string;
 	required?: boolean;
-	choices?: ApplicationCommandOptionChoice[];
+	choices?: ChoiceList<unknown>;
 	options?: ApplicationCommandOption[];
 };
 
@@ -47,10 +47,7 @@ export class Input implements Serializable {
 		};
 
 		if (this.choices != null) {
-			payload.choices = this.choices.map((choice) => ({
-				name: choice.name,
-				value: choice.value,
-			}));
+			payload.choices = this.choices.serialize();
 		}
 
 		// TODO: Handle Options (do we want to?)
@@ -59,14 +56,22 @@ export class Input implements Serializable {
 	}
 }
 
+interface StringInputArgs extends Omit<InputArgs, "type" | "options"> {
+	choices: ChoiceList<string>;
+}
+
 export class StringInput extends Input {
-	constructor(args: Omit<InputArgs, "type" | "options">) {
+	constructor(args: StringInputArgs) {
 		super({ type: ApplicationCommandOptionType.STRING, ...args });
 	}
 }
 
+interface IntegerInputArgs extends Omit<InputArgs, "type" | "options"> {
+	choices: ChoiceList<number>;
+}
+
 export class IntegerInput extends Input {
-	constructor(args: Omit<InputArgs, "type" | "options">) {
+	constructor(args: IntegerInputArgs) {
 		super({ type: ApplicationCommandOptionType.INTEGER, ...args });
 	}
 }
@@ -98,5 +103,28 @@ export class RoleInput extends Input {
 export class MentionableInput extends Input {
 	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
 		super({ type: ApplicationCommandOptionType.MENTIONABLE, ...args });
+	}
+}
+
+export class ChoiceList<T> implements Serializable {
+	public readonly _choices: Map<string, T>;
+
+	constructor(choices: Record<string, T>) {
+		this._choices = new Map(Object.entries(choices));
+		Object.assign(this, choices);
+	}
+
+	static create<T, K extends typeof ChoiceList, U extends Record<string, T>>(
+		this: K,
+		choices: U
+	) {
+		return new this(choices) as InstanceType<K> & U;
+	}
+
+	serialize(): ApplicationCommandOptionChoice[] {
+		return Array.from(this._choices.entries()).map(([key, value]) => ({
+			name: value,
+			value: key,
+		}));
 	}
 }

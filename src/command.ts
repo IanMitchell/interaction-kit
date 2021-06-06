@@ -57,6 +57,18 @@ export default class Command implements Serializable {
 	 * @param schema
 	 */
 	equals(schema: ApplicationCommand): boolean {
+		if (
+			this.name !== schema.name ||
+			this.#description !== schema.description ||
+			this.#defaultPermission !== schema.default_permission
+		) {
+			return false;
+		}
+
+		if (schema.options?.length !== this.#options.size) {
+			return false;
+		}
+
 		// TODO: Also check the below
 		// return schema.options?.every(option => {
 		//   option.name
@@ -66,12 +78,9 @@ export default class Command implements Serializable {
 		//   option.choices
 		//   option.options
 		// })
+		// return true;
 
-		return !(
-			this.name !== schema.name ||
-			this.#description !== schema.description ||
-			this.#defaultPermission !== schema.default_permission
-		);
+		return false;
 	}
 
 	serialize(): Omit<ApplicationCommand, "id" | "application_id"> {
@@ -89,10 +98,12 @@ export default class Command implements Serializable {
 
 			Array.from(this.#options.entries()).forEach(([key, value]) => {
 				// TODO: Why does this error?!?
-				payload.options.push(value.serialize());
+				payload.options?.push(value.serialize());
 			});
 		}
 
+		console.log({ payload });
+		console.log({ opts: payload.options });
 		return payload;
 	}
 }

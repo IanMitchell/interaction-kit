@@ -124,7 +124,7 @@ export default class Application {
 				console.log(`\tUpdating ${command.name}`);
 
 				try {
-					await this.apiClient.put(
+					await this.apiClient.patch(
 						`/applications/${this.#applicationID}/guilds/${
 							process.env.DEVELOPMENT_SERVER_ID
 						}/commands/${signature.id}`,
