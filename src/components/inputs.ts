@@ -10,7 +10,7 @@ type InputArgs = {
 	name: string;
 	description: string;
 	required?: boolean;
-	choices?: ChoiceList<unknown>;
+	choices?: ChoiceList<string | number>;
 	options?: ApplicationCommandOption[];
 };
 
