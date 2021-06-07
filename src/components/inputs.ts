@@ -111,14 +111,20 @@ export class ChoiceList<T> implements Serializable {
 
 	constructor(choices: Record<string, T>) {
 		this._choices = new Map(Object.entries(choices));
-		Object.assign(this, choices);
+
+		Object.keys(choices).forEach((key) =>
+			Object.defineProperty(this, key, {
+				writable: false,
+				value: key,
+			})
+		);
 	}
 
-	static create<T, K extends typeof ChoiceList, U extends Record<string, T>>(
-		this: K,
+	static create<T, U extends Record<string, T>>(
+		this: typeof ChoiceList,
 		choices: U
 	) {
-		return new this(choices) as InstanceType<K> & U;
+		return Object.freeze(new this(choices)) as ChoiceList<T> & U;
 	}
 
 	serialize(): ApplicationCommandOptionChoice[] {
