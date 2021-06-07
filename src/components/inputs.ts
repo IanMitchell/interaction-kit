@@ -106,7 +106,7 @@ export class MentionableInput extends Input {
 	}
 }
 
-export class ChoiceList<T> implements Serializable {
+export class ChoiceList<T extends string | number> implements Serializable {
 	public readonly _choices: Map<string, T>;
 
 	constructor(choices: Record<string, T>) {
@@ -120,7 +120,7 @@ export class ChoiceList<T> implements Serializable {
 		);
 	}
 
-	static create<T, U extends Record<string, T>>(
+	static create<T extends string | number, U extends Record<string, T>>(
 		this: typeof ChoiceList,
 		choices: U
 	) {
@@ -128,7 +128,7 @@ export class ChoiceList<T> implements Serializable {
 	}
 
 	serialize(): ApplicationCommandOptionChoice[] {
-		return Array.from(this._choices.entries()).map(([key, value]) => ({
+		return Array.from(this._choices.entries()).map(([value, key]) => ({
 			name: value,
 			value: key,
 		}));
