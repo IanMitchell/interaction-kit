@@ -114,9 +114,12 @@ export type ApplicationCommandInteractionDataResolved = {
 export type ApplicationCommandInteractionDataOption = {
 	name: string;
 	type: ApplicationCommandOptionType;
-	value?: unknown; // FIXME: This needs to be set correctly
+	value?: OptionType; // FIXME: This needs to be set correctly
 	options?: ApplicationCommandInteractionDataOption[];
 };
+
+// HACK: This is to fix typechecking
+export type OptionType = unknown;
 
 // https://discord.com/developers/docs/interactions/slash-commands#interaction-response
 // TODO: Check?

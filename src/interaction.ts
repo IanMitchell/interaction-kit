@@ -4,6 +4,7 @@ import {
 	Interaction as IInteraction,
 	InteractionResponse,
 	InteractionType,
+	OptionType,
 } from "./definitions";
 import { PermissionFlags } from "./data/messages";
 
@@ -27,6 +28,18 @@ export default class Interaction {
 		request.body?.data?.options?.forEach((option) => {
 			this.#options.set(option.name.toLowerCase(), option);
 		});
+	}
+
+	// TODO: Type? Should return an object where keys = #options keys, and value = ApplicationCommandInteractionDataOption
+	get options() {
+		return new Proxy(
+			{},
+			{
+				get: (target, property): OptionType | null => {
+					return this.#options.get(property.toString())?.value ?? null;
+				},
+			}
+		);
 	}
 
 	reply({
