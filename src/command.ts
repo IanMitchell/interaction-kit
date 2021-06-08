@@ -40,7 +40,7 @@ export default class Command implements Serializable {
 				);
 			}
 
-			this.#options.set(option.name.toLowerCase(), option);
+			this.#options.set(key, option);
 		});
 	}
 
@@ -96,14 +96,11 @@ export default class Command implements Serializable {
 		if (this.#options.size > 0) {
 			payload.options = [];
 
-			Array.from(this.#options.entries()).forEach(([key, value]) => {
-				// TODO: Why does this error?!?
+			Array.from(this.#options.entries()).forEach(([_, value]) => {
 				payload.options?.push(value.serialize());
 			});
 		}
 
-		console.log({ payload });
-		console.log({ opts: payload.options });
 		return payload;
 	}
 }
