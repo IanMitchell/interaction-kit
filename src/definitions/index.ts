@@ -7,6 +7,7 @@ export * from "./api";
 export * from "./application-commands";
 export * from "./channels";
 export * from "./components";
+export * from "./embeds";
 export * from "./emoji";
 export * from "./guild-members";
 export * from "./guilds";
