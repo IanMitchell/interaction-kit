@@ -26,6 +26,7 @@ export default class Command implements Serializable {
 		handler,
 		defaultPermission = true,
 	}: CommandArgs) {
+		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$
 		this.name = name;
 		this.#description = description;
 		this.#defaultPermission = defaultPermission;

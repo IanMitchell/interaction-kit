@@ -7,6 +7,13 @@ import {
 	OptionType,
 } from "./definitions";
 import { PermissionFlags } from "./data/messages";
+import Embed from "./components/embed";
+
+type InteractionReply = {
+	message: string | null;
+	embed: Embed | Embed[] | null;
+	ephemeral: boolean;
+};
 
 export default class Interaction {
 	public readonly type: InteractionType;
@@ -42,16 +49,22 @@ export default class Interaction {
 		);
 	}
 
-	reply({
-		message,
-		ephemeral = false,
-	}: {
-		message: string;
-		ephemeral: boolean;
-	}) {
+	reply({ message, embed, ephemeral = false }: InteractionReply) {
+		const data: InteractionResponse["data"] = {};
+
+		if (message != null) {
+			data.content = message;
+		}
+
+		if (embed != null) {
+			data.embeds = ([] as Embed[])
+				.concat(embed)
+				.map((item) => item.serialize());
+		}
+
 		const payload: InteractionResponse = {
 			type: 4,
-			data: { content: message },
+			data,
 		};
 
 		if (ephemeral && payload.data) {
