@@ -14,9 +14,9 @@ import {
 	Interaction as IInteraction,
 	InteractionType,
 } from "./definitions";
-import { validateRequest } from "./api/validate";
+import { validateRequest } from "./requests/validate";
 import Interaction from "./interaction";
-import APIClient from "./api/client";
+import APIClient from "./requests/client";
 
 type ApplicationArgs = {
 	applicationID: string;

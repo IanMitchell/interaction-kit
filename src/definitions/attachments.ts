@@ -5,6 +5,7 @@
 
 import { Snowflake } from "./snowflakes";
 
+// TODO: Add docs for this
 export interface Attachment {
 	id: Snowflake;
 	filename: string;

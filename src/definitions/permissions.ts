@@ -1,3 +1,4 @@
+// TODO: Document
 export enum PermissionFlags {
 	CREATE_INSTANT_INVITE = 1 << 0,
 	KICK_MEMBERS = 1 << 1,

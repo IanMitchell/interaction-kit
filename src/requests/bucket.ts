@@ -1,6 +1,6 @@
 import { Response } from "node-fetch";
 import APIClient, { calculateAPIReset, getAPIOffset } from "./client";
-import Queue from "./queue";
+import Queue from "../structures/queue";
 import APIRequest from "./request";
 
 export default class Bucket {
