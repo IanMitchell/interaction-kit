@@ -83,6 +83,10 @@ export default class Interaction {
 			data.content = message;
 		}
 
+		if (ephemeral) {
+			data.flags = PermissionFlags.EPHEMERAL;
+		}
+
 		if (embed != null) {
 			data.embeds = ([] as Embed[])
 				.concat(embed)
@@ -92,6 +96,7 @@ export default class Interaction {
 		const payload: InteractionResponse = {
 			type: 4,
 			data,
+		};
 
 		if (!this.#replied && !immediateFollowUp) {
 			this.#replied = true;
