@@ -11,9 +11,16 @@ import { PermissionFlags } from "./definitions/messages";
 import Embed from "./components/embed";
 
 type InteractionReply = {
-	message: string | null;
-	embed: Embed | Embed[] | null;
-	ephemeral: boolean;
+	message?: string;
+	embed?: Embed | Embed[] | null;
+	ephemeral?: boolean;
+	immediateFollowUp?: boolean;
+};
+
+type InteractionMessageModifiers = {
+	// TODO: Type these better
+	edit: (id) => unknown;
+	delete: (id) => unknown;
 };
 
 export default class Interaction {
@@ -21,6 +28,7 @@ export default class Interaction {
 	public readonly name: string | undefined;
 	public readonly token: string;
 	public readonly response: FastifyReply;
+	public readonly messages: InteractionMessageModifiers;
 	readonly #options: Map<string, ApplicationCommandInteractionDataOption>;
 	#replied: boolean;
 
@@ -28,7 +36,6 @@ export default class Interaction {
 		request: FastifyRequest<{ Body: IInteraction }>,
 		response: FastifyReply
 	) {
-		this.#replied = false;
 		this.response = response;
 
 		this.type = request.body.type;
@@ -40,6 +47,8 @@ export default class Interaction {
 		request.body?.data?.options?.forEach((option) => {
 			this.#options.set(option.name.toLowerCase(), option);
 		});
+
+		this.#replied = false;
 
 		// TODO: Update and Remove, or Edit and Delete?
 		this.messages = {
@@ -104,7 +113,7 @@ export default class Interaction {
 			return "@original";
 		}
 
-		const id = API.postWebhookMessage();
+		const id = await API.postWebhookMessage();
 		return id;
 	}
 }

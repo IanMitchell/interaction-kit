@@ -4,7 +4,7 @@
 	"author": "Ian Mitchell",
 	"description": "TODO",
 	"license": "MIT",
-	"main": "dist/index.js",
+	"exports": "./dist/index.js",
 	"typings": "dist/index.d.ts",
 	"type": "module",
 	"scripts": {

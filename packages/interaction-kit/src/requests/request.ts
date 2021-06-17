@@ -1,6 +1,7 @@
 import fetch, { Response } from "node-fetch";
 import { API_URL } from "../definitions";
 import { Method } from "./client";
+import pkg from "../../package.json";
 
 export default class APIRequest {
 	path: string;
@@ -55,7 +56,7 @@ export default class APIRequest {
 	async execute(): Promise<Response> {
 		let body;
 		const headers: Record<string, string> = {
-			"user-agent": "InteractionKit (https://interactionkit.dev, 0.0.1)",
+			"user-agent": `InteractionKit (https://interactionkit.dev, ${pkg.version})`,
 			...this.headers,
 		};
 

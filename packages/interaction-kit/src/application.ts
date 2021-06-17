@@ -64,6 +64,10 @@ export default class Application {
 		this.apiClient = new APIClient(this.#token);
 	}
 
+	get id() {
+		return this.#applicationID;
+	}
+
 	addCommand(command: Command) {
 		if (this.#commands.has(command.name.toLowerCase())) {
 			throw new Error(
