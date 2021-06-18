@@ -1,3 +1,13 @@
+import { Fragment } from "react";
+
 export default function Home() {
-	return <h1>Interaction Kit... coming soon(tm)</h1>;
+	return (
+		<Fragment>
+			<h1>Interaction Kit</h1>
+			<p>Coming Soon(tm).</p>
+			<p>
+				<a href="https://discord.gg/ian">Join our discord!</a>
+			</p>
+		</Fragment>
+	);
 }

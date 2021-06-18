@@ -4,3 +4,4 @@ export { default as Command } from "./command";
 export { default as Embed } from "./components/embed";
 export { default as Interaction } from "./interaction";
 export * from "./components/inputs";
+export * as API from "./api/index";

@@ -11,31 +11,31 @@ class Client {
 		BucketClassifier["route"],
 		Map<BucketClassifier["identifier"], Bucket>
 	>;
-	#globalReset: number;
+	#globalResetAfter: number;
 
 	constructor() {
 		this.#buckets = new Map();
-		this.#globalReset = 0;
+		this.#globalResetAfter = 0;
 	}
 
 	async checkGlobalRateLimit() {
 		return new Promise((resolve) => {
-			if (this.#globalReset === 0) {
+			if (this.#globalResetAfter === 0) {
 				return resolve(true);
 			}
 
 			return setTimeout(() => {
-				this.#globalReset = 0;
+				this.#globalResetAfter = 0;
 				resolve(true);
-			}, Date.now() - 1000 * this.#globalReset);
+			}, this.#globalResetAfter);
 		});
 	}
 
 	setGlobalReset(timestamp: number) {
-		this.#globalReset = Math.ceil(timestamp);
+		this.#globalResetAfter = timestamp;
 	}
 
-	async #queue(route: string, options: RequestInit, bucket: BucketClassifier) {
+	async #queue(url: URL, options: RequestInit, bucket: BucketClassifier) {
 		if (bucket?.route == null || bucket?.identifier == null) {
 			throw new Error("You must defined a bucket route and identifier");
 		}
@@ -43,39 +43,47 @@ class Client {
 		if (!this.#buckets.has(bucket?.route)) {
 			this.#buckets.set(
 				bucket.route,
-				new Map([[bucket.identifier, new Bucket(this.checkGlobalRateLimit)]])
+				new Map([
+					[
+						bucket.identifier,
+						new Bucket(this.checkGlobalRateLimit, this.setGlobalReset),
+					],
+				])
 			);
 		}
 
 		if (!this.#buckets.get(bucket.route)!.has(bucket.identifier)) {
 			this.#buckets
 				.get(bucket.route)!
-				.set(bucket.identifier, new Bucket(this.checkGlobalRateLimit));
+				.set(
+					bucket.identifier,
+					new Bucket(this.checkGlobalRateLimit, this.setGlobalReset)
+				);
 		}
 
 		return this.#buckets
 			.get(bucket.route)!
 			.get(bucket.identifier)!
-			.request(route, options);
+			.request(url, options);
 	}
 
-	async get(url: string, options: RequestInit, bucket: BucketClassifier) {
+	async get(url: URL, options: RequestInit, bucket: BucketClassifier) {
 		return this.#queue(url, { method: "GET", ...options }, bucket);
 	}
 
-	async post(url: string, options: RequestInit, bucket: BucketClassifier) {
+	async post(url: URL, options: RequestInit, bucket: BucketClassifier) {
 		return this.#queue(url, { method: "POST", ...options }, bucket);
 	}
 
-	async patch(url: string, options: RequestInit, bucket: BucketClassifier) {
+	async patch(url: URL, options: RequestInit, bucket: BucketClassifier) {
 		return this.#queue(url, { method: "PATCH", ...options }, bucket);
 	}
 
-	async put(url: string, options: RequestInit, bucket: BucketClassifier) {
+	async put(url: URL, options: RequestInit, bucket: BucketClassifier) {
 		return this.#queue(url, { method: "PUT", ...options }, bucket);
 	}
 
-	async delete(url: string, options: RequestInit, bucket: BucketClassifier) {
+	async delete(url: URL, options: RequestInit, bucket: BucketClassifier) {
 		return this.#queue(url, { method: "DELETE", ...options }, bucket);
 	}
 }

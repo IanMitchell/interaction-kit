@@ -2,6 +2,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import {
 	ApplicationCommandInteractionDataOption,
 	Interaction as IInteraction,
+	InteractionApplicationCommandCallbackData,
 	InteractionCallbackType,
 	InteractionResponse,
 	InteractionType,
@@ -9,6 +10,7 @@ import {
 } from "./definitions";
 import { PermissionFlags } from "./definitions/messages";
 import Embed from "./components/embed";
+import * as API from "./api/index";
 
 type InteractionReply = {
 	message?: string;
@@ -17,10 +19,13 @@ type InteractionReply = {
 	immediateFollowUp?: boolean;
 };
 
+// TODO: Set return types (should be returned data, likely)
 type InteractionMessageModifiers = {
-	// TODO: Type these better
-	edit: (id) => unknown;
-	delete: (id) => unknown;
+	edit: (
+		data: InteractionApplicationCommandCallbackData,
+		id?: string
+	) => unknown;
+	delete: (id?: string) => unknown;
 };
 
 export default class Interaction {
@@ -50,14 +55,25 @@ export default class Interaction {
 
 		this.#replied = false;
 
-		// TODO: Update and Remove, or Edit and Delete?
 		this.messages = {
-			edit: () => {
-				API.patchWebhookMessage();
+			edit: (
+				data: InteractionApplicationCommandCallbackData,
+				id = "@original"
+			) => {
+				API.patchWebhookMessage({
+					applicationID: process.env.applicationID,
+					interactionToken: this.token,
+					id,
+					data,
+				});
 			},
 
-			delete: () => {
-				API.deleteWebhookMessage();
+			delete: (id = "@original") => {
+				API.deleteWebhookMessage({
+					applicationID: process.env.applicationID,
+					interactionToken: this.token,
+					id,
+				});
 			},
 		};
 	}
@@ -103,7 +119,7 @@ export default class Interaction {
 		}
 
 		const payload: InteractionResponse = {
-			type: 4,
+			type: InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
 			data,
 		};
 
@@ -113,7 +129,13 @@ export default class Interaction {
 			return "@original";
 		}
 
-		const id = await API.postWebhookMessage();
+		// TODO: Verified this sends the ID back (we probably need to extract it)
+		const id = await API.postWebhookMessage({
+			applicationID: process.env.applicationID,
+			interactionToken: this.token,
+			data,
+		});
+
 		return id;
 	}
 }
