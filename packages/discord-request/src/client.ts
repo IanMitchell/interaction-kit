@@ -1,4 +1,5 @@
 import Bucket from "./bucket";
+import type { URL } from "url";
 import type { RequestInit } from "node-fetch";
 
 type BucketClassifier = {
@@ -14,6 +15,12 @@ class Client {
 	#globalResetAfter: number;
 
 	constructor() {
+		this.#buckets = new Map();
+		this.#globalResetAfter = 0;
+	}
+
+	reset() {
+		// TODO: Will this cause a memory leak?
 		this.#buckets = new Map();
 		this.#globalResetAfter = 0;
 	}

@@ -118,7 +118,6 @@ export default class Bucket {
 							case 500:
 							// TODO: Handle breaks
 							default:
-								console.log({ fn: console.warn });
 								console.warn(
 									`[BUCKET ERROR]: The url ${url} returned a status code ${response.status} which Interaction Kit does not know how to handle yet. This is a library issue; please open an issue on GitHub here: <TODO: URL>`
 								);

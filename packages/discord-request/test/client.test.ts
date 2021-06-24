@@ -3,8 +3,13 @@ enableFetchMocks();
 
 import { URL } from "url";
 import Bucket from "../src/bucket";
+import client from "../src/client";
 
 const emptyFunction = () => {};
+
+beforeEach(() => {
+	fetchMock.resetMocks();
+});
 
 describe("rate limits", () => {
 	test.todo("should throttle global rate limits");
@@ -44,7 +49,10 @@ describe("buckets", () => {
 describe("client", () => {
 	test.todo("should require bucket information");
 
-	test.todo("should return a singleton");
+	test("should return a singleton", async () => {
+		const dup = await import("../src/client");
+		expect(dup.default).toBe(client);
+	});
 
 	test.todo("should expose HTTP methods");
 

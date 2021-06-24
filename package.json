@@ -1,5 +1,5 @@
 {
-	"name": "interaction-kit",
+	"name": "interaction-kit-workspace",
 	"workspaces": [
 		"packages/*"
 	],
@@ -8,7 +8,7 @@
 		"typecheck": "npm run typecheck --workspaces",
 		"prettier": "npm run prettier --workspaces",
 		"lint": "npm run lint --workspaces",
-		"test": "npm test --workspaces"
+		"test": "jest"
 	},
 	"engines": {
 		"node": ">=14"
