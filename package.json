@@ -1,26 +1,15 @@
 {
 	"name": "interaction-kit",
-	"version": "0.0.2",
-	"author": "Ian Mitchell",
-	"description": "TODO",
-	"license": "MIT",
-	"exports": "./dist/index.js",
-	"typings": "dist/index.d.ts",
-	"type": "module",
-	"scripts": {
-		"start": "node .",
-		"build": "tsup src/index.ts --format esm,cjs --dts",
-		"build:fast": "tsup src/index.ts",
-		"clean": "rm -r dist/",
-		"typecheck": "tsc --noEmit",
-		"prettier": "prettier src/**/*.ts --check",
-		"lint": "eslint ./src/**/*.ts",
-		"test": "jest"
-	},
-	"files": [
-		"dist",
-		"src"
+	"workspaces": [
+		"packages/*"
 	],
+	"scripts": {
+		"clean": "npm run clean --workspaces",
+		"typecheck": "npm run typecheck --workspaces",
+		"prettier": "npm run prettier --workspaces",
+		"lint": "npm run lint --workspaces",
+		"test": "npm test --workspaces"
+	},
 	"engines": {
 		"node": ">=14"
 	},
@@ -42,22 +31,5 @@
 		"tslib": "^2.2.0",
 		"tsup": "^4.11.1",
 		"typescript": "^4.3.2"
-	},
-	"dependencies": {
-		"commander": "^7.2.0",
-		"dotenv": "^10.0.0",
-		"fastify": "^3.17.0",
-		"fastify-raw-body": "^3.1.0",
-		"node-fetch": "^2.6.1",
-		"tweetnacl": "^1.0.3"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/IanMitchell/interaction-kit.git"
-	},
-	"keywords": [],
-	"bugs": {
-		"url": "https://github.com/IanMitchell/interaction-kit/issues"
-	},
-	"homepage": "https://github.com/IanMitchell/interaction-kit#readme"
+	}
 }

@@ -2,20 +2,19 @@
 	"name": "discord-request",
 	"version": "0.0.2",
 	"author": "Ian Mitchell",
-	"description": "TODO",
+	"description": "Discord Request makes HTTP API requests while handling rate limit restrictions automatically.",
 	"license": "MIT",
 	"exports": "./dist/index.js",
 	"typings": "dist/index.d.ts",
 	"type": "module",
 	"scripts": {
-		"start": "node .",
 		"build": "tsup src/index.ts --format esm,cjs --dts",
 		"build:fast": "tsup src/index.ts",
 		"clean": "rm -r dist/",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
 		"lint": "eslint ./src/**/*.ts",
-		"test": "node --experimental-vm-modules node_modules/.bin/jest"
+		"test": "jest"
 	},
 	"files": [
 		"dist",
