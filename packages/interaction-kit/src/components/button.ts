@@ -2,9 +2,14 @@ import { ButtonStyle, Component, ComponentType } from "../definitions";
 import type { SerializableComponent } from "../interfaces";
 
 type ButtonArgs = {
-	customID?: string;
-} & Omit<Component, "type" | "components" | "customID">;
+	customID: Component["custom_id"];
+} & Omit<Component, "type" | "url" | "custom_id" | "components">;
 
+type LinkButtonArgs = {
+	url: string;
+} & Omit<Component, "type" | "custom_id" | "components">;
+
+// TODO: Add Validations
 export default class Button implements SerializableComponent {
 	#style: ButtonStyle | null;
 	#label: string | null;
@@ -13,13 +18,13 @@ export default class Button implements SerializableComponent {
 	#url: string | null;
 	#disabled: boolean | null;
 
-	constructor({ style, label, emoji, customID, url, disabled }: ButtonArgs) {
-		this.#style = style;
-		this.#label = label;
-		this.#emoji = emoji;
-		this.#customID = customID;
-		this.#url = url;
-		this.#disabled = disabled;
+	constructor(options: ButtonArgs | LinkButtonArgs) {
+		this.#style = options.style;
+		this.#label = options.label;
+		this.#emoji = options.emoji;
+		this.#customID = options.customID;
+		this.#url = options.url;
+		this.#disabled = options.disabled;
 	}
 
 	get type() {
@@ -46,7 +51,7 @@ export default class Button implements SerializableComponent {
 		return this;
 	}
 
-	setURL(url: ButtonArgs["url"]) {
+	setURL(url: LinkButtonArgs["url"]) {
 		this.#url = url;
 		return this;
 	}
@@ -88,3 +93,9 @@ export default class Button implements SerializableComponent {
 		return payload;
 	}
 }
+
+/**
+ * TODO: Do we want to export a ButtonLink class too?
+ * It helps typing, and may be easier to read, but it's also potentially
+ * divergent and unintuitive since we don't track the API 1:1
+ */

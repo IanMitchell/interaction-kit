@@ -5,9 +5,9 @@ import Button from "./button";
 export default class ActionRow implements SerializableComponent {
 	#components: SerializableComponent[];
 
-	// TODO: Validate Limits
 	constructor(...components: SerializableComponent[]) {
-		this.#components = components;
+		this.#components = [];
+		this.setComponents(...components);
 	}
 
 	get type() {
@@ -24,17 +24,35 @@ export default class ActionRow implements SerializableComponent {
 		}
 
 		if (this.#components[0].type === ComponentType.SELECT) {
-			return this.#components.length >= 1;
+			return this.#components.length > 0;
 		}
+
+		return false;
 	}
 
-	// TODO: Validate limits
 	setComponents(...components: SerializableComponent[]) {
-		this.#components.push(...components);
+		components.forEach((component) => this.addComponent(component));
 	}
 
-	// TODO: Validate limits
-	addComponent(component) {
+	addComponent(component: SerializableComponent) {
+		if (component.type === ComponentType.ACTION_ROW) {
+			throw new TypeError("An Action Row cannot contain another Action Row");
+		} else if (
+			component.type === ComponentType.SELECT &&
+			this.#components.length !== 0
+		) {
+			throw new TypeError(
+				"An Action Row must contain exactly 1 Select Component"
+			);
+		} else if (
+			component.type === ComponentType.BUTTON &&
+			this.#components.length >= 5
+		) {
+			throw new TypeError(
+				"An Action Row can only contain up to 5 Button Components"
+			);
+		}
+
 		this.#components.push(component);
 	}
 
