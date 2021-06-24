@@ -1,3 +1,11 @@
+import fetchMock, { enableFetchMocks } from "jest-fetch-mock";
+enableFetchMocks();
+
+import { URL } from "url";
+import Bucket from "../src/bucket";
+
+const emptyFunction = () => {};
+
 describe("rate limits", () => {
 	test.todo("should throttle global rate limits");
 
@@ -17,7 +25,18 @@ describe("rate limits", () => {
 });
 
 describe("buckets", () => {
-	test.todo("should alert to unknown HTTP status");
+	test("should alert to unknown HTTP status", async () => {
+		fetchMock.mockResponseOnce(JSON.stringify({ test: true }), {
+			status: 599,
+		});
+
+		const spy = jest.spyOn(console, "warn").mockImplementation();
+
+		const bucket = new Bucket(emptyFunction, emptyFunction);
+		await bucket.request(new URL("http://localhost:3000"), { method: "GET" });
+
+		expect(spy).toHaveBeenCalled();
+	});
 
 	test.todo("should alert to incorrect bucket assignment");
 });

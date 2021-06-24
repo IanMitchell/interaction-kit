@@ -25,6 +25,7 @@
 		"node": ">=14"
 	},
 	"devDependencies": {
+		"@types/jest": "^25.2.3",
 		"@types/node": "^15.6.1",
 		"@types/node-fetch": "^2.5.10",
 		"@typescript-eslint/eslint-plugin": "^4.25.0",
@@ -33,8 +34,10 @@
 		"eslint-config-prettier": "^8.3.0",
 		"eslint-config-xo": "^0.36.0",
 		"eslint-config-xo-typescript": "^0.41.1",
-		"jest": "^25.5.4",
+		"jest": "^27.0.5",
+		"jest-fetch-mock": "jefflau/jest-fetch-mock",
 		"prettier": "^2.3.0",
+		"ts-jest": "^27.0.3",
 		"tsdx": "^0.14.1",
 		"tslib": "^2.2.0",
 		"tsup": "^4.11.1",
