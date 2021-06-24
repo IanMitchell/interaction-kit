@@ -5,4 +5,8 @@
 
 // https://discord.com/developers/docs/reference#api-reference-base-url
 // https://discord.com/developers/docs/reference#api-versioning-api-versions
+
+/**
+ * The base Discord API URL with current version
+ */
 export const API_URL = "https://discord.com/api/v9";
