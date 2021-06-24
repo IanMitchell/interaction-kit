@@ -44,6 +44,8 @@ describe("buckets", () => {
 	});
 
 	test.todo("should alert to incorrect bucket assignment");
+
+	test.todo("should queue and automatically execute requests");
 });
 
 describe("client", () => {
