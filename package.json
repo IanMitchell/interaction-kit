@@ -4,10 +4,10 @@
 		"packages/*"
 	],
 	"scripts": {
-		"clean": "npm run clean --workspaces",
-		"typecheck": "npm run typecheck --workspaces",
-		"prettier": "npm run prettier --workspaces",
-		"lint": "npm run lint --workspaces",
+		"clean": "pnpm recursive run clean",
+		"typecheck": "pnpm recursive run typecheck",
+		"prettier": "pnpm recursive run prettier",
+		"lint": "pnpm recursive run lint",
 		"test": "jest"
 	},
 	"engines": {
