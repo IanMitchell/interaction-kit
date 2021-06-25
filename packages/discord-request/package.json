@@ -10,7 +10,7 @@
 	"scripts": {
 		"build": "tsup src/index.ts --format esm,cjs --dts",
 		"build:fast": "tsup src/index.ts",
-		"clean": "rm -r dist/",
+		"clean": "rm -rf dist/",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
 		"lint": "eslint ./src/**/*.ts",

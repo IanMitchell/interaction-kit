@@ -24,7 +24,7 @@
 		"eslint-config-xo": "^0.36.0",
 		"eslint-config-xo-typescript": "^0.41.1",
 		"jest": "^27.0.5",
-		"jest-fetch-mock": "jefflau/jest-fetch-mock",
+		"jest-fetch-mock": "github:jefflau/jest-fetch-mock",
 		"prettier": "^2.3.0",
 		"ts-jest": "^27.0.3",
 		"tsdx": "^0.14.1",
