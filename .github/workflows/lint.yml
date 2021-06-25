@@ -16,7 +16,7 @@ jobs:
       - name: Cache Dependencies
         uses: actions/cache@v2
         with:
-          path: ~/.npm
+          path: ~/.pnpm-store
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
@@ -25,11 +25,11 @@ jobs:
         env:
           CI: true
         run: |
-          npm install
+          pnpm install
 
       - name: Lint
         run: |
-          npm run lint
+          pnpm run lint
 
   Formatting:
     runs-on: ubuntu-latest
@@ -44,7 +44,7 @@ jobs:
       - name: Cache Dependencies
         uses: actions/cache@v2
         with:
-          path: ~/.npm
+          path: ~/.pnpm-store
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
@@ -53,8 +53,8 @@ jobs:
         env:
           CI: true
         run: |
-          npm install
+          pnpm install
 
       - name: Formatting
         run: |
-          npm run prettier
+          pnpm run prettier
