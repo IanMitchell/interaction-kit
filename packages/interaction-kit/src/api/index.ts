@@ -1,5 +1,6 @@
-import pkg from "../../../../package.json";
+import pkg from "../../package.json";
 
+// TODO: Move into a new spot for circular deps
 export function getStandardHeaders(json = true) {
 	return {
 		"user-agent": `InteractionKit (https://interactionkit.dev, ${pkg.version})`,
@@ -7,5 +8,6 @@ export function getStandardHeaders(json = true) {
 	};
 }
 
-export * from "./interactions";
+export * from "./commands";
 export * from "./guild";
+export * from "./interactions";

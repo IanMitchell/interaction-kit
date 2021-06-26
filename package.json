@@ -1,14 +1,12 @@
 {
 	"name": "interaction-kit-workspace",
-	"workspaces": [
-		"packages/*"
-	],
+	"private": true,
 	"scripts": {
-		"clean": "npm run clean --workspaces",
-		"typecheck": "npm run typecheck --workspaces",
-		"prettier": "npm run prettier --workspaces",
-		"lint": "npm run lint --workspaces",
-		"test": "jest"
+		"clean": "lerna run clean",
+		"typecheck": "lerna run typecheck --stream",
+		"prettier": "lerna run prettier --stream",
+		"lint": "lerna run lint --stream",
+		"test": "lerna run test --stream"
 	},
 	"engines": {
 		"node": ">=14"
@@ -25,6 +23,7 @@
 		"eslint-config-xo-typescript": "^0.41.1",
 		"jest": "^27.0.5",
 		"jest-fetch-mock": "jefflau/jest-fetch-mock",
+		"lerna": "^4.0.0",
 		"prettier": "^2.3.0",
 		"ts-jest": "^27.0.3",
 		"tsdx": "^0.14.1",

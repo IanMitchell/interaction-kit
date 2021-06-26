@@ -1,8 +1,9 @@
-import Client from "../../../discord-request/src/client";
+import { URL } from "url";
+import Client from "discord-request";
 import { API_URL } from "../definitions";
 import { getStandardHeaders } from "./index";
 
-export function getGuild(id: string, { counts = false }) {
+export async function getGuild(id: string, { counts = false }) {
 	const url = new URL(`/guilds/${id}`, new URL(API_URL));
 
 	if (counts) {

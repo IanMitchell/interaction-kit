@@ -12,6 +12,7 @@ class Client {
 		BucketClassifier["route"],
 		Map<BucketClassifier["identifier"], Bucket>
 	>;
+
 	#globalResetAfter: number;
 
 	constructor() {
@@ -19,19 +20,13 @@ class Client {
 		this.#globalResetAfter = 0;
 	}
 
-	reset() {
-		// TODO: Will this cause a memory leak?
-		this.#buckets = new Map();
-		this.#globalResetAfter = 0;
-	}
-
 	async checkGlobalRateLimit() {
 		return new Promise((resolve) => {
 			if (this.#globalResetAfter === 0) {
-				return resolve(true);
+				resolve(true);
 			}
 
-			return setTimeout(() => {
+			setTimeout(() => {
 				this.#globalResetAfter = 0;
 				resolve(true);
 			}, this.#globalResetAfter);
@@ -44,34 +39,35 @@ class Client {
 
 	async #queue(url: URL, options: RequestInit, bucket: BucketClassifier) {
 		if (bucket?.route == null || bucket?.identifier == null) {
-			throw new Error("You must defined a bucket route and identifier");
+			console.log({ rip: true });
+			throw new Error("You must define a bucket route and identifier");
+		} else {
+			console.log({ bucket });
 		}
 
-		if (!this.#buckets.has(bucket?.route)) {
-			this.#buckets.set(
-				bucket.route,
-				new Map([
-					[
-						bucket.identifier,
-						new Bucket(this.checkGlobalRateLimit, this.setGlobalReset),
-					],
-				])
-			);
-		}
+		let routeMap;
+		let targetBucket;
 
-		if (!this.#buckets.get(bucket.route)!.has(bucket.identifier)) {
-			this.#buckets
-				.get(bucket.route)!
-				.set(
+		if (this.#buckets.has(bucket?.route)) {
+			routeMap = this.#buckets.get(bucket?.route);
+		} else {
+			routeMap = new Map([
+				[
 					bucket.identifier,
-					new Bucket(this.checkGlobalRateLimit, this.setGlobalReset)
-				);
+					new Bucket(this.checkGlobalRateLimit, this.setGlobalReset),
+				],
+			]);
+			this.#buckets.set(bucket.route, routeMap);
 		}
 
-		return this.#buckets
-			.get(bucket.route)!
-			.get(bucket.identifier)!
-			.request(url, options);
+		if (routeMap?.has(bucket.identifier)) {
+			targetBucket = routeMap.get(bucket.identifier);
+		} else {
+			targetBucket = new Bucket(this.checkGlobalRateLimit, this.setGlobalReset);
+			routeMap?.set(bucket.identifier, targetBucket);
+		}
+
+		return targetBucket?.request(url, options);
 	}
 
 	async get(url: URL, options: RequestInit, bucket: BucketClassifier) {

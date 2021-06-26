@@ -5,6 +5,7 @@ import { URL } from "url";
 import Bucket from "../src/bucket";
 import client from "../src/client";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 const emptyFunction = () => {};
 
 beforeEach(() => {
@@ -41,24 +42,50 @@ describe("buckets", () => {
 		await bucket.request(new URL("http://localhost:3000"), { method: "GET" });
 
 		expect(spy).toHaveBeenCalled();
+		expect(spy.mock.calls[0][0]).toMatch(/returned a status code/);
 	});
 
-	test.todo("should alert to incorrect bucket assignment");
+	test("should alert to incorrect bucket assignment", async () => {
+		const spy = jest.spyOn(console, "warn").mockImplementation();
+		const bucket = new Bucket(emptyFunction, emptyFunction);
+
+		fetchMock.mockResponseOnce(JSON.stringify({ test: true }), {
+			status: 200,
+			headers: {
+				"x-ratelimit-bucket": "1",
+			},
+		});
+		await bucket.request(new URL("http://localhost:3000"), { method: "GET" });
+
+		fetchMock.mockResponseOnce(JSON.stringify({ test: true }), {
+			status: 200,
+			headers: {
+				"x-ratelimit-bucket": "2",
+			},
+		});
+		await bucket.request(new URL("http://localhost:3000"), { method: "GET" });
+
+		expect(spy).toHaveBeenCalled();
+		expect(spy.mock.calls[0][0]).toMatch(/incorrect bucket assignment/);
+	});
 
 	test.todo("should queue and automatically execute requests");
 });
 
 describe("client", () => {
-	test.todo("should require bucket information");
+	test("should require bucket information", async () => {
+		expect(() => {
+			// Suppress typescript since we're explicitly trying to break this case
+			// @ts-expect-error
+			const value = client.get(new URL("https://localhost:3000"), {}, {});
+			console.log({ value });
+		}).toThrow("You must define a bucket route and identifier");
+	});
 
 	test("should return a singleton", async () => {
 		const dup = await import("../src/client");
 		expect(dup.default).toBe(client);
 	});
-
-	test.todo("should expose HTTP methods");
-
-	test.todo("should lazily initialize buckets");
 
 	test.todo("should accept fetch parameters in HTTP methods");
 });

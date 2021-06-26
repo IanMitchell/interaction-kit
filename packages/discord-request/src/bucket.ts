@@ -26,6 +26,16 @@ function parseBoolean(
 	}
 }
 
+function parseRateLimit(json: Record<string, unknown>): {
+	global: boolean;
+	retryAfter: number;
+} {
+	return {
+		global: Boolean(json?.global) ?? false,
+		retryAfter: Number(json?.retryAfter) || 0,
+	};
+}
+
 export default class Bucket {
 	#checkGlobalRateLimit: () => unknown;
 	#setGlobalRateLimit: (timestamp: number) => unknown;
@@ -48,9 +58,11 @@ export default class Bucket {
 		await this.#checkGlobalRateLimit();
 
 		if (this.#resetAfter > 0) {
-			return new Promise((resolve) =>
-				setTimeout(() => resolve(true), this.#resetAfter)
-			);
+			return new Promise((resolve) => {
+				setTimeout(() => {
+					resolve(true);
+				}, this.#resetAfter);
+			});
 		}
 
 		return Promise.resolve();
@@ -68,7 +80,7 @@ export default class Bucket {
 
 	// #retry(callback, times = 3) {}
 
-	request(url: URL, options: RequestInit) {
+	async request(url: URL, options: RequestInit) {
 		// TODO: This return is probably wrong. We might need to return a standalone promise wrapper? Not sure
 		return this.#queue.then(async () => {
 			await this.#checkRateLimit();
@@ -80,7 +92,7 @@ export default class Bucket {
 
 				if (response.headers != null) {
 					const id = response.headers.get("x-ratelimit-bucket");
-					// TODO: Do we need these?
+					// TODO: Right now we'll be constantly hitting the 429 limit. We need to instead stop after the last request - before the 429 - and pause until the limit resets. This will prevent cloudflare bans
 					// const date = response.headers.get("date") ?? new Date().toJSON();
 					// const limit = response.headers.get("x-ratelimit-limit");
 					// const remaining = response.headers.get("x-ratelimit-remaining");
@@ -88,7 +100,7 @@ export default class Bucket {
 					const resetAfter =
 						1000 *
 						parseFloat(response.headers.get("x-ratelimit-reset-after") ?? "0");
-					const global = parseBoolean(
+					const isGlobal = parseBoolean(
 						response.headers.get("x-ratelimit-global")
 					);
 
@@ -99,37 +111,41 @@ export default class Bucket {
 
 					if (this.#identifier !== id) {
 						console.warn(
-							`[BUCKET ERROR]: The url ${url} has an incorrect bucket assignment. This is likely a problem with the library; please open an issue on GitHub here: <TODO: URL>`
+							`[BUCKET ERROR]: The url ${url.toString()} has an incorrect bucket assignment. This is likely a problem with the library; please open an issue on GitHub here: <TODO: URL>`
 						);
 					}
 
 					// Assign reset variables
-					this.setResetAfter(resetAfter, global);
+					this.setResetAfter(resetAfter, isGlobal);
 				}
 
 				if (!response.ok) {
 					// Special handling for rate limits
 					if (response.status === 429) {
-						const json = await response.json();
-						this.setResetAfter(1000 * json.retry_after, json.global);
+						const json = parseRateLimit(
+							(await response.json()) as Record<string, unknown>
+						);
+						this.setResetAfter(1000 * json.retryAfter, json.global);
 						// TODO: Call retry and return result of it. This should in theory move the retry to the front of the queue when implemented
 					} else {
 						switch (response.status) {
-							case 500:
 							// TODO: Handle breaks
+							case 500:
 							default:
 								console.warn(
-									`[BUCKET ERROR]: The url ${url} returned a status code ${response.status} which Interaction Kit does not know how to handle yet. This is a library issue; please open an issue on GitHub here: <TODO: URL>`
+									`[BUCKET ERROR]: The url ${url.toString()} returned a status code ${
+										response.status
+									} which Interaction Kit does not know how to handle yet. This is a library issue; please open an issue on GitHub here: <TODO: URL>`
 								);
 						}
 					}
 				}
 
-				const json = await response.json();
-				return Promise.resolve(json);
-			} catch (error) {
+				const json: unknown = await response.json();
+				return json;
+			} catch (error: unknown) {
 				console.error(error);
-				return Promise.reject(error);
+				throw error;
 			}
 		});
 	}

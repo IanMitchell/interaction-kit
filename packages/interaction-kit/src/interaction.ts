@@ -10,7 +10,8 @@ import {
 } from "./definitions";
 import { PermissionFlags } from "./definitions/messages";
 import Embed from "./components/embed";
-import * as API from "./api/index";
+import * as API from "./api";
+import Application from "./application";
 
 type InteractionReply = {
 	message?: string;
@@ -36,11 +37,14 @@ export default class Interaction {
 	public readonly messages: InteractionMessageModifiers;
 	readonly #options: Map<string, ApplicationCommandInteractionDataOption>;
 	#replied: boolean;
+	readonly #application: Application;
 
 	constructor(
+		application: Application,
 		request: FastifyRequest<{ Body: IInteraction }>,
 		response: FastifyReply
 	) {
+		this.#application = application;
 		this.response = response;
 
 		this.type = request.body.type;
@@ -56,25 +60,23 @@ export default class Interaction {
 		this.#replied = false;
 
 		this.messages = {
-			edit: (
+			edit: async (
 				data: InteractionApplicationCommandCallbackData,
 				id = "@original"
-			) => {
+			) =>
 				API.patchWebhookMessage({
-					applicationID: process.env.applicationID,
+					applicationID: this.#application.id,
 					interactionToken: this.token,
 					id,
 					data,
-				});
-			},
+				}),
 
-			delete: (id = "@original") => {
+			delete: async (id = "@original") =>
 				API.deleteWebhookMessage({
-					applicationID: process.env.applicationID,
+					applicationID: this.#application.id,
 					interactionToken: this.token,
 					id,
-				});
-			},
+				}),
 		};
 	}
 
@@ -131,7 +133,7 @@ export default class Interaction {
 
 		// TODO: Verified this sends the ID back (we probably need to extract it)
 		const id = await API.postWebhookMessage({
-			applicationID: process.env.applicationID,
+			applicationID: this.#application.id,
 			interactionToken: this.token,
 			data,
 		});

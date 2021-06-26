@@ -10,13 +10,12 @@ import rawBody from "fastify-raw-body";
 import Command from "./command";
 import {
 	InteractionCallbackType,
-	ApplicationCommand,
 	Interaction as IInteraction,
 	InteractionType,
 } from "./definitions";
 import { validateRequest } from "./requests/validate";
 import Interaction from "./interaction";
-import APIClient from "./requests/client";
+import * as API from "./api";
 
 type ApplicationArgs = {
 	applicationID: string;
@@ -37,7 +36,6 @@ export default class Application {
 	#token;
 	#commands;
 	#port;
-	apiClient: APIClient;
 
 	constructor({ applicationID, publicKey, token, port }: ApplicationArgs) {
 		if (!applicationID) {
@@ -61,7 +59,6 @@ export default class Application {
 		this.#token = token;
 		this.#commands = new Map<string, Command>();
 		this.#port = port ?? 3000;
-		this.apiClient = new APIClient(this.#token);
 	}
 
 	get id() {
@@ -93,13 +90,7 @@ export default class Application {
 			throw new NoDevelopmentServerEnvironmentVariableError();
 		}
 
-		// TODO: Move this into an API module
-		// (also, an example of using the api client)
-		const json = (await this.apiClient.get(
-			`/applications/${this.#applicationID}/guilds/${
-				process.env.DEVELOPMENT_SERVER_ID
-			}/commands`
-		)) as ApplicationCommand[];
+		const json = await API.getGuildApplicationCommands();
 
 		// TODO: Handle errors
 		/**
@@ -114,12 +105,7 @@ export default class Application {
 				console.log(`\tCreating ${name}`);
 
 				try {
-					await this.apiClient.post(
-						`/applications/${this.#applicationID}/guilds/${
-							process.env.DEVELOPMENT_SERVER_ID
-						}/commands`,
-						command.serialize()
-					);
+					await API.postGuildApplicationCommand();
 				} catch (e: unknown) {
 					console.error(`\tProblem updating ${command.name}`);
 					console.error(e);
@@ -128,12 +114,11 @@ export default class Application {
 				console.log(`\tUpdating ${command.name}`);
 
 				try {
-					await this.apiClient.patch(
-						`/applications/${this.#applicationID}/guilds/${
-							process.env.DEVELOPMENT_SERVER_ID
-						}/commands/${signature.id}`,
-						command.serialize()
-					);
+					await API.patchGuildApplicationCommand({
+						applicationID: this.#applicationID,
+						commandID: signature.id,
+						command: command.serialize(),
+					});
 				} catch (e: unknown) {
 					console.error(`\tProblem updating ${command.name}`);
 					console.error(e);
@@ -170,7 +155,7 @@ export default class Application {
 
 		server.post<{ Body: IInteraction }>("/", async (request, response) => {
 			console.log("REQUEST");
-			const interaction = new Interaction(request, response);
+			const interaction = new Interaction(this, request, response);
 
 			if (!interaction || interaction.type === InteractionType.PING) {
 				console.log("Handling Discord Ping");

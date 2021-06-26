@@ -84,8 +84,12 @@ export default class Command implements Serializable {
 		return false;
 	}
 
-	serialize(): Omit<ApplicationCommand, "id" | "application_id"> {
-		const payload: Omit<ApplicationCommand, "id" | "application_id"> = {
+	serialize():
+		| ApplicationCommand
+		| Omit<ApplicationCommand, "id" | "application_id"> {
+		const payload:
+			| ApplicationCommand
+			| Omit<ApplicationCommand, "id" | "application_id"> = {
 			name: this.name,
 			description: this.#description,
 		};

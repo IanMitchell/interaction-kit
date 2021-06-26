@@ -11,12 +11,12 @@ type LinkButtonArgs = {
 
 // TODO: Add Validations
 export default class Button implements SerializableComponent {
-	#style: ButtonStyle | null;
-	#label: string | null;
+	#style: ButtonStyle | undefined;
+	#label: string | undefined;
 	#emoji: Component["emoji"] | null;
-	#customID: string | null;
+	#customID: string | undefined;
 	#url: string | null;
-	#disabled: boolean | null;
+	#disabled: boolean | undefined;
 
 	constructor(options: ButtonArgs | LinkButtonArgs) {
 		this.#style = options.style;

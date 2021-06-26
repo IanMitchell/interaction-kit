@@ -1,4 +1,5 @@
-import { getStandardHeaders } from ".";
+import { URL } from "url";
+import { getStandardHeaders } from "./index";
 import Client from "../../../discord-request/src/client";
 import {
 	API_URL,
@@ -36,7 +37,7 @@ export async function postWebhookMessage({
 	);
 }
 
-export function patchWebhookMessage({
+export async function patchWebhookMessage({
 	applicationID,
 	interactionToken,
 	id,
@@ -60,14 +61,14 @@ export function patchWebhookMessage({
 		},
 		{
 			route: `[PATCH] /webhooks/{application.id}/{interaction.token}/messages/${
-				id === "@original" ? "@original" : "<message_id>"
+				id === "@original" ? "@original" : "{message_id}"
 			}`,
 			identifier: `${applicationID}${interactionToken}`,
 		}
 	);
 }
 
-export function deleteWebhookMessage({
+export async function deleteWebhookMessage({
 	applicationID,
 	interactionToken,
 	id,
@@ -88,7 +89,7 @@ export function deleteWebhookMessage({
 		},
 		{
 			route: `[DELETE] /webhooks/{application.id}/{interaction.token}/messages/${
-				id === "@original" ? "@original" : "<message_id>"
+				id === "@original" ? "@original" : "{message_id}"
 			}`,
 			identifier: `${applicationID}${interactionToken}`,
 		}

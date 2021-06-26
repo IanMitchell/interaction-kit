@@ -12,5 +12,4 @@ module.exports = {
 		"eqeqeq": ["error", "smart"],
 		"capitalized-comments": 0,
 	},
-	ignorePatterns: ["**/*.js"],
 };
