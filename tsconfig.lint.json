@@ -1,3 +1,4 @@
+// TODO: Refactor into common+extended config
 {
 	"compilerOptions": {
 		// sets the baseUrl to the current folder for if `paths` are ever added.
