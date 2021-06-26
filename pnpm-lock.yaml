@@ -45,14 +45,14 @@ importers:
 
   packages/interaction-kit:
     specifiers:
-      commander: ^7.2.0
+      commander: ^8.0.0
       dotenv: ^10.0.0
-      fastify: ^3.17.0
+      fastify: ^3.18.0
       fastify-raw-body: ^3.1.0
       node-fetch: ^2.6.1
       tweetnacl: ^1.0.3
     dependencies:
-      commander: 7.2.0
+      commander: 8.0.0
       dotenv: 10.0.0
       fastify: 3.18.0
       fastify-raw-body: 3.1.0
@@ -3264,9 +3264,9 @@ packages:
     engines: {node: '>= 6'}
     dev: true
 
-  /commander/7.2.0:
-    resolution: {integrity: sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==}
-    engines: {node: '>= 10'}
+  /commander/8.0.0:
+    resolution: {integrity: sha512-Xvf85aAtu6v22+E5hfVoLHqyul/jyxh91zvqk/ioJTQuJR7Z78n7H558vMPKanPSRgIEeZemT92I2g9Y8LPbSQ==}
+    engines: {node: '>= 12'}
     dev: false
 
   /commondir/1.0.1:
@@ -4504,8 +4504,8 @@ packages:
   /fast-json-stable-stringify/2.1.0:
     resolution: {integrity: sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==}
 
-  /fast-json-stringify/2.7.6:
-    resolution: {integrity: sha512-ezem8qpAgpad6tXeUhK0aSCS8Fi2vjxTorI9i5M+xrq6UUbTl7/bBTxL1SjRI2zy+qpPkdD4+UblUCQdxRpvIg==}
+  /fast-json-stringify/2.7.7:
+    resolution: {integrity: sha512-2kiwC/hBlK7QiGALsvj0QxtYwaReLOmAwOWJIxt5WHBB9EwXsqbsu8LCel47yh8NV8CEcFmnZYcXh4BionJcwQ==}
     engines: {node: '>= 10.0.0'}
     dependencies:
       ajv: 6.12.6
@@ -4557,7 +4557,7 @@ packages:
       '@fastify/ajv-compiler': 1.1.0
       abstract-logging: 2.0.1
       avvio: 7.2.2
-      fast-json-stringify: 2.7.6
+      fast-json-stringify: 2.7.7
       fastify-error: 0.3.1
       fastify-warning: 0.2.0
       find-my-way: 4.3.0
