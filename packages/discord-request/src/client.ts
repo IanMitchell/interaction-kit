@@ -46,12 +46,9 @@ class Client {
 			console.log({ bucket });
 		}
 
-		let routeMap;
-		let targetBucket;
+		let routeMap = this.#buckets.get(bucket?.route);
 
-		if (this.#buckets.has(bucket?.route)) {
-			routeMap = this.#buckets.get(bucket?.route);
-		} else {
+		if (routeMap == null) {
 			routeMap = new Map([
 				[
 					bucket.identifier,
@@ -61,14 +58,14 @@ class Client {
 			this.#buckets.set(bucket.route, routeMap);
 		}
 
-		if (routeMap?.has(bucket.identifier)) {
-			targetBucket = routeMap.get(bucket.identifier);
-		} else {
+		let targetBucket = routeMap.get(bucket.identifier);
+
+		if (targetBucket == null) {
 			targetBucket = new Bucket(this.checkGlobalRateLimit, this.setGlobalReset);
 			routeMap?.set(bucket.identifier, targetBucket);
 		}
 
-		return targetBucket?.request(url, options);
+		return targetBucket.request(url, options);
 	}
 
 	async get(
