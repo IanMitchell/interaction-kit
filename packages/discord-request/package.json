@@ -5,6 +5,7 @@
 	"description": "Discord Request makes HTTP API requests while handling rate limit restrictions automatically.",
 	"license": "MIT",
 	"exports": "./dist/client.js",
+	"main": "./dist/client.js",
 	"typings": "dist/client.d.ts",
 	"type": "module",
 	"scripts": {

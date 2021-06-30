@@ -12,6 +12,11 @@
 	"engines": {
 		"node": ">=14"
 	},
+	"dependencies": {
+		"discord-request": "file:packages/discord-request",
+		"interaction-kit": "file:packages/interaction-kit",
+		"interactionkit.dev": "file:packages/interactionkit.dev"
+	},
 	"devDependencies": {
 		"@types/jest": "^25.2.3",
 		"@types/node": "^15.6.1",

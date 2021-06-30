@@ -16,7 +16,7 @@ export async function getGuildApplicationCommands({
 		new URL(API_URL)
 	);
 
-	const response = Client.get(
+	const response = await Client.get(
 		url,
 		{
 			headers: getStandardHeaders(),
@@ -48,7 +48,7 @@ export async function postGuildApplicationCommand({
 		new URL(API_URL)
 	);
 
-	const response = Client.post(
+	const response = await Client.post(
 		url,
 		{
 			headers: getStandardHeaders(),
@@ -77,7 +77,7 @@ export async function putGuildApplicationCommands({
 		new URL(API_URL)
 	);
 
-	const response = Client.put(
+	const response = await Client.put(
 		url,
 		{
 			headers: getStandardHeaders(),
@@ -109,7 +109,7 @@ export async function patchGuildApplicationCommand({
 		new URL(API_URL)
 	);
 
-	const response = Client.patch(
+	const response = await Client.patch(
 		url,
 		{
 			headers: getStandardHeaders(),
