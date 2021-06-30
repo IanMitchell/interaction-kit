@@ -1,5 +1,5 @@
 import type { URL } from "url";
-import type { RequestInit } from "node-fetch";
+import type { RequestInit, Response } from "node-fetch";
 import fetch from "node-fetch";
 
 function parseBoolean(
@@ -80,7 +80,7 @@ export default class Bucket {
 
 	// #retry(callback, times = 3) {}
 
-	async request(url: URL, options: RequestInit) {
+	async request(url: URL, options: RequestInit): Promise<Response> {
 		// TODO: This return is probably wrong. We might need to return a standalone promise wrapper? Not sure
 		return this.#queue.then(async () => {
 			await this.#checkRateLimit();
@@ -141,8 +141,7 @@ export default class Bucket {
 					}
 				}
 
-				const json: unknown = await response.json();
-				return json;
+				return response;
 			} catch (error: unknown) {
 				console.error(error);
 				throw error;

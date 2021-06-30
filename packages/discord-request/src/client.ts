@@ -1,6 +1,7 @@
-import Bucket from "./bucket";
 import type { URL } from "url";
-import type { RequestInit } from "node-fetch";
+import type { RequestInit, Response } from "node-fetch";
+
+import Bucket from "./bucket";
 
 type BucketClassifier = {
 	route: string;
@@ -70,23 +71,43 @@ class Client {
 		return targetBucket?.request(url, options);
 	}
 
-	async get(url: URL, options: RequestInit, bucket: BucketClassifier) {
+	async get(
+		url: URL,
+		options: RequestInit,
+		bucket: BucketClassifier
+	): Promise<Response> {
 		return this.#queue(url, { method: "GET", ...options }, bucket);
 	}
 
-	async post(url: URL, options: RequestInit, bucket: BucketClassifier) {
+	async post(
+		url: URL,
+		options: RequestInit,
+		bucket: BucketClassifier
+	): Promise<Response> {
 		return this.#queue(url, { method: "POST", ...options }, bucket);
 	}
 
-	async patch(url: URL, options: RequestInit, bucket: BucketClassifier) {
+	async patch(
+		url: URL,
+		options: RequestInit,
+		bucket: BucketClassifier
+	): Promise<Response> {
 		return this.#queue(url, { method: "PATCH", ...options }, bucket);
 	}
 
-	async put(url: URL, options: RequestInit, bucket: BucketClassifier) {
+	async put(
+		url: URL,
+		options: RequestInit,
+		bucket: BucketClassifier
+	): Promise<Response> {
 		return this.#queue(url, { method: "PUT", ...options }, bucket);
 	}
 
-	async delete(url: URL, options: RequestInit, bucket: BucketClassifier) {
+	async delete(
+		url: URL,
+		options: RequestInit,
+		bucket: BucketClassifier
+	): Promise<Response> {
 		return this.#queue(url, { method: "DELETE", ...options }, bucket);
 	}
 }

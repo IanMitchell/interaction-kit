@@ -3,6 +3,7 @@
 	"private": true,
 	"scripts": {
 		"clean": "lerna run clean",
+		"build": "lerna run build --stream",
 		"typecheck": "lerna run typecheck --stream",
 		"prettier": "lerna run prettier --stream",
 		"lint": "lerna run lint --stream",
