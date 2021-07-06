@@ -5,19 +5,21 @@ import {
 	InteractionApplicationCommandCallbackData,
 	InteractionCallbackType,
 	InteractionResponse,
-	InteractionType,
+	InteractionRequestType,
 	OptionType,
 } from "./definitions";
 import { PermissionFlags } from "./definitions/messages";
 import Embed from "./components/embed";
 import * as API from "./api";
 import Application from "./application";
+import { SerializableComponent } from "./interfaces";
 
 type InteractionReply = {
 	message?: string;
 	embed?: Embed | Embed[] | null;
+	components?: SerializableComponent | SerializableComponent[] | null;
 	ephemeral?: boolean;
-	immediateFollowUp?: boolean;
+	queue?: boolean;
 };
 
 // TODO: Set return types (should be returned data, likely)
@@ -30,7 +32,7 @@ type InteractionMessageModifiers = {
 };
 
 export default class Interaction {
-	public readonly type: InteractionType;
+	public readonly type: InteractionRequestType;
 	public readonly name: string | undefined;
 	public readonly token: string;
 	public readonly response: FastifyReply;
@@ -92,6 +94,7 @@ export default class Interaction {
 		);
 	}
 
+	// TODO: Is `defer` more appropriate?
 	acknowledge() {
 		return this.response.status(200).send({
 			type: InteractionCallbackType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
@@ -101,8 +104,9 @@ export default class Interaction {
 	async reply({
 		message,
 		embed,
+		components,
 		ephemeral = false,
-		immediateFollowUp = false,
+		queue = false,
 	}: InteractionReply) {
 		const data: InteractionResponse["data"] = {};
 
@@ -120,12 +124,21 @@ export default class Interaction {
 				.map((item) => item.serialize());
 		}
 
+		if (components != null) {
+			data.components = ([] as SerializableComponent[])
+				.concat(components)
+				.map((component) => component.serialize());
+
+			// TODO: Add components to the Application
+			// TODO: Figure out how to add things outside of this path...
+		}
+
 		const payload: InteractionResponse = {
 			type: InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
 			data,
 		};
 
-		if (!this.#replied && !immediateFollowUp) {
+		if (!this.#replied && !queue) {
 			this.#replied = true;
 			await this.response.status(200).send(payload);
 			return "@original";

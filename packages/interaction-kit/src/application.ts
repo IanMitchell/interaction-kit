@@ -11,11 +11,12 @@ import Command from "./command";
 import {
 	InteractionCallbackType,
 	Interaction as IInteraction,
-	InteractionType,
+	InteractionRequestType,
 } from "./definitions";
 import { validateRequest } from "./requests/validate";
 import Interaction from "./interaction";
 import * as API from "./api";
+import { SerializableComponent } from "./interfaces";
 
 type ApplicationArgs = {
 	applicationID: string;
@@ -35,6 +36,7 @@ export default class Application {
 	#publicKey;
 	#token;
 	#commands;
+	#components;
 	#port;
 
 	constructor({ applicationID, publicKey, token, port }: ApplicationArgs) {
@@ -58,6 +60,7 @@ export default class Application {
 		this.#publicKey = publicKey;
 		this.#token = token;
 		this.#commands = new Map<string, Command>();
+		this.#components = new Map<string, SerializableComponent>();
 		this.#port = port ?? 3000;
 	}
 
@@ -80,6 +83,12 @@ export default class Application {
 	addCommands(...commands: Command[]) {
 		commands.forEach((command) => this.addCommand(command));
 		return this;
+	}
+
+	addComponent(component: SerializableComponent) {
+		if (component.id != null) {
+			this.#components.set(component.id, component);
+		}
 	}
 
 	// TODO: Should this be moved into Command?
@@ -157,12 +166,14 @@ export default class Application {
 			console.log("REQUEST");
 			const interaction = new Interaction(this, request, response);
 
-			if (!interaction || interaction.type === InteractionType.PING) {
+			if (!interaction || interaction.type === InteractionRequestType.PING) {
 				console.log("Handling Discord Ping");
 				void response.send({
 					type: InteractionCallbackType.PONG,
 				});
-			} else if (interaction.type === InteractionType.APPLICATION_COMMAND) {
+			} else if (
+				interaction.type === InteractionRequestType.APPLICATION_COMMAND
+			) {
 				if (!interaction.name) {
 					console.error(
 						`Received Command but with no name: ${JSON.stringify({
@@ -184,6 +195,21 @@ export default class Application {
 				console.error(`Unknown Command: ${interaction.name}`);
 				void response.status(400).send({
 					error: "Unknown Type",
+				});
+			} else if (
+				interaction.type === InteractionRequestType.MESSAGE_COMPONENT
+			) {
+				// TODO: Handle Component Interactions
+				if (this.#components.has(interaction?.data?.custom_id)) {
+					console.log(`Handling Component ${interaction.data.custom_id}`);
+					return this.#components
+						.get(interaction.data.custom_id)
+						?.handler(interaction, this);
+				}
+
+				console.error(`Unknown Component: ${interaction.data.custom_id}`);
+				void response.status(400).send({
+					error: "Unknown Component",
 				});
 			} else {
 				// TODO: figure out what would lead to this state, and how to handle it.

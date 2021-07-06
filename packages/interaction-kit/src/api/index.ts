@@ -8,6 +8,9 @@ export function getStandardHeaders(json = true) {
 	};
 }
 
+// TODO: Create a closure that automatically passes in standard headers and app ids, tokens, etc
+// in order to simplify the API
+
 export * from "./commands";
 export * from "./guild";
 export * from "./interactions";

@@ -2,7 +2,7 @@ import type { ApplicationCommand } from "./definitions";
 import Application from "./application";
 import { Input } from "./components/inputs";
 import Interaction from "./interaction";
-import { Serializable } from "./interfaces";
+import { Optional, Serializable } from "./interfaces";
 
 type CommandArgs = {
 	name: string;
@@ -84,12 +84,8 @@ export default class Command implements Serializable {
 		return false;
 	}
 
-	serialize():
-		| ApplicationCommand
-		| Omit<ApplicationCommand, "id" | "application_id"> {
-		const payload:
-			| ApplicationCommand
-			| Omit<ApplicationCommand, "id" | "application_id"> = {
+	serialize(): Optional<ApplicationCommand, "id" | "application_id"> {
+		const payload: Optional<ApplicationCommand, "id" | "application_id"> = {
 			name: this.name,
 			description: this.#description,
 		};

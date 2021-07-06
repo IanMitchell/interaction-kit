@@ -7,6 +7,7 @@ export interface Serializable {
 }
 
 export interface SerializableComponent extends Serializable {
+	get id(): Component["custom_id"];
 	get type(): ComponentType;
 	serialize(): Component;
 }

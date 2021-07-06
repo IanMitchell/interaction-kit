@@ -1,39 +1,48 @@
+import Application from "../application";
 import { ButtonStyle, Component, ComponentType } from "../definitions";
 import type { SerializableComponent } from "../interfaces";
 
 type ButtonArgs = {
+	handler: (event: ComponentInteraction, application: Application) => unknown;
 	customID: Component["custom_id"];
 } & Omit<Component, "type" | "url" | "custom_id" | "components">;
 
-type LinkButtonArgs = {
-	url: string;
-} & Omit<Component, "type" | "custom_id" | "components">;
+type ButtonLinkArgs = Omit<
+	Component,
+	"type" | "custom_id" | "style" | "components"
+>;
 
 // TODO: Add Validations
+// TODO: It feels easy to accidentally create invalid buttons here. We should
+// consider making this into a Button and ButtonLink
 export default class Button implements SerializableComponent {
 	#style: ButtonStyle | undefined;
 	#label: string | undefined;
 	#emoji: Component["emoji"] | null;
 	#customID: string | undefined;
-	#url: string | null;
+	#url: string | undefined;
 	#disabled: boolean | undefined;
+	handler: (event: ComponentInteraction, application: Application) => unknown;
 
-	constructor(options: ButtonArgs | LinkButtonArgs) {
-		this.#style = options.style;
+	constructor(options: ButtonArgs | ButtonLinkArgs) {
 		this.#label = options.label;
 		this.#emoji = options.emoji;
-		this.#customID = options.customID;
-		this.#url = options.url;
 		this.#disabled = options.disabled;
+
+		// TODO: Figure out how to support this I guess
+		this.#customID = options?.customID;
+		this.#style = options?.style;
+		this.handler = options?.handler;
+
+		this.#url = options?.url;
+	}
+
+	get id() {
+		return this.#customID;
 	}
 
 	get type() {
 		return ComponentType.BUTTON;
-	}
-
-	setStyle(style: ButtonArgs["style"]) {
-		this.#style = style;
-		return this;
 	}
 
 	setLabel(label: ButtonArgs["label"]) {
@@ -51,7 +60,18 @@ export default class Button implements SerializableComponent {
 		return this;
 	}
 
-	setURL(url: LinkButtonArgs["url"]) {
+	setStyle(style: ButtonArgs["style"]) {
+		this.#style = style;
+		return this;
+	}
+
+	setHandler(
+		fn: (interaction: ComponentInteraction, application: Application) => unknown
+	) {
+		this.handler = fn;
+	}
+
+	setURL(url: ButtonLinkArgs["url"]) {
 		this.#url = url;
 		return this;
 	}
@@ -93,9 +113,3 @@ export default class Button implements SerializableComponent {
 		return payload;
 	}
 }
-
-/**
- * TODO: Do we want to export a ButtonLink class too?
- * It helps typing, and may be easier to read, but it's also potentially
- * divergent and unintuitive since we don't track the API 1:1
- */

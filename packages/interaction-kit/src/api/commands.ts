@@ -4,6 +4,10 @@ import { getStandardHeaders } from "./index";
 import { API_URL, ApplicationCommand, Snowflake } from "../definitions";
 import { Optional } from "../interfaces";
 
+export async function getGlobalApplicationCommands() {
+	return Promise.resolve();
+}
+
 export async function getGuildApplicationCommands({
 	applicationID,
 	guildID,
@@ -28,10 +32,6 @@ export async function getGuildApplicationCommands({
 	);
 
 	return response.json() as Promise<ApplicationCommand[]>;
-}
-
-export async function getGlobalApplicationCommands() {
-	return Promise.resolve();
 }
 
 export async function postGuildApplicationCommand({

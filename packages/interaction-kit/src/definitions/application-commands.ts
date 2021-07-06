@@ -74,7 +74,7 @@ export enum ApplicationCommandPermissionType {
 export type Interaction = {
 	id: Snowflake;
 	application_id: Snowflake;
-	type: InteractionType;
+	type: InteractionRequestType;
 	data?: ApplicationCommandInteractionData;
 	guild_id?: Snowflake;
 	channel_id?: Snowflake;
@@ -84,10 +84,11 @@ export type Interaction = {
 	version: number;
 };
 
-// https://discord.com/developers/docs/interactions/slash-commands#interaction-interactiontype
-export enum InteractionType {
+// https://discord.com/developers/docs/interactions/slash-commands#interaction-object-interaction-request-type
+export enum InteractionRequestType {
 	PING = 1,
 	APPLICATION_COMMAND = 2,
+	MESSAGE_COMPONENT = 3,
 }
 
 // https://discord.com/developers/docs/interactions/slash-commands#interaction-applicationcommandinteractiondata
@@ -147,7 +148,7 @@ export type InteractionApplicationCommandCallbackData = {
 // https://discord.com/developers/docs/interactions/slash-commands#messageinteraction
 export type MessageInteraction = {
 	id: Snowflake;
-	type: InteractionType;
+	type: InteractionRequestType;
 	name: string;
 	user: User;
 };
