@@ -3,6 +3,7 @@ import Client from "discord-request";
 import Config from "./config";
 import { API_URL, Snowflake } from "../definitions";
 
+// TODO: Test, Type, Document
 export async function getGuild(
 	id: Snowflake,
 	options: {

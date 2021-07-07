@@ -4,10 +4,12 @@ import Config from "./config";
 import { API_URL, ApplicationCommand, Snowflake } from "../definitions";
 import { Optional } from "../interfaces";
 
+// TODO: Test, Type, Document
 export async function getGlobalApplicationCommands() {
 	return Promise.resolve();
 }
 
+// TODO: Test, Type, Document
 export async function getGuildApplicationCommands(
 	guildID: Snowflake,
 	options: {
@@ -39,6 +41,7 @@ export async function getGuildApplicationCommands(
 	return response.json() as Promise<ApplicationCommand[]>;
 }
 
+// TODO: Test, Type, Document
 export async function postGuildApplicationCommand(
 	guildID: Snowflake,
 	command: Omit<ApplicationCommand, "id" | "application_id">,
@@ -72,6 +75,7 @@ export async function postGuildApplicationCommand(
 	return response.json() as Promise<ApplicationCommand>;
 }
 
+// TODO: Test, Type, Document
 export async function putGuildApplicationCommands(
 	guildID: Snowflake,
 	commands: ApplicationCommand[],
@@ -105,6 +109,7 @@ export async function putGuildApplicationCommands(
 	return response.json() as Promise<ApplicationCommand>;
 }
 
+// TODO: Test, Type, Document
 export async function patchGuildApplicationCommand(
 	guildID: Snowflake,
 	command: Optional<
@@ -142,6 +147,7 @@ export async function patchGuildApplicationCommand(
 	return response.json() as Promise<ApplicationCommand>;
 }
 
+// TODO: Test, Type, Document
 export async function deleteGuildApplicationCommand(
 	guildID: Snowflake,
 	commandID: Snowflake,

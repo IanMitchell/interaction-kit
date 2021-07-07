@@ -11,6 +11,7 @@ import {
  * https://discord.com/developers/docs/interactions/slash-commands#followup-messages
  */
 
+// TODO: Test, Type, Document
 export async function postWebhookMessage(
 	interactionToken: string,
 	data: InteractionApplicationCommandCallbackData,
@@ -42,6 +43,7 @@ export async function postWebhookMessage(
 	);
 }
 
+// TODO: Test, Type, Document
 export async function patchWebhookMessage(
 	interactionToken: string,
 	id: string,
@@ -76,6 +78,7 @@ export async function patchWebhookMessage(
 	);
 }
 
+// TODO: Test, Type, Document
 export async function deleteWebhookMessage(
 	interactionToken: string,
 	id: string,
@@ -107,6 +110,5 @@ export async function deleteWebhookMessage(
 		}
 	);
 
-	// TODO: Verify this is correct
 	return response.ok;
 }

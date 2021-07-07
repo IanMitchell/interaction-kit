@@ -1,6 +1,7 @@
-import Application from "../application";
-import { ButtonStyle, Component, ComponentType } from "../definitions";
 import type { SerializableComponent } from "../interfaces";
+
+import Application from "../application";
+import { Component, ComponentType } from "../definitions";
 
 type ButtonArgs = {
 	handler: (event: ComponentInteraction, application: Application) => unknown;
@@ -12,29 +13,33 @@ type ButtonLinkArgs = Omit<
 	"type" | "custom_id" | "style" | "components"
 >;
 
-// TODO: Add Validations
-// TODO: It feels easy to accidentally create invalid buttons here. We should
-// consider making this into a Button and ButtonLink
+function isButtonLink(
+	options: ButtonArgs | ButtonLinkArgs
+): options is ButtonLinkArgs {
+	return (options as ButtonLinkArgs).url != null;
+}
+
 export default class Button implements SerializableComponent {
-	#style: ButtonStyle | undefined;
-	#label: string | undefined;
-	#emoji: Component["emoji"] | null;
-	#customID: string | undefined;
-	#url: string | undefined;
-	#disabled: boolean | undefined;
-	handler: (event: ComponentInteraction, application: Application) => unknown;
+	#style: ButtonArgs["style"];
+	#label: ButtonArgs["label"];
+	#emoji: ButtonArgs["emoji"];
+	#customID: ButtonArgs["customID"];
+	#url: ButtonLinkArgs["url"];
+	#disabled: ButtonArgs["disabled"];
+	handler: ButtonArgs["handler"] | undefined;
 
 	constructor(options: ButtonArgs | ButtonLinkArgs) {
 		this.#label = options.label;
 		this.#emoji = options.emoji;
 		this.#disabled = options.disabled;
 
-		// TODO: Figure out how to support this I guess
-		this.#customID = options?.customID;
-		this.#style = options?.style;
-		this.handler = options?.handler;
-
-		this.#url = options?.url;
+		if (isButtonLink(options)) {
+			this.#url = options?.url;
+		} else {
+			this.#customID = options?.customID;
+			this.#style = options?.style;
+			this.handler = options?.handler;
+		}
 	}
 
 	get id() {
@@ -65,12 +70,12 @@ export default class Button implements SerializableComponent {
 		return this;
 	}
 
-	setHandler(
-		fn: (interaction: ComponentInteraction, application: Application) => unknown
-	) {
+	setHandler(fn: ButtonArgs["handler"]) {
 		this.handler = fn;
+		return this;
 	}
 
+	// TODO: Can we throw type errors if this is used on a non-link button?
 	setURL(url: ButtonLinkArgs["url"]) {
 		this.#url = url;
 		return this;

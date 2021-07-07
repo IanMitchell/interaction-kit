@@ -37,8 +37,8 @@ export default class Interaction {
 	public readonly response: FastifyReply;
 	public readonly messages: InteractionMessageModifiers;
 	readonly #options: Map<string, ApplicationCommandInteractionDataOption>;
-	#replied: boolean;
 	readonly #application: Application;
+	#replied: boolean;
 
 	constructor(
 		application: Application,
