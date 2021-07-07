@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import {
 	ApplicationCommandInteractionDataOption,
-	Interaction as IInteraction,
+	Interaction as InteractionDefinition,
 	InteractionApplicationCommandCallbackData,
 	InteractionCallbackType,
 	InteractionResponse,
@@ -22,13 +22,12 @@ type InteractionReply = {
 	queue?: boolean;
 };
 
-// TODO: Set return types (should be returned data, likely)
 type InteractionMessageModifiers = {
 	edit: (
 		data: InteractionApplicationCommandCallbackData,
 		id?: string
-	) => unknown;
-	delete: (id?: string) => unknown;
+	) => ReturnType<typeof API.patchWebhookMessage>;
+	delete: (id?: string) => ReturnType<typeof API.deleteWebhookMessage>;
 };
 
 export default class Interaction {
@@ -43,7 +42,7 @@ export default class Interaction {
 
 	constructor(
 		application: Application,
-		request: FastifyRequest<{ Body: IInteraction }>,
+		request: FastifyRequest<{ Body: InteractionDefinition }>,
 		response: FastifyReply
 	) {
 		this.#application = application;
@@ -65,20 +64,10 @@ export default class Interaction {
 			edit: async (
 				data: InteractionApplicationCommandCallbackData,
 				id = "@original"
-			) =>
-				API.patchWebhookMessage({
-					applicationID: this.#application.id,
-					interactionToken: this.token,
-					id,
-					data,
-				}),
+			) => API.patchWebhookMessage(this.token, id, data),
 
 			delete: async (id = "@original") =>
-				API.deleteWebhookMessage({
-					applicationID: this.#application.id,
-					interactionToken: this.token,
-					id,
-				}),
+				API.deleteWebhookMessage(this.token, id),
 		};
 	}
 
@@ -145,11 +134,7 @@ export default class Interaction {
 		}
 
 		// TODO: Verified this sends the ID back (we probably need to extract it)
-		const id = await API.postWebhookMessage({
-			applicationID: this.#application.id,
-			interactionToken: this.token,
-			data,
-		});
+		const id = await API.postWebhookMessage(this.token, data);
 
 		return id;
 	}

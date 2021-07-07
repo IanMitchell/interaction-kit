@@ -8,7 +8,7 @@ export async function getGuild(
 	options: {
 		headers?: Record<string, string>;
 		counts?: boolean;
-	}
+	} = {}
 ) {
 	const { headers = Config.getHeaders(), counts = false } = options;
 

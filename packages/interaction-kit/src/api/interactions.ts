@@ -17,7 +17,7 @@ export async function postWebhookMessage(
 	options: {
 		headers?: Record<string, string>;
 		applicationID?: Snowflake;
-	}
+	} = {}
 ) {
 	const {
 		applicationID = Config.applicationID,
@@ -49,7 +49,7 @@ export async function patchWebhookMessage(
 	options: {
 		headers?: Record<string, string>;
 		applicationID?: string;
-	}
+	} = {}
 ) {
 	const {
 		applicationID = Config.applicationID,
@@ -82,8 +82,8 @@ export async function deleteWebhookMessage(
 	options: {
 		headers?: Record<string, string>;
 		applicationID?: string;
-	}
-) {
+	} = {}
+): Promise<boolean> {
 	const {
 		applicationID = Config.applicationID,
 		headers = Config.getHeaders(),
@@ -94,7 +94,7 @@ export async function deleteWebhookMessage(
 		new URL(API_URL)
 	);
 
-	return Client.delete(
+	const response = await Client.delete(
 		url,
 		{
 			headers,
@@ -106,4 +106,7 @@ export async function deleteWebhookMessage(
 			identifier: `${applicationID}${interactionToken}`,
 		}
 	);
+
+	// TODO: Verify this is correct
+	return response.ok;
 }

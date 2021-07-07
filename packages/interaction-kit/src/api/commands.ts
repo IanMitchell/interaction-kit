@@ -13,7 +13,7 @@ export async function getGuildApplicationCommands(
 	options: {
 		headers?: Record<string, string>;
 		applicationID?: Snowflake;
-	}
+	} = {}
 ): Promise<ApplicationCommand[]> {
 	const {
 		applicationID = Config.applicationID,
@@ -45,7 +45,7 @@ export async function postGuildApplicationCommand(
 	options: {
 		headers?: Record<string, string>;
 		applicationID?: Snowflake;
-	}
+	} = {}
 ) {
 	const {
 		applicationID = Config.applicationID,
@@ -78,7 +78,7 @@ export async function putGuildApplicationCommands(
 	options: {
 		headers?: Record<string, string>;
 		applicationID?: Snowflake;
-	}
+	} = {}
 ) {
 	const {
 		applicationID = Config.applicationID,
@@ -114,7 +114,7 @@ export async function patchGuildApplicationCommand(
 	options: {
 		headers?: Record<string, string>;
 		applicationID?: Snowflake;
-	}
+	} = {}
 ) {
 	const {
 		applicationID = Config.applicationID,
@@ -148,7 +148,7 @@ export async function deleteGuildApplicationCommand(
 	options: {
 		headers?: Record<string, string>;
 		applicationID?: Snowflake;
-	}
+	} = {}
 ) {
 	const {
 		applicationID = Config.applicationID,
