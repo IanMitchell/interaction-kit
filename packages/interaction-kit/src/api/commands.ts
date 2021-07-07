@@ -1,6 +1,6 @@
 import Client from "discord-request";
 import { URL } from "url";
-import { getStandardHeaders } from "./index";
+import Config from "./config";
 import { API_URL, ApplicationCommand, Snowflake } from "../definitions";
 import { Optional } from "../interfaces";
 
@@ -8,13 +8,18 @@ export async function getGlobalApplicationCommands() {
 	return Promise.resolve();
 }
 
-export async function getGuildApplicationCommands({
-	applicationID,
-	guildID,
-}: {
-	applicationID: Snowflake;
-	guildID: Snowflake;
-}): Promise<ApplicationCommand[]> {
+export async function getGuildApplicationCommands(
+	guildID: Snowflake,
+	options: {
+		headers?: Record<string, string>;
+		applicationID?: Snowflake;
+	}
+): Promise<ApplicationCommand[]> {
+	const {
+		applicationID = Config.applicationID,
+		headers = Config.getHeaders(),
+	} = options;
+
 	const url = new URL(
 		`/applications/${applicationID}/guilds/${guildID}/commands`,
 		new URL(API_URL)
@@ -23,7 +28,7 @@ export async function getGuildApplicationCommands({
 	const response = await Client.get(
 		url,
 		{
-			headers: getStandardHeaders(),
+			headers,
 		},
 		{
 			route: "[GET] /applications/{application.id}/guilds/{guild.id}/commands",
@@ -34,15 +39,19 @@ export async function getGuildApplicationCommands({
 	return response.json() as Promise<ApplicationCommand[]>;
 }
 
-export async function postGuildApplicationCommand({
-	applicationID,
-	guildID,
-	command,
-}: {
-	applicationID: Snowflake;
-	guildID: Snowflake;
-	command: Omit<ApplicationCommand, "id" | "application_id">;
-}) {
+export async function postGuildApplicationCommand(
+	guildID: Snowflake,
+	command: Omit<ApplicationCommand, "id" | "application_id">,
+	options: {
+		headers?: Record<string, string>;
+		applicationID?: Snowflake;
+	}
+) {
+	const {
+		applicationID = Config.applicationID,
+		headers = Config.getHeaders(),
+	} = options;
+
 	const url = new URL(
 		`/applications/${applicationID}/guilds/${guildID}/commands`,
 		new URL(API_URL)
@@ -51,7 +60,7 @@ export async function postGuildApplicationCommand({
 	const response = await Client.post(
 		url,
 		{
-			headers: getStandardHeaders(),
+			headers,
 			body: JSON.stringify(command),
 		},
 		{
@@ -63,15 +72,19 @@ export async function postGuildApplicationCommand({
 	return response.json() as Promise<ApplicationCommand>;
 }
 
-export async function putGuildApplicationCommands({
-	applicationID,
-	guildID,
-	commands,
-}: {
-	applicationID: Snowflake;
-	guildID: Snowflake;
-	commands: ApplicationCommand[];
-}) {
+export async function putGuildApplicationCommands(
+	guildID: Snowflake,
+	commands: ApplicationCommand[],
+	options: {
+		headers?: Record<string, string>;
+		applicationID?: Snowflake;
+	}
+) {
+	const {
+		applicationID = Config.applicationID,
+		headers = Config.getHeaders(),
+	} = options;
+
 	const url = new URL(
 		`/applications/${applicationID}/guilds/${guildID}/commands`,
 		new URL(API_URL)
@@ -80,7 +93,7 @@ export async function putGuildApplicationCommands({
 	const response = await Client.put(
 		url,
 		{
-			headers: getStandardHeaders(),
+			headers,
 			body: JSON.stringify(commands),
 		},
 		{
@@ -92,18 +105,22 @@ export async function putGuildApplicationCommands({
 	return response.json() as Promise<ApplicationCommand>;
 }
 
-export async function patchGuildApplicationCommand({
-	applicationID,
-	guildID,
-	command,
-}: {
-	applicationID: string;
-	guildID: string;
+export async function patchGuildApplicationCommand(
+	guildID: Snowflake,
 	command: Optional<
 		ApplicationCommand,
 		"name" | "description" | "options" | "default_permission"
-	>;
-}) {
+	>,
+	options: {
+		headers?: Record<string, string>;
+		applicationID?: Snowflake;
+	}
+) {
+	const {
+		applicationID = Config.applicationID,
+		headers = Config.getHeaders(),
+	} = options;
+
 	const url = new URL(
 		`/applications/${applicationID}/guilds/${guildID}/commands`,
 		new URL(API_URL)
@@ -112,7 +129,7 @@ export async function patchGuildApplicationCommand({
 	const response = await Client.patch(
 		url,
 		{
-			headers: getStandardHeaders(),
+			headers,
 			body: JSON.stringify(command),
 		},
 		{
@@ -125,15 +142,19 @@ export async function patchGuildApplicationCommand({
 	return response.json() as Promise<ApplicationCommand>;
 }
 
-export async function deleteGuildApplicationCommand({
-	applicationID,
-	guildID,
-	commandID,
-}: {
-	applicationID: Snowflake;
-	guildID: Snowflake;
-	commandID: Snowflake;
-}) {
+export async function deleteGuildApplicationCommand(
+	guildID: Snowflake,
+	commandID: Snowflake,
+	options: {
+		headers?: Record<string, string>;
+		applicationID?: Snowflake;
+	}
+) {
+	const {
+		applicationID = Config.applicationID,
+		headers = Config.getHeaders(),
+	} = options;
+
 	const url = new URL(
 		`/applications/${applicationID}/guilds/${guildID}/commands/${commandID}`,
 		new URL(API_URL)
@@ -142,7 +163,7 @@ export async function deleteGuildApplicationCommand({
 	const response = await Client.delete(
 		url,
 		{
-			headers: getStandardHeaders(),
+			headers,
 		},
 		{
 			route:

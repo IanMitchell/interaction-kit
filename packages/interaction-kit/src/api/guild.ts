@@ -1,9 +1,17 @@
 import { URL } from "url";
 import Client from "discord-request";
-import { API_URL } from "../definitions";
-import { getStandardHeaders } from "./index";
+import Config from "./config";
+import { API_URL, Snowflake } from "../definitions";
 
-export async function getGuild(id: string, { counts = false }) {
+export async function getGuild(
+	id: Snowflake,
+	options: {
+		headers?: Record<string, string>;
+		counts?: boolean;
+	}
+) {
+	const { headers = Config.getHeaders(), counts = false } = options;
+
 	const url = new URL(`/guilds/${id}`, new URL(API_URL));
 
 	if (counts) {
@@ -13,7 +21,7 @@ export async function getGuild(id: string, { counts = false }) {
 	return Client.get(
 		url,
 		{
-			headers: getStandardHeaders(),
+			headers,
 		},
 		{
 			route: "[GET] /guilds/{guild.id}",

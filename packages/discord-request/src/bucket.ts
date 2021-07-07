@@ -60,6 +60,7 @@ export default class Bucket {
 		if (this.#resetAfter > 0) {
 			return new Promise((resolve) => {
 				setTimeout(() => {
+					this.#resetAfter = 0;
 					resolve(true);
 				}, this.#resetAfter);
 			});
@@ -68,8 +69,8 @@ export default class Bucket {
 		return Promise.resolve();
 	}
 
-	setResetAfter(resetAfter: number, global = false) {
-		if (resetAfter > 0) {
+	setResetAfter(remaining: number, resetAfter: number, global = false) {
+		if (remaining <= 0 && resetAfter > 0) {
 			if (global) {
 				this.#setGlobalRateLimit(resetAfter);
 			} else {
@@ -92,11 +93,15 @@ export default class Bucket {
 
 				if (response.headers != null) {
 					const id = response.headers.get("x-ratelimit-bucket");
-					// TODO: Right now we'll be constantly hitting the 429 limit. We need to instead stop after the last request - before the 429 - and pause until the limit resets. This will prevent cloudflare bans
+					// Unused headers:
 					// const date = response.headers.get("date") ?? new Date().toJSON();
 					// const limit = response.headers.get("x-ratelimit-limit");
-					// const remaining = response.headers.get("x-ratelimit-remaining");
 					// const reset = 1000 * parseFloat(response.headers.get("x-ratelimit-reset"));
+
+					const remaining = parseInt(
+						response.headers.get("x-ratelimit-remaining") ?? "1",
+						10
+					);
 					const resetAfter =
 						1000 *
 						parseFloat(response.headers.get("x-ratelimit-reset-after") ?? "0");
@@ -111,12 +116,12 @@ export default class Bucket {
 
 					if (this.#identifier !== id) {
 						console.warn(
-							`[BUCKET ERROR]: The url ${url.toString()} has an incorrect bucket assignment. This is likely a problem with the library; please open an issue on GitHub here: <TODO: URL>`
+							`[BUCKET ERROR]: The url ${url.toString()} has an incorrect bucket assignment. This is likely a problem with the library using Discord Request.`
 						);
 					}
 
 					// Assign reset variables
-					this.setResetAfter(resetAfter, isGlobal);
+					this.setResetAfter(remaining, resetAfter, isGlobal);
 				}
 
 				if (!response.ok) {
@@ -125,7 +130,7 @@ export default class Bucket {
 						const json = parseRateLimit(
 							(await response.json()) as Record<string, unknown>
 						);
-						this.setResetAfter(1000 * json.retryAfter, json.global);
+						this.setResetAfter(-1, 1000 * json.retryAfter, json.global);
 						// TODO: Call retry and return result of it. This should in theory move the retry to the front of the queue when implemented
 					} else {
 						switch (response.status) {
@@ -135,7 +140,7 @@ export default class Bucket {
 								console.warn(
 									`[BUCKET ERROR]: The url ${url.toString()} returned a status code ${
 										response.status
-									} which Interaction Kit does not know how to handle yet. This is a library issue; please open an issue on GitHub here: <TODO: URL>`
+									} which Discord Request does not know how to handle yet. This is a library issue; please open an issue on GitHub here: https://github.com/IanMitchell/interaction-kit/issues`
 								);
 						}
 					}

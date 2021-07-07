@@ -1,24 +1,29 @@
 import { URL } from "url";
-import { getStandardHeaders } from "./index";
+import Config from "./config";
 import Client from "../../../discord-request/src/client";
 import {
 	API_URL,
 	InteractionApplicationCommandCallbackData,
+	Snowflake,
 } from "../definitions";
 
 /**
  * https://discord.com/developers/docs/interactions/slash-commands#followup-messages
  */
 
-export async function postWebhookMessage({
-	applicationID,
-	interactionToken,
-	data,
-}: {
-	applicationID: string;
-	interactionToken: string;
-	data: InteractionApplicationCommandCallbackData;
-}) {
+export async function postWebhookMessage(
+	interactionToken: string,
+	data: InteractionApplicationCommandCallbackData,
+	options: {
+		headers?: Record<string, string>;
+		applicationID?: Snowflake;
+	}
+) {
+	const {
+		applicationID = Config.applicationID,
+		headers = Config.getHeaders(),
+	} = options;
+
 	const url = new URL(
 		`/webhooks/${applicationID}/${interactionToken}`,
 		new URL(API_URL)
@@ -27,7 +32,7 @@ export async function postWebhookMessage({
 	return Client.post(
 		url,
 		{
-			headers: getStandardHeaders(),
+			headers,
 			body: JSON.stringify(data),
 		},
 		{
@@ -37,17 +42,20 @@ export async function postWebhookMessage({
 	);
 }
 
-export async function patchWebhookMessage({
-	applicationID,
-	interactionToken,
-	id,
-	data,
-}: {
-	applicationID: string;
-	interactionToken: string;
-	id: string;
-	data: InteractionApplicationCommandCallbackData;
-}) {
+export async function patchWebhookMessage(
+	interactionToken: string,
+	id: string,
+	data: InteractionApplicationCommandCallbackData,
+	options: {
+		headers?: Record<string, string>;
+		applicationID?: string;
+	}
+) {
+	const {
+		applicationID = Config.applicationID,
+		headers = Config.getHeaders(),
+	} = options;
+
 	const url = new URL(
 		`/webhooks/${applicationID}/${interactionToken}/messages/${id}`,
 		new URL(API_URL)
@@ -56,7 +64,7 @@ export async function patchWebhookMessage({
 	return Client.patch(
 		url,
 		{
-			headers: getStandardHeaders(),
+			headers,
 			body: JSON.stringify(data),
 		},
 		{
@@ -68,15 +76,19 @@ export async function patchWebhookMessage({
 	);
 }
 
-export async function deleteWebhookMessage({
-	applicationID,
-	interactionToken,
-	id,
-}: {
-	applicationID: string;
-	interactionToken: string;
-	id: string;
-}) {
+export async function deleteWebhookMessage(
+	interactionToken: string,
+	id: string,
+	options: {
+		headers?: Record<string, string>;
+		applicationID?: string;
+	}
+) {
+	const {
+		applicationID = Config.applicationID,
+		headers = Config.getHeaders(),
+	} = options;
+
 	const url = new URL(
 		`/webhooks/${applicationID}/${interactionToken}/messages/${id}`,
 		new URL(API_URL)
@@ -85,7 +97,7 @@ export async function deleteWebhookMessage({
 	return Client.delete(
 		url,
 		{
-			headers: getStandardHeaders(),
+			headers,
 		},
 		{
 			route: `[DELETE] /webhooks/{application.id}/{interaction.token}/messages/${
