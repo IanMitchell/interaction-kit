@@ -133,6 +133,7 @@ export default class Application {
 				try {
 					await API.patchGuildApplicationCommand(guildID, {
 						...command.serialize(),
+						application_id: this.#applicationID,
 						id: signature.id,
 					});
 				} catch (e: unknown) {

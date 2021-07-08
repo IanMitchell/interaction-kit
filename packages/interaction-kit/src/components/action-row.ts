@@ -1,8 +1,7 @@
+import type { Serializable, SerializableComponent } from "../interfaces";
 import { Component, ComponentType } from "../definitions";
-import type { SerializableComponent } from "../interfaces";
-import Button from "./button";
 
-export default class ActionRow implements SerializableComponent {
+export default class ActionRow implements Serializable {
 	#components: SerializableComponent[];
 
 	constructor(...components: SerializableComponent[]) {
@@ -31,7 +30,9 @@ export default class ActionRow implements SerializableComponent {
 	}
 
 	setComponents(...components: SerializableComponent[]) {
-		components.forEach((component) => this.addComponent(component));
+		components.forEach((component) => {
+			this.addComponent(component);
+		});
 	}
 
 	addComponent(component: SerializableComponent) {
