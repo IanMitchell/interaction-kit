@@ -7,14 +7,14 @@ import {
 	InteractionResponse,
 	InteractionRequestType,
 	OptionType,
-} from "./definitions";
-import { PermissionFlags } from "./definitions/messages";
-import Embed from "./components/embed";
-import * as API from "./api";
-import Application from "./application";
-import { SerializableComponent } from "./interfaces";
+} from "../definitions";
+import { PermissionFlags } from "../definitions/messages";
+import Embed from "../components/embed";
+import * as API from "../api";
+import Application from "../application";
+import { Interaction, SerializableComponent } from "../interfaces";
 
-type InteractionReply = {
+type ApplicationCommandInteractionReply = {
 	message?: string;
 	embed?: Embed | Embed[] | null;
 	components?: SerializableComponent | SerializableComponent[] | null;
@@ -22,7 +22,7 @@ type InteractionReply = {
 	queue?: boolean;
 };
 
-type InteractionMessageModifiers = {
+type ApplicationCommandInteractionMessageModifiers = {
 	edit: (
 		data: InteractionApplicationCommandCallbackData,
 		id?: string
@@ -30,12 +30,12 @@ type InteractionMessageModifiers = {
 	delete: (id?: string) => ReturnType<typeof API.deleteWebhookMessage>;
 };
 
-export default class Interaction {
-	public readonly type: InteractionRequestType;
+export default class ApplicationCommandInteraction implements Interaction {
+	public readonly type = InteractionRequestType.APPLICATION_COMMAND;
 	public readonly name: string | undefined;
 	public readonly token: string;
 	public readonly response: FastifyReply;
-	public readonly messages: InteractionMessageModifiers;
+	public readonly messages: ApplicationCommandInteractionMessageModifiers;
 	readonly #options: Map<string, ApplicationCommandInteractionDataOption>;
 	readonly #application: Application;
 	#replied: boolean;
@@ -47,8 +47,6 @@ export default class Interaction {
 	) {
 		this.#application = application;
 		this.response = response;
-
-		this.type = request.body.type;
 		this.token = request.body.token;
 		this.name = request.body.data?.name?.toLowerCase();
 
@@ -96,7 +94,7 @@ export default class Interaction {
 		components,
 		ephemeral = false,
 		queue = false,
-	}: InteractionReply) {
+	}: ApplicationCommandInteractionReply) {
 		const data: InteractionResponse["data"] = {};
 
 		if (message != null) {

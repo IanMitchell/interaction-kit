@@ -1,4 +1,8 @@
-import { Component, ComponentType } from "./definitions";
+import {
+	Component,
+	ComponentType,
+	InteractionRequestType,
+} from "./definitions";
 
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -10,4 +14,8 @@ export interface SerializableComponent extends Serializable {
 	get id(): Component["custom_id"];
 	get type(): ComponentType;
 	serialize(): Component;
+}
+
+export interface Interaction {
+	readonly type: InteractionRequestType;
 }

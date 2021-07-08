@@ -1,24 +1,20 @@
 /* eslint-disable no-await-in-loop */
 
+import type { FastifyRequest, FastifyReply } from "fastify";
+
 import dotenv from "dotenv";
-import fastify, {
-	FastifyInstance,
-	FastifyRequest,
-	FastifyReply,
-} from "fastify";
-import rawBody from "fastify-raw-body";
 import Command from "./command";
 import Config from "./api/config";
 import {
 	InteractionCallbackType,
-	Interaction as IInteraction,
+	Interaction as InteractionDefinition,
 	InteractionRequestType,
 	Snowflake,
 } from "./definitions";
-import { validateRequest } from "./requests/validate";
-import Interaction from "./interaction";
+import * as Interaction from "./interactions";
 import * as API from "./api";
 import { SerializableComponent } from "./interfaces";
+import startInteractionKitServer from "./server";
 
 type ApplicationArgs = {
 	applicationID: string;
@@ -27,19 +23,15 @@ type ApplicationArgs = {
 	port?: number;
 };
 
-type ServerCallback = (
-	app: FastifyInstance
-) => (request: FastifyRequest, response: FastifyReply) => unknown;
-
 dotenv.config();
 
 export default class Application {
-	#applicationID;
-	#publicKey;
-	#token;
-	#commands;
-	#components;
-	#port;
+	#applicationID: Snowflake;
+	#publicKey: string;
+	#token: string;
+	#commands: Map<string, Command>;
+	#components: Map<string, SerializableComponent>;
+	#port: number;
 
 	constructor({ applicationID, publicKey, token, port }: ApplicationArgs) {
 		if (!applicationID) {
@@ -153,94 +145,60 @@ export default class Application {
 	// TODO: onChange, reload file and maybe emit command change events
 	// }
 
-	startServer(callback?: ServerCallback) {
-		console.log("Starting server...");
-		const server = fastify();
+	handler(
+		request: FastifyRequest<{ Body: InteractionDefinition }>,
+		response: FastifyReply
+	) {
+		console.log("REQUEST");
+		const interaction = Interaction.create(this, request, response);
 
-		void server.register(rawBody, {
-			runFirst: true,
-		});
-
-		server.addHook("preHandler", async (request, response) => {
-			if (request.method === "POST") {
-				if (!validateRequest(request, this.#publicKey)) {
-					console.log("Invalid Discord Request");
-					return response.status(401).send({ error: "Bad request signature " });
-				}
-			}
-		});
-
-		server.post<{ Body: IInteraction }>("/", async (request, response) => {
-			console.log("REQUEST");
-			const interaction = new Interaction(this, request, response);
-
-			if (!interaction || interaction.type === InteractionRequestType.PING) {
+		switch (interaction.type) {
+			case InteractionRequestType.PING:
 				console.log("Handling Discord Ping");
 				void response.send({
 					type: InteractionCallbackType.PONG,
 				});
-			} else if (
-				interaction.type === InteractionRequestType.APPLICATION_COMMAND
-			) {
-				if (!interaction.name) {
-					console.error(
-						`Received Command but with no name: ${JSON.stringify({
-							type: interaction.type,
-							name: interaction.name,
-						})}`
-					);
-
-					return;
-				}
-
-				if (this.#commands.has(interaction.name)) {
+				break;
+			case InteractionRequestType.APPLICATION_COMMAND:
+				if (this.#commands.has(interaction.name ?? "")) {
 					console.log(`Handling ${interaction.name}`);
 					return this.#commands
 						.get(interaction.name)
 						?.handler(interaction, this);
 				}
 
-				console.error(`Unknown Command: ${interaction.name}`);
+				console.error(`Unknown Command: ${interaction.name ?? "[no name]"}`);
 				void response.status(400).send({
 					error: "Unknown Type",
 				});
-			} else if (
-				interaction.type === InteractionRequestType.MESSAGE_COMPONENT
-			) {
+				break;
+			case InteractionRequestType.MESSAGE_COMPONENT:
 				// TODO: Handle Component Interactions
-				if (this.#components.has(interaction?.data?.custom_id)) {
-					console.log(`Handling Component ${interaction.data.custom_id}`);
+				if (this.#components.has(interaction.customID)) {
+					console.log(`Handling Component ${interaction.customID}`);
 					return this.#components
-						.get(interaction.data.custom_id)
+						.get(interaction.customID)
 						?.handler(interaction, this);
 				}
 
-				console.error(`Unknown Component: ${interaction.data.custom_id}`);
+				console.error(
+					`Unknown Component: ${interaction.customID ?? "[no custom id]"}`
+				);
 				void response.status(400).send({
 					error: "Unknown Component",
 				});
-			} else {
-				// TODO: figure out what would lead to this state, and how to handle it.
-				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				console.error(`Unknown Type: ${interaction.type}`);
-			}
-		});
-
-		if (callback) {
-			callback(server);
-		} else {
-			server.listen(this.#port, async (error, address) => {
-				if (error) {
-					console.error(error);
-					process.exit(1);
-				}
-
-				console.log(`Server listening on ${address}`);
-			});
+				break;
+			default:
+				console.error(`Unknown Type: ${request.body.type}`);
+				break;
 		}
+	}
 
+	startServer() {
+		console.log("Starting server...");
 		// TODO: Move this into a dev env check.
 		void this.updateCommands();
+		startInteractionKitServer(this.handler, this.#publicKey, this.#port);
 	}
 }
 

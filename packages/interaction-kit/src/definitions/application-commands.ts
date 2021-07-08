@@ -9,6 +9,7 @@ import { User } from "./users";
 import { AllowedMentions, Channel } from "./channels";
 import { Embed } from "./embeds";
 import { Role } from "./roles";
+import { Component } from "./components";
 
 // https://discord.com/developers/docs/interactions/slash-commands#applicationcommand
 export type ApplicationCommand = {
@@ -136,13 +137,14 @@ export enum InteractionCallbackType {
 	DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE = 5,
 }
 
-// https://discord.com/developers/docs/interactions/slash-commands#interaction-response-interactionapplicationcommandcallbackdata
+// https://discord.com/developers/docs/interactions/slash-commands#interaction-response-object-interaction-application-command-callback-data-structure
 export type InteractionApplicationCommandCallbackData = {
 	tts?: boolean;
 	content?: string;
 	embeds?: Embed[];
 	allowed_mentions?: AllowedMentions;
 	flags?: number;
+	components?: Component[];
 };
 
 // https://discord.com/developers/docs/interactions/slash-commands#messageinteraction
