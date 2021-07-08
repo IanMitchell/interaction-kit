@@ -21,13 +21,12 @@ export async function postWebhookMessage(
 	} = {}
 ) {
 	const {
-		applicationID = Config.applicationID,
+		applicationID = Config.getApplicationID(),
 		headers = Config.getHeaders(),
 	} = options;
 
 	const url = new URL(
-		`/webhooks/${applicationID}/${interactionToken}`,
-		new URL(API_URL)
+		`${API_URL}/webhooks/${applicationID}/${interactionToken}`
 	);
 
 	return Client.post(
@@ -54,13 +53,12 @@ export async function patchWebhookMessage(
 	} = {}
 ) {
 	const {
-		applicationID = Config.applicationID,
+		applicationID = Config.getApplicationID(),
 		headers = Config.getHeaders(),
 	} = options;
 
 	const url = new URL(
-		`/webhooks/${applicationID}/${interactionToken}/messages/${id}`,
-		new URL(API_URL)
+		`${API_URL}/webhooks/${applicationID}/${interactionToken}/messages/${id}`
 	);
 
 	return Client.patch(
@@ -88,13 +86,12 @@ export async function deleteWebhookMessage(
 	} = {}
 ): Promise<boolean> {
 	const {
-		applicationID = Config.applicationID,
+		applicationID = Config.getApplicationID(),
 		headers = Config.getHeaders(),
 	} = options;
 
 	const url = new URL(
-		`/webhooks/${applicationID}/${interactionToken}/messages/${id}`,
-		new URL(API_URL)
+		`${API_URL}/webhooks/${applicationID}/${interactionToken}/messages/${id}`
 	);
 
 	const response = await Client.delete(

@@ -138,7 +138,9 @@ export default class Bucket {
 							case 500:
 							default:
 								console.warn(
-									`[BUCKET ERROR]: The url ${url.toString()} returned a status code ${
+									`[BUCKET ERROR]: The url [${
+										options?.method ?? "GET"
+									}] ${url.toString()} returned a status code ${
 										response.status
 									} which Discord Request does not know how to handle yet. This is a library issue; please open an issue on GitHub here: https://github.com/IanMitchell/interaction-kit/issues`
 								);

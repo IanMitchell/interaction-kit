@@ -1,7 +1,7 @@
 import type { SerializableComponent } from "../interfaces";
 
 import Application from "../application";
-import { Component, ComponentType } from "../definitions";
+import { ButtonStyle, Component, ComponentType } from "../definitions";
 
 type ButtonArgs = {
 	handler: (event: ComponentInteraction, application: Application) => unknown;
@@ -35,9 +35,10 @@ export default class Button implements SerializableComponent {
 
 		if (isButtonLink(options)) {
 			this.#url = options?.url;
+			this.#style = ButtonStyle.LINK;
 		} else {
 			this.#customID = options?.customID;
-			this.#style = options?.style;
+			this.#style = options?.style ?? ButtonStyle.PRIMARY;
 			this.handler = options?.handler;
 		}
 	}

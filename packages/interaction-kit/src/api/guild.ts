@@ -13,7 +13,7 @@ export async function getGuild(
 ) {
 	const { headers = Config.getHeaders(), counts = false } = options;
 
-	const url = new URL(`/guilds/${id}`, new URL(API_URL));
+	const url = new URL(`${API_URL}/guilds/${id}`);
 
 	if (counts) {
 		url.searchParams.set("with_counts", "true");

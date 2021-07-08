@@ -18,13 +18,12 @@ export async function getGuildApplicationCommands(
 	} = {}
 ): Promise<ApplicationCommand[]> {
 	const {
-		applicationID = Config.applicationID,
+		applicationID = Config.getApplicationID(),
 		headers = Config.getHeaders(),
 	} = options;
 
 	const url = new URL(
-		`/applications/${applicationID}/guilds/${guildID}/commands`,
-		new URL(API_URL)
+		`${API_URL}/applications/${applicationID}/guilds/${guildID}/commands`
 	);
 
 	const response = await Client.get(
@@ -51,13 +50,12 @@ export async function postGuildApplicationCommand(
 	} = {}
 ) {
 	const {
-		applicationID = Config.applicationID,
+		applicationID = Config.getApplicationID(),
 		headers = Config.getHeaders(),
 	} = options;
 
 	const url = new URL(
-		`/applications/${applicationID}/guilds/${guildID}/commands`,
-		new URL(API_URL)
+		`${API_URL}/applications/${applicationID}/guilds/${guildID}/commands`
 	);
 
 	const response = await Client.post(
@@ -85,13 +83,12 @@ export async function putGuildApplicationCommands(
 	} = {}
 ) {
 	const {
-		applicationID = Config.applicationID,
+		applicationID = Config.getApplicationID(),
 		headers = Config.getHeaders(),
 	} = options;
 
 	const url = new URL(
-		`/applications/${applicationID}/guilds/${guildID}/commands`,
-		new URL(API_URL)
+		`${API_URL}/applications/${applicationID}/guilds/${guildID}/commands`
 	);
 
 	const response = await Client.put(
@@ -122,13 +119,12 @@ export async function patchGuildApplicationCommand(
 	} = {}
 ) {
 	const {
-		applicationID = Config.applicationID,
+		applicationID = Config.getApplicationID(),
 		headers = Config.getHeaders(),
 	} = options;
 
 	const url = new URL(
-		`/applications/${applicationID}/guilds/${guildID}/commands`,
-		new URL(API_URL)
+		`${API_URL}/applications/${applicationID}/guilds/${guildID}/commands/${command.id}`
 	);
 
 	const response = await Client.patch(
@@ -157,13 +153,12 @@ export async function deleteGuildApplicationCommand(
 	} = {}
 ) {
 	const {
-		applicationID = Config.applicationID,
+		applicationID = Config.getApplicationID(),
 		headers = Config.getHeaders(),
 	} = options;
 
 	const url = new URL(
-		`/applications/${applicationID}/guilds/${guildID}/commands/${commandID}`,
-		new URL(API_URL)
+		`${API_URL}/applications/${applicationID}/guilds/${guildID}/commands/${commandID}`
 	);
 
 	const response = await Client.delete(

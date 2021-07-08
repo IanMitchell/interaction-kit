@@ -14,28 +14,28 @@ class Client {
 		Map<BucketClassifier["identifier"], Bucket>
 	>;
 
-	#globalResetAfter: number;
+	globalResetAfter: number;
 
 	constructor() {
 		this.#buckets = new Map();
-		this.#globalResetAfter = 0;
+		this.globalResetAfter = 0;
 	}
 
 	async checkGlobalRateLimit() {
 		return new Promise((resolve) => {
-			if (this.#globalResetAfter === 0) {
+			if (this.globalResetAfter === 0) {
 				resolve(true);
 			}
 
 			setTimeout(() => {
-				this.#globalResetAfter = 0;
+				this.globalResetAfter = 0;
 				resolve(true);
-			}, this.#globalResetAfter);
+			}, this.globalResetAfter);
 		});
 	}
 
 	setGlobalReset(timestamp: number) {
-		this.#globalResetAfter = timestamp;
+		this.globalResetAfter = timestamp;
 	}
 
 	async #queue(url: URL, options: RequestInit, bucket: BucketClassifier) {

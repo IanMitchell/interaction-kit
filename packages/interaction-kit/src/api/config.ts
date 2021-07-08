@@ -6,7 +6,7 @@ export default (() => {
 	let APPLICATION_ID: Snowflake = `${BigInt(0)}`;
 
 	return {
-		applicationID: APPLICATION_ID,
+		getApplicationID: () => APPLICATION_ID,
 
 		setToken: (token: string) => {
 			TOKEN = token;

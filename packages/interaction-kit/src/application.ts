@@ -8,10 +8,12 @@ import fastify, {
 } from "fastify";
 import rawBody from "fastify-raw-body";
 import Command from "./command";
+import Config from "./api/config";
 import {
 	InteractionCallbackType,
 	Interaction as IInteraction,
 	InteractionRequestType,
+	Snowflake,
 } from "./definitions";
 import { validateRequest } from "./requests/validate";
 import Interaction from "./interaction";
@@ -56,12 +58,16 @@ export default class Application {
 			throw new Error("Please provide a Token. You can find this value <here>");
 		}
 
-		this.#applicationID = applicationID;
+		this.#applicationID = applicationID as Snowflake;
 		this.#publicKey = publicKey;
-		this.#token = token;
+		this.#token = token as Snowflake;
 		this.#commands = new Map<string, Command>();
 		this.#components = new Map<string, SerializableComponent>();
 		this.#port = port ?? 3000;
+
+		// Configure API Defaults
+		Config.setToken(this.#token);
+		Config.setApplicationID(this.#applicationID);
 	}
 
 	get id() {
@@ -99,7 +105,9 @@ export default class Application {
 			throw new NoDevelopmentServerEnvironmentVariableError();
 		}
 
-		const json = await API.getGuildApplicationCommands();
+		const guildID: Snowflake = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
+
+		const json = await API.getGuildApplicationCommands(guildID);
 
 		// TODO: Handle errors
 		/**
@@ -114,7 +122,7 @@ export default class Application {
 				console.log(`\tCreating ${name}`);
 
 				try {
-					await API.postGuildApplicationCommand();
+					await API.postGuildApplicationCommand(guildID, command.serialize());
 				} catch (e: unknown) {
 					console.error(`\tProblem updating ${command.name}`);
 					console.error(e);
@@ -123,10 +131,9 @@ export default class Application {
 				console.log(`\tUpdating ${command.name}`);
 
 				try {
-					await API.patchGuildApplicationCommand({
-						applicationID: this.#applicationID,
-						commandID: signature.id,
-						command: command.serialize(),
+					await API.patchGuildApplicationCommand(guildID, {
+						...command.serialize(),
+						id: signature.id,
 					});
 				} catch (e: unknown) {
 					console.error(`\tProblem updating ${command.name}`);
