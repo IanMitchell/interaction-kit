@@ -203,7 +203,7 @@ export default class Application {
 	startServer() {
 		console.log("Starting server...");
 		// TODO: Move this into a dev env check.
-		// void this.updateCommands();
+		void this.updateCommands();
 		startInteractionKitServer(
 			(...args) => this.handler(...args),
 			this.#publicKey,
