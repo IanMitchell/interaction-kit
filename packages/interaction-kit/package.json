@@ -1,6 +1,6 @@
 {
 	"name": "interaction-kit",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"author": "Ian Mitchell",
 	"description": "Interaction Kit is a Discord HTTP API Framework",
 	"license": "MIT",

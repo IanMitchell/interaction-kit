@@ -98,14 +98,13 @@ export default class Application {
 
 	// TODO: Should this be moved into Command?
 	async updateCommands() {
-		console.log("Updating Commands in Development Server");
+		console.log("Checking for command updates in Development Server");
 
 		if (!process.env.DEVELOPMENT_SERVER_ID) {
 			throw new NoDevelopmentServerEnvironmentVariableError();
 		}
 
 		const guildID: Snowflake = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
-
 		const json = await API.getGuildApplicationCommands(guildID);
 
 		// TODO: Handle errors
@@ -141,6 +140,8 @@ export default class Application {
 				}
 			}
 		}
+
+		console.log("Finished checking for updates");
 
 		return this;
 	}

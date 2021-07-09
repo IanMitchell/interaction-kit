@@ -2,7 +2,7 @@ import type { ApplicationCommand } from "./definitions";
 import Application from "./application";
 import { Input } from "./components/inputs";
 import ApplicationCommandInteraction from "./interactions/application-command-interaction";
-import { Optional, Serializable } from "./interfaces";
+import { Comparable, Optional, Serializable } from "./interfaces";
 
 type CommandArgs = {
 	name: string;
@@ -12,7 +12,9 @@ type CommandArgs = {
 	handler: (interaction: ApplicationCommandInteraction) => unknown;
 };
 
-export default class Command implements Serializable {
+export default class Command
+	implements Serializable, Comparable<ApplicationCommand>
+{
 	name: string;
 	#description: string;
 	#defaultPermission: boolean;
@@ -56,10 +58,6 @@ export default class Command implements Serializable {
 		throw new Error("Unimplemented");
 	}
 
-	/**
-	 * Compares if a command is equal to a given command.
-	 * @param schema
-	 */
 	equals(schema: ApplicationCommand): boolean {
 		if (
 			this.name !== schema.name ||
@@ -69,22 +67,15 @@ export default class Command implements Serializable {
 			return false;
 		}
 
-		if (schema.options?.length !== this.#options.size) {
+		if (this.#options.size !== (schema.options?.length ?? 0)) {
 			return false;
 		}
 
-		// TODO: Also check the below
-		// return schema.options?.every(option => {
-		//   option.name
-		//   option.description
-		//   option.type
-		//   option.required
-		//   option.choices
-		//   option.options
-		// })
-		// return true;
-
-		return false;
+		return (
+			schema.options?.every((option) => {
+				return this.#options.get(option.name)?.equals(option) ?? false;
+			}) ?? true
+		);
 	}
 
 	serialize(): Optional<ApplicationCommand, "id" | "application_id"> {
