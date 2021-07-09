@@ -13,7 +13,7 @@ import {
 } from "./definitions";
 import * as Interaction from "./interactions";
 import * as API from "./api";
-import { SerializableComponent } from "./interfaces";
+import { Executable, SerializableComponent } from "./interfaces";
 import startInteractionKitServer from "./server";
 
 type ApplicationArgs = {
@@ -25,12 +25,19 @@ type ApplicationArgs = {
 
 dotenv.config();
 
+// TODO: This should be moved... somewhere
+function isExecutable(
+	component: SerializableComponent | (SerializableComponent & Executable)
+): component is SerializableComponent & Executable {
+	return (component as SerializableComponent & Executable).handler != null;
+}
+
 export default class Application {
 	#applicationID: Snowflake;
 	#publicKey: string;
 	#token: string;
 	#commands: Map<string, Command>;
-	#components: Map<string, SerializableComponent>;
+	#components: Map<string, SerializableComponent & Executable>;
 	#port: number;
 
 	constructor({ applicationID, publicKey, token, port }: ApplicationArgs) {
@@ -54,7 +61,7 @@ export default class Application {
 		this.#publicKey = publicKey;
 		this.#token = token as Snowflake;
 		this.#commands = new Map<string, Command>();
-		this.#components = new Map<string, SerializableComponent>();
+		this.#components = new Map<string, SerializableComponent & Executable>();
 		this.#port = port ?? 3000;
 
 		// Configure API Defaults
@@ -84,7 +91,7 @@ export default class Application {
 	}
 
 	addComponent(component: SerializableComponent) {
-		if (component.id != null) {
+		if (component.id != null && isExecutable(component)) {
 			this.#components.set(component.id, component);
 		}
 	}
@@ -173,7 +180,6 @@ export default class Application {
 				});
 				break;
 			case InteractionRequestType.MESSAGE_COMPONENT:
-				// TODO: Handle Component Interactions
 				if (this.#components.has(interaction.customID)) {
 					console.log(`Handling Component ${interaction.customID}`);
 					return this.#components
@@ -197,8 +203,12 @@ export default class Application {
 	startServer() {
 		console.log("Starting server...");
 		// TODO: Move this into a dev env check.
-		void this.updateCommands();
-		startInteractionKitServer(this.handler, this.#publicKey, this.#port);
+		// void this.updateCommands();
+		startInteractionKitServer(
+			(...args) => this.handler(...args),
+			this.#publicKey,
+			this.#port
+		);
 	}
 }
 

@@ -9,8 +9,7 @@
 	"typings": "dist/client.d.ts",
 	"type": "module",
 	"scripts": {
-		"build": "tsup src/client.ts --format esm,cjs --dts",
-		"build:fast": "tsup src/client.ts",
+		"build": "tsup src/client.ts --format esm --dts",
 		"clean": "rm -r dist/",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",

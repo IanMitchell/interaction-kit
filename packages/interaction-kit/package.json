@@ -9,8 +9,7 @@
 	"type": "module",
 	"scripts": {
 		"start": "node .",
-		"build": "tsup src/index.ts --format esm,cjs --dts",
-		"build:fast": "tsup src/index.ts",
+		"build": "tsup src/index.ts --format esm --dts",
 		"clean": "rm -r dist/",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
