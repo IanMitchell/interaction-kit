@@ -2,9 +2,9 @@
 
 🚧 **INTERACTION KIT IS UNDER CONSTRUCTION AND IS NOT READY FOR USE** 🏗
 
-Interaction Kit is a framework for creating Discord slash command bots over the HTTP API. TODO: More here.
+Interaction Kit is a framework for creating Discord slash command bots over the HTTP API.
 
-## HTTP vs Gateway
+<!-- ## HTTP vs Gateway
 
 In short, you probably should be using [discord.js]() unless you know why you're here.
 
@@ -20,6 +20,6 @@ There are other drawbacks as well - HTTP-only bots don't currently show up as On
 
 ## Community
 
-## Packages
+## Packages -->
 
 TODO: Write
