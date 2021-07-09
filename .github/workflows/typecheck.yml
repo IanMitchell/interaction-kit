@@ -18,7 +18,7 @@ jobs:
         env:
           CI: true
         run: |
-          npx lerna bootstrap
+          lerna bootstrap
 
       - name: Typecheck
         run: |
