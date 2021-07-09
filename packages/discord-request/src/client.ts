@@ -40,10 +40,7 @@ class Client {
 
 	async #queue(url: URL, options: RequestInit, bucket: BucketClassifier) {
 		if (bucket?.route == null || bucket?.identifier == null) {
-			console.log({ rip: true });
 			throw new Error("You must define a bucket route and identifier");
-		} else {
-			console.log({ bucket });
 		}
 
 		let routeMap = this.#buckets.get(bucket?.route);

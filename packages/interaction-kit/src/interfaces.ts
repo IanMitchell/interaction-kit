@@ -24,6 +24,10 @@ export interface Executable {
 	handler: (interaction: Interaction, application: Application) => unknown;
 }
 
+export interface Comparable<T> {
+	equals: (schema: T) => boolean;
+}
+
 export type InteractionReply = {
 	message?: string;
 	embed?: Embed | Embed[] | null;

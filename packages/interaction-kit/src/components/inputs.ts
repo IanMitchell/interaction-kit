@@ -1,4 +1,4 @@
-import { Serializable } from "../interfaces";
+import { Comparable, Serializable } from "../interfaces";
 import {
 	ApplicationCommandOption,
 	ApplicationCommandOptionChoice,
@@ -16,7 +16,9 @@ type InputArgs = {
 	options?: ApplicationCommandOption[];
 };
 
-export class Input implements Serializable {
+export class Input
+	implements Serializable, Comparable<ApplicationCommandOption>
+{
 	public readonly type;
 	public readonly name;
 	public readonly description;
@@ -55,6 +57,46 @@ export class Input implements Serializable {
 		// TODO: Handle Options (do we want to?)
 
 		return payload;
+	}
+
+	equals(schema: ApplicationCommandOption): boolean {
+		if (
+			this.type !== schema.type ||
+			this.name !== schema.name ||
+			this.description !== schema.description ||
+			this.required !== (schema.required ?? false)
+		) {
+			return false;
+		}
+
+		if ((this.choices?._choices?.size ?? 0) !== (schema.choices?.length ?? 0)) {
+			return false;
+		}
+
+		const choiceMap = new Map();
+		for (const commandOption of this.choices?._choices?.values() ?? []) {
+			choiceMap.set(commandOption.name, commandOption.value);
+		}
+
+		const choiceEquality =
+			schema.choices?.every((choice) => {
+				if (!choiceMap.has(choice.name)) {
+					return false;
+				}
+
+				return choiceMap.get(choice.name) === choice.value;
+			}) ?? true;
+
+		if (!choiceEquality) {
+			return false;
+		}
+
+		// TODO: Nothing uses options yet, but eventually verify they're correct somehow
+		// if ((this.options?.length ?? 0) !== (schema.options?.length ?? 0)) {
+		// 	return false;
+		// }
+
+		return true;
 	}
 }
 
