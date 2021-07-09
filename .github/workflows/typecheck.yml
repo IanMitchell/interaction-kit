@@ -18,7 +18,7 @@ jobs:
         env:
           CI: true
         run: |
-          npx lerna bootstrap
+          npx lerna bootstrap
 
       - name: Build
         run: |
