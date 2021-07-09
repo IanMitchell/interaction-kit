@@ -1,9 +1,9 @@
-name: Typecheck
+name: Test
 
 on: [push, pull_request]
 
 jobs:
-  Typecheck:
+  Test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -24,6 +24,6 @@ jobs:
         run: |
           npm run build
 
-      - name: Typecheck
+      - name: Test
         run: |
-          npm run typecheck
+          npm test

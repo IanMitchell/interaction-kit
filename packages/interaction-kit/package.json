@@ -1,0 +1,43 @@
+{
+	"name": "interaction-kit",
+	"version": "0.0.2",
+	"author": "Ian Mitchell",
+	"description": "Interaction Kit is a Discord HTTP API Framework",
+	"license": "MIT",
+	"exports": "./dist/index.js",
+	"typings": "dist/index.d.ts",
+	"type": "module",
+	"scripts": {
+		"start": "node .",
+		"build": "tsup src/index.ts --format esm --dts",
+		"clean": "rm -r dist/",
+		"typecheck": "tsc --noEmit",
+		"prettier": "prettier src/**/*.ts --check",
+		"lint": "eslint ./src/**/*.ts"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"engines": {
+		"node": ">=14"
+	},
+	"dependencies": {
+		"commander": "^7.2.0",
+		"discord-request": "file:../discord-request",
+		"dotenv": "^10.0.0",
+		"fastify": "^3.17.0",
+		"fastify-raw-body": "^3.1.0",
+		"node-fetch": "^2.6.1",
+		"tweetnacl": "^1.0.3"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/IanMitchell/interaction-kit.git"
+	},
+	"keywords": [],
+	"bugs": {
+		"url": "https://github.com/IanMitchell/interaction-kit/issues"
+	},
+	"homepage": "https://github.com/IanMitchell/interaction-kit#readme"
+}

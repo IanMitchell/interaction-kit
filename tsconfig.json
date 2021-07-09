@@ -25,13 +25,11 @@
 
 		// use es2018 standard libraries
 		"lib": ["es2018"],
-		// emit commonjs. this allows for nodejs and typescript compatibility with the lib
-		"module": "commonjs",
+		"module": "CommonJS",
 		// target es2018
-		"target": "es2018"
+		"target": "es2018",
+		"resolveJsonModule": true
 	},
-	// build all typescript files recursively inside src/
-	"include": ["src/**/*.ts", "bin/**/*.ts"],
 	// ignore node_modules and dist
-	"exclude": ["node_modules", "dist"]
+	"exclude": ["node_modules"]
 }
