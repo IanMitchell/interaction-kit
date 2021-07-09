@@ -18,7 +18,7 @@ jobs:
         env:
           CI: true
         run: |
-          lerna bootstrap
+          npx lerna bootstrap
 
       - name: Lint
         run: |
@@ -39,7 +39,7 @@ jobs:
         env:
           CI: true
         run: |
-          lerna bootstrap
+          npx lerna bootstrap
 
       - name: Formatting
         run: |
