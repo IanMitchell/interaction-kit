@@ -1,6 +1,5 @@
 import { InteractionRequestType } from "../definitions";
-import { Interaction } from "../interfaces";
 
-export default class PingInteraction implements Interaction {
+export default class PingInteraction {
 	public readonly type = InteractionRequestType.PING;
 }

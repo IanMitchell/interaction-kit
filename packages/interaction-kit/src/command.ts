@@ -1,7 +1,7 @@
 import type { ApplicationCommand } from "./definitions";
 import Application from "./application";
 import { Input } from "./components/inputs";
-import Interaction from "./interaction";
+import ApplicationCommandInteraction from "./interactions/application-command-interaction";
 import { Optional, Serializable } from "./interfaces";
 
 type CommandArgs = {
@@ -9,7 +9,7 @@ type CommandArgs = {
 	description: string;
 	defaultPermission?: boolean;
 	options?: Input[];
-	handler: (interaction: Interaction) => unknown;
+	handler: (interaction: ApplicationCommandInteraction) => unknown;
 };
 
 export default class Command implements Serializable {
@@ -17,7 +17,10 @@ export default class Command implements Serializable {
 	#description: string;
 	#defaultPermission: boolean;
 	#options: Map<string, Input>;
-	handler: (interaction: Interaction, application: Application) => unknown;
+	handler: (
+		interaction: ApplicationCommandInteraction,
+		application: Application
+	) => unknown;
 
 	constructor({
 		name,

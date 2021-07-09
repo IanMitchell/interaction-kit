@@ -7,35 +7,33 @@ import {
 	InteractionResponse,
 	InteractionRequestType,
 	OptionType,
+	Snowflake,
+	ComponentType,
 } from "../definitions";
 import { PermissionFlags } from "../definitions/messages";
 import Embed from "../components/embed";
 import * as API from "../api";
 import Application from "../application";
-import { Interaction, SerializableComponent } from "../interfaces";
-
-type ApplicationCommandInteractionReply = {
-	message?: string;
-	embed?: Embed | Embed[] | null;
-	components?: SerializableComponent | SerializableComponent[] | null;
-	ephemeral?: boolean;
-	queue?: boolean;
-};
-
-type ApplicationCommandInteractionMessageModifiers = {
-	edit: (
-		data: InteractionApplicationCommandCallbackData,
-		id?: string
-	) => ReturnType<typeof API.patchWebhookMessage>;
-	delete: (id?: string) => ReturnType<typeof API.deleteWebhookMessage>;
-};
+import {
+	Interaction,
+	InteractionMessageModifiers,
+	InteractionReply,
+	SerializableComponent,
+} from "../interfaces";
+import ActionRow, { isActionRow } from "../components/action-row";
 
 export default class ApplicationCommandInteraction implements Interaction {
 	public readonly type = InteractionRequestType.APPLICATION_COMMAND;
-	public readonly name: string | undefined;
+	public readonly name: string;
 	public readonly token: string;
 	public readonly response: FastifyReply;
-	public readonly messages: ApplicationCommandInteractionMessageModifiers;
+	public readonly messages: InteractionMessageModifiers;
+
+	// TODO: Convert these into Records
+	public readonly channelID: Snowflake | undefined;
+	public readonly guildID: Snowflake | undefined;
+	public readonly member: Record<string, unknown> | undefined;
+
 	readonly #options: Map<string, ApplicationCommandInteractionDataOption>;
 	readonly #application: Application;
 	#replied: boolean;
@@ -48,7 +46,12 @@ export default class ApplicationCommandInteraction implements Interaction {
 		this.#application = application;
 		this.response = response;
 		this.token = request.body.token;
-		this.name = request.body.data?.name?.toLowerCase();
+		this.name = request.body.data?.name?.toLowerCase() ?? "";
+
+		// TODO: Make these records
+		this.channelID = request.body.channel_id;
+		this.guildID = request.body.guild_id;
+		this.member = request.body.member;
 
 		this.#options = new Map();
 
@@ -88,13 +91,14 @@ export default class ApplicationCommandInteraction implements Interaction {
 		});
 	}
 
+	// TODO: This is mostly shared with message-component-interaction
 	async reply({
 		message,
 		embed,
 		components,
 		ephemeral = false,
 		queue = false,
-	}: ApplicationCommandInteractionReply) {
+	}: InteractionReply) {
 		const data: InteractionResponse["data"] = {};
 
 		if (message != null) {
@@ -112,12 +116,19 @@ export default class ApplicationCommandInteraction implements Interaction {
 		}
 
 		if (components != null) {
+			components.forEach((component: SerializableComponent) => {
+				if (isActionRow(component)) {
+					component.components.forEach((child) => {
+						this.#application.addComponent(child);
+					});
+				} else {
+					this.#application.addComponent(component);
+				}
+			});
+
 			data.components = ([] as SerializableComponent[])
 				.concat(components)
 				.map((component) => component.serialize());
-
-			// TODO: Add components to the Application
-			// TODO: Figure out how to add things outside of this path...
 		}
 
 		const payload: InteractionResponse = {

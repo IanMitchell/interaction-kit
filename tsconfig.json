@@ -25,8 +25,7 @@
 
 		// use es2018 standard libraries
 		"lib": ["es2018"],
-		// emit commonjs. this allows for nodejs and typescript compatibility with the lib
-		"module": "commonjs",
+		"module": "CommonJS",
 		// target es2018
 		"target": "es2018",
 		"resolveJsonModule": true

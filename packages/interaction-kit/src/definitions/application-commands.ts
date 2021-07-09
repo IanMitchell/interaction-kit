@@ -9,7 +9,8 @@ import { User } from "./users";
 import { AllowedMentions, Channel } from "./channels";
 import { Embed } from "./embeds";
 import { Role } from "./roles";
-import { Component } from "./components";
+import { Component, ComponentType } from "./components";
+import { Message } from "./messages";
 
 // https://discord.com/developers/docs/interactions/slash-commands#applicationcommand
 export type ApplicationCommand = {
@@ -71,7 +72,7 @@ export enum ApplicationCommandPermissionType {
 	USER = 2,
 }
 
-// https://discord.com/developers/docs/interactions/slash-commands#interaction
+// https://discord.com/developers/docs/interactions/slash-commands#interaction-object
 export type Interaction = {
 	id: Snowflake;
 	application_id: Snowflake;
@@ -83,6 +84,7 @@ export type Interaction = {
 	user?: User;
 	token: string;
 	version: number;
+	message?: Message;
 };
 
 // https://discord.com/developers/docs/interactions/slash-commands#interaction-object-interaction-request-type
@@ -92,12 +94,14 @@ export enum InteractionRequestType {
 	MESSAGE_COMPONENT = 3,
 }
 
-// https://discord.com/developers/docs/interactions/slash-commands#interaction-applicationcommandinteractiondata
+// https://discord.com/developers/docs/interactions/slash-commands#interaction-object-application-command-interaction-data-structure
 export type ApplicationCommandInteractionData = {
 	id: Snowflake;
 	name: string;
 	resolved?: ApplicationCommandInteractionDataResolved;
 	options?: ApplicationCommandInteractionDataOption[];
+	custom_id?: string;
+	component_type?: ComponentType;
 };
 
 // https://discord.com/developers/docs/interactions/slash-commands#interaction-applicationcommandinteractiondataresolved
