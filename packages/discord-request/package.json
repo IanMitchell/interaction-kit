@@ -1,6 +1,6 @@
 {
 	"name": "discord-request",
-	"version": "0.0.2",
+	"version": "0.0.1",
 	"author": "Ian Mitchell",
 	"description": "Discord Request makes HTTP API requests while handling rate limit restrictions automatically.",
 	"license": "MIT",
