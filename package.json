@@ -1,5 +1,6 @@
 {
 	"name": "interaction-kit-workspace",
+	"version": "0.0.1",
 	"private": true,
 	"scripts": {
 		"clean": "lerna run clean",
