@@ -8,7 +8,6 @@ import {
 	InteractionRequestType,
 	OptionType,
 	Snowflake,
-	ComponentType,
 } from "../definitions";
 import { PermissionFlags } from "../definitions/messages";
 import Embed from "../components/embed";
@@ -20,7 +19,7 @@ import {
 	InteractionReply,
 	SerializableComponent,
 } from "../interfaces";
-import ActionRow, { isActionRow } from "../components/action-row";
+import { isActionRow } from "../components/action-row";
 
 export default class ApplicationCommandInteraction implements Interaction {
 	public readonly type = InteractionRequestType.APPLICATION_COMMAND;
