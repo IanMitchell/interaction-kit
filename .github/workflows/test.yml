@@ -12,20 +12,13 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 16.2
-
-      - name: Cache Dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          cache: npm
 
       - name: Install
         env:
           CI: true
         run: |
-          npm install
+          npx lerna bootstrap
 
       - name: Test
         run: |
