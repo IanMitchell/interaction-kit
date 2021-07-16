@@ -24,7 +24,7 @@ export default class Embed implements Serializable {
 	public author: EmbedAuthor | undefined;
 	public fields: EmbedField[];
 
-	constructor(options: EmbedDefinition | null) {
+	constructor(options?: EmbedDefinition) {
 		// TODO: Add validations for API limits
 		this.title = options?.title;
 		this.description = options?.description;
