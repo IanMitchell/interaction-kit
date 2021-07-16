@@ -101,7 +101,7 @@ export class Input
 }
 
 interface StringInputArgs extends Omit<InputArgs, "type" | "options"> {
-	choices: Choices<string>;
+	choices?: Choices<string>;
 }
 
 export class StringInput extends Input {
@@ -111,7 +111,7 @@ export class StringInput extends Input {
 }
 
 interface IntegerInputArgs extends Omit<InputArgs, "type" | "options"> {
-	choices: Choices<number>;
+	choices?: Choices<number>;
 }
 
 export class IntegerInput extends Input {
