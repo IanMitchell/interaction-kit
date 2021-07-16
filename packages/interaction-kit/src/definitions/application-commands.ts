@@ -139,8 +139,8 @@ export enum InteractionCallbackType {
 	PONG = 1,
 	CHANNEL_MESSAGE_WITH_SOURCE = 4,
 	DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE = 5,
-    	DEFERRED_UPDATE_MESSAGE = 6,
-    	UPDATE_MESSAGE = 7,
+	DEFERRED_UPDATE_MESSAGE = 6,
+	UPDATE_MESSAGE = 7,
 }
 
 // https://discord.com/developers/docs/interactions/slash-commands#interaction-response-object-interaction-application-command-callback-data-structure
