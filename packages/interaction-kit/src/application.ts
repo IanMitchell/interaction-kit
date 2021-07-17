@@ -91,9 +91,15 @@ export default class Application {
 	}
 
 	addComponent(component: SerializableComponent) {
-		if (component.id != null && isExecutable(component)) {
+		if (
+			component.id != null &&
+			isExecutable(component) &&
+			!this.#components.has(component.id)
+		) {
 			this.#components.set(component.id, component);
 		}
+
+		return this;
 	}
 
 	// TODO: Should this be moved into Command?
