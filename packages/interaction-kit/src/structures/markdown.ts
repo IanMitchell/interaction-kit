@@ -36,7 +36,7 @@ export enum TimestampStyle {
 }
 
 export function time(timestamp: number, type = TimestampStyle.SHORT_DATETIME) {
-	return `<t:${timestamp}:${type};`;
+	return `<t:${timestamp}:${type}>`;
 }
 
 export function bold(message: string) {
