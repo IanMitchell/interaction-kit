@@ -1,0 +1,54 @@
+name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  Lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js 16.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.2
+          cache: npm
+
+      - name: Install
+        env:
+          CI: true
+        run: |
+          npx lerna bootstrap
+
+      - name: Build
+        run: |
+          npm run build
+
+      - name: Lint
+        run: |
+          npm run lint
+
+  Formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js 16.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.2
+          cache: npm
+
+      - name: Install
+        env:
+          CI: true
+        run: |
+          npx lerna bootstrap
+
+      - name: Build
+        run: |
+          npm run build
+
+      - name: Formatting
+        run: |
+          npm run prettier

@@ -1,9 +1,11 @@
 name: Add Sponsor Labels
+
 on:
   pull_request:
     types: [opened]
   issues:
     types: [opened, edited]
+
 jobs:
   build:
     name: Label Sponsors

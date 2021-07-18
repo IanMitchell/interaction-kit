@@ -1,40 +1,41 @@
 {
-  "name": "interaction-kit",
-  "version": "0.0.2",
-  "author": "Ian Mitchell",
-  "description": "TODO",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
-  "module": "dist/mylib.esm.js",
-  "type": "module",
-  "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test",
-    "lint": "tsdx lint"
-  },
-  "files": [
-    "dist",
-    "src"
-  ],
-  "engines": {
-    "node": ">=14"
-  },
-  "devDependencies": {
-    "@types/node": "^15.6.0",
-    "@types/node-fetch": "^2.5.10",
-    "tsdx": "^0.14.1",
-    "tslib": "^2.2.0",
-    "typescript": "^4.2.4"
-  },
-  "dependencies": {
-    "arg": "^5.0.0",
-    "dotenv": "^10.0.0",
-    "fastify": "^3.15.1",
-    "fastify-raw-body": "^3.1.0",
-    "node-fetch": "^2.6.1",
-    "prompts": "^2.4.1",
-    "tweetnacl": "^0.14.5"
-  }
+	"name": "interaction-kit-workspace",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"clean": "lerna run clean",
+		"build": "lerna run build --stream",
+		"typecheck": "lerna run typecheck --stream",
+		"prettier": "lerna run prettier --stream",
+		"lint": "lerna run lint --stream",
+		"test": "lerna run test --stream"
+	},
+	"engines": {
+		"node": ">=14"
+	},
+	"dependencies": {
+		"discord-request": "file:packages/discord-request",
+		"interaction-kit": "file:packages/interaction-kit",
+		"interactionkit.dev": "file:packages/interactionkit.dev"
+	},
+	"devDependencies": {
+		"@types/jest": "^25.2.3",
+		"@types/node": "^15.6.1",
+		"@types/node-fetch": "^2.5.10",
+		"@typescript-eslint/eslint-plugin": "^4.25.0",
+		"@typescript-eslint/parser": "^4.25.0",
+		"eslint": "^7.27.0",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-config-xo": "^0.36.0",
+		"eslint-config-xo-typescript": "^0.41.1",
+		"jest": "^27.0.5",
+		"jest-fetch-mock": "jefflau/jest-fetch-mock",
+		"lerna": "^4.0.0",
+		"prettier": "^2.3.0",
+		"ts-jest": "^27.0.3",
+		"tsdx": "^0.14.1",
+		"tslib": "^2.2.0",
+		"tsup": "^4.11.1",
+		"typescript": "^4.3.2"
+	}
 }

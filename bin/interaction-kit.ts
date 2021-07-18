@@ -10,92 +10,92 @@ import { Snowflake } from "../src/data/snowflake";
 import Command from "../src/command";
 
 async function deploy() {
-  const deletedCommands: ApplicationCommand[] = [];
-  const updatedCommands: Map<Snowflake, Command> = new Map();
-  // Load application file, import app
-  const application = {};
-  // Get list of commands
+	const deletedCommands: ApplicationCommand[] = [];
+	const updatedCommands: Map<Snowflake, Command> = new Map();
+	// Load application file, import app
+	const application = {};
+	// Get list of commands
 
-  // TODO: Error handling
-  let response = await fetch(
-    `https://discord.com/api/v8/applications/${process.env.APPLICATION_ID}/commands`
-  );
-  const json: ApplicationCommand[] = await response.json();
+	// TODO: Error handling
+	let response = await fetch(
+		`https://discord.com/api/v8/applications/${process.env.APPLICATION_ID}/commands`
+	);
+	const json: ApplicationCommand[] = await response.json();
 
-  // TODO: register unaccounted for commands
-  // we need to think about a clean way of examining all commands
-  json.forEach(registeredCommand => {
-    const command = application.getCommand(name);
+	// TODO: register unaccounted for commands
+	// we need to think about a clean way of examining all commands
+	json.forEach((registeredCommand) => {
+		const command = application.getCommand(name);
 
-    if (command == null /* || TODO: skipCheck on name */) {
-      deletedCommands.push(registeredCommand);
-      // TODO: skipCheck or remove
-    } else {
-      if (!command.isEqualTo(registeredCommand)) {
-        updatedCommands.set(registeredCommand.id, command);
-      }
-    }
-  });
+		if (command == null /* || TODO: skipCheck on name */) {
+			deletedCommands.push(registeredCommand);
+			// TODO: skipCheck or remove
+		} else {
+			if (!command.isEqualTo(registeredCommand)) {
+				updatedCommands.set(registeredCommand.id, command);
+			}
+		}
+	});
 
-  // TODO: Create new commands
+	// TODO: Create new commands
 
-  // Update modified commands
-  response = await fetch(
-    `https://discord.com/api/v8/applications/${process.env.APPLICATION_ID}/commands`,
-    {
-      method: "PUT",
-      body: JSON.stringify(
-        Array.from(updatedCommands.entries()).map(([key, value]) => ({
-          id: key,
-          ...value.serialize()
-        }))
-      )
-    }
-  );
+	// Update modified commands
+	response = await fetch(
+		`https://discord.com/api/v8/applications/${process.env.APPLICATION_ID}/commands`,
+		{
+			method: "PUT",
+			body: JSON.stringify(
+				Array.from(updatedCommands.entries()).map(([key, value]) => ({
+					id: key,
+					...value.serialize(),
+				}))
+			),
+		}
+	);
 
-  if (response.ok) {
-    console.log(`Updated the following commands:`);
-    updatedCommands.forEach(cmd => {
-      console.log(`\t${cmd.name}`);
-    });
-  }
+	if (response.ok) {
+		console.log(`Updated the following commands:`);
+		updatedCommands.forEach((cmd) => {
+			console.log(`\t${cmd.name}`);
+		});
+	}
 
-  // Delete removed commands
-  for (const command of deletedCommands) {
-    response = await fetch(
-      `https://discord.com/api/v8/applications/${process.env.APPLICATION_ID}/commands/${command.id}`,
-      {
-        method: "DELETE"
-      }
-    );
+	// Delete removed commands
+	for (const command of deletedCommands) {
+		response = await fetch(
+			`https://discord.com/api/v8/applications/${process.env.APPLICATION_ID}/commands/${command.id}`,
+			{
+				method: "DELETE",
+			}
+		);
 
-    if (response.ok) {
-      console.log(`Deleted ${command.name}`);
-    }
-  }
+		if (response.ok) {
+			console.log(`Deleted ${command.name}`);
+		}
+	}
 
-  console.log("Done updating Discord API");
+	console.log("Done updating Discord API");
 }
 
 process.on("SIGTERM", () => process.exit(0));
 process.on("SIGINT", () => process.exit(0));
 
 const commands = {
-  new: import("./new").then(mod => mod.default),
-  dev: "",
-  deploy: "",
-  start: ""
+	new: import("./new").then((mod) => mod.default),
+	dev: "",
+	deploy: "",
+	start: "",
 };
 
 const args = arg(
-  {
-    "--version": Boolean,
-    "-v": "--version",
+	{
+		"--version": Boolean,
+		"-v": "--version",
 
-    "--help": Boolean,
-    "-h": "--help"
-  },
-  { permissive: true }
+		"--help": Boolean,
+		"-h": "--help",
+	},
+	{ permissive: true }
 );
 
 const command = args._[0];
@@ -103,22 +103,22 @@ const command = args._[0];
 console.log({ args, command });
 
 if (args["--version"]) {
-  console.log("Not verison 1, I'll tell ya that one for free buddy");
-  // TODO: Some standard message with package.version
-  return;
+	console.log("Not verison 1, I'll tell ya that one for free buddy");
+	// TODO: Some standard message with package.version
+	return;
 }
 
 if (args["--help"] && !(command in commands)) {
-  // TODO: General help
-  console.log("Help");
-  return;
+	// TODO: General help
+	console.log("Help");
+	return;
 }
 
 if (command === "new") {
-  return commands.new(args._[1]);
+	return commands.new(args._[1]);
 } else {
-  console.log("No");
-  return;
+	console.log("No");
+	return;
 }
 
 // import { Command } from "commander";

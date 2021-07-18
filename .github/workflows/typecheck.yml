@@ -1,0 +1,29 @@
+name: Typecheck
+
+on: [push, pull_request]
+
+jobs:
+  Typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node.js 16.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.2
+          cache: npm
+
+      - name: Install
+        env:
+          CI: true
+        run: |
+          npx lerna bootstrap
+
+      - name: Build
+        run: |
+          npm run build
+
+      - name: Typecheck
+        run: |
+          npm run typecheck

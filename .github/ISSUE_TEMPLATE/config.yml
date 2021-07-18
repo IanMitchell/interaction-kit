@@ -3,9 +3,9 @@ contact_links:
   - name: Questions?
     url: https://github.com/IanMitchell/interaction-kit/discussions
     about: Have a question about how to do something? Post it in our Discussions tab!
-  - name: Feature Requests
-    url: https://github.com/IanMitchell/interaction-kit/discussions
-    about: Have a feature request? Post them in our Discussions tab!
+  #  - name: Feature Requests
+  #    url: https://github.com/IanMitchell/interaction-kit/discussions
+  #    about: Have a feature request? Post them in our Discussions tab!
   - name: Discord Server
     url: http://ianmitchell.dev/discord
     about: If you want to chat about the library, join our Discord community!
