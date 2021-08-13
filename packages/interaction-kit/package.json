@@ -13,7 +13,8 @@
 		"clean": "rm -r dist/",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
-		"lint": "eslint ./src/**/*.ts"
+		"lint": "eslint ./src/**/*.ts",
+		"test": "jest"
 	},
 	"files": [
 		"dist",
