@@ -2,7 +2,7 @@ import { ActionRow, Button, Command } from "interaction-kit";
 import creditsButton from "../components/credits-button";
 
 function getInviteLink(application) {
-	return `https://discord.com/oauth2/authorize?client_id=${application.id}&scope=applications.commands`;
+	return `https://discord.com/oauth2/authorize?client_id=${application.id}&scope=bot%20applications.commands`;
 }
 
 export default new Command({

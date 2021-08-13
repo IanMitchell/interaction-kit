@@ -7,9 +7,17 @@ export default new Application({
 	token: process.env.TOKEN,
 })
 	.addCommandDirectory(path.join(process.cwd(), "./commands"))
-	.addComponentDirectory(process.cwd(), "./components");
+	.addComponentDirectory(path.join(process.cwd(), "./components"))
+	.addMenuDirectory(path.join(process.cwd(), "./menus"));
 
 /**
  * If you'd like to run a custom server, uncomment below!
+ * The below example is for a Vercel Serverless Function
+ * Learn more: https://vercel.com/docs/serverless-functions/introduction
  */
-// export function server() {}
+// export function server(app) {
+// 	return async (request, response) => {
+// 		await app.ready();
+// 		app.server.emit('request', request, response);
+// 	}
+// }

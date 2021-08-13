@@ -118,9 +118,11 @@ export default class ApplicationCommandInteraction implements Interaction {
 			components.forEach((component: SerializableComponent) => {
 				if (isActionRow(component)) {
 					component.components.forEach((child) => {
+						// todo: warn
 						this.#application.addComponent(child);
 					});
 				} else {
+					// todo: warn
 					this.#application.addComponent(component);
 				}
 			});
