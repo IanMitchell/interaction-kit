@@ -1,7 +1,10 @@
+import ApplicationCommandInteraction from "./interactions/application-command-interaction";
 import * as API from "./api";
 import Application from "./application";
 import Embed from "./components/embed";
 import {
+	ApplicationCommand,
+	ApplicationCommandType,
 	Component,
 	ComponentType,
 	InteractionApplicationCommandCallbackData,
@@ -15,8 +18,21 @@ export interface Mentionable {
 	id: Snowflake;
 }
 
-export interface Serializable {
-	serialize(): unknown;
+export interface InteractionKitCommand<
+	T extends ApplicationCommandInteraction = ApplicationCommandInteraction
+> extends Executable<T>,
+		Serializable<Optional<ApplicationCommand, "id" | "application_id">>,
+		Comparable<ApplicationCommand> {
+	name: string;
+	handler: (
+		interaction: ApplicationCommandInteraction,
+		application: Application
+	) => unknown;
+	get type(): ApplicationCommandType;
+}
+
+export interface Serializable<T = unknown> {
+	serialize(): T;
 }
 
 export interface SerializableComponent extends Serializable {
@@ -25,8 +41,8 @@ export interface SerializableComponent extends Serializable {
 	serialize(): Component;
 }
 
-export interface Executable {
-	handler: (interaction: Interaction, application: Application) => unknown;
+export interface Executable<T extends Interaction = Interaction> {
+	handler: (interaction: T, application: Application) => unknown;
 }
 
 export interface Comparable<T> {

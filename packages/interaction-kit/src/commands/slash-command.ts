@@ -1,8 +1,8 @@
-import type { ApplicationCommand } from "./definitions";
-import Application from "./application";
-import { Input } from "./components/inputs";
-import ApplicationCommandInteraction from "./interactions/application-command-interaction";
-import { Comparable, Optional, Serializable } from "./interfaces";
+import { ApplicationCommand, ApplicationCommandType } from "../definitions";
+import Application from "../application";
+import { Input } from "../components/inputs";
+import ApplicationCommandInteraction from "../interactions/application-command-interaction";
+import { Optional, InteractionKitCommand } from "../interfaces";
 
 type CommandArgs = {
 	name: string;
@@ -12,9 +12,7 @@ type CommandArgs = {
 	handler: (interaction: ApplicationCommandInteraction) => unknown;
 };
 
-export default class Command
-	implements Serializable, Comparable<ApplicationCommand>
-{
+export default class SlashCommand implements InteractionKitCommand {
 	name: string;
 	#description: string;
 	#defaultPermission: boolean;
@@ -48,6 +46,10 @@ export default class Command
 
 			this.#options.set(key, option);
 		});
+	}
+
+	get type() {
+		return ApplicationCommandType.CHAT_INPUT;
 	}
 
 	group() {

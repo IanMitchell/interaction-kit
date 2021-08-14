@@ -15,12 +15,20 @@ import { Message } from "./messages";
 // https://discord.com/developers/docs/interactions/slash-commands#application-command-object-application-command-structure
 export type ApplicationCommand = {
 	id: Snowflake;
+	type?: ApplicationCommandType;
 	application_id: Snowflake;
 	name: string;
-	description: string;
+	description?: string;
 	options?: ApplicationCommandOption[];
 	default_permission?: boolean;
 };
+
+// https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-types
+export enum ApplicationCommandType {
+	CHAT_INPUT = 1,
+	USER = 2,
+	MESSAGE = 3,
+}
 
 // https://discord.com/developers/docs/interactions/slash-commands#application-command-object-application-command-option-structure
 export type ApplicationCommandOption = {
@@ -97,6 +105,7 @@ export enum InteractionRequestType {
 // https://discord.com/developers/docs/interactions/slash-commands#interaction-object-application-command-interaction-data-structure
 export type ApplicationCommandInteractionData = {
 	id: Snowflake;
+	type: ApplicationCommandType;
 	name: string;
 	resolved?: ApplicationCommandInteractionDataResolved;
 	options?: ApplicationCommandInteractionDataOption[];

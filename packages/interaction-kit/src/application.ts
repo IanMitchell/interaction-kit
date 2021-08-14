@@ -3,17 +3,23 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
 
 import dotenv from "dotenv";
-import Command from "./command";
+import SlashCommand from "./commands/slash-command";
+import ContextMenu from "./commands/context-menu";
 import Config from "./api/config";
 import {
 	InteractionCallbackType,
 	Interaction as InteractionDefinition,
 	InteractionRequestType,
 	Snowflake,
+	ApplicationCommandType,
 } from "./definitions";
 import * as Interaction from "./interactions";
 import * as API from "./api";
-import { Executable, SerializableComponent } from "./interfaces";
+import {
+	Executable,
+	InteractionKitCommand,
+	SerializableComponent,
+} from "./interfaces";
 import startInteractionKitServer from "./server";
 
 type ApplicationArgs = {
@@ -36,8 +42,9 @@ export default class Application {
 	#applicationID: Snowflake;
 	#publicKey: string;
 	#token: string;
-	#commands: Map<string, Command>;
-	#components: Map<string, SerializableComponent & Executable>;
+	#commands: Map<ApplicationCommandType, Map<string, InteractionKitCommand>>;
+
+	#components: Map<string, SerializableComponent & Executable> = new Map();
 	#port: number;
 
 	constructor({ applicationID, publicKey, token, port }: ApplicationArgs) {
@@ -60,9 +67,17 @@ export default class Application {
 		this.#applicationID = applicationID as Snowflake;
 		this.#publicKey = publicKey;
 		this.#token = token as Snowflake;
-		this.#commands = new Map<string, Command>();
-		this.#components = new Map<string, SerializableComponent & Executable>();
 		this.#port = port ?? 3000;
+
+		// Set up internal data structures
+		this.#commands = new Map<
+			ApplicationCommandType,
+			Map<string, InteractionKitCommand>
+		>([
+			[ApplicationCommandType.CHAT_INPUT, new Map<string, SlashCommand>()],
+			[ApplicationCommandType.MESSAGE, new Map<string, ContextMenu>()],
+			[ApplicationCommandType.USER, new Map<string, ContextMenu>()],
+		]);
 
 		// Configure API Defaults
 		Config.setToken(this.#token);
@@ -73,24 +88,26 @@ export default class Application {
 		return this.#applicationID;
 	}
 
-	addCommand(command: Command) {
-		if (this.#commands.has(command.name.toLowerCase())) {
+	addCommand(command: InteractionKitCommand) {
+		if (this.#commands.get(command.type)?.has(command.name.toLowerCase())) {
 			throw new Error(
 				`Error registering ${command.name.toLowerCase()}: Duplicate names are not allowed`
 			);
 		}
 
 		console.log(`Registering the ${command.name.toLowerCase()} command`);
-		this.#commands.set(command.name.toLowerCase(), command);
+		this.#commands.get(command.type)?.set(command.name.toLowerCase(), command);
 		return this;
 	}
 
-	addCommands(...commands: Command[]) {
+	addCommands(...commands: Array<SlashCommand | ContextMenu>) {
 		commands.forEach((command) => this.addCommand(command));
 		return this;
 	}
 
-	addComponent(component: SerializableComponent) {
+	addComponent(
+		component: SerializableComponent | (SerializableComponent & Executable)
+	) {
 		if (
 			component.id != null &&
 			isExecutable(component) &&
@@ -119,11 +136,15 @@ export default class Application {
 		 *  { message: 'Missing Access', code: 50001 }
 		 */
 
-		for (const [name, command] of this.#commands) {
-			const signature = json.find((cmd) => cmd.name === name);
+		const allCommands = Array.from(this.#commands.values())
+			.map((map) => Array.from(map.values()))
+			.flat();
+
+		for (const command of allCommands) {
+			const signature = json.find((cmd) => cmd.name === command.name);
 
 			if (!signature) {
-				console.log(`\tCreating ${name}`);
+				console.log(`\tCreating ${command.name}`);
 
 				try {
 					await API.postGuildApplicationCommand(guildID, command.serialize());
@@ -174,10 +195,15 @@ export default class Application {
 				});
 				break;
 			case InteractionRequestType.APPLICATION_COMMAND:
-				if (this.#commands.has(interaction.name ?? "")) {
+				if (
+					this.#commands
+						.get(interaction.commandType)
+						?.has(interaction.name ?? "")
+				) {
 					console.log(`Handling ${interaction.name}`);
 					return this.#commands
-						.get(interaction.name)
+						.get(interaction.commandType)
+						?.get(interaction.name)
 						?.handler(interaction, this);
 				}
 
