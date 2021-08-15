@@ -9,12 +9,17 @@
 	"type": "module",
 	"scripts": {
 		"start": "node .",
-		"build": "tsup src/index.ts --format esm --dts",
+		"build": "npm run build:src && npm run build:bin",
+		"build:src": "tsup src/index.ts --format esm --dts",
+		"build:bin": "tsup bin/interaction-kit.ts --format esm --dts",
 		"clean": "rm -r dist/",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
 		"lint": "eslint ./src/**/*.ts",
 		"test": "jest"
+	},
+	"bin": {
+		"interaction-kit": "./dist/interaction-kit.js"
 	},
 	"files": [
 		"dist",
