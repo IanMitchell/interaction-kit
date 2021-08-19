@@ -4,7 +4,9 @@ import type { FastifyRequest, FastifyReply } from "fastify";
 
 import dotenv from "dotenv";
 import SlashCommand from "./commands/slash-command";
-import ContextMenu from "./commands/context-menu";
+import ContextMenu, {
+	ContextMenuApplicationCommandType,
+} from "./commands/context-menu";
 import Config from "./api/config";
 import {
 	InteractionCallbackType,
@@ -42,7 +44,10 @@ export default class Application {
 	#applicationID: Snowflake;
 	#publicKey: string;
 	#token: string;
-	#commands: Map<ApplicationCommandType, Map<string, InteractionKitCommand>>;
+	#commands: Map<
+		ApplicationCommandType,
+		Map<string, InteractionKitCommand<ApplicationCommandType>>
+	>;
 
 	#components: Map<string, SerializableComponent & Executable> = new Map();
 	#port: number;
@@ -72,11 +77,17 @@ export default class Application {
 		// Set up internal data structures
 		this.#commands = new Map<
 			ApplicationCommandType,
-			Map<string, InteractionKitCommand>
+			Map<string, InteractionKitCommand<ApplicationCommandType>>
 		>([
 			[ApplicationCommandType.CHAT_INPUT, new Map<string, SlashCommand>()],
-			[ApplicationCommandType.MESSAGE, new Map<string, ContextMenu>()],
-			[ApplicationCommandType.USER, new Map<string, ContextMenu>()],
+			[
+				ApplicationCommandType.MESSAGE,
+				new Map<string, ContextMenu<ApplicationCommandType.MESSAGE>>(),
+			],
+			[
+				ApplicationCommandType.USER,
+				new Map<string, ContextMenu<ApplicationCommandType.USER>>(),
+			],
 		]);
 
 		// Configure API Defaults
@@ -88,7 +99,7 @@ export default class Application {
 		return this.#applicationID;
 	}
 
-	addCommand(command: InteractionKitCommand) {
+	addCommand(command: InteractionKitCommand<ApplicationCommandType>) {
 		if (this.#commands.get(command.type)?.has(command.name.toLowerCase())) {
 			throw new Error(
 				`Error registering ${command.name.toLowerCase()}: Duplicate names are not allowed`
@@ -100,7 +111,11 @@ export default class Application {
 		return this;
 	}
 
-	addCommands(...commands: Array<SlashCommand | ContextMenu>) {
+	addCommands(
+		...commands: Array<
+			SlashCommand | ContextMenu<ContextMenuApplicationCommandType>
+		>
+	) {
 		commands.forEach((command) => this.addCommand(command));
 		return this;
 	}

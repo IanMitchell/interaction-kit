@@ -9,16 +9,20 @@ type CommandArgs = {
 	description: string;
 	defaultPermission?: boolean;
 	options?: Input[];
-	handler: (interaction: ApplicationCommandInteraction) => unknown;
+	handler: (
+		interaction: ApplicationCommandInteraction<ApplicationCommandType.CHAT_INPUT>
+	) => unknown;
 };
 
-export default class SlashCommand implements InteractionKitCommand {
+export default class SlashCommand
+	implements InteractionKitCommand<ApplicationCommandType.CHAT_INPUT>
+{
 	name: string;
 	#description: string;
 	#defaultPermission: boolean;
 	#options: Map<string, Input>;
 	handler: (
-		interaction: ApplicationCommandInteraction,
+		interaction: ApplicationCommandInteraction<ApplicationCommandType.CHAT_INPUT>,
 		application: Application
 	) => unknown;
 

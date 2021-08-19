@@ -4,20 +4,30 @@ import { Input } from "../components/inputs";
 import ApplicationCommandInteraction from "../interactions/application-command-interaction";
 import { InteractionKitCommand, Optional } from "../interfaces";
 
-type ContextMenuArgs = {
+export type ContextMenuApplicationCommandType = Exclude<
+	ApplicationCommandType,
+	ApplicationCommandType.CHAT_INPUT
+>;
+
+type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 	name: string;
-	type: ApplicationCommandType;
+	type: T;
 	defaultPermission?: boolean;
 	options?: Input[];
-	handler: (interaction: ApplicationCommandInteraction) => unknown;
+	handler: (
+		interaction: ApplicationCommandInteraction<T>,
+		application: Application
+	) => unknown;
 };
 
-export default class ContextMenu implements InteractionKitCommand {
+export default class ContextMenu<T extends ContextMenuApplicationCommandType>
+	implements InteractionKitCommand<T>
+{
 	name: string;
-	type: ApplicationCommandType;
+	type: T;
 	#defaultPermission: boolean;
 	handler: (
-		interaction: ApplicationCommandInteraction,
+		interaction: ApplicationCommandInteraction<T>,
 		application: Application
 	) => unknown;
 
@@ -26,7 +36,7 @@ export default class ContextMenu implements InteractionKitCommand {
 		type,
 		handler,
 		defaultPermission = true,
-	}: ContextMenuArgs) {
+	}: ContextMenuArgs<T>) {
 		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$
 		this.name = name;
 		this.type = type;

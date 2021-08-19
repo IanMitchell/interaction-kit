@@ -111,6 +111,7 @@ export type ApplicationCommandInteractionData = {
 	options?: ApplicationCommandInteractionDataOption[];
 	custom_id?: string;
 	component_type?: ComponentType;
+	target_id?: Snowflake;
 };
 
 // https://discord.com/developers/docs/interactions/slash-commands#interaction-object-application-command-interaction-data-resolved-structure
@@ -122,6 +123,7 @@ export type ApplicationCommandInteractionDataResolved = {
 		Snowflake,
 		Pick<Channel, "id" | "name" | "type" | "permissions">
 	>;
+	messages?: Record<Snowflake, Message>;
 };
 
 // https://discord.com/developers/docs/interactions/slash-commands#interaction-object-application-command-interaction-data-option-structure

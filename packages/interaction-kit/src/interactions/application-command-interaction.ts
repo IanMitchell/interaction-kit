@@ -8,6 +8,7 @@ import {
 	InteractionRequestType,
 	OptionType,
 	Snowflake,
+	ApplicationCommandType,
 } from "../definitions";
 import { PermissionFlags } from "../definitions/messages";
 import Embed from "../components/embed";
@@ -21,10 +22,29 @@ import {
 } from "../interfaces";
 import { isActionRow } from "../components/action-row";
 
-export default class ApplicationCommandInteraction implements Interaction {
+type MessageTargetType = {};
+
+type UserTargetType = {};
+
+type TargetType<T extends ApplicationCommandType> =
+	T extends ApplicationCommandType.CHAT_INPUT
+		? null
+		: T extends ApplicationCommandType.MESSAGE
+		? MessageTargetType
+		: T extends ApplicationCommandType.USER
+		? UserTargetType
+		: null;
+
+export default class ApplicationCommandInteraction<
+	T extends ApplicationCommandType
+> implements Interaction
+{
 	public readonly type = InteractionRequestType.APPLICATION_COMMAND;
+	public readonly commandType: ApplicationCommandType;
 	public readonly name: string;
 	public readonly token: string;
+	public readonly target: TargetType<T>;
+
 	public readonly response: FastifyReply;
 	public readonly messages: InteractionMessageModifiers;
 
@@ -46,13 +66,27 @@ export default class ApplicationCommandInteraction implements Interaction {
 		this.response = response;
 		this.token = request.body.token;
 		this.name = request.body.data?.name?.toLowerCase() ?? "";
-
-		// TODO: Make these records
-		this.channelID = request.body.channel_id;
-		this.guildID = request.body.guild_id;
-		this.member = request.body.member;
-
 		this.#options = new Map();
+
+		const id = request.body.data?.target_id ?? "0";
+		switch (request.body.data?.type) {
+			case ApplicationCommandType.MESSAGE:
+				this.commandType = ApplicationCommandType.MESSAGE;
+				this.target = request.body.data?.resolved?.messages?.[id] ?? {};
+				break;
+			case ApplicationCommandType.USER:
+				this.commandType = ApplicationCommandType.USER;
+				this.target = {
+					...(request.body?.data?.resolved?.members?.[id] ?? {}),
+					...(request.body?.data?.resolved?.users?.[id] ?? {}),
+				};
+				break;
+			case ApplicationCommandType.CHAT_INPUT:
+			default:
+				this.commandType = ApplicationCommandType.CHAT_INPUT;
+				this.target = null;
+				break;
+		}
 
 		request.body?.data?.options?.forEach((option) => {
 			this.#options.set(option.name.toLowerCase(), option);

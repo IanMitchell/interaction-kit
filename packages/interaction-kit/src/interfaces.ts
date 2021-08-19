@@ -19,13 +19,14 @@ export interface Mentionable {
 }
 
 export interface InteractionKitCommand<
-	T extends ApplicationCommandInteraction = ApplicationCommandInteraction
+	U extends ApplicationCommandType,
+	T extends ApplicationCommandInteraction<U> = ApplicationCommandInteraction<U>
 > extends Executable<T>,
 		Serializable<Optional<ApplicationCommand, "id" | "application_id">>,
 		Comparable<ApplicationCommand> {
 	name: string;
 	handler: (
-		interaction: ApplicationCommandInteraction,
+		interaction: ApplicationCommandInteraction<U>,
 		application: Application
 	) => unknown;
 	get type(): ApplicationCommandType;
