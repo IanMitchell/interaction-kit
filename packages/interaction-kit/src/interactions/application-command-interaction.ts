@@ -43,7 +43,7 @@ export default class ApplicationCommandInteraction<
 	public readonly commandType: ApplicationCommandType;
 	public readonly name: string;
 	public readonly token: string;
-	public readonly target: TargetType<T>;
+	public readonly target: TargetType<ApplicationCommandType>;
 
 	public readonly response: FastifyReply;
 	public readonly messages: InteractionMessageModifiers;
@@ -72,12 +72,18 @@ export default class ApplicationCommandInteraction<
 		switch (request.body.data?.type) {
 			case ApplicationCommandType.MESSAGE:
 				this.commandType = ApplicationCommandType.MESSAGE;
+				// @ts-ignore
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				this.target = request.body.data?.resolved?.messages?.[id] ?? {};
 				break;
 			case ApplicationCommandType.USER:
 				this.commandType = ApplicationCommandType.USER;
+				// @ts-ignore
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				this.target = {
+					// @ts-ignore
 					...(request.body?.data?.resolved?.members?.[id] ?? {}),
+					// @ts-ignore
 					...(request.body?.data?.resolved?.users?.[id] ?? {}),
 				};
 				break;
@@ -87,6 +93,9 @@ export default class ApplicationCommandInteraction<
 				this.target = null;
 				break;
 		}
+
+		// TEMPORARY
+		this.member = request.body?.member;
 
 		request.body?.data?.options?.forEach((option) => {
 			this.#options.set(option.name.toLowerCase(), option);

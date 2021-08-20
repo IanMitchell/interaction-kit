@@ -1,6 +1,5 @@
 import { ApplicationCommand, ApplicationCommandType } from "../definitions";
 import Application from "../application";
-import { Input } from "../components/inputs";
 import ApplicationCommandInteraction from "../interactions/application-command-interaction";
 import { InteractionKitCommand, Optional } from "../interfaces";
 
@@ -13,7 +12,6 @@ type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 	name: string;
 	type: T;
 	defaultPermission?: boolean;
-	options?: Input[];
 	handler: (
 		interaction: ApplicationCommandInteraction<T>,
 		application: Application
@@ -23,6 +21,9 @@ type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 	implements InteractionKitCommand<T>
 {
+	static USER = ApplicationCommandType.USER;
+	static MESSAGE = ApplicationCommandType.MESSAGE;
+
 	name: string;
 	type: T;
 	#defaultPermission: boolean;

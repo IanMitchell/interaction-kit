@@ -200,51 +200,55 @@ export default class Application {
 		response: FastifyReply
 	) {
 		console.log("REQUEST");
-		const interaction = Interaction.create(this, request, response);
+		try {
+			const interaction = Interaction.create(this, request, response);
 
-		switch (interaction.type) {
-			case InteractionRequestType.PING:
-				console.log("Handling Discord Ping");
-				void response.send({
-					type: InteractionCallbackType.PONG,
-				});
-				break;
-			case InteractionRequestType.APPLICATION_COMMAND:
-				if (
-					this.#commands
-						.get(interaction.commandType)
-						?.has(interaction.name ?? "")
-				) {
-					console.log(`Handling ${interaction.name}`);
-					return this.#commands
-						.get(interaction.commandType)
-						?.get(interaction.name)
-						?.handler(interaction, this);
-				}
+			switch (interaction.type) {
+				case InteractionRequestType.PING:
+					console.log("Handling Discord Ping");
+					void response.send({
+						type: InteractionCallbackType.PONG,
+					});
+					break;
+				case InteractionRequestType.APPLICATION_COMMAND:
+					if (
+						this.#commands
+							.get(interaction.commandType)
+							?.has(interaction.name ?? "")
+					) {
+						console.log(`Handling ${interaction.name}`);
+						return this.#commands
+							.get(interaction.commandType)
+							?.get(interaction.name)
+							?.handler(interaction, this);
+					}
 
-				console.error(`Unknown Command: ${interaction.name ?? "[no name]"}`);
-				void response.status(400).send({
-					error: "Unknown Type",
-				});
-				break;
-			case InteractionRequestType.MESSAGE_COMPONENT:
-				if (this.#components.has(interaction.customID)) {
-					console.log(`Handling Component ${interaction.customID}`);
-					return this.#components
-						.get(interaction.customID)
-						?.handler(interaction, this);
-				}
+					console.error(`Unknown Command: ${interaction.name ?? "[no name]"}`);
+					void response.status(400).send({
+						error: "Unknown Type",
+					});
+					break;
+				case InteractionRequestType.MESSAGE_COMPONENT:
+					if (this.#components.has(interaction.customID)) {
+						console.log(`Handling Component ${interaction.customID}`);
+						return this.#components
+							.get(interaction.customID)
+							?.handler(interaction, this);
+					}
 
-				console.error(
-					`Unknown Component: ${interaction.customID ?? "[no custom id]"}`
-				);
-				void response.status(400).send({
-					error: "Unknown Component",
-				});
-				break;
-			default:
-				console.error(`Unknown Type: ${request.body.type}`);
-				break;
+					console.error(
+						`Unknown Component: ${interaction.customID ?? "[no custom id]"}`
+					);
+					void response.status(400).send({
+						error: "Unknown Component",
+					});
+					break;
+				default:
+					console.error(`Unknown Type: ${request.body.type}`);
+					break;
+			}
+		} catch (error: unknown) {
+			console.error(error);
 		}
 	}
 
