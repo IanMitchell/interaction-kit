@@ -4,9 +4,7 @@ import type { FastifyRequest, FastifyReply } from "fastify";
 
 import dotenv from "dotenv";
 import SlashCommand from "./commands/slash-command";
-import ContextMenu, {
-	ContextMenuApplicationCommandType,
-} from "./commands/context-menu";
+import ContextMenu from "./commands/context-menu";
 import Config from "./api/config";
 import {
 	InteractionCallbackType,
@@ -40,14 +38,33 @@ function isExecutable(
 	return (component as SerializableComponent & Executable).handler != null;
 }
 
+export interface CommandMap
+	extends Map<
+		ApplicationCommandType,
+		Map<
+			string,
+			| SlashCommand
+			| ContextMenu<ApplicationCommandType.MESSAGE>
+			| ContextMenu<ApplicationCommandType.USER>
+		>
+	> {
+	get(key: ApplicationCommandType.CHAT_INPUT): Map<string, SlashCommand>;
+	get(
+		key: ApplicationCommandType.MESSAGE
+	): Map<string, ContextMenu<ApplicationCommandType.MESSAGE>>;
+	get(
+		key: ApplicationCommandType.USER
+	): Map<string, ContextMenu<ApplicationCommandType.USER>>;
+	get(
+		key: ApplicationCommandType
+	): Map<string, InteractionKitCommand<ApplicationCommandType>>;
+}
+
 export default class Application {
 	#applicationID: Snowflake;
 	#publicKey: string;
 	#token: string;
-	#commands: Map<
-		ApplicationCommandType,
-		Map<string, InteractionKitCommand<ApplicationCommandType>>
-	>;
+	#commands: CommandMap;
 
 	#components: Map<string, SerializableComponent & Executable> = new Map();
 	#port: number;
@@ -75,20 +92,11 @@ export default class Application {
 		this.#port = port ?? 3000;
 
 		// Set up internal data structures
-		this.#commands = new Map<
-			ApplicationCommandType,
-			Map<string, InteractionKitCommand<ApplicationCommandType>>
-		>([
-			[ApplicationCommandType.CHAT_INPUT, new Map<string, SlashCommand>()],
-			[
-				ApplicationCommandType.MESSAGE,
-				new Map<string, ContextMenu<ApplicationCommandType.MESSAGE>>(),
-			],
-			[
-				ApplicationCommandType.USER,
-				new Map<string, ContextMenu<ApplicationCommandType.USER>>(),
-			],
-		]);
+		this.#commands = new Map([
+			[ApplicationCommandType.CHAT_INPUT, new Map()],
+			[ApplicationCommandType.MESSAGE, new Map()],
+			[ApplicationCommandType.USER, new Map()],
+		]) as CommandMap;
 
 		// Configure API Defaults
 		Config.setToken(this.#token);
@@ -112,9 +120,7 @@ export default class Application {
 	}
 
 	addCommands(
-		...commands: Array<
-			SlashCommand | ContextMenu<ContextMenuApplicationCommandType>
-		>
+		...commands: Array<InteractionKitCommand<ApplicationCommandType>>
 	) {
 		commands.forEach((command) => this.addCommand(command));
 		return this;

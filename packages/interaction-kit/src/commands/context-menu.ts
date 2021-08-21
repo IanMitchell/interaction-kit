@@ -21,8 +21,8 @@ type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 	implements InteractionKitCommand<T>
 {
-	static USER = ApplicationCommandType.USER;
-	static MESSAGE = ApplicationCommandType.MESSAGE;
+	static readonly USER = ApplicationCommandType.USER;
+	static readonly MESSAGE = ApplicationCommandType.MESSAGE;
 
 	name: string;
 	type: T;

@@ -22,9 +22,13 @@ import {
 } from "../interfaces";
 import { isActionRow } from "../components/action-row";
 
-type MessageTargetType = {};
+type MessageTargetType = {
+	pinned: boolean;
+};
 
-type UserTargetType = {};
+type UserTargetType = {
+	bot: boolean;
+};
 
 type TargetType<T extends ApplicationCommandType> =
 	T extends ApplicationCommandType.CHAT_INPUT
@@ -40,10 +44,10 @@ export default class ApplicationCommandInteraction<
 > implements Interaction
 {
 	public readonly type = InteractionRequestType.APPLICATION_COMMAND;
-	public readonly commandType: ApplicationCommandType;
+	public readonly commandType: T;
 	public readonly name: string;
 	public readonly token: string;
-	public readonly target: TargetType<ApplicationCommandType>;
+	public readonly target: TargetType<T>;
 
 	public readonly response: FastifyReply;
 	public readonly messages: InteractionMessageModifiers;
@@ -69,27 +73,32 @@ export default class ApplicationCommandInteraction<
 		this.#options = new Map();
 
 		const id = request.body.data?.target_id ?? "0";
+		// This switch block has some types that can be updated once TS 4.4 drops
+		// https://devblogs.microsoft.com/typescript/announcing-typescript-4-4-rc/#symbol-template-signatures
 		switch (request.body.data?.type) {
 			case ApplicationCommandType.MESSAGE:
+				// @ts-expect-error
 				this.commandType = ApplicationCommandType.MESSAGE;
-				// @ts-ignore
+				// @ts-expect-error
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				this.target = request.body.data?.resolved?.messages?.[id] ?? {};
 				break;
 			case ApplicationCommandType.USER:
+				// @ts-expect-error
 				this.commandType = ApplicationCommandType.USER;
-				// @ts-ignore
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				this.target = {
-					// @ts-ignore
+					// @ts-expect-error
 					...(request.body?.data?.resolved?.members?.[id] ?? {}),
-					// @ts-ignore
+					// @ts-expect-error
 					...(request.body?.data?.resolved?.users?.[id] ?? {}),
 				};
 				break;
 			case ApplicationCommandType.CHAT_INPUT:
 			default:
+				// @ts-expect-error
 				this.commandType = ApplicationCommandType.CHAT_INPUT;
+				// @ts-expect-error
 				this.target = null;
 				break;
 		}

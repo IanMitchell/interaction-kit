@@ -29,7 +29,7 @@ export interface InteractionKitCommand<
 		interaction: ApplicationCommandInteraction<U>,
 		application: Application
 	) => unknown;
-	get type(): ApplicationCommandType;
+	get type(): U;
 }
 
 export interface Serializable<T = unknown> {

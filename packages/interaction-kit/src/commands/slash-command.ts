@@ -17,6 +17,8 @@ type CommandArgs = {
 export default class SlashCommand
 	implements InteractionKitCommand<ApplicationCommandType.CHAT_INPUT>
 {
+	public readonly type = ApplicationCommandType.CHAT_INPUT;
+
 	name: string;
 	#description: string;
 	#defaultPermission: boolean;
@@ -50,10 +52,6 @@ export default class SlashCommand
 
 			this.#options.set(key, option);
 		});
-	}
-
-	get type() {
-		return ApplicationCommandType.CHAT_INPUT;
 	}
 
 	group() {
