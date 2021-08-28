@@ -1,10 +1,9 @@
 ---
 name: Feature Request
 about: Request a new feature for Interaction Kit alphas, betas, or final release
-title: ''
+title: ""
 labels: Feature
-assignees: ''
-
+assignees: ""
 ---
 
 **Describe the request**

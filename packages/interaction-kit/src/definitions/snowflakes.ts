@@ -7,4 +7,4 @@
 export const EPOCH = 1420070400000;
 
 // https://discord.com/developers/docs/reference#snowflakes
-export type Snowflake = `${bigint}`;
+export type Snowflake = `${bigint}`; // My condolences to Crawl 😔

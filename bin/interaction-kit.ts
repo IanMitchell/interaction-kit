@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import {Command} from 'commander';
+import { Command } from "commander";
 
 const cli = new Command();
 
@@ -7,12 +7,12 @@ const cli = new Command();
 
 // TODO: Make all these options optional
 cli
-	.command('new [name]')
-	.option('--server <server>', 'An ID for your development server')
-	.option('--token <token>')
-	.option('--public_key <publicKey>')
-	.option('--application_id <applicationID>')
-	.description('Creates a new Interaction Kit project')
+	.command("new [name]")
+	.option("--server <server>", "An ID for your development server")
+	.option("--token <token>")
+	.option("--public_key <publicKey>")
+	.option("--application_id <applicationID>")
+	.description("Creates a new Interaction Kit project")
 	.action(
 		(
 			name: string,
@@ -45,10 +45,10 @@ cli
 	);
 
 cli
-	.command('dev')
-	.description('Run your Interaction Kit application in a development mode')
+	.command("dev")
+	.description("Run your Interaction Kit application in a development mode")
 	.action(() => {
-		console.log('Unimplemented');
+		console.log("Unimplemented");
 		// TODO: Load dotenv
 		// TODO: Load from package.json "main" file
 	});
