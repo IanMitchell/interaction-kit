@@ -76,9 +76,9 @@ export default class SlashCommand
 		}
 
 		return (
-			schema.options?.every((option) => {
-				return this.#options.get(option.name)?.equals(option) ?? false;
-			}) ?? true
+			schema.options?.every(
+				(option) => this.#options.get(option.name)?.equals(option) ?? false
+			) ?? true
 		);
 	}
 
