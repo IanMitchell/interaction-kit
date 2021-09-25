@@ -73,24 +73,17 @@ export default class ApplicationCommandInteraction<
 		this.#options = new Map();
 
 		const id = request.body.data?.target_id ?? "0";
-		// This switch block has some types that can be updated once TS 4.4 drops
-		// https://devblogs.microsoft.com/typescript/announcing-typescript-4-4-rc/#symbol-template-signatures
 		switch (request.body.data?.type) {
 			case ApplicationCommandType.MESSAGE:
-				// @ts-expect-error
 				this.commandType = ApplicationCommandType.MESSAGE;
-				// @ts-expect-error
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				this.target = request.body.data?.resolved?.messages?.[id] ?? {};
 				break;
 			case ApplicationCommandType.USER:
-				// @ts-expect-error
 				this.commandType = ApplicationCommandType.USER;
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				this.target = {
-					// @ts-expect-error
 					...(request.body?.data?.resolved?.members?.[id] ?? {}),
-					// @ts-expect-error
 					...(request.body?.data?.resolved?.users?.[id] ?? {}),
 				};
 				break;
