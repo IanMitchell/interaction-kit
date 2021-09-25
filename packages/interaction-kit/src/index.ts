@@ -11,6 +11,7 @@ export * from "./components/inputs";
 
 export { default as ActionRow } from "./components/action-row";
 export { default as Button } from "./components/button";
+export { default as Select } from "./components/select";
 export { ButtonStyle } from "./definitions/components";
 
 export { default as Embed } from "./components/embed";
