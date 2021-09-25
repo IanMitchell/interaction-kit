@@ -78,7 +78,6 @@ export default class ApplicationCommandInteraction<
 				// @ts-expect-error This is set at runtime but it's guaranteed to be the generic
 				this.commandType = ApplicationCommandType.MESSAGE;
 				// @ts-expect-error Same as above
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				this.target = (request.body.data?.resolved?.messages?.[id] ??
 					{}) as MessageTargetType;
 				break;
