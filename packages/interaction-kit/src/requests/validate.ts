@@ -1,18 +1,57 @@
+import { NodeEdKeyImportParams, webcrypto } from "crypto";
 import type { FastifyRequest } from "fastify";
-import nacl from "tweetnacl";
+import { TextEncoder } from "util";
 
-export function validateRequest(request: FastifyRequest, publicKey: string) {
-	const signature = request.headers["x-signature-ed25519"] as string;
+const encoder = new TextEncoder();
+
+export function hexToBinary(hex: string) {
+	const buffer = new Uint8Array(Math.ceil(hex.length / 2));
+	for (let i = 0; i < buffer.length; i++) {
+		buffer[i] = parseInt(hex.substr(i * 2, 2), 16);
+	}
+
+	return buffer;
+}
+
+export async function validateRequest(
+	request: FastifyRequest,
+	publicKey: string
+) {
+	const signature = hexToBinary(
+		request.headers["x-signature-ed25519"] as string
+	);
 	const timestamp = request.headers["x-signature-timestamp"] as string;
 	const body = request.rawBody as string;
 
-	if (signature == null || timestamp == null || body == null) {
+	const key = async (key: string) =>
+		webcrypto.subtle.importKey(
+			"raw",
+			hexToBinary(key),
+			{
+				name: "NODE-ED25519",
+				namedCurve: "NODE-ED25519",
+				public: true,
+			} as NodeEdKeyImportParams,
+			true,
+			["verify"]
+		);
+
+	const isVerified = webcrypto.subtle.verify(
+		// @ts-expect-error
+		"NODE-ED25519",
+		await key(publicKey),
+		signature,
+		encoder.encode(timestamp + body)
+	);
+
+	if (
+		signature == null ||
+		timestamp == null ||
+		body == null ||
+		!(await isVerified)
+	) {
 		return false;
 	}
 
-	return nacl.sign.detached.verify(
-		Buffer.from(timestamp + body),
-		Buffer.from(signature, "hex"),
-		Buffer.from(publicKey, "hex")
-	);
+	return true;
 }

@@ -1,10 +1,9 @@
 ---
 name: Bug report
 about: Report a bug with Interaction Kit
-title: ''
+title: ""
 labels: Bug
-assignees: ''
-
+assignees: ""
 ---
 
 **Describe the bug**

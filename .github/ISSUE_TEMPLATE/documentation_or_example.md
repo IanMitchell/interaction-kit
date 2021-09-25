@@ -1,10 +1,9 @@
 ---
 name: Documentation or Example
 about: Request an example for something or Documentation related issues
-title: ''
+title: ""
 labels: Documentation
-assignees: ''
-
+assignees: ""
 ---
 
 Give us a description of what you're looking for!
