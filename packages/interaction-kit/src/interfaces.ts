@@ -14,6 +14,8 @@ import {
 
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
+export type ArrayValue<T> = T extends Array<infer U> ? U : T;
+
 export interface Mentionable {
 	id: Snowflake;
 }

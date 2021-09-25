@@ -10,7 +10,17 @@ type ButtonArgs = {
 		application: Application
 	) => unknown;
 	customID: Component["custom_id"];
-} & Omit<Component, "type" | "url" | "custom_id" | "components">;
+} & Omit<
+	Component,
+	| "type"
+	| "url"
+	| "custom_id"
+	| "components"
+	| "options"
+	| "placeholder"
+	| "min_values"
+	| "max_values"
+>;
 
 type ButtonLinkArgs = Omit<
 	Component,

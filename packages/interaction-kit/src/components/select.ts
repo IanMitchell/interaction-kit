@@ -1,7 +1,7 @@
 import Application from "../application";
-import { MessageComponentInteraction } from "..";
+import { Choices, MessageComponentInteraction } from "..";
 import { Component, ComponentType } from "../definitions";
-import { SerializableComponent } from "../interfaces";
+import { SerializableComponent, ArrayValue } from "../interfaces";
 
 type SelectArgs = {
 	handler: (
@@ -9,13 +9,25 @@ type SelectArgs = {
 		application: Application
 	) => unknown;
 	customID: Component["custom_id"];
-} & Omit<Component, "type" | "url" | "custom_id" | "components">;
+	min: Component["min_values"];
+	max: Component["max_values"];
+	options: Choices<ArrayValue<Component["options"]>>;
+} & Omit<
+	Component,
+	| "type"
+	| "url"
+	| "custom_id"
+	| "components"
+	| "min_values"
+	| "max_values"
+	| "options"
+>;
 
 export default class Select implements SerializableComponent {
 	#customID: SelectArgs["customID"];
 
 	constructor(options: SelectArgs) {
-		this.#customID = options.customID; 
+		this.#customID = options.customID;
 	}
 
 	get id() {
