@@ -75,12 +75,17 @@ export default class ApplicationCommandInteraction<
 		const id = request.body.data?.target_id ?? "0";
 		switch (request.body.data?.type) {
 			case ApplicationCommandType.MESSAGE:
+				// @ts-expect-error This is set at runtime but it's guaranteed to be the generic
 				this.commandType = ApplicationCommandType.MESSAGE;
+				// @ts-expect-error Same as above
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				this.target = request.body.data?.resolved?.messages?.[id] ?? {};
+				this.target = (request.body.data?.resolved?.messages?.[id] ??
+					{}) as MessageTargetType;
 				break;
 			case ApplicationCommandType.USER:
+				// @ts-expect-error This is set at runtime but it's guaranteed to be the generic
 				this.commandType = ApplicationCommandType.USER;
+				// @ts-expect-error Same as above
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				this.target = {
 					...(request.body?.data?.resolved?.members?.[id] ?? {}),
@@ -89,9 +94,9 @@ export default class ApplicationCommandInteraction<
 				break;
 			case ApplicationCommandType.CHAT_INPUT:
 			default:
-				// @ts-expect-error
+				// @ts-expect-error This is set at runtime but it's guaranteed to be the generic
 				this.commandType = ApplicationCommandType.CHAT_INPUT;
-				// @ts-expect-error
+				// @ts-expect-error same as above
 				this.target = null;
 				break;
 		}
