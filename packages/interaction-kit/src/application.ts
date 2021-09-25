@@ -3,17 +3,23 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
 
 import dotenv from "dotenv";
-import Command from "./command";
+import SlashCommand from "./commands/slash-command";
+import ContextMenu from "./commands/context-menu";
 import Config from "./api/config";
 import {
 	InteractionCallbackType,
 	Interaction as InteractionDefinition,
 	InteractionRequestType,
 	Snowflake,
+	ApplicationCommandType,
 } from "./definitions";
 import * as Interaction from "./interactions";
 import * as API from "./api";
-import { Executable, SerializableComponent } from "./interfaces";
+import {
+	Executable,
+	InteractionKitCommand,
+	SerializableComponent,
+} from "./interfaces";
 import startInteractionKitServer from "./server";
 
 type ApplicationArgs = {
@@ -32,12 +38,35 @@ function isExecutable(
 	return (component as SerializableComponent & Executable).handler != null;
 }
 
+export interface CommandMap
+	extends Map<
+		ApplicationCommandType,
+		Map<
+			string,
+			| SlashCommand
+			| ContextMenu<ApplicationCommandType.MESSAGE>
+			| ContextMenu<ApplicationCommandType.USER>
+		>
+	> {
+	get(key: ApplicationCommandType.CHAT_INPUT): Map<string, SlashCommand>;
+	get(
+		key: ApplicationCommandType.MESSAGE
+	): Map<string, ContextMenu<ApplicationCommandType.MESSAGE>>;
+	get(
+		key: ApplicationCommandType.USER
+	): Map<string, ContextMenu<ApplicationCommandType.USER>>;
+	get(
+		key: ApplicationCommandType
+	): Map<string, InteractionKitCommand<ApplicationCommandType>>;
+}
+
 export default class Application {
 	#applicationID: Snowflake;
 	#publicKey: string;
 	#token: string;
-	#commands: Map<string, Command>;
-	#components: Map<string, SerializableComponent & Executable>;
+	#commands: CommandMap;
+
+	#components: Map<string, SerializableComponent & Executable> = new Map();
 	#port: number;
 
 	constructor({ applicationID, publicKey, token, port }: ApplicationArgs) {
@@ -60,9 +89,14 @@ export default class Application {
 		this.#applicationID = applicationID as Snowflake;
 		this.#publicKey = publicKey;
 		this.#token = token as Snowflake;
-		this.#commands = new Map<string, Command>();
-		this.#components = new Map<string, SerializableComponent & Executable>();
 		this.#port = port ?? 3000;
+
+		// Set up internal data structures
+		this.#commands = new Map([
+			[ApplicationCommandType.CHAT_INPUT, new Map()],
+			[ApplicationCommandType.MESSAGE, new Map()],
+			[ApplicationCommandType.USER, new Map()],
+		]) as CommandMap;
 
 		// Configure API Defaults
 		Config.setToken(this.#token);
@@ -73,24 +107,28 @@ export default class Application {
 		return this.#applicationID;
 	}
 
-	addCommand(command: Command) {
-		if (this.#commands.has(command.name.toLowerCase())) {
+	addCommand(command: InteractionKitCommand<ApplicationCommandType>) {
+		if (this.#commands.get(command.type)?.has(command.name.toLowerCase())) {
 			throw new Error(
 				`Error registering ${command.name.toLowerCase()}: Duplicate names are not allowed`
 			);
 		}
 
 		console.log(`Registering the ${command.name.toLowerCase()} command`);
-		this.#commands.set(command.name.toLowerCase(), command);
+		this.#commands.get(command.type)?.set(command.name.toLowerCase(), command);
 		return this;
 	}
 
-	addCommands(...commands: Command[]) {
+	addCommands(
+		...commands: Array<InteractionKitCommand<ApplicationCommandType>>
+	) {
 		commands.forEach((command) => this.addCommand(command));
 		return this;
 	}
 
-	addComponent(component: SerializableComponent) {
+	addComponent(
+		component: SerializableComponent | (SerializableComponent & Executable)
+	) {
 		if (
 			component.id != null &&
 			isExecutable(component) &&
@@ -119,11 +157,15 @@ export default class Application {
 		 *  { message: 'Missing Access', code: 50001 }
 		 */
 
-		for (const [name, command] of this.#commands) {
-			const signature = json.find((cmd) => cmd.name === name);
+		const allCommands = Array.from(this.#commands.values())
+			.map((map) => Array.from(map.values()))
+			.flat();
+
+		for (const command of allCommands) {
+			const signature = json.find((cmd) => cmd.name === command.name);
 
 			if (!signature) {
-				console.log(`\tCreating ${name}`);
+				console.log(`\tCreating ${command.name}`);
 
 				try {
 					await API.postGuildApplicationCommand(guildID, command.serialize());
@@ -164,46 +206,55 @@ export default class Application {
 		response: FastifyReply
 	) {
 		console.log("REQUEST");
-		const interaction = Interaction.create(this, request, response);
+		try {
+			const interaction = Interaction.create(this, request, response);
 
-		switch (interaction.type) {
-			case InteractionRequestType.PING:
-				console.log("Handling Discord Ping");
-				void response.send({
-					type: InteractionCallbackType.PONG,
-				});
-				break;
-			case InteractionRequestType.APPLICATION_COMMAND:
-				if (this.#commands.has(interaction.name ?? "")) {
-					console.log(`Handling ${interaction.name}`);
-					return this.#commands
-						.get(interaction.name)
-						?.handler(interaction, this);
-				}
+			switch (interaction.type) {
+				case InteractionRequestType.PING:
+					console.log("Handling Discord Ping");
+					void response.send({
+						type: InteractionCallbackType.PONG,
+					});
+					break;
+				case InteractionRequestType.APPLICATION_COMMAND:
+					if (
+						this.#commands
+							.get(interaction.commandType)
+							?.has(interaction.name ?? "")
+					) {
+						console.log(`Handling ${interaction.name}`);
+						return this.#commands
+							.get(interaction.commandType)
+							?.get(interaction.name)
+							?.handler(interaction, this);
+					}
 
-				console.error(`Unknown Command: ${interaction.name ?? "[no name]"}`);
-				void response.status(400).send({
-					error: "Unknown Type",
-				});
-				break;
-			case InteractionRequestType.MESSAGE_COMPONENT:
-				if (this.#components.has(interaction.customID)) {
-					console.log(`Handling Component ${interaction.customID}`);
-					return this.#components
-						.get(interaction.customID)
-						?.handler(interaction, this);
-				}
+					console.error(`Unknown Command: ${interaction.name ?? "[no name]"}`);
+					void response.status(400).send({
+						error: "Unknown Type",
+					});
+					break;
+				case InteractionRequestType.MESSAGE_COMPONENT:
+					if (this.#components.has(interaction.customID)) {
+						console.log(`Handling Component ${interaction.customID}`);
+						return this.#components
+							.get(interaction.customID)
+							?.handler(interaction, this);
+					}
 
-				console.error(
-					`Unknown Component: ${interaction.customID ?? "[no custom id]"}`
-				);
-				void response.status(400).send({
-					error: "Unknown Component",
-				});
-				break;
-			default:
-				console.error(`Unknown Type: ${request.body.type}`);
-				break;
+					console.error(
+						`Unknown Component: ${interaction.customID ?? "[no custom id]"}`
+					);
+					void response.status(400).send({
+						error: "Unknown Component",
+					});
+					break;
+				default:
+					console.error(`Unknown Type: ${request.body.type}`);
+					break;
+			}
+		} catch (error: unknown) {
+			console.error(error);
 		}
 	}
 

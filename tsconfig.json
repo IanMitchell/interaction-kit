@@ -24,10 +24,10 @@
 		"strict": true,
 
 		// use es2018 standard libraries
-		"lib": ["es2018"],
+		"lib": ["es2021"],
 		"module": "CommonJS",
 		// target es2018
-		"target": "es2018",
+		"target": "es2021",
 		"resolveJsonModule": true
 	},
 	// ignore node_modules and dist

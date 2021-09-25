@@ -1,4 +1,4 @@
-import { Command, StringInput } from "interaction-kit";
+import { SlashCommand, StringInput } from "interaction-kit";
 
 const responses = [
 	"It is certain",
@@ -23,7 +23,7 @@ const responses = [
 	"Very doubtful",
 ];
 
-export default new Command({
+export default new SlashCommand({
 	name: "8ball",
 	description: "Ask the magic Eight Ball",
 	options: [

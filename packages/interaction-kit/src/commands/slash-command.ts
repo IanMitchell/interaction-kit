@@ -1,26 +1,30 @@
-import type { ApplicationCommand } from "./definitions";
-import Application from "./application";
-import { Input } from "./components/inputs";
-import ApplicationCommandInteraction from "./interactions/application-command-interaction";
-import { Comparable, Optional, Serializable } from "./interfaces";
+import { ApplicationCommand, ApplicationCommandType } from "../definitions";
+import Application from "../application";
+import { Input } from "../components/inputs";
+import ApplicationCommandInteraction from "../interactions/application-command-interaction";
+import { Optional, InteractionKitCommand } from "../interfaces";
 
 type CommandArgs = {
 	name: string;
 	description: string;
 	defaultPermission?: boolean;
 	options?: Input[];
-	handler: (interaction: ApplicationCommandInteraction) => unknown;
+	handler: (
+		interaction: ApplicationCommandInteraction<ApplicationCommandType.CHAT_INPUT>
+	) => unknown;
 };
 
-export default class Command
-	implements Serializable, Comparable<ApplicationCommand>
+export default class SlashCommand
+	implements InteractionKitCommand<ApplicationCommandType.CHAT_INPUT>
 {
+	public readonly type = ApplicationCommandType.CHAT_INPUT;
+
 	name: string;
 	#description: string;
 	#defaultPermission: boolean;
 	#options: Map<string, Input>;
 	handler: (
-		interaction: ApplicationCommandInteraction,
+		interaction: ApplicationCommandInteraction<ApplicationCommandType.CHAT_INPUT>,
 		application: Application
 	) => unknown;
 
@@ -72,9 +76,9 @@ export default class Command
 		}
 
 		return (
-			schema.options?.every((option) => {
-				return this.#options.get(option.name)?.equals(option) ?? false;
-			}) ?? true
+			schema.options?.every(
+				(option) => this.#options.get(option.name)?.equals(option) ?? false
+			) ?? true
 		);
 	}
 

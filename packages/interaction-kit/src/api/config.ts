@@ -16,12 +16,10 @@ export default (() => {
 			APPLICATION_ID = id;
 		},
 
-		getHeaders: (json = true) => {
-			return {
-				"user-agent": `InteractionKit (https://interactionkit.dev, ${pkg.version})`,
-				"Content-Type": json ? "application/json" : "x-www-form-urlencoded",
-				"Authorization": `Bot ${TOKEN}`,
-			};
-		},
+		getHeaders: (json = true) => ({
+			"user-agent": `InteractionKit (https://interactionkit.dev, ${pkg.version})`,
+			"Content-Type": json ? "application/json" : "x-www-form-urlencoded",
+			"Authorization": `Bot ${TOKEN}`,
+		}),
 	};
 })();

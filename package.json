@@ -19,23 +19,23 @@
 		"interactionkit.dev": "file:packages/interactionkit.dev"
 	},
 	"devDependencies": {
-		"@types/jest": "^25.2.3",
-		"@types/node": "^16.6.1",
-		"@types/node-fetch": "^2.5.10",
-		"@typescript-eslint/eslint-plugin": "^4.25.0",
-		"@typescript-eslint/parser": "^4.25.0",
-		"eslint": "^7.27.0",
+		"@types/jest": "^27.0.2",
+		"@types/node": "^16.9.6",
+		"@types/node-fetch": "^2.5.12",
+		"@typescript-eslint/eslint-plugin": "^4.31.2",
+		"@typescript-eslint/parser": "^4.31.2",
+		"eslint": "^7.32.0",
 		"eslint-config-prettier": "^8.3.0",
-		"eslint-config-xo": "^0.36.0",
-		"eslint-config-xo-typescript": "^0.41.1",
-		"jest": "^27.0.5",
+		"eslint-config-xo": "^0.38.0",
+		"eslint-config-xo-typescript": "^0.44.0",
+		"jest": "^27.2.2",
 		"jest-fetch-mock": "jefflau/jest-fetch-mock",
 		"lerna": "^4.0.0",
-		"prettier": "^2.3.0",
-		"ts-jest": "^27.0.3",
+		"prettier": "^2.4.1",
+		"ts-jest": "^27.0.5",
 		"tsdx": "^0.14.1",
-		"tslib": "^2.2.0",
-		"tsup": "^4.11.1",
-		"typescript": "^4.3.2"
+		"tslib": "^2.3.1",
+		"tsup": "^5.2.0",
+		"typescript": "^4.4.3"
 	}
 }
