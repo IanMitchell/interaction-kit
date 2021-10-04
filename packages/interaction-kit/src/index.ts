@@ -8,6 +8,7 @@ export { default as PingInteraction } from "./interactions/ping-interaction";
 export { default as ApplicationCommandInteraction } from "./interactions/application-command-interaction";
 export { default as MessageComponentInteraction } from "./interactions/message-component-interaction";
 export * from "./components/inputs";
+export * from "./components/choices";
 
 export { default as ActionRow } from "./components/action-row";
 export { default as Button } from "./components/button";

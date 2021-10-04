@@ -4,13 +4,13 @@ import { Serializable } from "../interfaces";
 type ChoiceType = ApplicationCommandOptionChoice | SelectOption;
 
 export class Choices<T extends ChoiceType> implements Serializable {
-	#choices: Map<string, T>;
+	_choices: Map<string, T>;
 
 	constructor(choices: Record<string, T>) {
-		this.#choices = new Map();
+		this._choices = new Map();
 
 		Object.entries(choices).forEach(([key, value]) => {
-			this.#choices.set(key, value);
+			this._choices.set(key, value);
 			Object.defineProperty(this, key, {
 				writable: false,
 				value: value.value,
@@ -26,7 +26,7 @@ export class Choices<T extends ChoiceType> implements Serializable {
 	}
 
 	serialize(): T[] {
-		return Array.from(this.#choices.values());
+		return Array.from(this._choices.values());
 	}
 }
 
