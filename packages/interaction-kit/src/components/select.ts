@@ -1,5 +1,4 @@
 import Application from "../application";
-import { Choices, MessageComponentInteraction } from "..";
 import { Component, ComponentType } from "../definitions";
 import { SerializableComponent, ArrayValue } from "../interfaces";
 
