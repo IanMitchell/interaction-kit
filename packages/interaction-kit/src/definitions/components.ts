@@ -15,7 +15,7 @@ export type Component = {
 	custom_id?: string; // button
 	url?: string; // button
 	disabled?: boolean; // button
-	options: SelectOption[]; // select
+	options?: SelectOption[]; // select
 	placeholder?: string; // select
 	min_values?: number; // select
 	max_values?: number; // select

@@ -11,10 +11,6 @@ export class Choices<T extends ChoiceType> implements Serializable {
 
 		Object.entries(choices).forEach(([key, value]) => {
 			this._choices.set(key, value);
-			Object.defineProperty(this, key, {
-				writable: false,
-				value: value.value,
-			});
 		});
 	}
 
@@ -45,6 +41,13 @@ export class SelectOptionList extends Choices<SelectOption> {
 		});
 
 		super(values);
+
+		Object.entries(values).forEach(([key, value]) => {
+			Object.defineProperty(this, key, {
+				writable: false,
+				value,
+			});
+		});
 	}
 }
 
@@ -72,5 +75,12 @@ export class SlashChoiceList<
 		});
 
 		super(values);
+
+		Object.entries(values).forEach(([key, value]) => {
+			Object.defineProperty(this, key, {
+				writable: false,
+				value: value.value,
+			});
+		});
 	}
 }

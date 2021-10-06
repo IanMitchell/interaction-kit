@@ -1,7 +1,7 @@
 import MessageComponentInteraction from "../interactions/message-component-interaction";
 import Application from "../application";
 import { Component, ComponentType } from "../definitions";
-import { SerializableComponent } from "../interfaces";
+import { Executable, SerializableComponent } from "../interfaces";
 import { SelectOptionList } from "./choices";
 
 type SelectArgs = {
@@ -24,9 +24,11 @@ type SelectArgs = {
 	| "options"
 >;
 
-export default class Select implements SerializableComponent {
+export default class Select
+	implements SerializableComponent, Executable<MessageComponentInteraction>
+{
+	options: SelectArgs["options"];
 	#customID: SelectArgs["customID"];
-	#options: SelectArgs["options"];
 	#placeholder: SelectArgs["placeholder"];
 	#min: SelectArgs["min"];
 	#max: SelectArgs["max"];
@@ -35,7 +37,7 @@ export default class Select implements SerializableComponent {
 
 	constructor(options: SelectArgs) {
 		this.#customID = options.customID;
-		this.#options = options.options;
+		this.options = options.options;
 		this.#placeholder = options.placeholder;
 		this.#min = options.min;
 		this.#max = options.max;
@@ -53,11 +55,6 @@ export default class Select implements SerializableComponent {
 
 	setCustomID(customID: SelectArgs["customID"]) {
 		this.#customID = customID;
-		return this;
-	}
-
-	setOptions(options: SelectArgs["options"]) {
-		this.#options = options;
 		return this;
 	}
 
@@ -90,7 +87,7 @@ export default class Select implements SerializableComponent {
 		const payload: Component = {
 			type: ComponentType.SELECT,
 			custom_id: this.#customID,
-			options: this.#options.serialize(),
+			options: this.options.serialize(),
 		};
 
 		if (this.#placeholder) {
