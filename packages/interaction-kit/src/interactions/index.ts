@@ -7,6 +7,7 @@ import {
 import ApplicationCommandInteraction from "./application-command-interaction";
 import MessageComponentInteraction from "./message-component-interaction";
 import PingInteraction from "./ping-interaction";
+import { createComponentInteraction } from "./components";
 
 export function create(
 	application: Application,
@@ -18,10 +19,21 @@ export function create(
 			return new PingInteraction();
 		case InteractionRequestType.APPLICATION_COMMAND:
 			return new ApplicationCommandInteraction(application, request, response);
-		case InteractionRequestType.MESSAGE_COMPONENT:
-			return new MessageComponentInteraction(application, request, response);
+		case InteractionRequestType.MESSAGE_COMPONENT: {
+			const component = application.getComponent(
+				request?.body?.data?.custom_id
+			);
+			return createComponentInteraction(
+				application,
+				component,
+				request,
+				response
+			);
+		}
 		default:
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-			throw new Error(`Unknown Interaction Type: ${request?.body?.type}`);
+			throw new Error(
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+				`Unknown Interaction Type: ${request?.body?.type ?? "[unknown]"}`
+			);
 	}
 }

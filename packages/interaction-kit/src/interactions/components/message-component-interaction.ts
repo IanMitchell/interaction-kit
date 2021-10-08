@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import * as API from "../api";
+import * as API from "../../api";
 import {
 	ComponentType,
 	Interaction as InteractionDefinition,
@@ -7,20 +7,18 @@ import {
 	InteractionCallbackType,
 	InteractionRequestType,
 	InteractionResponse,
-	SelectOption,
 	Snowflake,
-} from "../definitions";
-import Application from "../application";
+} from "../../definitions";
+import Application from "../../application";
 import {
 	Interaction,
 	InteractionMessageModifiers,
 	InteractionReply,
 	SerializableComponent,
-} from "../interfaces";
-import { PermissionFlags } from "../definitions/messages";
-import Embed from "../components/embed";
-import { isActionRow } from "../components/action-row";
-import Select from "../components/select";
+} from "../../interfaces";
+import { PermissionFlags } from "../../definitions/messages";
+import Embed from "../../components/embed";
+import { isActionRow } from "../../components/action-row";
 
 export default class MessageComponentInteraction implements Interaction {
 	public readonly type = InteractionRequestType.MESSAGE_COMPONENT;
@@ -28,7 +26,6 @@ export default class MessageComponentInteraction implements Interaction {
 	public readonly response: FastifyReply;
 	public readonly customID: string;
 	public readonly messages: InteractionMessageModifiers;
-	public readonly values: Set<SelectOption>;
 	readonly #application: Application;
 	#replied: boolean;
 
@@ -47,27 +44,6 @@ export default class MessageComponentInteraction implements Interaction {
 		this.response = response;
 		this.token = request.body.token;
 		this.customID = request?.body?.data?.custom_id ?? "";
-
-		// TODO: This needs to be cleaned up
-		let options: SelectOption[] = [];
-		if (request?.body?.data?.component_type === ComponentType.SELECT) {
-			options =
-				request?.body?.data?.values?.map((value) => {
-					const selectOption: SelectOption = { label: value, value };
-					const component = application.getComponent(this.customID);
-
-					if (component?.type === ComponentType.SELECT) {
-						return (
-							(component as unknown as Select).options._choices.get(value) ??
-							selectOption
-						);
-					}
-
-					return selectOption;
-				}) ?? [];
-		}
-
-		this.values = new Set<SelectOption>(options);
 
 		// TODO: Make these records
 		this.channelID = request.body.channel_id;
@@ -89,18 +65,6 @@ export default class MessageComponentInteraction implements Interaction {
 		this.#replied = false;
 	}
 
-	// // TODO: Type? Should return an object where keys = #options keys, and value = ApplicationCommandInteractionDataOption
-	// get options() {
-	// 	return new Proxy(
-	// 		{},
-	// 		{
-	// 			get: (target, property): OptionType | null => {
-	// 				return this.#options.get(property.toString())?.value ?? null;
-	// 			},
-	// 		}
-	// 	);
-	// }
-
 	// // TODO: Is `defer` more appropriate?
 	acknowledge() {
 		return this.response.status(200).send({
@@ -108,7 +72,6 @@ export default class MessageComponentInteraction implements Interaction {
 		});
 	}
 
-	// TODO: Should "reply" just be message content, and should "send" be the full object?
 	async reply({
 		message,
 		embed,
