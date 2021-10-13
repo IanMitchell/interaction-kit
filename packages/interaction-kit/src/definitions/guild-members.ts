@@ -3,5 +3,19 @@
  * be defined with references back to the documentation section.
  */
 
-// FIXME: Implement this
-export type GuildMember = Record<string, unknown>;
+import { User } from "./users";
+import { Snowflake } from "./snowflakes"
+
+// https://discord.com/developers/docs/resources/guild#guild-member-object-guild-member-structure
+export type GuildMember = {
+    user?: User;
+    nick?: string | null;
+    avatar?: string | null;
+    roles: Snowflake[];
+    joined_at: Date; // TODO: validate
+    premium_since?: Date | null;
+    deaf: boolean;
+    mute: boolean;
+    pending?: boolean;
+    permissions?: string;
+};
