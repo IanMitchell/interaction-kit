@@ -21,7 +21,7 @@ export enum PermissionFlags {
 	LOADING = 1 << 7,
 }
 
-// https://discord.com/developers/docs/resources/channel#message-object-message-structure
+// @see {@link https://discord.com/developers/docs/resources/channel#message-object-message-structure}
 export type Message = {
     id: Snowflake;
     channel_id: Snowflake;
@@ -65,7 +65,10 @@ export type UserMention = {
     bot?: boolean;
 };
 
-// https://discord.com/developers/docs/resources/channel#message-reference-object-message-reference-structure
+// @see {@link https://discord.com/developers/docs/resources/channel#message-reference-object-message-reference-structure}
+
+
+// @see {@link https://discord.com/developers/docs/resources/channel#message-reference-object-message-reference-structure}
 export type MessageReference = {
     message_id?: Snowflake;
     channel_id?: Snowflake;
@@ -73,7 +76,7 @@ export type MessageReference = {
     fail_if_not_exists?: boolean;
 };
 
-// https://discord.com/developers/docs/resources/channel#message-object-message-types
+// @see {@link https://discord.com/developers/docs/resources/channel#message-object-message-types}
 export enum MessageType {
     DEFAULT = 0,
     RECIPIENT_ADD = 1,
@@ -100,7 +103,7 @@ export enum MessageType {
     CONTEXT_MENU_COMMAND = 23,
 };
 
-// https://discord.com/developers/docs/resources/channel#message-object-message-activity-structure
+// @see {@link https://discord.com/developers/docs/resources/channel#message-object-message-activity-structure}
 export type MessageActivity = {
     type: number;
     party_id?: string;

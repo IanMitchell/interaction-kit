@@ -6,7 +6,7 @@
 import { User } from "./users";
 import type { Snowflake } from "./snowflakes";
 
-// https://discord.com/developers/docs/resources/channel#channel-object-channel-structure
+// @see {@link https://discord.com/developers/docs/resources/channel#channel-object-channel-structure}
 export type Channel = {
     id: Snowflake;
     type: ChannelType;

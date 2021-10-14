@@ -5,7 +5,7 @@
 
 import { Snowflake } from "./snowflakes";
 
-// https://discord.com/developers/docs/resources/channel#attachment-object-attachment-structure
+// @see {@link https://discord.com/developers/docs/resources/channel#attachment-object-attachment-structure}
 export interface Attachment {
 	id: Snowflake;
 	filename: string;

@@ -3,7 +3,7 @@
  * be defined with references back to the documentation section.
  */
 
-// https://discord.com/developers/docs/resources/channel#embed-object
+// @see {@link https://discord.com/developers/docs/resources/channel#embed-object}
 export type Embed = {
 	title?: string;
 	type?: EmbedType;
@@ -20,7 +20,7 @@ export type Embed = {
 	fields?: EmbedField[];
 };
 
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-types
+// @see {@link https://discord.com/developers/docs/resources/channel#embed-object-embed-types}
 export enum EmbedType {
 	RICH,
 	IMAGE,
@@ -30,7 +30,7 @@ export enum EmbedType {
 	LINK,
 }
 
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-thumbnail-structure
+// @see {@link https://discord.com/developers/docs/resources/channel#embed-object-embed-thumbnail-structure}
 export type EmbedThumbnail = {
 	url?: string;
 	proxy_url?: string;
@@ -38,7 +38,7 @@ export type EmbedThumbnail = {
 	width?: number;
 };
 
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-video-structure
+// @see {@link https://discord.com/developers/docs/resources/channel#embed-object-embed-video-structure}
 export type EmbedVideo = {
 	url?: string;
 	proxy_url?: string;
@@ -46,7 +46,7 @@ export type EmbedVideo = {
 	width?: number;
 };
 
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-image-structure
+// @see {@link https://discord.com/developers/docs/resources/channel#embed-object-embed-image-structure}
 export type EmbedImage = {
 	url?: string;
 	proxy_url?: string;
@@ -54,13 +54,13 @@ export type EmbedImage = {
 	width?: number;
 };
 
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-provider-structure
+// @see {@link https://discord.com/developers/docs/resources/channel#embed-object-embed-provider-structure}
 export type EmbedProvider = {
 	name?: string;
 	url?: string;
 };
 
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-author-structure
+// @see {@link https://discord.com/developers/docs/resources/channel#embed-object-embed-author-structure}
 export type EmbedAuthor = {
 	name?: string;
 	url?: string;
@@ -68,14 +68,14 @@ export type EmbedAuthor = {
 	proxy_icon_url?: string;
 };
 
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-footer-structure
+// @see {@link https://discord.com/developers/docs/resources/channel#embed-object-embed-footer-structure}
 export type EmbedFooter = {
 	text: string;
 	icon_url?: string;
 	proxy_icon_url?: string;
 };
 
-// https://discord.com/developers/docs/resources/channel#embed-object-embed-field-structure
+// @see {@link https://discord.com/developers/docs/resources/channel#embed-object-embed-field-structure}
 export type EmbedField = {
 	name: string;
 	value: string;
