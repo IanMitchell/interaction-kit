@@ -1,4 +1,4 @@
-// @see {@link https://discord.com/developers/docs/topics/permissions#permissions-bitwise-permission-flags}
+/** @link https://discord.com/developers/docs/topics/permissions#permissions-bitwise-permission-flags */
 export enum PermissionFlags {
 	CREATE_INSTANT_INVITE = 1 << 0,
 	KICK_MEMBERS = 1 << 1,

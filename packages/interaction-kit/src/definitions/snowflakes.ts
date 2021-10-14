@@ -3,8 +3,8 @@
  * be defined with references back to the documentation section.
  */
 
-// @see {@link https://discord.com/developers/docs/reference#snowflakes-snowflake-id-format-structure-left-to-right}
+/** @link https://discord.com/developers/docs/reference#snowflakes-snowflake-id-format-structure-left-to-right */
 export const EPOCH = 1420070400000;
 
-// @see {@link https://discord.com/developers/docs/reference#snowflakes}
+/** @link https://discord.com/developers/docs/reference#snowflakes */
 export type Snowflake = `${bigint}`; // My condolences to Crawl 😔

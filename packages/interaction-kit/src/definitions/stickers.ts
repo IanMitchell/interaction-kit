@@ -1,21 +1,21 @@
 import { User } from "./users";
 import { Snowflake } from "./snowflakes";
 
-// @see {@link https://discord.com/developers/docs/resources/sticker#sticker-item-object-sticker-item-structure}
+/** @link https://discord.com/developers/docs/resources/sticker#sticker-item-object-sticker-item-structure */
 export type StickerItem = {
     id: Snowflake;
     name: string;
     format_type: StickerFormatType;
 };
 
-// @see {@link https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-format-types}
+/** @link https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-format-types */
 export enum StickerFormatType {
     PNG = 1,
     APNG = 2,
     LOTTIE = 3,
 };
 
-// @see {@link https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-structure}
+/** @link https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-structure */
 export type Sticker = {
     id: Snowflake;
     pack_id?: Snowflake;
@@ -31,7 +31,7 @@ export type Sticker = {
     sort_value?: number;
 };
 
-// @see {@link https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-types}
+/** @link https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-types */
 export enum StickerType {
     STANDARD = 1,
     GUILD = 2

@@ -5,7 +5,7 @@
 
 import { Snowflake } from "./snowflakes";
 
-// @see {@link https://discord.com/developers/docs/topics/permissions#role-object-role-structure}
+/** @link https://discord.com/developers/docs/topics/permissions#role-object-role-structure */
 export type Role = {
     id: Snowflake;
     name: string;
@@ -20,7 +20,7 @@ export type Role = {
     tags?: RoleTags; // TODO: validate
 };
 
-// @see {@link https://discord.com/developers/docs/topics/permissions#role-object-role-tags-structure}
+/** @link https://discord.com/developers/docs/topics/permissions#role-object-role-tags-structure */
 export type RoleTags = {
     bot_id?: Snowflake;
     integration_id?: Snowflake;

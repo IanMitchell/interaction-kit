@@ -8,7 +8,7 @@ import { Emoji } from "./emoji";
 import { Role } from "./roles";
 import { Sticker } from "./stickers";
 
-// @see {@link https://discord.com/developers/docs/resources/guild#guild-object-guild-structure}
+/** @link https://discord.com/developers/docs/resources/guild#guild-object-guild-structure */
 export type Guild = {
     id: Snowflake;
     name: string;
@@ -50,14 +50,14 @@ export type Guild = {
     stickers?: Sticker[];
 };
 
-// @see {@link https://discord.com/developers/docs/resources/guild#welcome-screen-object-welcome-screen-structure}
+/** @link https://discord.com/developers/docs/resources/guild#welcome-screen-object-welcome-screen-structure */
 export type WelcomeScreen = {
     description: string | null;
     welcome_channels: WelcomeScreenChannel[];
 };
 
 
-// @see {@link https://discord.com/developers/docs/resources/guild#welcome-screen-object-welcome-screen-channel-structure}
+/** @link https://discord.com/developers/docs/resources/guild#welcome-screen-object-welcome-screen-channel-structure */
 export type WelcomeScreenChannel = {
     channel_id: Snowflake;
     description: string;
@@ -65,7 +65,7 @@ export type WelcomeScreenChannel = {
     emoji_name: string | null;
 };
 
-// @see {@link https://discord.com/developers/docs/resources/guild#guild-object-verification-level}
+/** @link https://discord.com/developers/docs/resources/guild#guild-object-verification-level */
 export enum VerificationLevel {
     NONE = 0,
     LOW = 1,
@@ -74,20 +74,20 @@ export enum VerificationLevel {
     VERY_HIGH = 4
 };
 
-// @see {@link https://discord.com/developers/docs/resources/guild#guild-object-default-message-notification-level}
+/** @link https://discord.com/developers/docs/resources/guild#guild-object-default-message-notification-level */
 export enum DefaultMessageNotificationLevel {
     ALL_MESSAGES = 0,
     ONLY_MENTIONS = 1
 };
 
-// @see {@link https://discord.com/developers/docs/resources/guild#guild-object-explicit-content-filter-level}
+/** @link https://discord.com/developers/docs/resources/guild#guild-object-explicit-content-filter-level */
 export enum ExplicitContentFilterLevel {
     DISABLED = 0,
     MEMBERS_WITHOUT_ROLES = 1,
     ALL_MEMBERS = 2
 };
 
-// @see {@link https://discord.com/developers/docs/resources/guild#guild-object-mfa-level}
+/** @link https://discord.com/developers/docs/resources/guild#guild-object-mfa-level */
 export enum MFALevel {
     NONE = 0,
     ENABLED = 1

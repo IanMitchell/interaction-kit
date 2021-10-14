@@ -5,7 +5,7 @@
 
 import type { Emoji } from "./emoji";
 
-// @see {@link https://discord.com/developers/docs/interactions/message-components#component-object-component-structure}
+/** @link https://discord.com/developers/docs/interactions/message-components#component-object-component-structure */
 // TODO: Add in type constraints
 export type Component = {
 	type: ComponentType; // all
@@ -18,14 +18,14 @@ export type Component = {
 	components?: Component[]; // action rows
 };
 
-// @see {@link https://discord.com/developers/docs/interactions/message-components#component-object-component-types}
+/** @link https://discord.com/developers/docs/interactions/message-components#component-object-component-types */
 export enum ComponentType {
 	ACTION_ROW = 1,
 	BUTTON = 2,
 	SELECT = 3,
 }
 
-// @see {@link https://discord.com/developers/docs/interactions/message-components#button-object-button-styles}
+/** @link https://discord.com/developers/docs/interactions/message-components#button-object-button-styles */
 export enum ButtonStyle {
 	PRIMARY = 1,
 	SECONDARY = 2,

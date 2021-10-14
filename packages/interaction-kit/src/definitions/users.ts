@@ -5,7 +5,7 @@
 
 import { Snowflake } from "./snowflakes";
 
-// @see {@link https://discord.com/developers/docs/resources/user#user-object-user-structure}
+/** @link https://discord.com/developers/docs/resources/user#user-object-user-structure */
 export type User = {
     id: Snowflake;
     username: string;
@@ -24,6 +24,6 @@ export type User = {
     public_flags?: number;
 };
 
-// @see {@link https://discord.com/developers/docs/resources/user#user-object-user-flags}
+/** @link https://discord.com/developers/docs/resources/user#user-object-user-flags */
 // TODO: implement this
 export enum UserFlags {}

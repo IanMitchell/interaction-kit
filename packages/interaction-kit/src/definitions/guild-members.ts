@@ -6,7 +6,7 @@
 import { User } from "./users";
 import { Snowflake } from "./snowflakes"
 
-// @see {@link https://discord.com/developers/docs/resources/guild#guild-member-object-guild-member-structure}
+/** @link https://discord.com/developers/docs/resources/guild#guild-member-object-guild-member-structure */
 export type GuildMember = {
     user?: User;
     nick?: string | null;
