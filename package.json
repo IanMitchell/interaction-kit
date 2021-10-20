@@ -8,7 +8,8 @@
 		"typecheck": "lerna run typecheck --stream",
 		"prettier": "lerna run prettier --stream",
 		"lint": "lerna run lint --stream",
-		"test": "lerna run test --stream"
+		"test": "lerna run test --stream",
+		"bot": "npx ts-node test-bot/bot.ts"
 	},
 	"engines": {
 		"node": ">=16.6.0"
