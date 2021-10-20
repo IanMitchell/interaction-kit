@@ -1,7 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import * as API from "../../api";
 import {
-	ComponentType,
 	Interaction as InteractionDefinition,
 	InteractionApplicationCommandCallbackData,
 	InteractionCallbackType,
