@@ -1,25 +1,22 @@
 import { ApplicationCommand, ApplicationCommandType } from "../definitions";
 import Application from "../application";
-import ApplicationCommandInteraction from "../interactions/application-command-interaction";
 import { InteractionKitCommand, Optional } from "../interfaces";
-
-export type ContextMenuApplicationCommandType = Exclude<
-	ApplicationCommandType,
-	ApplicationCommandType.CHAT_INPUT
->;
+import ContextMenuInteraction, {
+	ContextMenuApplicationCommandType,
+} from "../interactions/application-commands/context-menu-interaction";
 
 type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 	name: string;
 	type: T;
 	defaultPermission?: boolean;
 	handler: (
-		interaction: ApplicationCommandInteraction<T>,
+		interaction: ContextMenuInteraction<T>,
 		application: Application
 	) => unknown;
 };
 
 export default class ContextMenu<T extends ContextMenuApplicationCommandType>
-	implements InteractionKitCommand<T>
+	implements InteractionKitCommand<ContextMenuInteraction<T>>
 {
 	static readonly USER = ApplicationCommandType.USER;
 	static readonly MESSAGE = ApplicationCommandType.MESSAGE;
@@ -28,7 +25,7 @@ export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 	type: T;
 	#defaultPermission: boolean;
 	handler: (
-		interaction: ApplicationCommandInteraction<T>,
+		interaction: ContextMenuInteraction<T>,
 		application: Application
 	) => unknown;
 

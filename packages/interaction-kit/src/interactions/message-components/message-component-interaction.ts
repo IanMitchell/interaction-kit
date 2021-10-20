@@ -1,5 +1,5 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import * as API from "../api";
+import * as API from "../../api";
 import {
 	Interaction as InteractionDefinition,
 	InteractionApplicationCommandCallbackData,
@@ -7,17 +7,17 @@ import {
 	InteractionRequestType,
 	InteractionResponse,
 	Snowflake,
-} from "../definitions";
-import Application from "../application";
+} from "../../definitions";
+import Application from "../../application";
 import {
 	Interaction,
 	InteractionMessageModifiers,
 	InteractionReply,
 	SerializableComponent,
-} from "../interfaces";
-import { PermissionFlags } from "../definitions/messages";
-import Embed from "../components/embed";
-import { isActionRow } from "../components/action-row";
+} from "../../interfaces";
+import { PermissionFlags } from "../../definitions/messages";
+import Embed from "../../components/embed";
+import { isActionRow } from "../../components/action-row";
 
 export default class MessageComponentInteraction implements Interaction {
 	public readonly type = InteractionRequestType.MESSAGE_COMPONENT;
@@ -63,18 +63,6 @@ export default class MessageComponentInteraction implements Interaction {
 
 		this.#replied = false;
 	}
-
-	// // TODO: Type? Should return an object where keys = #options keys, and value = ApplicationCommandInteractionDataOption
-	// get options() {
-	// 	return new Proxy(
-	// 		{},
-	// 		{
-	// 			get: (target, property): OptionType | null => {
-	// 				return this.#options.get(property.toString())?.value ?? null;
-	// 			},
-	// 		}
-	// 	);
-	// }
 
 	// // TODO: Is `defer` more appropriate?
 	acknowledge() {

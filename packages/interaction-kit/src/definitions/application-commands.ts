@@ -9,7 +9,7 @@ import { User } from "./users";
 import { AllowedMentions, Channel } from "./channels";
 import { Embed } from "./embeds";
 import { Role } from "./roles";
-import { Component, ComponentType } from "./components";
+import { Component, ComponentType, SelectOption } from "./components";
 import { Message } from "./messages";
 
 /** @link https://discord.com/developers/docs/interactions/slash-commands#application-command-object-application-command-structure */
@@ -112,6 +112,7 @@ export type ApplicationCommandInteractionData = {
 	custom_id?: string;
 	component_type?: ComponentType;
 	target_id?: Snowflake;
+	values?: Array<SelectOption["value"]>;
 };
 
 /** @link https://discord.com/developers/docs/interactions/slash-commands#interaction-object-application-command-interaction-data-resolved-structure */

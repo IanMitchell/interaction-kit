@@ -4,15 +4,16 @@ import {
 	ApplicationCommandOptionChoice,
 	ApplicationCommandOptionType,
 } from "../definitions";
+import { SlashChoiceList } from "./choices";
 
-type ChoiceValue = ApplicationCommandOptionChoice["value"];
+type InputChoiceValue = ApplicationCommandOptionChoice["value"];
 
 type InputArgs = {
 	type: ApplicationCommandOptionType;
 	name: string;
 	description: string;
 	required?: boolean;
-	choices?: Choices<ChoiceValue>;
+	choices?: SlashChoiceList<InputChoiceValue>;
 	options?: ApplicationCommandOption[];
 };
 
@@ -101,7 +102,7 @@ export class Input
 }
 
 interface StringInputArgs extends Omit<InputArgs, "type" | "options"> {
-	choices?: Choices<string>;
+	choices?: SlashChoiceList<string>;
 }
 
 export class StringInput extends Input {
@@ -111,7 +112,7 @@ export class StringInput extends Input {
 }
 
 interface IntegerInputArgs extends Omit<InputArgs, "type" | "options"> {
-	choices?: Choices<number>;
+	choices?: SlashChoiceList<number>;
 }
 
 export class IntegerInput extends Input {
@@ -147,53 +148,5 @@ export class RoleInput extends Input {
 export class MentionableInput extends Input {
 	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
 		super({ type: ApplicationCommandOptionType.MENTIONABLE, ...args });
-	}
-}
-
-type ExplicitChoice<T extends ChoiceValue> = {
-	name: string;
-	value: T;
-};
-
-export class Choices<T extends ChoiceValue> implements Serializable {
-	public readonly _choices: Map<string, ApplicationCommandOptionChoice>;
-
-	constructor(choices: Record<string, T | ExplicitChoice<T>>) {
-		this._choices = new Map();
-
-		Object.entries(choices).forEach(([key, value]) => {
-			if (typeof value === "string") {
-				this._choices.set(key, { name: value, value });
-				Object.defineProperty(this, key, {
-					writable: false,
-					value,
-				});
-			} else if (typeof value === "number") {
-				this._choices.set(key, { name: value.toString(), value });
-				Object.defineProperty(this, key, {
-					writable: false,
-					value,
-				});
-			} else if (value instanceof Object) {
-				this._choices.set(key, value);
-				Object.defineProperty(this, key, {
-					writable: false,
-					value: value.value,
-				});
-			} else {
-				throw new Error("Unknown Input Format");
-			}
-		});
-	}
-
-	static list<
-		T extends ChoiceValue,
-		U extends Record<string, T | ExplicitChoice<T>>
-	>(this: typeof Choices, choices: U) {
-		return Object.freeze(new this(choices)) as Choices<T> & U;
-	}
-
-	serialize(): ApplicationCommandOptionChoice[] {
-		return Array.from(this._choices.values());
 	}
 }

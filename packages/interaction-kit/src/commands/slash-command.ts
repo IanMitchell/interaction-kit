@@ -1,21 +1,19 @@
 import { ApplicationCommand, ApplicationCommandType } from "../definitions";
 import Application from "../application";
 import { Input } from "../components/inputs";
-import ApplicationCommandInteraction from "../interactions/application-command-interaction";
 import { Optional, InteractionKitCommand } from "../interfaces";
+import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
 
 type CommandArgs = {
 	name: string;
 	description: string;
 	defaultPermission?: boolean;
 	options?: Input[];
-	handler: (
-		interaction: ApplicationCommandInteraction<ApplicationCommandType.CHAT_INPUT>
-	) => unknown;
+	handler: (interaction: SlashCommandInteraction) => unknown;
 };
 
 export default class SlashCommand
-	implements InteractionKitCommand<ApplicationCommandType.CHAT_INPUT>
+	implements InteractionKitCommand<SlashCommandInteraction>
 {
 	public readonly type = ApplicationCommandType.CHAT_INPUT;
 
@@ -24,7 +22,7 @@ export default class SlashCommand
 	#defaultPermission: boolean;
 	#options: Map<string, Input>;
 	handler: (
-		interaction: ApplicationCommandInteraction<ApplicationCommandType.CHAT_INPUT>,
+		interaction: SlashCommandInteraction,
 		application: Application
 	) => unknown;
 

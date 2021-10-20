@@ -15,7 +15,20 @@ export type Component = {
 	custom_id?: string; // button
 	url?: string; // button
 	disabled?: boolean; // button
+	options?: SelectOption[]; // select
+	placeholder?: string; // select
+	min_values?: number; // select
+	max_values?: number; // select
 	components?: Component[]; // action rows
+};
+
+/** @link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-option-structure */
+export type SelectOption = {
+	label: string;
+	value: string;
+	description?: string;
+	emoji?: Emoji;
+	default?: boolean;
 };
 
 /** @link https://discord.com/developers/docs/interactions/message-components#component-object-component-types */

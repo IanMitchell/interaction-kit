@@ -7,20 +7,16 @@ import SlashCommand from "./commands/slash-command";
 import ContextMenu from "./commands/context-menu";
 import Config from "./api/config";
 import {
-	InteractionCallbackType,
 	Interaction as InteractionDefinition,
-	InteractionRequestType,
 	Snowflake,
 	ApplicationCommandType,
 } from "./definitions";
 import * as Interaction from "./interactions";
 import * as API from "./api";
-import {
-	Executable,
-	InteractionKitCommand,
-	SerializableComponent,
-} from "./interfaces";
+import { InteractionKitCommand, SerializableComponent } from "./interfaces";
 import startInteractionKitServer from "./server";
+import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
+import { ExecutableComponent, isExecutableComponent } from "./components";
 
 type ApplicationArgs = {
 	applicationID: string;
@@ -30,13 +26,6 @@ type ApplicationArgs = {
 };
 
 dotenv.config();
-
-// TODO: This should be moved... somewhere
-function isExecutable(
-	component: SerializableComponent | (SerializableComponent & Executable)
-): component is SerializableComponent & Executable {
-	return (component as SerializableComponent & Executable).handler != null;
-}
 
 export interface CommandMap
 	extends Map<
@@ -57,7 +46,7 @@ export interface CommandMap
 	): Map<string, ContextMenu<ApplicationCommandType.USER>>;
 	get(
 		key: ApplicationCommandType
-	): Map<string, InteractionKitCommand<ApplicationCommandType>>;
+	): Map<string, InteractionKitCommand<ApplicationCommandInteraction>>;
 }
 
 export default class Application {
@@ -66,7 +55,7 @@ export default class Application {
 	#token: string;
 	#commands: CommandMap;
 
-	#components: Map<string, SerializableComponent & Executable> = new Map();
+	#components: Map<string, ExecutableComponent> = new Map();
 	#port: number;
 
 	constructor({ applicationID, publicKey, token, port }: ApplicationArgs) {
@@ -107,7 +96,7 @@ export default class Application {
 		return this.#applicationID;
 	}
 
-	addCommand(command: InteractionKitCommand<ApplicationCommandType>) {
+	addCommand(command: InteractionKitCommand<ApplicationCommandInteraction>) {
 		if (this.#commands.get(command.type)?.has(command.name.toLowerCase())) {
 			throw new Error(
 				`Error registering ${command.name.toLowerCase()}: Duplicate names are not allowed`
@@ -120,24 +109,30 @@ export default class Application {
 	}
 
 	addCommands(
-		...commands: Array<InteractionKitCommand<ApplicationCommandType>>
+		...commands: Array<InteractionKitCommand<ApplicationCommandInteraction>>
 	) {
 		commands.forEach((command) => this.addCommand(command));
 		return this;
 	}
 
-	addComponent(
-		component: SerializableComponent | (SerializableComponent & Executable)
-	) {
+	addComponent(component: SerializableComponent) {
 		if (
+			isExecutableComponent(component) &&
 			component.id != null &&
-			isExecutable(component) &&
 			!this.#components.has(component.id)
 		) {
 			this.#components.set(component.id, component);
 		}
 
 		return this;
+	}
+
+	getComponent(customID: string) {
+		return this.#components.get(customID);
+	}
+
+	getCommand(type: ApplicationCommandType, customID: string) {
+		return this.#commands.get(type).get(customID);
 	}
 
 	// TODO: Should this be moved into Command?
@@ -207,54 +202,12 @@ export default class Application {
 	) {
 		console.log("REQUEST");
 		try {
-			const interaction = Interaction.create(this, request, response);
-
-			switch (interaction.type) {
-				case InteractionRequestType.PING:
-					console.log("Handling Discord Ping");
-					void response.send({
-						type: InteractionCallbackType.PONG,
-					});
-					break;
-				case InteractionRequestType.APPLICATION_COMMAND:
-					if (
-						this.#commands
-							.get(interaction.commandType)
-							?.has(interaction.name ?? "")
-					) {
-						console.log(`Handling ${interaction.name}`);
-						return this.#commands
-							.get(interaction.commandType)
-							?.get(interaction.name)
-							?.handler(interaction, this);
-					}
-
-					console.error(`Unknown Command: ${interaction.name ?? "[no name]"}`);
-					void response.status(400).send({
-						error: "Unknown Type",
-					});
-					break;
-				case InteractionRequestType.MESSAGE_COMPONENT:
-					if (this.#components.has(interaction.customID)) {
-						console.log(`Handling Component ${interaction.customID}`);
-						return this.#components
-							.get(interaction.customID)
-							?.handler(interaction, this);
-					}
-
-					console.error(
-						`Unknown Component: ${interaction.customID ?? "[no custom id]"}`
-					);
-					void response.status(400).send({
-						error: "Unknown Component",
-					});
-					break;
-				default:
-					console.error(`Unknown Type: ${request.body.type}`);
-					break;
-			}
-		} catch (error: unknown) {
-			console.error(error);
+			Interaction.handler(this, request, response);
+		} catch (exception: unknown) {
+			void response.status(400).send({
+				error: "Unknown Type",
+			});
+			throw exception;
 		}
 	}
 
@@ -263,7 +216,9 @@ export default class Application {
 		// TODO: Move this into a dev env check.
 		void this.updateCommands();
 		startInteractionKitServer(
-			(...args) => this.handler(...args),
+			(...args) => {
+				this.handler(...args);
+			},
 			this.#publicKey,
 			this.#port
 		);

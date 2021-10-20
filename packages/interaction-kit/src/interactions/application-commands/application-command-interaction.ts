@@ -6,48 +6,24 @@ import {
 	InteractionCallbackType,
 	InteractionResponse,
 	InteractionRequestType,
-	OptionType,
 	Snowflake,
-	ApplicationCommandType,
-} from "../definitions";
-import { PermissionFlags } from "../definitions/messages";
-import Embed from "../components/embed";
-import * as API from "../api";
-import Application from "../application";
+} from "../../definitions";
+import { PermissionFlags } from "../../definitions/messages";
+import Embed from "../../components/embed";
+import * as API from "../../api";
+import Application from "../../application";
 import {
 	Interaction,
 	InteractionMessageModifiers,
 	InteractionReply,
 	SerializableComponent,
-} from "../interfaces";
-import { isActionRow } from "../components/action-row";
+} from "../../interfaces";
+import { isActionRow } from "../../components/action-row";
 
-type MessageTargetType = {
-	pinned: boolean;
-};
-
-type UserTargetType = {
-	bot: boolean;
-};
-
-type TargetType<T extends ApplicationCommandType> =
-	T extends ApplicationCommandType.CHAT_INPUT
-		? null
-		: T extends ApplicationCommandType.MESSAGE
-		? MessageTargetType
-		: T extends ApplicationCommandType.USER
-		? UserTargetType
-		: null;
-
-export default class ApplicationCommandInteraction<
-	T extends ApplicationCommandType
-> implements Interaction
-{
+export default class ApplicationCommandInteraction implements Interaction {
 	public readonly type = InteractionRequestType.APPLICATION_COMMAND;
-	public readonly commandType: T;
 	public readonly name: string;
 	public readonly token: string;
-	public readonly target: TargetType<T>;
 
 	public readonly response: FastifyReply;
 	public readonly messages: InteractionMessageModifiers;
@@ -72,34 +48,6 @@ export default class ApplicationCommandInteraction<
 		this.name = request.body.data?.name?.toLowerCase() ?? "";
 		this.#options = new Map();
 
-		const id = request.body.data?.target_id ?? "0";
-		switch (request.body.data?.type) {
-			case ApplicationCommandType.MESSAGE:
-				// @ts-expect-error This is set at runtime but it's guaranteed to be the generic
-				this.commandType = ApplicationCommandType.MESSAGE;
-				// @ts-expect-error Same as above
-				this.target = (request.body.data?.resolved?.messages?.[id] ??
-					{}) as MessageTargetType;
-				break;
-			case ApplicationCommandType.USER:
-				// @ts-expect-error This is set at runtime but it's guaranteed to be the generic
-				this.commandType = ApplicationCommandType.USER;
-				// @ts-expect-error Same as above
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				this.target = {
-					...(request.body?.data?.resolved?.members?.[id] ?? {}),
-					...(request.body?.data?.resolved?.users?.[id] ?? {}),
-				};
-				break;
-			case ApplicationCommandType.CHAT_INPUT:
-			default:
-				// @ts-expect-error This is set at runtime but it's guaranteed to be the generic
-				this.commandType = ApplicationCommandType.CHAT_INPUT;
-				// @ts-expect-error same as above
-				this.target = null;
-				break;
-		}
-
 		// TEMPORARY
 		this.member = request.body?.member;
 
@@ -118,18 +66,6 @@ export default class ApplicationCommandInteraction<
 			delete: async (id = "@original") =>
 				API.deleteWebhookMessage(this.token, id),
 		};
-	}
-
-	// TODO: Type? Should return an object where keys = #options keys, and value = ApplicationCommandInteractionDataOption
-	get options() {
-		return new Proxy(
-			{},
-			{
-				get: (target, property): OptionType | null => {
-					return this.#options.get(property.toString())?.value ?? null;
-				},
-			}
-		);
 	}
 
 	// TODO: Is `defer` more appropriate?
