@@ -12,6 +12,9 @@ import SelectInteraction from "./message-components/select-interaction";
 import SlashCommandInteraction from "./application-commands/slash-command-interaction";
 import ContextMenuInteraction from "./application-commands/context-menu-interaction";
 import MessageComponentInteraction from "./message-components/message-component-interaction";
+import { ExecutableComponent } from "../components";
+import { Button } from "../components/button";
+import Select from "../components/select";
 
 function getApplicationCommandInteraction(
 	application: Application,
@@ -46,15 +49,25 @@ function getApplicationCommandInteraction(
 
 function getMessageComponentInteraction(
 	application: Application,
-	component: unknown, // TODO: Fix
+	component: ExecutableComponent | undefined,
 	request: FastifyRequest<{ Body: InteractionDefinition }>,
 	response: FastifyReply
 ): MessageComponentInteraction {
 	switch (request?.body?.data?.component_type) {
 		case ComponentType.BUTTON:
-			return new ButtonInteraction(application, component, request, response);
+			return new ButtonInteraction(
+				application,
+				component as Button,
+				request,
+				response
+			);
 		case ComponentType.SELECT:
-			return new SelectInteraction(application, component, request, response);
+			return new SelectInteraction(
+				application,
+				component as Select,
+				request,
+				response
+			);
 		default:
 			throw new Error(
 				`Unknown Interaction Component type: ${
@@ -69,12 +82,16 @@ export function create(
 	request: FastifyRequest<{ Body: InteractionDefinition }>,
 	response: FastifyReply
 ) {
+	if (request?.body?.data?.custom_id == null) {
+		throw new Error("Received interaction without Custom ID");
+	}
+
 	switch (request?.body?.type) {
 		case InteractionRequestType.PING:
 			return new PingInteraction();
 		case InteractionRequestType.APPLICATION_COMMAND: {
 			const command = application.getCommand(
-				request?.body?.type,
+				request?.body?.data?.type,
 				request?.body?.data?.custom_id
 			);
 			return getApplicationCommandInteraction(

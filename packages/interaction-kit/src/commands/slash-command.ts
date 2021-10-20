@@ -13,7 +13,7 @@ type CommandArgs = {
 };
 
 export default class SlashCommand
-	implements InteractionKitCommand<ApplicationCommandType.CHAT_INPUT>
+	implements InteractionKitCommand<SlashCommandInteraction>
 {
 	public readonly type = ApplicationCommandType.CHAT_INPUT;
 

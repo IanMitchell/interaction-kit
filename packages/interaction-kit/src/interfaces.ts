@@ -20,18 +20,8 @@ export interface Mentionable {
 	id: Snowflake;
 }
 
-export interface InteractionKitCommand<
-	U extends ApplicationCommandType,
-	T extends ApplicationCommandInteraction<U> = ApplicationCommandInteraction<U>
-> extends Executable<T>,
-		Serializable<Optional<ApplicationCommand, "id" | "application_id">>,
-		Comparable<ApplicationCommand> {
-	name: string;
-	handler: (
-		interaction: ApplicationCommandInteraction<U>,
-		application: Application
-	) => unknown;
-	get type(): U;
+export interface Comparable<T> {
+	equals: (schema: T) => boolean;
 }
 
 export interface Serializable<T = unknown> {
@@ -42,14 +32,6 @@ export interface SerializableComponent extends Serializable {
 	get id(): Component["custom_id"];
 	get type(): ComponentType;
 	serialize(): Component;
-}
-
-export interface Executable<T extends Interaction = Interaction> {
-	handler: (interaction: T, application: Application) => unknown;
-}
-
-export interface Comparable<T> {
-	equals: (schema: T) => boolean;
 }
 
 export type InteractionReply = {
@@ -76,4 +58,17 @@ export interface Interaction {
 
 	acknowledge: () => unknown;
 	reply: (message: InteractionReply) => unknown;
+}
+
+export interface Executable<T extends Interaction = Interaction> {
+	handler: (interaction: T, application: Application) => unknown;
+}
+
+export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
+	extends Executable<T>,
+		Serializable<Optional<ApplicationCommand, "id" | "application_id">>,
+		Comparable<ApplicationCommand> {
+	name: string;
+	handler: (interaction: T, application: Application) => unknown;
+	get type(): ApplicationCommandType;
 }

@@ -1,13 +1,10 @@
-import type { SerializableComponent } from "../interfaces";
+import type { Executable, SerializableComponent } from "../interfaces";
 
 import Application from "../application";
 import { ButtonStyle, Component, ComponentType } from "../definitions";
 import ButtonInteraction from "../interactions/message-components/button-interaction";
 
-type ButtonArgs = {
-	handler: (event: ButtonInteraction, application: Application) => unknown;
-	customID: Component["custom_id"];
-} & Omit<
+type ButtonBaseArgs = Omit<
 	Component,
 	| "type"
 	| "url"
@@ -19,43 +16,32 @@ type ButtonArgs = {
 	| "max_values"
 >;
 
+type ButtonArgs = {
+	handler: (event: ButtonInteraction, application: Application) => unknown;
+	customID: Component["custom_id"];
+	style: Exclude<ButtonStyle, ButtonStyle.LINK>;
+} & ButtonBaseArgs;
+
 type ButtonLinkArgs = Omit<
 	Component,
 	"type" | "custom_id" | "style" | "components"
 >;
 
-function isButtonLink(
-	options: ButtonArgs | ButtonLinkArgs
-): options is ButtonLinkArgs {
-	return (options as ButtonLinkArgs).url != null;
-}
-
-export default class Button implements SerializableComponent {
-	#style: ButtonArgs["style"];
+abstract class ButtonBase implements SerializableComponent {
+	#style: ButtonStyle | undefined;
 	#label: ButtonArgs["label"];
 	#emoji: ButtonArgs["emoji"];
-	#customID: ButtonArgs["customID"];
-	#url: ButtonLinkArgs["url"];
 	#disabled: ButtonArgs["disabled"];
-	handler: ButtonArgs["handler"] | undefined;
 
-	constructor(options: ButtonArgs | ButtonLinkArgs) {
+	constructor(options: ButtonBaseArgs) {
 		this.#label = options.label;
 		this.#emoji = options.emoji;
 		this.#disabled = options.disabled;
-
-		if (isButtonLink(options)) {
-			this.#url = options?.url;
-			this.#style = ButtonStyle.LINK;
-		} else {
-			this.#customID = options?.customID;
-			this.#style = options?.style ?? ButtonStyle.PRIMARY;
-			this.handler = options?.handler;
-		}
+		this.#style = options.style;
 	}
 
-	get id() {
-		return this.#customID;
+	get id(): SerializableComponent["id"] {
+		return undefined;
 	}
 
 	get type() {
@@ -69,27 +55,6 @@ export default class Button implements SerializableComponent {
 
 	setEmoji(emoji: ButtonArgs["emoji"]) {
 		this.#emoji = emoji;
-		return this;
-	}
-
-	setCustomID(customID: ButtonArgs["customID"]) {
-		this.#customID = customID;
-		return this;
-	}
-
-	setStyle(style: ButtonArgs["style"]) {
-		this.#style = style;
-		return this;
-	}
-
-	setHandler(fn: ButtonArgs["handler"]) {
-		this.handler = fn;
-		return this;
-	}
-
-	// TODO: Can we throw type errors if this is used on a non-link button?
-	setURL(url: ButtonLinkArgs["url"]) {
-		this.#url = url;
 		return this;
 	}
 
@@ -115,16 +80,84 @@ export default class Button implements SerializableComponent {
 			payload.emoji = this.#emoji;
 		}
 
-		if (this.#customID != null) {
-			payload.custom_id = this.#customID;
-		}
-
-		if (this.#url != null) {
-			payload.url = this.#url;
-		}
-
 		if (this.#disabled != null) {
 			payload.disabled = this.#disabled;
+		}
+
+		return payload;
+	}
+
+	protected setStyle(style: ButtonStyle) {
+		this.#style = style;
+		return this;
+	}
+}
+
+export class ButtonLink extends ButtonBase {
+	#url: ButtonLinkArgs["url"];
+
+	constructor(options: ButtonLinkArgs) {
+		super({
+			...options,
+			style: ButtonStyle.LINK,
+		});
+
+		this.#url = options?.url;
+	}
+
+	setURL(url: ButtonLinkArgs["url"]) {
+		this.#url = url;
+		return this;
+	}
+
+	serialize(): Component {
+		const payload = super.serialize();
+		payload.url = this.#url;
+
+		return payload;
+	}
+}
+
+export class Button
+	extends ButtonBase
+	implements SerializableComponent, Executable<ButtonInteraction>
+{
+	#customID: ButtonArgs["customID"];
+	handler: ButtonArgs["handler"];
+
+	constructor(options: ButtonArgs) {
+		super({
+			...options,
+			style: options?.style ?? ButtonStyle.PRIMARY,
+		});
+		this.#customID = options?.customID;
+		this.handler = options?.handler;
+	}
+
+	get id() {
+		return this.#customID;
+	}
+
+	setCustomID(customID: ButtonArgs["customID"]) {
+		this.#customID = customID;
+		return this;
+	}
+
+	setStyle(style: Exclude<ButtonArgs["style"], ButtonStyle.LINK>) {
+		super.setStyle(style);
+		return this;
+	}
+
+	setHandler(fn: ButtonArgs["handler"]) {
+		this.handler = fn;
+		return this;
+	}
+
+	serialize(): Component {
+		const payload = super.serialize();
+
+		if (this.#customID != null) {
+			payload.custom_id = this.#customID;
 		}
 
 		return payload;

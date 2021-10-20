@@ -15,12 +15,11 @@ import {
 } from "./definitions";
 import * as Interaction from "./interactions";
 import * as API from "./api";
-import {
-	Executable,
-	InteractionKitCommand,
-	SerializableComponent,
-} from "./interfaces";
+import { InteractionKitCommand } from "./interfaces";
 import startInteractionKitServer from "./server";
+import SlashCommandInteraction from "./interactions/application-commands/slash-command-interaction";
+import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
+import { ExecutableComponent, isExecutableComponent } from "./components";
 
 type ApplicationArgs = {
 	applicationID: string;
@@ -30,13 +29,6 @@ type ApplicationArgs = {
 };
 
 dotenv.config();
-
-// TODO: This should be moved... somewhere
-function isExecutable(
-	component: SerializableComponent | (SerializableComponent & Executable)
-): component is SerializableComponent & Executable {
-	return (component as SerializableComponent & Executable).handler != null;
-}
 
 export interface CommandMap
 	extends Map<
@@ -57,7 +49,7 @@ export interface CommandMap
 	): Map<string, ContextMenu<ApplicationCommandType.USER>>;
 	get(
 		key: ApplicationCommandType
-	): Map<string, InteractionKitCommand<ApplicationCommandType>>;
+	): Map<string, InteractionKitCommand<SlashCommandInteraction>>;
 }
 
 export default class Application {
@@ -66,7 +58,7 @@ export default class Application {
 	#token: string;
 	#commands: CommandMap;
 
-	#components: Map<string, SerializableComponent & Executable> = new Map();
+	#components: Map<string, ExecutableComponent> = new Map();
 	#port: number;
 
 	constructor({ applicationID, publicKey, token, port }: ApplicationArgs) {
@@ -107,7 +99,7 @@ export default class Application {
 		return this.#applicationID;
 	}
 
-	addCommand(command: InteractionKitCommand<ApplicationCommandType>) {
+	addCommand(command: InteractionKitCommand<ApplicationCommandInteraction>) {
 		if (this.#commands.get(command.type)?.has(command.name.toLowerCase())) {
 			throw new Error(
 				`Error registering ${command.name.toLowerCase()}: Duplicate names are not allowed`
@@ -120,18 +112,16 @@ export default class Application {
 	}
 
 	addCommands(
-		...commands: Array<InteractionKitCommand<ApplicationCommandType>>
+		...commands: Array<InteractionKitCommand<ApplicationCommandInteraction>>
 	) {
 		commands.forEach((command) => this.addCommand(command));
 		return this;
 	}
 
-	addComponent(
-		component: SerializableComponent | (SerializableComponent & Executable)
-	) {
+	addComponent(component: ExecutableComponent) {
 		if (
+			isExecutableComponent(component) &&
 			component.id != null &&
-			isExecutable(component) &&
 			!this.#components.has(component.id)
 		) {
 			this.#components.set(component.id, component);
@@ -231,13 +221,20 @@ export default class Application {
 							?.has(interaction.name ?? "")
 					) {
 						console.log(`Handling ${interaction.name}`);
-						return this.#commands
-							.get(interaction.commandType)
-							?.get(interaction.name)
-							?.handler(interaction, this);
+						return (
+							this.#commands
+								.get(interaction.commandType)
+								?.get(interaction.name)
+								// @ts-expect-error We know at this point our interaction matches our component type
+								?.handler(interaction, this)
+						);
 					}
 
-					console.error(`Unknown Command: ${interaction.name ?? "[no name]"}`);
+					console.error(
+						`Unknown Type or Command: [type: ${
+							interaction.commandType
+						}, command: ${interaction.name ?? "[no name]"}`
+					);
 					void response.status(400).send({
 						error: "Unknown Type",
 					});
@@ -245,9 +242,12 @@ export default class Application {
 				case InteractionRequestType.MESSAGE_COMPONENT:
 					if (this.#components.has(interaction.customID)) {
 						console.log(`Handling Component ${interaction.customID}`);
-						return this.#components
-							.get(interaction.customID)
-							?.handler(interaction, this);
+						return (
+							this.#components
+								.get(interaction.customID)
+								// @ts-expect-error We know at this point our interaction matches our component type
+								?.handler(interaction, this)
+						);
 					}
 
 					console.error(

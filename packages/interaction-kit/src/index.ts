@@ -25,7 +25,7 @@ export { default as ContextMenu } from "./commands/context-menu";
 
 // Export Components
 export { default as ActionRow } from "./components/action-row";
-export { default as Button } from "./components/button";
+export { Button, ButtonLink } from "./components/button";
 export { default as Select } from "./components/select";
 export { ButtonStyle } from "./definitions/components";
 
