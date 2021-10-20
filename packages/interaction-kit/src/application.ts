@@ -7,9 +7,7 @@ import SlashCommand from "./commands/slash-command";
 import ContextMenu from "./commands/context-menu";
 import Config from "./api/config";
 import {
-	InteractionCallbackType,
 	Interaction as InteractionDefinition,
-	InteractionRequestType,
 	Snowflake,
 	ApplicationCommandType,
 } from "./definitions";
@@ -17,7 +15,6 @@ import * as Interaction from "./interactions";
 import * as API from "./api";
 import { InteractionKitCommand, SerializableComponent } from "./interfaces";
 import startInteractionKitServer from "./server";
-import SlashCommandInteraction from "./interactions/application-commands/slash-command-interaction";
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
 import { ExecutableComponent, isExecutableComponent } from "./components";
 
@@ -49,7 +46,7 @@ export interface CommandMap
 	): Map<string, ContextMenu<ApplicationCommandType.USER>>;
 	get(
 		key: ApplicationCommandType
-	): Map<string, InteractionKitCommand<SlashCommandInteraction>>;
+	): Map<string, InteractionKitCommand<ApplicationCommandInteraction>>;
 }
 
 export default class Application {
@@ -205,64 +202,12 @@ export default class Application {
 	) {
 		console.log("REQUEST");
 		try {
-			const interaction = Interaction.create(this, request, response);
-
-			switch (interaction.type) {
-				case InteractionRequestType.PING:
-					console.log("Handling Discord Ping");
-					void response.send({
-						type: InteractionCallbackType.PONG,
-					});
-					break;
-				case InteractionRequestType.APPLICATION_COMMAND:
-					if (
-						this.#commands
-							.get(interaction.commandType)
-							?.has(interaction.name ?? "")
-					) {
-						console.log(`Handling ${interaction.name}`);
-						return (
-							this.#commands
-								.get(interaction.commandType)
-								?.get(interaction.name)
-								// @ts-expect-error We know at this point our interaction matches our component type
-								?.handler(interaction, this)
-						);
-					}
-
-					console.error(
-						`Unknown Type or Command: [type: ${
-							interaction.commandType
-						}, command: ${interaction.name ?? "[no name]"}`
-					);
-					void response.status(400).send({
-						error: "Unknown Type",
-					});
-					break;
-				case InteractionRequestType.MESSAGE_COMPONENT:
-					if (this.#components.has(interaction.customID)) {
-						console.log(`Handling Component ${interaction.customID}`);
-						return (
-							this.#components
-								.get(interaction.customID)
-								// @ts-expect-error We know at this point our interaction matches our component type
-								?.handler(interaction, this)
-						);
-					}
-
-					console.error(
-						`Unknown Component: ${interaction.customID ?? "[no custom id]"}`
-					);
-					void response.status(400).send({
-						error: "Unknown Component",
-					});
-					break;
-				default:
-					console.error(`Unknown Type: ${request.body.type}`);
-					break;
-			}
-		} catch (error: unknown) {
-			console.error(error);
+			Interaction.handler(this, request, response);
+		} catch (exception: unknown) {
+			void response.status(400).send({
+				error: "Unknown Type",
+			});
+			throw exception;
 		}
 	}
 
@@ -271,7 +216,9 @@ export default class Application {
 		// TODO: Move this into a dev env check.
 		void this.updateCommands();
 		startInteractionKitServer(
-			(...args) => this.handler(...args),
+			(...args) => {
+				this.handler(...args);
+			},
 			this.#publicKey,
 			this.#port
 		);
