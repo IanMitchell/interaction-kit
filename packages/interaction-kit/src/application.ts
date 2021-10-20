@@ -15,7 +15,7 @@ import {
 } from "./definitions";
 import * as Interaction from "./interactions";
 import * as API from "./api";
-import { InteractionKitCommand } from "./interfaces";
+import { InteractionKitCommand, SerializableComponent } from "./interfaces";
 import startInteractionKitServer from "./server";
 import SlashCommandInteraction from "./interactions/application-commands/slash-command-interaction";
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
@@ -118,7 +118,7 @@ export default class Application {
 		return this;
 	}
 
-	addComponent(component: ExecutableComponent) {
+	addComponent(component: SerializableComponent) {
 		if (
 			isExecutableComponent(component) &&
 			component.id != null &&
