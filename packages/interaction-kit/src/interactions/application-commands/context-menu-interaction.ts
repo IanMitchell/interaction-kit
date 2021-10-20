@@ -5,6 +5,7 @@ import {
 } from "../../definitions";
 import Application from "../../application";
 import ApplicationCommandInteraction from "./application-command-interaction";
+import { InteractionKitCommand } from "../../interfaces";
 
 export type ContextMenuApplicationCommandType = Exclude<
 	ApplicationCommandType,
@@ -34,7 +35,7 @@ export default class ContextMenuInteraction<
 
 	constructor(
 		application: Application,
-		command: unknown, // TODO: Fix
+		command: InteractionKitCommand<ContextMenuInteraction<T>>,
 		request: FastifyRequest<{ Body: InteractionDefinition }>,
 		response: FastifyReply
 	) {

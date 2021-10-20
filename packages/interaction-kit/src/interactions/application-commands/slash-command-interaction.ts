@@ -6,6 +6,7 @@ import {
 	Interaction as InteractionDefinition,
 	OptionType,
 } from "../../definitions";
+import { InteractionKitCommand } from "../../interfaces";
 import ApplicationCommandInteraction from "./application-command-interaction";
 
 export default class SlashCommandInteraction extends ApplicationCommandInteraction {
@@ -13,7 +14,7 @@ export default class SlashCommandInteraction extends ApplicationCommandInteracti
 
 	constructor(
 		application: Application,
-		command: unknown, // TODO: Fix
+		command: InteractionKitCommand<SlashCommandInteraction>,
 		request: FastifyRequest<{ Body: InteractionDefinition }>,
 		response: FastifyReply
 	) {
