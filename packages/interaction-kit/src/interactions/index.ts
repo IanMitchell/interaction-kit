@@ -4,7 +4,6 @@ import {
 	ApplicationCommandType,
 	ComponentType,
 	Interaction as InteractionDefinition,
-	InteractionCallbackType,
 	InteractionRequestType,
 } from "../definitions";
 import ButtonInteraction from "./message-components/button-interaction";
