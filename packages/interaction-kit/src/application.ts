@@ -144,6 +144,10 @@ export default class Application {
 		return this.#components.get(customID);
 	}
 
+	getCommand(type: ApplicationCommandType, customID: string) {
+		return this.#commands.get(type).get(customID);
+	}
+
 	// TODO: Should this be moved into Command?
 	async updateCommands() {
 		console.log("Checking for command updates in Development Server");

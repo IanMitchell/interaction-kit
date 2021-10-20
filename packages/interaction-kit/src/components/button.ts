@@ -2,13 +2,10 @@ import type { SerializableComponent } from "../interfaces";
 
 import Application from "../application";
 import { ButtonStyle, Component, ComponentType } from "../definitions";
-import MessageComponentInteraction from "../interactions/message-component-interaction";
+import ButtonInteraction from "../interactions/message-components/button-interaction";
 
 type ButtonArgs = {
-	handler: (
-		event: MessageComponentInteraction,
-		application: Application
-	) => unknown;
+	handler: (event: ButtonInteraction, application: Application) => unknown;
 	customID: Component["custom_id"];
 } & Omit<
 	Component,

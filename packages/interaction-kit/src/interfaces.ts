@@ -1,4 +1,4 @@
-import ApplicationCommandInteraction from "./interactions/application-command-interaction";
+import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
 import * as API from "./api";
 import Application from "./application";
 import Embed from "./components/embed";

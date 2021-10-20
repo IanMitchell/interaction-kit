@@ -1,14 +1,11 @@
-import MessageComponentInteraction from "../interactions/message-component-interaction";
+import SelectInteraction from "../interactions/message-components/select-interaction";
 import Application from "../application";
 import { Component, ComponentType } from "../definitions";
 import { Executable, SerializableComponent } from "../interfaces";
 import { SelectOptionList } from "./choices";
 
 type SelectArgs = {
-	handler: (
-		event: MessageComponentInteraction,
-		application: Application
-	) => unknown;
+	handler: (event: SelectInteraction, application: Application) => unknown;
 	customID: Component["custom_id"];
 	min: Component["min_values"];
 	max: Component["max_values"];
@@ -25,7 +22,7 @@ type SelectArgs = {
 >;
 
 export default class Select
-	implements SerializableComponent, Executable<MessageComponentInteraction>
+	implements SerializableComponent, Executable<SelectInteraction>
 {
 	options: SelectArgs["options"];
 	#customID: SelectArgs["customID"];
