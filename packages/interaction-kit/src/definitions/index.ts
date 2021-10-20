@@ -5,12 +5,17 @@
 
 export * from "./api";
 export * from "./application-commands";
+export * from "./attachments";
 export * from "./channels";
 export * from "./components";
 export * from "./embeds";
 export * from "./emoji";
 export * from "./guild-members";
 export * from "./guilds";
+export * from "./messages";
 export * from "./roles";
 export * from "./snowflakes";
+export * from "./users";
+export * from "./reactions";
+export * from "./stickers";
 export * from "./users";
