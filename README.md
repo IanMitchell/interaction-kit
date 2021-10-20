@@ -1,5 +1,7 @@
 # Interaction Kit
 
+> Our end strategy is being acquired by iCrawl
+
 🚧 **INTERACTION KIT IS UNDER CONSTRUCTION AND IS NOT READY FOR USE** 🏗
 
 Interaction Kit is a framework for creating Discord slash command bots over the HTTP API.

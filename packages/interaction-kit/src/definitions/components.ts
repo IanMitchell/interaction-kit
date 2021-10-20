@@ -5,7 +5,7 @@
 
 import type { Emoji } from "./emoji";
 
-// https://discord.com/developers/docs/interactions/message-components#component-object-component-structure
+/** @link https://discord.com/developers/docs/interactions/message-components#component-object-component-structure */
 // TODO: Add in type constraints
 export type Component = {
 	type: ComponentType; // all
@@ -22,7 +22,7 @@ export type Component = {
 	components?: Component[]; // action rows
 };
 
-// https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-option-structure
+/** @link https://discord.com/developers/docs/interactions/message-components#select-menu-object-select-option-structure */
 export type SelectOption = {
 	label: string;
 	value: string;
@@ -31,14 +31,14 @@ export type SelectOption = {
 	default?: boolean;
 };
 
-// https://discord.com/developers/docs/interactions/message-components#component-object-component-types
+/** @link https://discord.com/developers/docs/interactions/message-components#component-object-component-types */
 export enum ComponentType {
 	ACTION_ROW = 1,
 	BUTTON = 2,
 	SELECT = 3,
 }
 
-// https://discord.com/developers/docs/interactions/message-components#button-object-button-styles
+/** @link https://discord.com/developers/docs/interactions/message-components#button-object-button-styles */
 export enum ButtonStyle {
 	PRIMARY = 1,
 	SECONDARY = 2,

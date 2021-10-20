@@ -5,7 +5,7 @@
 
 import { Snowflake } from "./snowflakes";
 
-// TODO: Add docs for this
+/** @link https://discord.com/developers/docs/resources/channel#attachment-object-attachment-structure */
 export interface Attachment {
 	id: Snowflake;
 	filename: string;
@@ -15,4 +15,5 @@ export interface Attachment {
 	proxy_url: string;
 	height?: number | null;
 	width?: number | null;
+    ephemeral?: boolean;
 }

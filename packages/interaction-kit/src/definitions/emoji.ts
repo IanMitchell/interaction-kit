@@ -6,7 +6,7 @@
 import { Snowflake } from "./snowflakes";
 import { User } from "./users";
 
-// https://discord.com/developers/docs/resources/emoji#emoji-object-emoji-structure
+/** @link https://discord.com/developers/docs/resources/emoji#emoji-object-emoji-structure */
 // TODO: add in type constraints
 export type Emoji = {
 	id: Snowflake | null;
