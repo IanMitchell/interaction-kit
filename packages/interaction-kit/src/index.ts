@@ -28,7 +28,10 @@ export { default as ActionRow } from "./components/action-row";
 export { Button, ButtonLink } from "./components/button";
 export { default as Select } from "./components/select";
 export { ButtonStyle } from "./definitions/components";
-
 export { default as Embed } from "./components/embed";
 
+// Export Markup
 export * as Markdown from "./structures/markdown";
+
+// Export Scripts
+export * as Scripts from "./scripts";
