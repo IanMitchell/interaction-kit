@@ -10,7 +10,7 @@ import startCommand from "../src/cli/start";
 process.on("SIGTERM", () => process.exit(0));
 process.on("SIGINT", () => process.exit(0));
 
-const commands = {
+const commands: Record<string, (argv?: string[]) => void> = {
 	dev: devCommand,
 	deploy: deployCommand,
 	start: startCommand,
@@ -62,4 +62,5 @@ if (args["--help"]) {
 
 process.env.NODE_ENV ??= command === "dev" ? "development" : "production";
 
+// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 commands[command]?.(forwardedArgs);
