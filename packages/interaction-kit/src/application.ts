@@ -96,6 +96,12 @@ export default class Application {
 		return this.#applicationID;
 	}
 
+	get commands() {
+		return Array.from(this.#commands.values())
+			.map((map) => Array.from(map.values()))
+			.flat();
+	}
+
 	addCommand(command: InteractionKitCommand<ApplicationCommandInteraction>) {
 		if (this.#commands.get(command.type)?.has(command.name.toLowerCase())) {
 			throw new Error(
@@ -131,8 +137,8 @@ export default class Application {
 		return this.#components.get(customID);
 	}
 
-	getCommand(type: ApplicationCommandType, customID: string) {
-		return this.#commands.get(type).get(customID);
+	getCommand(type: ApplicationCommandType, id: Snowflake) {
+		return this.#commands.get(type).get(id);
 	}
 
 	// TODO: Should this be moved into Command?

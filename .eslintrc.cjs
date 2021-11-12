@@ -11,5 +11,6 @@ module.exports = {
 		"no-eq-null": 0,
 		"eqeqeq": ["error", "smart"],
 		"capitalized-comments": 0,
+		"no-await-in-loop": 0,
 	},
 };

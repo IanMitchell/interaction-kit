@@ -1,21 +1,58 @@
-import { putGuildApplicationCommands } from "../api";
-import { getApplicationEntrypoint } from "../scripts/application";
-import { getApplicationCommandChanges } from "../scripts/commands";
+import {
+	deleteGlobalApplicationCommand,
+	deleteGuildApplicationCommand,
+	putGlobalApplicationCommands,
+	putGuildApplicationCommands,
+} from "../api";
+import {
+	getApplicationEntrypoint,
+	getApplicationCommandChanges,
+} from "../scripts";
 
 export default async function command(argv?: string[]) {
-	// TODO: Check for help?
 	// TODO: parse args
+	// TODO: Check for help?
 
 	const application = getApplicationEntrypoint();
-	const differences = getApplicationCommandChanges(application);
+	const { globalCommands, guildCommands } = await getApplicationCommandChanges(
+		application
+	);
 
-	Array.from(differences.newCommands).forEach((command) => {
-		// TODO: create
+	const globalCommandList = [
+		...globalCommands.newCommands,
+		...globalCommands.updatedCommands,
+	];
+
+	await putGlobalApplicationCommands(globalCommandList, {
+		applicationID: application.id,
 	});
 
-	Array.from(differences.updatedCommands).forEach((command) => {});
+	await Promise.all(
+		Array.from(globalCommands.deletedCommands).map(async (id) =>
+			deleteGlobalApplicationCommand(id, {
+				applicationID: application.id,
+			})
+		)
+	);
 
-	Array.from(differences.deletedCommands).forEach((command) => {
-		// TODO: delete
-	});
+	for (const [guildID, commandList] of guildCommands.entries()) {
+		const guildCommandList = [
+			...commandList.newCommands,
+			...commandList.updatedCommands,
+		];
+
+		await putGuildApplicationCommands(guildID, guildCommandList, {
+			applicationID: application.id,
+		});
+
+		await Promise.all(
+			Array.from(commandList.deletedCommands).map(async (id) =>
+				deleteGuildApplicationCommand(guildID, id, {
+					applicationID: application.id,
+				})
+			)
+		);
+	}
+
+	process.exit(0);
 }

@@ -1,79 +1,65 @@
 #!/usr/bin/env node
-import path from "node:path";
-import ngrok from "ngrok";
-import Application from "../src/application";
-import { ApplicationCommand } from "../src/definitions";
+import arg from "arg";
+import pkg from "../package.json";
+import devCommand from "../src/cli/dev";
+import deployCommand from "../src/cli/deploy";
+import startCommand from "../src/cli/start";
 
-const port = 3000;
+// Credit to Next.js, which I largely ripped off for this
 
-async function dev() {
-	let app: Application | null = null;
+process.on("SIGTERM", () => process.exit(0));
+process.on("SIGINT", () => process.exit(0));
 
-	try {
-		const pkg = (
-			await (import(path.join(process.cwd(), "package.json")) as Promise<{
-				default: Record<string, unknown>;
-			}>)
-		).default;
+const commands = {
+	dev: devCommand,
+	deploy: deployCommand,
+	start: startCommand,
+};
 
-		const appFile = pkg?.main as string;
-		const appModule = (await import(
-			path.join(process.cwd(), appFile)
-		)) as Record<string, unknown>;
-		app = appModule?.default as Application;
-	} catch (error: unknown) {
-		console.error(
-			"There was an error finding your Application file! You can find out more info here <url>"
-		);
-		console.error(error);
+const args = arg(
+	{
+		"--version": Boolean,
+		"--help": Boolean,
+		"-v": "--version",
+		"-h": "--help",
+	},
+	{
+		permissive: true,
 	}
+);
 
-	if (app == null) {
-		throw new Error("hm");
-	}
-
-	app.startServer();
-
-	console.log("Starting Tunnel...");
-
-	const url = await ngrok.connect({
-		addr: port,
-		onLogEvent: (msg) => {
-			console.log(msg);
-		},
-		onStatusChange: (status) => {
-			console.log(`Status ${status}`);
-		},
-		onTerminated: () => {
-			console.log("Terminated");
-		},
-	});
-
-	console.log(`URL: ${url}`);
-	console.log("Add this as your test bot thing. More info: <url>");
+if (args["--version"]) {
+	console.log(`Interaction Kit v${pkg.version}`);
+	process.exit(0);
 }
 
-async function deploy() {
-	const deletedCommands: ApplicationCommand[] = [];
-	const updatedCommands: Map<Snowflake, Command> = new Map();
+const valid = args._[0] in commands;
 
-	let response = await fetch(
-		`https://discord.com/api/v8/applications/${process.env.APPLICATION_ID}/commands`
-	);
-	const json: ApplicationCommand[] = await response.json();
+if (!valid && args["--help"]) {
+	console.log(`
+    Usage
+      $ ikit <command>
 
-	json.forEach((registeredCommand) => {
-		const command = application.getCommand(name);
+    Available commands
+      ${Object.keys(commands).join(", ")}
 
-		if (command == null /* || TODO: skipCheck on name */) {
-			deletedCommands.push(registeredCommand);
-			// TODO: skipCheck or remove
-		} else {
-			if (!command.isEqualTo(registeredCommand)) {
-				updatedCommands.set(registeredCommand.id, command);
-			}
-		}
-	});
+			Options
+      --version, -v   Version number
+      --help, -h      Displays this message
+
+			For more information run a command with the --help flag
+      $ ikit dev --help
+  `);
+	process.exit(0);
 }
 
-void dev();
+const command = valid ? args._[0] : "dev";
+const forwardedArgs = valid ? args._.slice(1) : args._;
+
+if (args["--help"]) {
+	forwardedArgs.push("--help");
+}
+
+process.env.NODE_ENV ??= command === "dev" ? "development" : "production";
+
+commands[command]?.(forwardedArgs);

@@ -5,8 +5,157 @@ import { API_URL, ApplicationCommand, Snowflake } from "../definitions";
 import { Optional } from "../interfaces";
 
 // TODO: Test, Type, Document
-export async function getGlobalApplicationCommands() {
-	return Promise.resolve();
+export async function getGlobalApplicationCommands(
+	options: {
+		headers?: Record<string, string>;
+		applicationID?: Snowflake;
+	} = {}
+): Promise<ApplicationCommand[]> {
+	const {
+		applicationID = Config.getApplicationID(),
+		headers = Config.getHeaders(),
+	} = options;
+
+	const url = new URL(`${API_URL}/applications/${applicationID}/commands`);
+
+	const response = await Client.get(
+		url,
+		{
+			headers,
+		},
+		{
+			route: "[GET] /applications/{application.id}/commands",
+			identifier: applicationID,
+		}
+	);
+
+	return response.json() as Promise<ApplicationCommand[]>;
+}
+
+// TODO: Test, Type, Document
+export async function postGlobalApplicationCommand(
+	command: Omit<ApplicationCommand, "id" | "application_id">,
+	options: {
+		headers?: Record<string, string>;
+		applicationID?: Snowflake;
+	} = {}
+) {
+	const {
+		applicationID = Config.getApplicationID(),
+		headers = Config.getHeaders(),
+	} = options;
+
+	const url = new URL(`${API_URL}/applications/${applicationID}/commands`);
+
+	const response = await Client.post(
+		url,
+		{
+			headers,
+			body: JSON.stringify(command),
+		},
+		{
+			route: "[POST] /applications/{application.id}/commands",
+			identifier: applicationID,
+		}
+	);
+
+	return response.json() as Promise<ApplicationCommand>;
+}
+
+// TODO: Test, Type, Document
+export async function putGlobalApplicationCommands(
+	commands: ApplicationCommand[],
+	options: {
+		headers?: Record<string, string>;
+		applicationID?: Snowflake;
+	} = {}
+) {
+	const {
+		applicationID = Config.getApplicationID(),
+		headers = Config.getHeaders(),
+	} = options;
+
+	const url = new URL(`${API_URL}/applications/${applicationID}/commands`);
+
+	const response = await Client.put(
+		url,
+		{
+			headers,
+			body: JSON.stringify(commands),
+		},
+		{
+			route: "[PUT] /applications/{application.id}/commands",
+			identifier: applicationID,
+		}
+	);
+
+	return response.json() as Promise<ApplicationCommand>;
+}
+
+// TODO: Test, Type, Document
+export async function patchGlobalApplicationCommand(
+	command: Optional<
+		ApplicationCommand,
+		"name" | "description" | "options" | "default_permission"
+	>,
+	options: {
+		headers?: Record<string, string>;
+		applicationID?: Snowflake;
+	} = {}
+) {
+	const {
+		applicationID = Config.getApplicationID(),
+		headers = Config.getHeaders(),
+	} = options;
+
+	const url = new URL(
+		`${API_URL}/applications/${applicationID}/commands/${command.id}`
+	);
+
+	const response = await Client.patch(
+		url,
+		{
+			headers,
+			body: JSON.stringify(command),
+		},
+		{
+			route: "[PATCH] /applications/{application.id}/commands",
+			identifier: applicationID,
+		}
+	);
+
+	return response.json() as Promise<ApplicationCommand>;
+}
+
+// TODO: Test, Type, Document
+export async function deleteGlobalApplicationCommand(
+	commandID: Snowflake,
+	options: {
+		headers?: Record<string, string>;
+		applicationID?: Snowflake;
+	} = {}
+) {
+	const {
+		applicationID = Config.getApplicationID(),
+		headers = Config.getHeaders(),
+	} = options;
+
+	const url = new URL(
+		`${API_URL}/applications/${applicationID}/commands/${commandID}`
+	);
+
+	const response = await Client.delete(
+		url,
+		{
+			headers,
+		},
+		{
+			route: "[DELETE] /applications/{application.id}/commands/{command.id}",
+			identifier: applicationID,
+		}
+	);
+
+	return response.ok;
 }
 
 // TODO: Test, Type, Document
