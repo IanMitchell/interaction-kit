@@ -9,7 +9,7 @@
 	"type": "module",
 	"scripts": {
 		"start": "node .",
-		"build": "tsc && tsc --project bin/tsconfig.json",
+		"build": "tsc",
 		"clean": "rm -r dist/ && rm -r bin/*.js",
 		"typecheck": "tsc --noEmit && tsc --project bin/tsconfig.json",
 		"prettier": "prettier src/**/*.ts --check && prettier bin/*.ts",
