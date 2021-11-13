@@ -29,7 +29,6 @@ const args = arg(
 );
 
 if (args["--version"]) {
-	// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 	console.log(`Interaction Kit v${pkg.version}`);
 	process.exit(0);
 }
