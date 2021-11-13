@@ -1,4 +1,4 @@
-import { NodeEdKeyImportParams, webcrypto } from "crypto";
+import { webcrypto } from "crypto";
 import type { FastifyRequest } from "fastify";
 import { TextEncoder } from "util";
 
@@ -24,6 +24,7 @@ export async function validateRequest(
 	const body = request.rawBody as string;
 
 	const key = async (key: string) =>
+		// @ts-expect-error ????
 		webcrypto.subtle.importKey(
 			"raw",
 			hexToBinary(key),
@@ -31,13 +32,13 @@ export async function validateRequest(
 				name: "NODE-ED25519",
 				namedCurve: "NODE-ED25519",
 				public: true,
-			} as NodeEdKeyImportParams,
+			},
 			true,
 			["verify"]
 		);
 
+	// @ts-expect-error ????
 	const isVerified = webcrypto.subtle.verify(
-		// @ts-expect-error ????
 		"NODE-ED25519",
 		await key(publicKey),
 		signature,

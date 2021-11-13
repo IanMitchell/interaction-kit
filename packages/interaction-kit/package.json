@@ -9,11 +9,11 @@
 	"type": "module",
 	"scripts": {
 		"start": "node .",
-		"build": "tsc",
-		"clean": "rm -r dist/",
-		"typecheck": "tsc --noEmit",
-		"prettier": "prettier src/**/*.ts --check",
-		"lint": "eslint ./src/**/*.ts",
+		"build": "tsc && tsc --project bin/tsconfig.json",
+		"clean": "rm -r dist/ && rm -r bin/*.js",
+		"typecheck": "tsc --noEmit && tsc --project bin/tsconfig.json",
+		"prettier": "prettier src/**/*.ts --check && prettier bin/*.ts",
+		"lint": "eslint ./src/**/*.ts && eslint ./bin/*.ts",
 		"test": "jest"
 	},
 	"files": [
@@ -26,6 +26,7 @@
 	},
 	"dependencies": {
 		"arg": "^5.0.1",
+		"chokidar": "^3.5.2",
 		"discord-request": "file:../discord-request",
 		"dotenv": "^10.0.0",
 		"fastify": "^3.17.0",
