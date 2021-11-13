@@ -1,71 +1,64 @@
+import chokidar from "chokidar";
+import arg from "arg";
+
+const CONFIG_FILES = [".env"];
+
 export default async function dev(argv?: string[]) {
-	// get pkg.json
-	// get main
-	// import application
-	// start server with args
-	// start file listeners and watcher
-	// start ngrok
-}
+	if (argv?.includes("--help")) {
+		console.log(`
+			Description
+				Creates all new commands, updates all changed commands, and deletes all removed commands from Discord.
 
-async function dev() {
-	let app: Application | null = null;
+			Usage
+				$ ikit deploy
+  	`);
+		process.exit(0);
+	}
 
-	try {
-		const pkg = (
-			await (import(path.join(process.cwd(), "package.json")) as Promise<{
-				default: Record<string, unknown>;
-			}>)
-		).default;
+	// parse port
 
-		const appFile = pkg?.main as string;
-		const appModule = (await import(
-			path.join(process.cwd(), appFile)
-		)) as Record<string, unknown>;
-		app = appModule?.default as Application;
-	} catch (error: unknown) {
-		console.error(
-			"There was an error finding your Application file! You can find out more info here <url>"
+	// get application
+	// start server (how?)
+
+	// listen on config files [.env]
+	const configWatcher = chokidar.watch(CONFIG_FILES);
+	configWatcher.on("change", (path) => {
+		console.log(
+			`Change detected in ${path} - please restart your application!`
 		);
-		console.error(error);
-	}
-
-	if (app == null) {
-		throw new Error("hm");
-	}
-
-	app.startServer();
-
-	console.log("Starting Tunnel...");
-
-	const url = await ngrok.connect({
-		addr: port,
-		onLogEvent: (msg) => {
-			console.log(msg);
-		},
-		onStatusChange: (status) => {
-			console.log(`Status ${status}`);
-		},
-		onTerminated: () => {
-			console.log("Terminated");
-		},
 	});
 
-	console.log(`URL: ${url}`);
-	console.log("Add this as your test bot thing. More info: <url>");
-}
+	/**
+	 * On change, alert user to restart service (is there a way to do this without ngrok)
+	 */
+	// listen on bot files [package.json, src/application.{js,ts}]
+	/**
+	 * On change, reload entire application and bot
+	 */
+	// listen to command and component changes
+	/**
+	 * On change, unregister command/component, and reload file.
+	 * If command, compare to old command. If changed, reregister with Discord
+	 */
 
-// Watch config changes
-if (command === "dev") {
-	const { CONFIG_FILES } = require("../shared/lib/constants");
-	const { watchFile } = require("fs");
+	// start ngrok
+	// console.log("Starting Tunnel...");
 
-	for (const CONFIG_FILE of CONFIG_FILES) {
-		watchFile(`${process.cwd()}/${CONFIG_FILE}`, (cur: any, prev: any) => {
-			if (cur.size > 0 || prev.size > 0) {
-				console.log(
-					`\n> Found a change in ${CONFIG_FILE}. Restart the server to see the changes in effect.`
-				);
-			}
-		});
-	}
+	// const url = await ngrok.connect({
+	// 	addr: port,
+	// 	onLogEvent: (msg) => {
+	// 		console.log(msg);
+	// 	},
+	// 	onStatusChange: (status) => {
+	// 		console.log(`Status ${status}`);
+	// 	},
+	// 	onTerminated: () => {
+	// 		console.log("Terminated");
+	// 	},
+	// });
+
+	// console.log(`URL: ${url}`);
+	// console.log("Add this as your test bot thing. More info: <url>");
+	// create tunnel
+	// output tunnel
 }

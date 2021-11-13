@@ -3,8 +3,10 @@ import Application from "./application";
 import { ApplicationCommand, Snowflake } from "./definitions";
 import { Optional } from "./interfaces";
 
-export function getApplicationEntrypoint(): Application {
+export async function getApplicationEntrypoint(): Promise<Application> {
+	// @ts-expect-error ????
 	const json = await import(path.join(process.cwd(), "package.json"));
+	// @ts-expect-error ????
 	const app = await import(path.join(process.cwd(), json?.default?.main));
 	return app?.default as Application;
 }
@@ -52,6 +54,7 @@ export async function getApplicationCommandChanges(application: Application) {
 		}
 		// If the command does not exist, we add it
 		else {
+			// @ts-expect-error ????
 			globalCommandList.newCommands.add(command.serialize());
 		}
 	}

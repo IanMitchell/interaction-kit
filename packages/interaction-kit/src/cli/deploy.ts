@@ -1,8 +1,8 @@
 import {
 	deleteGlobalApplicationCommand,
-	deleteGuildApplicationCommand,
 	putGlobalApplicationCommands,
-	putGuildApplicationCommands,
+	// deleteGuildApplicationCommand,
+	// putGuildApplicationCommands,
 } from "../api";
 import {
 	getApplicationEntrypoint,
@@ -10,13 +10,19 @@ import {
 } from "../scripts";
 
 export default async function command(argv?: string[]) {
-	// TODO: parse args
-	// TODO: Check for help?
+	if (argv?.includes("--help")) {
+		console.log(`
+			Description
+				Creates all new commands, updates all changed commands, and deletes all removed commands from Discord.
 
-	const application = getApplicationEntrypoint();
-	const { globalCommands, guildCommands } = await getApplicationCommandChanges(
-		application
-	);
+			Usage
+				$ ikit deploy
+  	`);
+		process.exit(0);
+	}
+
+	const application = await getApplicationEntrypoint();
+	const { globalCommands } = await getApplicationCommandChanges(application);
 
 	const globalCommandList = [
 		...globalCommands.newCommands,
@@ -35,24 +41,25 @@ export default async function command(argv?: string[]) {
 		)
 	);
 
-	for (const [guildID, commandList] of guildCommands.entries()) {
-		const guildCommandList = [
-			...commandList.newCommands,
-			...commandList.updatedCommands,
-		];
+	// TODO: Enable once Guild Commands are figured out
+	// for (const [guildID, commandList] of guildCommands.entries()) {
+	// 	const guildCommandList = [
+	// 		...commandList.newCommands,
+	// 		...commandList.updatedCommands,
+	// 	];
 
-		await putGuildApplicationCommands(guildID, guildCommandList, {
-			applicationID: application.id,
-		});
+	// 	await putGuildApplicationCommands(guildID, guildCommandList, {
+	// 		applicationID: application.id,
+	// 	});
 
-		await Promise.all(
-			Array.from(commandList.deletedCommands).map(async (id) =>
-				deleteGuildApplicationCommand(guildID, id, {
-					applicationID: application.id,
-				})
-			)
-		);
-	}
+	// 	await Promise.all(
+	// 		Array.from(commandList.deletedCommands).map(async (id) =>
+	// 			deleteGuildApplicationCommand(guildID, id, {
+	// 				applicationID: application.id,
+	// 			})
+	// 		)
+	// 	);
+	// }
 
 	process.exit(0);
 }
