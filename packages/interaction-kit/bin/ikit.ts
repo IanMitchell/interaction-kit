@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 import arg from "arg";
+import pkg from "../package.json";
 import devCommand from "../src/cli/dev";
 import deployCommand from "../src/cli/deploy";
 import startCommand from "../src/cli/start";
 
 // Credit to Next.js, which I largely ripped off for this
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
-const pkg = require("../package.json") as Record<string, unknown>;
 
 process.on("SIGTERM", () => process.exit(0));
 process.on("SIGINT", () => process.exit(0));
