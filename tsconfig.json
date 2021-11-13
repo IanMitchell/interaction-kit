@@ -23,11 +23,10 @@
 		// force "use strict"
 		"strict": true,
 
-		// use es2018 standard libraries
 		"lib": ["es2021"],
-		"module": "CommonJS",
-		// target es2018
+		"module": "ES2020",
 		"target": "es2021",
+		"moduleResolution": "node",
 		"resolveJsonModule": true
 	},
 	// ignore node_modules and dist
