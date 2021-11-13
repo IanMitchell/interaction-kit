@@ -37,6 +37,7 @@ export async function validateRequest(
 		);
 
 	const isVerified = webcrypto.subtle.verify(
+		// @ts-expect-error ????
 		"NODE-ED25519",
 		await key(publicKey),
 		signature,

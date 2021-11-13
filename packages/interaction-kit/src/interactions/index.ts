@@ -128,6 +128,7 @@ export function handler(
 		case InteractionRequestType.APPLICATION_COMMAND: {
 			const command = application.getCommand(
 				request?.body?.data?.type,
+				// @ts-expect-error ????
 				request?.body?.data?.custom_id
 			);
 			handleApplicationCommandInteraction(
