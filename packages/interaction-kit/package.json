@@ -20,7 +20,9 @@
 		"dist",
 		"src"
 	],
-	"bin": "./bin/ikit.js",
+	"bin": {
+		"ikit": "./dist/bin/ikit.js"
+	},
 	"engines": {
 		"node": ">=16.6.0"
 	},
