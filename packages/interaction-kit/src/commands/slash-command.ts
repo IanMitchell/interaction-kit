@@ -39,10 +39,11 @@ export default class SlashCommand
 		this.handler = handler;
 		this.#options = new Map();
 
-		if (/^[\w-]{1,32}$/.test(name)) this.name = name
-		else throw new Error (
-			`Name must consist of 1-32 lowercase characters`
-		)
+		if (/^[\w-]{1,32}$/.test(name)) {
+			this.name = name;
+		} else {
+			throw new Error(`Name must consist of 1-32 lowercase characters`);
+		}
 
 		options?.forEach((option) => {
 			const key = option.name.toLowerCase();
