@@ -42,10 +42,10 @@ export type ApplicationCommandOption = {
 	required?: boolean;
 	choices?: ApplicationCommandOptionChoice[];
 	options?: ApplicationCommandOption[];
-	channel_types?: ChannelType[],
-	min_value?: number,
-	max_value?: number,
-	autocomplete?: boolean
+	channel_types?: ChannelType[];
+	min_value?: number;
+	max_value?: number;
+	autocomplete?: boolean;
 };
 
 /** @link https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-type */
