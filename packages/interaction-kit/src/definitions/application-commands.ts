@@ -138,11 +138,10 @@ export type ApplicationCommandInteractionDataResolved = {
 };
 
 /** @link https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-interaction-data-option-structure */
-// TODO: Mutually exclusive, also what is option type?
 export type ApplicationCommandInteractionDataOption = {
 	name: string;
 	type: ApplicationCommandOptionType;
-	value?: ApplicationCommandOptionType; // FIXME: This needs to be set correctly || Zelda fixed - please check
+	value?: ApplicationCommandOptionType;
 	options?: ApplicationCommandInteractionDataOption[];
 	focused?: boolean;
 };
