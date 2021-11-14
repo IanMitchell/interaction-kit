@@ -12,7 +12,7 @@ import { Role } from "./roles";
 import { Component, ComponentType, SelectOption } from "./components";
 import { Message } from "./messages";
 import { ChannelType } from "./channels"
-import { PartialAttachent } from "./attachment"
+import { PartialAttachment } from "./attachment"
 
 /** @link https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-structure */
 export type ApplicationCommand = {
@@ -171,7 +171,7 @@ export type InteractionApplicationCommandCallbackData = {
 	allowed_mentions?: AllowedMentions;
 	flags?: InteractionCallbackDataFlags;
 	components?: Component[];
-	attachments?: PartialAttachent[];
+	attachments?: PartialAttachment[];
 };
 
 /** @link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-interaction-callback-data-flags */
