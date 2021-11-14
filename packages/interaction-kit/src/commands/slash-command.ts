@@ -33,12 +33,17 @@ export default class SlashCommand
 		handler,
 		defaultPermission = true,
 	}: CommandArgs) {
-		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$
-		this.name = name;
+		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$ || Done by Zelda - please check
+		this.name = "";
 		this.#description = description;
 		this.#defaultPermission = defaultPermission;
 		this.handler = handler;
 		this.#options = new Map();
+
+		if (/^[\w-]{1,32}$/.test(name)) this.name = name
+		else throw new Error (
+			`Name must consist of 1-32 lowercase characters`
+		)
 
 		options?.forEach((option) => {
 			const key = option.name.toLowerCase();
