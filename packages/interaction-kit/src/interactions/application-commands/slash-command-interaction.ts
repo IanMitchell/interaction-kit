@@ -4,7 +4,7 @@ import {
 	ApplicationCommandInteractionDataOption,
 	ApplicationCommandType,
 	Interaction as InteractionDefinition,
-	OptionType,
+	ApplicationCommandInteractionDataOption,
 } from "../../definitions";
 import { InteractionKitCommand } from "../../interfaces";
 import ApplicationCommandInteraction from "./application-command-interaction";
@@ -35,7 +35,7 @@ export default class SlashCommandInteraction extends ApplicationCommandInteracti
 		return new Proxy(
 			{},
 			{
-				get: (target, property): OptionType | null =>
+				get: (target, property): ApplicationCommandInteractionDataOption | null =>
 					this.#options.get(property.toString())?.value ?? null,
 			}
 		);

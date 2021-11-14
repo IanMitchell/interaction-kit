@@ -12,7 +12,7 @@ import { Role } from "./roles";
 import { Component, ComponentType, SelectOption } from "./components";
 import { Message } from "./messages";
 import { ChannelType } from "./channels"
-import { PartialAttachment } from "./attachment"
+import { PartialAttachment } from "./attachments"
 
 /** @link https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-structure */
 export type ApplicationCommand = {
