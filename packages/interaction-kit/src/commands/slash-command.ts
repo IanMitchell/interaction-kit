@@ -33,7 +33,6 @@ export default class SlashCommand
 		handler,
 		defaultPermission = true,
 	}: CommandArgs) {
-		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$ || Done by Zelda - please check
 		this.name = "";
 		this.#description = description;
 		this.#defaultPermission = defaultPermission;
@@ -95,11 +94,12 @@ export default class SlashCommand
 			payload.default_permission = this.#defaultPermission;
 		}
 
-		// TODO: Sort these so that required options come first
 		if (this.#options.size > 0) {
 			payload.options = [];
 
-			Array.from(this.#options.entries()).forEach(([_, value]) => {
+			Array.from(this.#options.entries())
+			.sort((a) => a.required ? -1 : 1)
+			.forEach(([_, value]) => {
 				payload.options?.push(value.serialize());
 			});
 		}
