@@ -4,7 +4,6 @@ import {
 	ApplicationCommandInteractionDataOption,
 	ApplicationCommandType,
 	Interaction as InteractionDefinition,
-	ApplicationCommandInteractionDataOption,
 } from "../../definitions";
 import { InteractionKitCommand } from "../../interfaces";
 import ApplicationCommandInteraction from "./application-command-interaction";
