@@ -2,6 +2,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import Application from "../../application";
 import {
 	ApplicationCommandInteractionDataOption,
+	ApplicationCommandOptionType,
 	ApplicationCommandType,
 	Interaction as InteractionDefinition,
 	OptionType,
@@ -30,7 +31,6 @@ export default class SlashCommandInteraction extends ApplicationCommandInteracti
 		return ApplicationCommandType.CHAT_INPUT;
 	}
 
-	// TODO: Type? Should return an object where keys = #options keys, and value = ApplicationCommandInteractionDataOption
 	get options() {
 		return new Proxy(
 			{},
@@ -38,6 +38,6 @@ export default class SlashCommandInteraction extends ApplicationCommandInteracti
 				get: (target, property): OptionType | null =>
 					this.#options.get(property.toString())?.value ?? null,
 			}
-		);
+		) as Record<string, ApplicationCommandOptionType>;
 	}
 }
