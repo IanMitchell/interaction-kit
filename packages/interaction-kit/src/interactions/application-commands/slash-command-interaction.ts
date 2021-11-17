@@ -2,6 +2,8 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import Application from "../../application";
 import {
 	ApplicationCommandInteractionDataOption,
+	ApplicationCommandInteractionDataOptionValueType,
+	ApplicationCommandOptionType,
 	ApplicationCommandType,
 	Interaction as InteractionDefinition,
 } from "../../definitions";
@@ -20,7 +22,7 @@ export default class SlashCommandInteraction extends ApplicationCommandInteracti
 		super(application, request, response);
 		this.#options = new Map();
 
-		request.body?.data?.options?.forEach((option) => {
+		request.body?.data?.options?.forEach((option: ApplicationCommandInteractionDataOption) => {
 			this.#options.set(option.name.toLowerCase(), option);
 		});
 	}
@@ -34,9 +36,9 @@ export default class SlashCommandInteraction extends ApplicationCommandInteracti
 		return new Proxy(
 			{},
 			{
-				get: (target, property): ApplicationCommandInteractionDataOption | null =>
+				get: (target, property): ApplicationCommandInteractionDataOptionValueType | null =>
 					this.#options.get(property.toString())?.value ?? null,
 			}
-		);
+		) as Record<string, ApplicationCommandInteractionDataOptionValueType>;
 	}
 }

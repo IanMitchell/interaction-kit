@@ -3,11 +3,11 @@ import * as API from "../../api";
 import {
 	Interaction as InteractionDefinition,
 	InteractionApplicationCommandCallbackData,
+	InteractionCallbackDataFlags,
 	InteractionCallbackType,
 	InteractionRequestType,
 	InteractionResponse,
 	Snowflake,
-	InteractionCallbackDataFlags,
 } from "../../definitions";
 import Application from "../../application";
 import {
@@ -16,6 +16,7 @@ import {
 	InteractionReply,
 	SerializableComponent,
 } from "../../interfaces";
+import { PermissionFlags } from "../../definitions/messages";
 import Embed from "../../components/embed";
 import { isActionRow } from "../../components/action-row";
 

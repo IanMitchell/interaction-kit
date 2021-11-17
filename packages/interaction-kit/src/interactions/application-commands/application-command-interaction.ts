@@ -9,6 +9,7 @@ import {
 	InteractionRequestType,
 	Snowflake,
 } from "../../definitions";
+import { PermissionFlags } from "../../definitions/messages";
 import Embed from "../../components/embed";
 import * as API from "../../api";
 import Application from "../../application";
@@ -51,7 +52,7 @@ export default class ApplicationCommandInteraction implements Interaction {
 		// TEMPORARY
 		this.member = request.body?.member;
 
-		request.body?.data?.options?.forEach((option) => {
+		request.body?.data?.options?.forEach((option: ApplicationCommandInteractionDataOption) => {
 			this.#options.set(option.name.toLowerCase(), option);
 		});
 

@@ -20,8 +20,8 @@ export default class SelectInteraction extends MessageComponentInteraction {
 
 		const options: SelectOption[] =
 			request?.body?.data?.values
-				?.map((value) => component.options._choices.get(value))
-				?.filter((value): value is SelectOption => value != null) ?? [];
+				?.map((value: SelectOption["value"]) => component.options._choices.get(value))
+				?.filter((value: SelectOption): value is SelectOption => value != null) ?? [];
 
 		this.values = new Set<SelectOption>(options);
 	}
