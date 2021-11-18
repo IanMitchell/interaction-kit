@@ -39,31 +39,20 @@ export async function validateRequest(
 	const timestamp = request.headers["x-signature-timestamp"] as string;
 	const body = request.rawBody as string;
 
-	console.log({ signature, timestamp, body });
+	const key = await getPublicKey(publicKey);
 
-	let isVerified;
-	try {
-		const key = await getPublicKey(publicKey);
-		console.log({ key });
-
-		// @ts-ignore ????
-		isVerified = await webcrypto.subtle.verify(
-			"NODE-ED25519",
-			key,
-			signature,
-			encoder.encode(timestamp + body)
-		);
-	} catch (error) {
-		console.error(error);
-	}
-	console.log({ isVerified });
+	// @ts-ignore ????
+	const isVerified = await webcrypto.subtle.verify(
+		"NODE-ED25519",
+		key,
+		signature,
+		encoder.encode(timestamp + body)
+	);
 
 	if (signature == null || timestamp == null || body == null || !isVerified) {
-		console.log("Failed to validate");
 		return false;
 	}
 
-	console.log("Valid");
 	return true;
 }
 /* eslint-enable */
