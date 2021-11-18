@@ -19,7 +19,8 @@ export default function startInteractionKitServer(
 
 	server.addHook("preHandler", async (request, response) => {
 		if (request.method === "POST") {
-			if (!(await validateRequest(request, publicKey))) {
+			const isValid = await validateRequest(request, publicKey);
+			if (!isValid) {
 				console.log("Invalid Discord Request");
 				return response.status(401).send({ error: "Bad request signature" });
 			}
