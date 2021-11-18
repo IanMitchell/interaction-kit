@@ -1,12 +1,11 @@
+import path from "node:path";
 import { getGlobalApplicationCommands } from "./api";
 import Application from "./application";
 import { ApplicationCommand, Snowflake } from "./definitions";
 import { Optional } from "./interfaces";
 
 export async function getApplicationEntrypoint(): Promise<Application> {
-	// @ts-expect-error ????
 	const json = await import(path.join(process.cwd(), "package.json"));
-	// @ts-expect-error ????
 	const app = await import(path.join(process.cwd(), json?.default?.main));
 	return app?.default as Application;
 }

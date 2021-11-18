@@ -21,7 +21,7 @@ export default function startInteractionKitServer(
 		if (request.method === "POST") {
 			if (!(await validateRequest(request, publicKey))) {
 				console.log("Invalid Discord Request");
-				return response.status(401).send({ error: "Bad request signature " });
+				return response.status(401).send({ error: "Bad request signature" });
 			}
 		}
 	});
@@ -38,4 +38,6 @@ export default function startInteractionKitServer(
 
 		console.log(`Server listening on ${address}`);
 	});
+
+	return server;
 }

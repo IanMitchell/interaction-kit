@@ -4,8 +4,8 @@
 	"author": "Ian Mitchell",
 	"description": "Interaction Kit is a Discord HTTP API Framework",
 	"license": "MIT",
-	"exports": "./dist/index.js",
-	"typings": "dist/index.d.ts",
+	"exports": "./dist/src/index.js",
+	"typings": "dist/src/index.d.ts",
 	"type": "module",
 	"scripts": {
 		"start": "node .",

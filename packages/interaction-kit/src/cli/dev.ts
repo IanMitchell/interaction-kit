@@ -1,9 +1,13 @@
+import ngrok from "ngrok";
 import chokidar from "chokidar";
 import arg from "arg";
+import { getApplicationEntrypoint } from "../scripts";
 
 const CONFIG_FILES = [".env"];
+const BOT_FILES = ["package.json", "src/*", "src/**/*"];
 
 export default async function dev(argv?: string[]) {
+	// Handle Help
 	if (argv?.includes("--help")) {
 		console.log(`
 			Description
@@ -15,12 +19,24 @@ export default async function dev(argv?: string[]) {
 		process.exit(0);
 	}
 
-	// parse port
+	// Parse input args
+	const args = arg(
+		{
+			"--port": Number,
+			"-p": "--port",
+		},
+		{
+			permissive: true,
+		}
+	);
 
-	// get application
-	// start server (how?)
+	const port = args["--port"] ?? 3000;
 
-	// listen on config files [.env]
+	// Start application
+	let application = await getApplicationEntrypoint();
+	let server = application.startServer();
+
+	// Listen for config file changes and let user know they need to reload
 	const configWatcher = chokidar.watch(CONFIG_FILES);
 	configWatcher.on("change", (path) => {
 		console.log(
@@ -28,37 +44,35 @@ export default async function dev(argv?: string[]) {
 		);
 	});
 
-	/**
-	 * On change, alert user to restart service (is there a way to do this without ngrok)
-	 */
-	// listen on bot files [package.json, src/application.{js,ts}]
-	/**
-	 * On change, reload entire application and bot
-	 */
-	// listen to command and component changes
-	/**
-	 * On change, unregister command/component, and reload file.
-	 * If command, compare to old command. If changed, reregister with Discord
-	 */
+	// Watch for changes requiring application reloads
+	const botWatcher = chokidar.watch(BOT_FILES);
+	botWatcher.on("change", async () => {
+		console.log("Reloading application");
 
-	// start ngrok
-	// console.log("Starting Tunnel...");
+		// Reset server and watchers
+		await server.close();
 
-	// const url = await ngrok.connect({
-	// 	addr: port,
-	// 	onLogEvent: (msg) => {
-	// 		console.log(msg);
-	// 	},
-	// 	onStatusChange: (status) => {
-	// 		console.log(`Status ${status}`);
-	// 	},
-	// 	onTerminated: () => {
-	// 		console.log("Terminated");
-	// 	},
-	// });
+		// Reload the application
+		application = await getApplicationEntrypoint();
+		server = application.startServer();
+	});
 
-	// console.log(`URL: ${url}`);
-	// console.log("Add this as your test bot thing. More info: <url>");
-	// create tunnel
-	// output tunnel
+	// Start up ngrok tunnel to connect with
+	console.log("Starting Tunnel...");
+
+	const url = await ngrok.connect({
+		addr: port,
+		onLogEvent: (msg) => {
+			console.log(`ngrok Log Event: ${msg}`);
+		},
+		onStatusChange: (status) => {
+			console.log(`Status ${status}`);
+		},
+		onTerminated: () => {
+			console.log("ngrok tunnel terminated");
+		},
+	});
+
+	console.log(`URL: ${url}`);
+	console.log("Add this as your test bot thing. More info: <url>");
 }
