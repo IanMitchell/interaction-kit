@@ -128,7 +128,6 @@ export function handler(
 
 			const command = application.getCommand(
 				request?.body?.data?.type,
-				// @ts-expect-error ????
 				request?.body?.data?.custom_id
 			);
 			handleApplicationCommandInteraction(

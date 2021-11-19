@@ -2,6 +2,9 @@
 
 import type { FastifyRequest, FastifyReply } from "fastify";
 
+import fs from "node:fs";
+import path from "node:path";
+import url from "node:url";
 import dotenv from "dotenv";
 import SlashCommand from "./commands/slash-command";
 import ContextMenu from "./commands/context-menu";
@@ -137,8 +140,8 @@ export default class Application {
 		return this.#components.get(customID);
 	}
 
-	getCommand(type: ApplicationCommandType, id: Snowflake) {
-		return this.#commands.get(type).get(id);
+	getCommand(type: ApplicationCommandType, customID: string) {
+		return this.#commands.get(type).get(customID);
 	}
 
 	// TODO: Should this be moved into Command?
@@ -193,6 +196,46 @@ export default class Application {
 		console.log("Finished checking for updates");
 
 		return this;
+	}
+
+	loadApplicationCommandDirectory(directoryPath: string) {
+		const directory = path.join(
+			path.dirname(url.fileURLToPath(import.meta.url)),
+			directoryPath
+		);
+
+		fs.readdir(directory, async (err, files) => {
+			if (err) {
+				throw err;
+			}
+
+			for (const file of files) {
+				if (file.endsWith(".js")) {
+					const command = await import(path.join(directory, file));
+					this.addCommand(command.default);
+				}
+			}
+		});
+	}
+
+	loadMessageComponentDirectory(directoryPath: string) {
+		const directory = path.join(
+			path.dirname(url.fileURLToPath(import.meta.url)),
+			directoryPath
+		);
+
+		fs.readdir(directory, async (err, files) => {
+			if (err) {
+				throw err;
+			}
+
+			for (const file of files) {
+				if (file.endsWith(".js")) {
+					const component = await import(path.join(directory, file));
+					this.addComponent(component.default);
+				}
+			}
+		});
 	}
 
 	// LoadDirectory(path: string) {

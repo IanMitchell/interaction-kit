@@ -68,8 +68,12 @@ export default async function dev(argv?: string[]) {
 		onStatusChange: (status) => {
 			console.log(`Status ${status}`);
 		},
-		onTerminated: () => {
+		onTerminated: async () => {
 			console.log("ngrok tunnel terminated");
+
+			// Cleanup
+			await server.close();
+			process.exit(0);
 		},
 	});
 
