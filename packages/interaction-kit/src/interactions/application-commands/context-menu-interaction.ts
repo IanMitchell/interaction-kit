@@ -53,7 +53,7 @@ export default class ContextMenuInteraction<
 			case ApplicationCommandType.USER:
 				// @ts-expect-error This is set at runtime but it's guaranteed to be the generic
 				this.commandType = ApplicationCommandType.USER;
-				// @ ts-expect-error Same as above
+				// @ts-expect-error Same as above
 				this.target = {
 					...(request.body?.data?.resolved?.members?.[id] ?? {}),
 					...(request.body?.data?.resolved?.users?.[id] ?? {}),
