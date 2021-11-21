@@ -15,7 +15,6 @@ import {
 	ApplicationCommandType,
 } from "./definitions";
 import * as Interaction from "./interactions";
-import * as API from "./api";
 import { InteractionKitCommand, SerializableComponent } from "./interfaces";
 import startInteractionKitServer from "./server";
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
@@ -200,7 +199,7 @@ export default class Application {
 		}
 	}
 
-	startServer() {
+	async startServer() {
 		return startInteractionKitServer(
 			(...args) => {
 				this.handler(...args);

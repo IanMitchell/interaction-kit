@@ -116,7 +116,9 @@ export default async function dev(argv?: string[]) {
 	});
 
 	// Watch for changes requiring application reloads
-	const botWatcher = chokidar.watch(BOT_FILES);
+	const botWatcher = chokidar.watch(BOT_FILES, {
+		ignoreInitial: true,
+	});
 	const handler = async () => {
 		console.log("Reloading application");
 
@@ -129,9 +131,19 @@ export default async function dev(argv?: string[]) {
 		server = await startDevServer(application);
 	};
 
-	botWatcher.on("change", handler);
-	botWatcher.on("add", handler);
-	botWatcher.on("unlink", handler);
+	botWatcher.on("change", () => {
+		console.log("change event!");
+		void handler();
+	});
+	botWatcher.on("add", (path) => {
+		console.log("add event!");
+		console.log(path);
+		void handler();
+	});
+	botWatcher.on("unlink", () => {
+		console.log("unlink event!");
+		void handler();
+	});
 
 	// Start up ngrok tunnel to connect with
 	console.log("Starting Tunnel...");

@@ -3,7 +3,7 @@ import rawBody from "fastify-raw-body";
 import { Interaction } from "./definitions";
 import { validateRequest } from "./requests/validate";
 
-export default function startInteractionKitServer(
+export default async function startInteractionKitServer(
 	handler: (
 		request: FastifyRequest<{ Body: Interaction }>,
 		response: FastifyReply
@@ -40,5 +40,9 @@ export default function startInteractionKitServer(
 		console.log(`Server listening on ${address}`);
 	});
 
-	return server;
+	return new Promise<typeof server>((resolve) => {
+		server.ready(() => {
+			resolve(server);
+		});
+	});
 }
