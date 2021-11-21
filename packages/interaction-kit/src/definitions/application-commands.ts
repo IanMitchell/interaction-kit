@@ -6,12 +6,11 @@
  import type { Snowflake } from "./snowflakes";
  import type { GuildMember } from "./guild-members";
  import { User } from "./users";
- import { AllowedMentions, Channel } from "./channels";
+ import { AllowedMentions, Channel, ChannelType } from "./channels";
  import { Embed } from "./embeds";
  import { Role } from "./roles";
  import { Component, ComponentType, SelectOption } from "./components";
  import { Message } from "./messages";
- import { ChannelType } from "./channels"
  import { PartialAttachment } from "./attachments"
  
  /** @link https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-structure */
