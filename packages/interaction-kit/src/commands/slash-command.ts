@@ -95,11 +95,12 @@ export default class SlashCommand
 			payload.default_permission = this.#defaultPermission;
 		}
 
-		// TODO: Sort these so that required options come first
 		if (this.#options.size > 0) {
 			payload.options = [];
 
-			Array.from(this.#options.entries()).forEach(([_, value]) => {
+			Array.from(this.#options.entries())
+			.sort((a) => a[1].required ? -1 : 1)
+			.forEach(([_, value]) => {
 				payload.options?.push(value.serialize());
 			});
 		}
