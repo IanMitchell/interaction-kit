@@ -1,12 +1,7 @@
-import {
-	deleteGlobalApplicationCommand,
-	putGlobalApplicationCommands,
-	// deleteGuildApplicationCommand,
-	// putGuildApplicationCommands,
-} from "../api";
+import * as API from "../api";
 import {
 	getApplicationEntrypoint,
-	getApplicationCommandChanges,
+	getGlobalApplicationCommandChanges,
 } from "../scripts";
 
 export default async function command(argv?: string[]) {
@@ -22,20 +17,23 @@ export default async function command(argv?: string[]) {
 	}
 
 	const application = await getApplicationEntrypoint();
-	const { globalCommands } = await getApplicationCommandChanges(application);
+	const globalCommandChangeSet = await getGlobalApplicationCommandChanges(
+		application
+	);
 
 	const globalCommandList = [
-		...globalCommands.newCommands,
-		...globalCommands.updatedCommands,
+		...globalCommandChangeSet.newCommands,
+		...globalCommandChangeSet.updatedCommands,
+		...globalCommandChangeSet.unchangedCommands,
 	];
 
-	await putGlobalApplicationCommands(globalCommandList, {
+	await API.putGlobalApplicationCommands(globalCommandList, {
 		applicationID: application.id,
 	});
 
 	await Promise.all(
-		Array.from(globalCommands.deletedCommands).map(async (id) =>
-			deleteGlobalApplicationCommand(id, {
+		Array.from(globalCommandChangeSet.deletedCommands).map(async (cmd) =>
+			API.deleteGlobalApplicationCommand(cmd.id, {
 				applicationID: application.id,
 			})
 		)

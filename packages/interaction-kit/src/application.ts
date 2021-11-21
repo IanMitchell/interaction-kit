@@ -140,62 +140,8 @@ export default class Application {
 		return this.#components.get(customID);
 	}
 
-	getCommand(type: ApplicationCommandType, customID: string) {
-		return this.#commands.get(type).get(customID);
-	}
-
-	// TODO: Should this be moved into Command?
-	async updateCommands() {
-		console.log("Checking for command updates in Development Server");
-
-		if (!process.env.DEVELOPMENT_SERVER_ID) {
-			throw new NoDevelopmentServerEnvironmentVariableError();
-		}
-
-		const guildID: Snowflake = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
-		const json = await API.getGuildApplicationCommands(guildID);
-
-		// TODO: Handle errors
-		/**
-		 * Not in development server:
-		 *  { message: 'Missing Access', code: 50001 }
-		 */
-
-		const allCommands = Array.from(this.#commands.values())
-			.map((map) => Array.from(map.values()))
-			.flat();
-
-		for (const command of allCommands) {
-			const signature = json.find((cmd) => cmd.name === command.name);
-
-			if (!signature) {
-				console.log(`\tCreating ${command.name}`);
-
-				try {
-					await API.postGuildApplicationCommand(guildID, command.serialize());
-				} catch (e: unknown) {
-					console.error(`\tProblem updating ${command.name}`);
-					console.error(e);
-				}
-			} else if (!command.equals(signature)) {
-				console.log(`\tUpdating ${command.name}`);
-
-				try {
-					await API.patchGuildApplicationCommand(guildID, {
-						...command.serialize(),
-						application_id: this.#applicationID,
-						id: signature.id,
-					});
-				} catch (e: unknown) {
-					console.error(`\tProblem updating ${command.name}`);
-					console.error(e);
-				}
-			}
-		}
-
-		console.log("Finished checking for updates");
-
-		return this;
+	getCommand(type: ApplicationCommandType, name: string) {
+		return this.#commands.get(type).get(name);
 	}
 
 	loadApplicationCommandDirectory(directoryPath: string) {
@@ -238,13 +184,6 @@ export default class Application {
 		});
 	}
 
-	// LoadDirectory(path: string) {
-	// TODO: Load all JS files from path
-	// TODO: Create map of file/commandData
-	// TODO: Create file listener on change
-	// TODO: onChange, reload file and maybe emit command change events
-	// }
-
 	handler(
 		request: FastifyRequest<{ Body: InteractionDefinition }>,
 		response: FastifyReply
@@ -253,6 +192,7 @@ export default class Application {
 		try {
 			Interaction.handler(this, request, response);
 		} catch (exception: unknown) {
+			console.log(exception);
 			void response.status(400).send({
 				error: "Unknown Type",
 			});
@@ -261,23 +201,12 @@ export default class Application {
 	}
 
 	startServer() {
-		console.log("Starting server...");
-		// TODO: Move this into a dev env check.
-		void this.updateCommands();
 		return startInteractionKitServer(
 			(...args) => {
 				this.handler(...args);
 			},
 			this.#publicKey,
 			this.#port
-		);
-	}
-}
-
-class NoDevelopmentServerEnvironmentVariableError extends Error {
-	constructor() {
-		super(
-			"interaction-kit requires the environment variable DEVELOPMENT_SERVER_ID to update a single server's commands."
 		);
 	}
 }

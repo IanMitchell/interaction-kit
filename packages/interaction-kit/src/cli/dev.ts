@@ -1,10 +1,81 @@
 import ngrok from "ngrok";
 import chokidar from "chokidar";
 import arg from "arg";
-import { getApplicationEntrypoint } from "../scripts";
+import * as API from "../api";
+import {
+	getApplicationEntrypoint,
+	getGuildApplicationCommandChanges,
+} from "../scripts";
+import Application from "../application";
+import { Snowflake, ApplicationCommand } from "../definitions";
 
 const CONFIG_FILES = [".env"];
 const BOT_FILES = ["package.json", "src/*", "src/**/*"];
+
+/* eslint-disable */
+// @ts-expect-error TS Dumb
+const listFormatter = new Intl.ListFormat("en", {
+	style: "long",
+	type: "conjunction",
+});
+
+function getCommandLogList(commands: ApplicationCommand[]): string {
+	return listFormatter.format(commands.map((cmd) => cmd.name));
+}
+/* eslint-enable */
+
+async function startDevServer(application: Application) {
+	console.log("Checking for command updates in Development Server");
+
+	if (!process.env.DEVELOPMENT_SERVER_ID) {
+		console.error("Missing `DEVELOPMENT_SERVER_ID` env variable. <link>");
+		process.exit(0);
+	}
+
+	const guildID: Snowflake = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
+	const devCommandChangeSet = await getGuildApplicationCommandChanges(
+		application,
+		guildID
+	);
+
+	console.log(
+		`${devCommandChangeSet.newCommands.size} new commands, ${devCommandChangeSet.updatedCommands.size} changed commands, ${devCommandChangeSet.deletedCommands.size} removed commands, and ${devCommandChangeSet.unchangedCommands.size} unchanged commands.`
+	);
+
+	const commandList = [
+		...devCommandChangeSet.newCommands,
+		...devCommandChangeSet.updatedCommands,
+		...devCommandChangeSet.unchangedCommands,
+	];
+
+	try {
+		if (commandList.length > 0) {
+			await API.putGuildApplicationCommands(guildID, commandList, {
+				applicationID: application.id,
+			});
+		}
+	} catch (error: unknown) {
+		console.log({ error });
+	}
+
+	if (devCommandChangeSet.deletedCommands.size > 0) {
+		const deletedCommandList = Array.from(devCommandChangeSet.deletedCommands);
+		const logList = getCommandLogList(deletedCommandList);
+		console.log(`Deleting ${logList} commands...`);
+		await Promise.all(
+			deletedCommandList.map(async (cmd) =>
+				API.deleteGuildApplicationCommand(guildID, cmd.id, {
+					applicationID: application.id,
+				})
+			)
+		);
+	}
+
+	// TODO: Iterate on guild commands
+
+	console.log("Starting server...");
+	return application.startServer();
+}
 
 export default async function dev(argv?: string[]) {
 	// Handle Help
@@ -34,7 +105,7 @@ export default async function dev(argv?: string[]) {
 
 	// Start application
 	let application = await getApplicationEntrypoint();
-	let server = application.startServer();
+	let server = await startDevServer(application);
 
 	// Listen for config file changes and let user know they need to reload
 	const configWatcher = chokidar.watch(CONFIG_FILES);
@@ -46,16 +117,21 @@ export default async function dev(argv?: string[]) {
 
 	// Watch for changes requiring application reloads
 	const botWatcher = chokidar.watch(BOT_FILES);
-	botWatcher.on("change", async () => {
+	const handler = async () => {
 		console.log("Reloading application");
 
 		// Reset server and watchers
 		await server.close();
+		console.log("Server shutdown");
 
 		// Reload the application
 		application = await getApplicationEntrypoint();
-		server = application.startServer();
-	});
+		server = await startDevServer(application);
+	};
+
+	botWatcher.on("change", handler);
+	botWatcher.on("add", handler);
+	botWatcher.on("unlink", handler);
 
 	// Start up ngrok tunnel to connect with
 	console.log("Starting Tunnel...");

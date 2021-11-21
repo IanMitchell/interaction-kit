@@ -122,13 +122,13 @@ export function handler(
 		}
 
 		case InteractionRequestType.APPLICATION_COMMAND: {
-			if (request?.body?.data?.custom_id == null) {
-				throw new Error("Received interaction without Custom ID");
+			if (request?.body?.data?.name == null) {
+				throw new Error("Received interaction without Name");
 			}
 
 			const command = application.getCommand(
 				request?.body?.data?.type,
-				request?.body?.data?.custom_id
+				request?.body?.data?.name
 			);
 			handleApplicationCommandInteraction(
 				application,
