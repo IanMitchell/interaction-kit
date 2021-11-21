@@ -16,7 +16,7 @@ import { StickerItem } from "./stickers";
 import { MessageInteraction } from "./application-commands";
 
 /** @link https://discord.com/developers/docs/resources/channel#message-object-message-flags */
-export enum PermissionFlags {    
+export enum MessageFlags {    
     CROSSPOSTED = 1 << 0,
     IS_CROSSPOSTED = 1 << 1,
     SUPRESS_EMBEDS = 1 << 2,
@@ -53,7 +53,7 @@ export type Message = {
     application?: unknown; // TODO: type this
     application_id?: Snowflake;
     message_reference?: MessageReference;
-    flags?: number;
+    flags?: MessageFlags;
     referenced_message?: Message | null;
     interaction?: MessageInteraction;
     thread?: Channel;
