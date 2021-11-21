@@ -4,11 +4,11 @@ import {
 	Interaction as InteractionDefinition,
 	InteractionApplicationCommandCallbackData,
 	InteractionCallbackType,
+	InteractionCallbackDataFlags,
 	InteractionResponse,
 	InteractionRequestType,
 	Snowflake,
 } from "../../definitions";
-import { PermissionFlags } from "../../definitions/messages";
 import Embed from "../../components/embed";
 import * as API from "../../api";
 import Application from "../../application";
@@ -90,7 +90,7 @@ export default class ApplicationCommandInteraction implements Interaction {
 		}
 
 		if (ephemeral) {
-			data.flags = PermissionFlags.EPHEMERAL;
+			data.flags = InteractionCallbackDataFlags.EPHEMERAL;
 		}
 
 		if (embed != null) {
