@@ -4,6 +4,7 @@ import {
 	Interaction as InteractionDefinition,
 	InteractionApplicationCommandCallbackData,
 	InteractionCallbackType,
+	InteractionCallbackDataFlags,
 	InteractionRequestType,
 	InteractionResponse,
 	Snowflake,
@@ -15,7 +16,6 @@ import {
 	InteractionReply,
 	SerializableComponent,
 } from "../../interfaces";
-import { PermissionFlags } from "../../definitions/messages";
 import Embed from "../../components/embed";
 import { isActionRow } from "../../components/action-row";
 
@@ -85,7 +85,7 @@ export default class MessageComponentInteraction implements Interaction {
 		}
 
 		if (ephemeral) {
-			data.flags = PermissionFlags.EPHEMERAL;
+			data.flags = InteractionCallbackDataFlags.EPHEMERAL;
 		}
 
 		if (embed != null) {
