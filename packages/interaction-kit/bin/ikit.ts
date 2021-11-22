@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import dotenv from "dotenv";
 import arg from "arg";
 import pkg from "../package.json";
 import devCommand from "../src/cli/dev";
@@ -6,6 +7,9 @@ import deployCommand from "../src/cli/deploy";
 import startCommand from "../src/cli/start";
 
 // Credit to Next.js, which I largely ripped off for this
+
+// Setup .env
+dotenv.config();
 
 process.on("SIGTERM", () => process.exit(0));
 process.on("SIGINT", () => process.exit(0));

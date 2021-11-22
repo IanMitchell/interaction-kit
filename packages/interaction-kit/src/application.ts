@@ -1,11 +1,8 @@
-/* eslint-disable no-await-in-loop */
-
 import type { FastifyRequest, FastifyReply } from "fastify";
 
 import fs from "node:fs";
 import path from "node:path";
 import url from "node:url";
-import dotenv from "dotenv";
 import SlashCommand from "./commands/slash-command";
 import ContextMenu from "./commands/context-menu";
 import Config from "./api/config";
@@ -26,8 +23,6 @@ type ApplicationArgs = {
 	token: string;
 	port?: number;
 };
-
-dotenv.config();
 
 export interface CommandMap
 	extends Map<

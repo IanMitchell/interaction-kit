@@ -4,9 +4,16 @@ import Application from "./application";
 import { ApplicationCommand, Snowflake } from "./definitions";
 
 export async function getApplicationEntrypoint(): Promise<Application> {
-	const json = await import(path.join(process.cwd(), "package.json"));
-	const app = await import(path.join(process.cwd(), json?.default?.main));
-	return app?.default as Application;
+	try {
+		const json = await import(path.join(process.cwd(), "package.json"));
+		const app = await import(path.join(process.cwd(), json?.default?.main));
+		return app?.default as Application;
+	} catch (error: unknown) {
+		console.error("There was an error reading your application file:");
+		// @ts-expect-error dumdum
+		console.log(error.message);
+		process.exit(1);
+	}
 }
 
 function getChangeSet(
