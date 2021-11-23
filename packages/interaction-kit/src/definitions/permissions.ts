@@ -37,4 +37,5 @@ export enum PermissionFlags {
 	MANAGE_THREADS = 1 << 34,
 	USE_PUBLIC_THREADS = 1 << 35,
 	USE_PRIVATE_THREADS = 1 << 36,
+	MODERATE_MEMBERS = 1 << 40,
 }
