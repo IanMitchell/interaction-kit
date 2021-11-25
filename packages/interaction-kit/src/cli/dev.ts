@@ -10,7 +10,7 @@ import Application from "../application";
 import { Snowflake, ApplicationCommand } from "../definitions";
 
 const CONFIG_FILES = [".env"];
-const BOT_FILES = ["package.json", "src/*", "src/**/*"];
+const BOT_FILES = ["package.json", "src/**/*"];
 
 /* eslint-disable */
 // @ts-expect-error TS Dumb
@@ -26,11 +26,6 @@ function getCommandLogList(commands: ApplicationCommand[]): string {
 
 async function startDevServer(application: Application) {
 	console.log("Checking for command updates in Development Server");
-
-	if (!process.env.DEVELOPMENT_SERVER_ID) {
-		console.error("Missing `DEVELOPMENT_SERVER_ID` env variable. <link>");
-		process.exit(0);
-	}
 
 	const guildID: Snowflake = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
 	const devCommandChangeSet = await getGuildApplicationCommandChanges(
@@ -90,6 +85,11 @@ export default async function dev(argv?: string[]) {
 		process.exit(0);
 	}
 
+	if (!process.env.DEVELOPMENT_SERVER_ID) {
+		console.error("Missing `DEVELOPMENT_SERVER_ID` env variable. <link>");
+		process.exit(0);
+	}
+
 	// Parse input args
 	const args = arg(
 		{
@@ -108,7 +108,9 @@ export default async function dev(argv?: string[]) {
 	let server = await startDevServer(application);
 
 	// Listen for config file changes and let user know they need to reload
-	const configWatcher = chokidar.watch(CONFIG_FILES);
+	const configWatcher = chokidar.watch(CONFIG_FILES, {
+		ignoreInitial: true,
+	});
 	configWatcher.on("change", (path) => {
 		console.log(
 			`Change detected in ${path} - please restart your application!`
@@ -131,17 +133,17 @@ export default async function dev(argv?: string[]) {
 		server = await startDevServer(application);
 	};
 
-	botWatcher.on("change", () => {
-		console.log("change event!");
+	botWatcher.on("change", (path) => {
+		console.log(`${path} changed, reloading`);
 		void handler();
 	});
 	botWatcher.on("add", (path) => {
-		console.log("add event!");
+		console.log(`${path} was added, reloading`);
 		console.log(path);
 		void handler();
 	});
-	botWatcher.on("unlink", () => {
-		console.log("unlink event!");
+	botWatcher.on("unlink", (path) => {
+		console.log(`${path} was removed, reloading`);
 		void handler();
 	});
 
@@ -165,6 +167,6 @@ export default async function dev(argv?: string[]) {
 		},
 	});
 
-	console.log(`URL: ${url}`);
+	console.log(`ngrok tunnel started for http://localhost:${port}\n${url}`);
 	console.log("Add this as your test bot thing. More info: <url>");
 }

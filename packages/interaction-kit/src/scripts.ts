@@ -5,9 +5,11 @@ import { ApplicationCommand, Snowflake } from "./definitions";
 
 export async function getApplicationEntrypoint(): Promise<Application> {
 	try {
+		/* eslint-disable*/
 		const json = await import(path.join(process.cwd(), "package.json"));
 		const app = await import(path.join(process.cwd(), json?.default?.main));
 		return app?.default as Application;
+		/* eslint-enable */
 	} catch (error: unknown) {
 		console.error("There was an error reading your application file:");
 		// @ts-expect-error dumdum

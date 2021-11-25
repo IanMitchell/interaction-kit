@@ -15,9 +15,8 @@ export default class ActionRow implements SerializableComponent {
 		this.setComponents(...components);
 	}
 
-	// TODO: Is there a cleaner form for this?
 	get id() {
-		return "";
+		return undefined;
 	}
 
 	get type() {

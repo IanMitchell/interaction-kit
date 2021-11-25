@@ -9,7 +9,10 @@ import startCommand from "../src/cli/start";
 // Credit to Next.js, which I largely ripped off for this
 
 // Setup .env
-dotenv.config();
+const result = dotenv.config();
+if (result.error) {
+	throw result.error;
+}
 
 process.on("SIGTERM", () => process.exit(0));
 process.on("SIGINT", () => process.exit(0));

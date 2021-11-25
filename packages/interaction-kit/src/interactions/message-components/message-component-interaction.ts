@@ -64,8 +64,12 @@ export default class MessageComponentInteraction implements Interaction {
 		this.#replied = false;
 	}
 
-	// // TODO: Is `defer` more appropriate?
+	// TODO: Settle on acknowledge or defer
 	acknowledge() {
+		return this.defer();
+	}
+
+	defer() {
 		return this.response.status(200).send({
 			type: InteractionCallbackType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
 		});
