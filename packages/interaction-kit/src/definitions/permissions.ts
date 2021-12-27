@@ -32,7 +32,6 @@ export enum PermissionFlags {
 	MANAGE_WEBHOOKS = 1 << 29n,
 	MANAGE_EMOJIS = 1 << 30n,
 	USE_SLASH_COMMANDS = 1 << 31n,
-	// TODO: These may not work as they shift over 31 ..?
 	REQUEST_TO_SPEAK = 1 << 32n,
 	MANAGE_THREADS = 1 << 34n,
 	USE_PUBLIC_THREADS = 1 << 35n,
