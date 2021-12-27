@@ -64,7 +64,7 @@ export async function postGlobalApplicationCommand(
 
 // TODO: Test, Type, Document
 export async function putGlobalApplicationCommands(
-	commands: ApplicationCommand[],
+	commands: Array<Optional<ApplicationCommand, "id" | "application_id">>,
 	options: {
 		headers?: Record<string, string>;
 		applicationID?: Snowflake;

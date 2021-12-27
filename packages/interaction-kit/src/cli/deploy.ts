@@ -1,8 +1,5 @@
 import * as API from "../api";
-import {
-	getApplicationEntrypoint,
-	getGlobalApplicationCommandChanges,
-} from "../scripts";
+import { getApplicationEntrypoint } from "../scripts";
 
 export default async function command(argv?: string[]) {
 	if (argv?.includes("--help")) {
@@ -17,47 +14,15 @@ export default async function command(argv?: string[]) {
 	}
 
 	const application = await getApplicationEntrypoint();
-	const globalCommandChangeSet = await getGlobalApplicationCommandChanges(
-		application
+	const serializedCommands = application.commands.map((command) =>
+		command.serialize()
 	);
 
-	const globalCommandList = [
-		...globalCommandChangeSet.newCommands,
-		...globalCommandChangeSet.updatedCommands,
-		...globalCommandChangeSet.unchangedCommands,
-	];
-
-	await API.putGlobalApplicationCommands(globalCommandList, {
+	await API.putGlobalApplicationCommands(serializedCommands, {
 		applicationID: application.id,
 	});
 
-	await Promise.all(
-		Array.from(globalCommandChangeSet.deletedCommands).map(async (cmd) =>
-			API.deleteGlobalApplicationCommand(cmd.id, {
-				applicationID: application.id,
-			})
-		)
-	);
-
 	// TODO: Enable once Guild Commands are figured out
-	// for (const [guildID, commandList] of guildCommands.entries()) {
-	// 	const guildCommandList = [
-	// 		...commandList.newCommands,
-	// 		...commandList.updatedCommands,
-	// 	];
-
-	// 	await putGuildApplicationCommands(guildID, guildCommandList, {
-	// 		applicationID: application.id,
-	// 	});
-
-	// 	await Promise.all(
-	// 		Array.from(commandList.deletedCommands).map(async (id) =>
-	// 			deleteGuildApplicationCommand(guildID, id, {
-	// 				applicationID: application.id,
-	// 			})
-	// 		)
-	// 	);
-	// }
 
 	process.exit(0);
 }
