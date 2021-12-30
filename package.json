@@ -14,6 +14,7 @@
 		"node": ">=16.6.0"
 	},
 	"dependencies": {
+		"create-ikit-app": "file:packages/create-ikit-app",
 		"discord-request": "file:packages/discord-request",
 		"interaction-kit": "file:packages/interaction-kit",
 		"interactionkit.dev": "file:packages/interactionkit.dev"

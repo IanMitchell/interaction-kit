@@ -1,0 +1,30 @@
+{
+	"name": "create-ikit-app",
+	"version": "0.0.1",
+	"author": "Ian Mitchell",
+	"description": "Sets up a new Interaction Kit bot application",
+	"license": "MIT",
+	"exports": "./dist/index.js",
+	"main": "./dist/index.js",
+	"typings": "dist/index.d.ts",
+	"type": "module",
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -r dist/",
+		"typecheck": "tsc --noEmit",
+		"prettier": "prettier src/**/*.ts --check",
+		"lint": "eslint ./src/**/*.ts",
+		"test": "jest"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"engines": {
+		"node": ">=16"
+	},
+	"dependencies": {
+		"args": "5.0.1",
+		"inquirer": "^5.0.0"
+	}
+}

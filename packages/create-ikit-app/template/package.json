@@ -1,0 +1,12 @@
+{
+	"name": "%NAME%",
+	"main": "src/app.%EXT%",
+	"type": "module",
+	"scripts": {
+		"deploy": "NODE_OPTIONS='--es-module-specifier-resolution=node' ikit deploy",
+		"dev": "NODE_OPTIONS='--es-module-specifier-resolution=node' ikit dev"
+	},
+	"engines": {
+		"node": ">=16"
+	}
+}
