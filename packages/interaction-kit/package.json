@@ -29,7 +29,7 @@
 	"dependencies": {
 		"arg": "^5.0.1",
 		"chokidar": "^3.5.2",
-		"discord-request": "file:../discord-request",
+		"discord-request": "0.0.3",
 		"dotenv": "^10.0.0",
 		"fastify": "^3.17.0",
 		"fastify-raw-body": "^3.1.0",

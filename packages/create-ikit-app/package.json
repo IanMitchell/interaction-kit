@@ -4,9 +4,9 @@
 	"author": "Ian Mitchell",
 	"description": "Sets up a new Interaction Kit bot application",
 	"license": "MIT",
-	"exports": "./dist/index.js",
-	"main": "./dist/index.js",
-	"typings": "dist/index.d.ts",
+	"exports": "./dist/src/index.js",
+	"main": "./dist/src/index.js",
+	"typings": "dist/src/index.d.ts",
 	"type": "module",
 	"scripts": {
 		"build": "tsc",

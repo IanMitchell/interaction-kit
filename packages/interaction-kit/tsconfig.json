@@ -4,5 +4,6 @@
 		"rootDir": ".",
 		"outDir": "dist"
 	},
-	"exclude": ["dist"]
+	"exclude": ["dist"],
+	"references": [{ "path": "../discord-request" }]
 }

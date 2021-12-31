@@ -1,5 +1,8 @@
 {
 	"name": "interaction-kit-workspace",
+	"workspaces": [
+		"packages/*"
+	],
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
@@ -12,12 +15,6 @@
 	},
 	"engines": {
 		"node": ">=16.6.0"
-	},
-	"dependencies": {
-		"create-ikit-app": "file:packages/create-ikit-app",
-		"discord-request": "file:packages/discord-request",
-		"interaction-kit": "file:packages/interaction-kit",
-		"interactionkit.dev": "file:packages/interactionkit.dev"
 	},
 	"devDependencies": {
 		"@types/jest": "^27.0.2",

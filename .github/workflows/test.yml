@@ -12,18 +12,18 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 16.2
-          cache: npm
+          cache: yarn
 
       - name: Install
         env:
           CI: true
         run: |
-          npx lerna bootstrap
+          yarn install
 
       - name: Build
         run: |
-          npm run build
+          yarn build
 
       - name: Test
         run: |
-          npm test
+          yarn test
