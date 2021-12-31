@@ -1,5 +1,6 @@
 import arg from "arg";
 import inquirer from "inquirer";
+import spawn from "cross-spawn";
 
 process.on("SIGTERM", () => process.exit(0));
 process.on("SIGINT", () => process.exit(0));
@@ -133,4 +134,19 @@ console.log(values);
 
 // insert values into template (only .env?)
 
-// run npm `install interaction-kit fastify `
+const packages = ["interaction-kit", "fastify"];
+await new Promise((resolve, reject) => {
+	const child = spawn("npm", `install ${packages.join(" ")}`, {
+		stdio: "inherit",
+		env: { ...process.env },
+	});
+
+	child.on("close", (code) => {
+		if (code !== 0) {
+			reject(new Error(`npm install ${packages.join(" ")}`));
+			return;
+		}
+
+		resolve(true);
+	});
+});
