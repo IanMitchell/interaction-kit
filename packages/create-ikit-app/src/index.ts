@@ -136,7 +136,7 @@ console.log(values);
 
 const packages = ["interaction-kit", "fastify"];
 await new Promise((resolve, reject) => {
-	const child = spawn("npm", `install ${packages.join(" ")}`, {
+	const child = spawn("npm", [`install`, ...packages], {
 		stdio: "inherit",
 		env: { ...process.env },
 	});
