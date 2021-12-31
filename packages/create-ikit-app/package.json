@@ -24,7 +24,7 @@
 		"node": ">=16"
 	},
 	"dependencies": {
-		"args": "5.0.1",
+		"arg": "^5.0.1",
 		"inquirer": "^5.0.0"
 	}
 }
