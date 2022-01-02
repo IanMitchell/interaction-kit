@@ -6,24 +6,10 @@ jobs:
   Test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      uses: ianmitchell/interaction-kit/.github/workflows/install.yml@v1
 
-      - name: Install Node.js 16.x
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16.x
-          cache: yarn
-
-      - name: Install
-        env:
-          CI: true
-        run: |
-          yarn install
-
-      - name: Build
-        run: |
-          yarn build
+      uses: ianmitchell/interaction-kit/.github/workflows/build.yml@v1
 
       - name: Test
         run: |
-          yarn test
+          npm test
