@@ -11,6 +11,7 @@ jobs:
   Setup:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Install Node.js 16.x
         uses: actions/setup-node@v2
         with:

@@ -4,13 +4,10 @@ on: [push, pull_request]
 
 jobs:
   Setup:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ianmitchell/interaction-kit/.github/workflows/setup.yml@a584eb0cac8e4c0fc56744f90a0c92aa13792328
 
   Prettier:
-    needs: Setup
+    runs-on: ubuntu-latest
+    uses: ianmitchell/interaction-kit/.github/workflows/setup.yml@a584eb0cac8e4c0fc56744f90a0c92aa13792328
     steps:
       - name: Formatting
         run: |
