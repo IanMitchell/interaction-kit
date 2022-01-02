@@ -7,7 +7,7 @@ jobs:
 
   Prettier:
     runs-on: ubuntu-latest
-    uses: ianmitchell/interaction-kit/.github/workflows/setup.yml@a584eb0cac8e4c0fc56744f90a0c92aa13792328
+    uses: ianmitchell/interaction-kit/.github/workflows/setup.yml@a1dbbafaa16bbf626e267e114f3fd736db259e5e
     steps:
       - name: Formatting
         run: |
