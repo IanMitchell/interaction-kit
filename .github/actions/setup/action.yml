@@ -15,10 +15,12 @@ runs:
     - name: Install
       env:
         CI: true
+      shell: bash
       run: |
         npm install
 
     - name: Build
       if: ${{ inputs.build }}
+      shell: bash
       run: |
         npm run build
