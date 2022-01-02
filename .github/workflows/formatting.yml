@@ -1,17 +1,15 @@
-name: Test
+name: Formatting
 
 on: [push, pull_request]
 
 jobs:
   Setup:
     uses: ianmitchell/interaction-kit/.github/workflows/setup.yml@$GITHUB_SHA
-    with:
-      build: true
 
-  Test:
+  Prettier:
     runs-on: ubuntu-latest
     needs: Setup
     steps:
-      - name: Test
+      - name: Formatting
         run: |
-          npm test
+          yarn prettier

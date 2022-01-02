@@ -3,27 +3,15 @@ name: Lint
 on: [push, pull_request]
 
 jobs:
-  Install:
-    uses: ianmitchell/interaction-kit/.github/workflows/install.yml@ee08c1f7f12daa96bbb815f6b510528f811d97a8
-
-  Build:
-    uses: ianmitchell/interaction-kit/.github/workflows/build.yml@ee08c1f7f12daa96bbb815f6b510528f811d97a8
+  Setup:
+    uses: ianmitchell/interaction-kit/.github/workflows/setup.yml@$GITHUB_SHA
+    with:
+      build: true
 
   ESLint:
     runs-on: ubuntu-latest
-    needs:
-      - Install
-      - Build
+    needs: Setup
     steps:
       - name: Lint
         run: |
           yarn lint
-
-  Prettier:
-    runs-on: ubuntu-latest
-    needs:
-      - Install
-    steps:
-      - name: Formatting
-        run: |
-          yarn prettier

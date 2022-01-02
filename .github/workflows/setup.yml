@@ -1,10 +1,14 @@
-name: Typecheck
+name: Setup
 
 on:
   workflow_call:
+    inputs:
+      build:
+        type: boolean
+        default: false
 
 jobs:
-  Install:
+  Setup:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -20,3 +24,8 @@ jobs:
           CI: true
         run: |
           npm install
+
+      - name: Build
+        if: ${{ inputs.build }}
+        run: |
+          npm run build
