@@ -3,15 +3,11 @@ name: Test
 on: [push, pull_request]
 
 jobs:
-  Setup:
-    uses: ianmitchell/interaction-kit/.github/workflows/setup.yml@53b7c89e4aba33974865d7850f90fbc61a40a5bb
-    with:
-      build: true
-
   Test:
     runs-on: ubuntu-latest
-    needs: Setup
     steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/setup-build
       - name: Test
         run: |
           npm test

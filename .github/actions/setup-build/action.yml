@@ -1,0 +1,9 @@
+name: Setup and Build
+runs:
+  using: "composite"
+  steps:
+    - uses: ./.github/actions/setup
+    - name: Build
+      shell: bash
+      run: |
+        npm run build

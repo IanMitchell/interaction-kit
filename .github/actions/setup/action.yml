@@ -1,8 +1,4 @@
 name: Setup
-inputs:
-  build:
-    type: boolean
-    default: false
 runs:
   using: "composite"
   steps:

@@ -10,4 +10,4 @@ jobs:
       - uses: ./.github/actions/setup
       - name: Formatting
         run: |
-          yarn prettier
+          npm run prettier
