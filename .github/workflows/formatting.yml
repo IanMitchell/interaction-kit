@@ -3,14 +3,11 @@ name: Formatting
 on: [push, pull_request]
 
 jobs:
-  Setup:
-    uses: ianmitchell/interaction-kit/.github/workflows/setup.yml@1b7470aa499e9ce44ee4882ee6836da7f1f146e3
-
   Prettier:
     runs-on: ubuntu-latest
-    needs: Setup
     steps:
       - uses: actions/checkout@v2
+      - uses: ./.github/actions/setup@68bd4ff02b0d62825aee4b9e860ec9a98029d8eb
       - name: Formatting
         run: |
           yarn prettier
