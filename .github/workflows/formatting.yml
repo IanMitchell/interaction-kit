@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup@68bd4ff02b0d62825aee4b9e860ec9a98029d8eb
+      - uses: ./.github/actions/setup
       - name: Formatting
         run: |
           yarn prettier
