@@ -4,10 +4,10 @@ on: [push, pull_request]
 
 jobs:
   Install:
-    uses: ianmitchell/interaction-kit/.github/workflows/install.yml@v1
+    uses: ianmitchell/interaction-kit/.github/workflows/install.yml@ee08c1f7f12daa96bbb815f6b510528f811d97a8
 
   Build:
-    uses: ianmitchell/interaction-kit/.github/workflows/build.yml@v1
+    uses: ianmitchell/interaction-kit/.github/workflows/build.yml@ee08c1f7f12daa96bbb815f6b510528f811d97a8
 
   ESLint:
     runs-on: ubuntu-latest
