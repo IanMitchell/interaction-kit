@@ -11,7 +11,7 @@ jobs:
     # needs: Setup
     steps:
       - name: Setup
-        uses: ./.github/workflows/setup
+        uses: ./.github/workflows/setup.yml
       - name: Formatting
         run: |
           yarn prettier
