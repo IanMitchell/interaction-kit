@@ -4,10 +4,10 @@ on: [push, pull_request]
 
 jobs:
   Install:
-    uses: ./.github/workflows/install.yml@v1
+    uses: ianmitchell/interaction-kit/.github/workflows/install.yml@v1
 
   Build:
-    uses: ./.github/workflows/build.yml@v1
+    uses: ianmitchell/interaction-kit/.github/workflows/build.yml@v1
 
   Typecheck:
     runs-on: ubuntu-latest
