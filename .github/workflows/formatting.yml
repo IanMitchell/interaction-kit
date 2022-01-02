@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   Setup:
-    uses: ianmitchell/interaction-kit/.github/workflows/setup.yml@a584eb0cac8e4c0fc56744f90a0c92aa13792328
+    uses: ianmitchell/interaction-kit/.github/workflows/setup.yml@1b7470aa499e9ce44ee4882ee6836da7f1f146e3
 
   Prettier:
     runs-on: ubuntu-latest
