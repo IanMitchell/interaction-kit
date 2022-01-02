@@ -4,9 +4,8 @@ on: [push, pull_request]
 
 jobs:
   Setup:
-    uses:
-      - actions/checkout@v2
-      - ianmitchell/interaction-kit/.github/workflows/setup.yml@a584eb0cac8e4c0fc56744f90a0c92aa13792328
+    - uses: actions/checkout@v2
+    - uses: ianmitchell/interaction-kit/.github/workflows/setup.yml@a584eb0cac8e4c0fc56744f90a0c92aa13792328
 
   Prettier:
     runs-on: ubuntu-latest
