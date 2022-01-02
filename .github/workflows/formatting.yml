@@ -4,13 +4,14 @@ on: [push, pull_request]
 
 jobs:
   Setup:
-    uses: ianmitchell/interaction-kit/.github/workflows/setup.yml@a584eb0cac8e4c0fc56744f90a0c92aa13792328
+    uses:
+      - actions/checkout@v2
+      - ianmitchell/interaction-kit/.github/workflows/setup.yml@a584eb0cac8e4c0fc56744f90a0c92aa13792328
 
   Prettier:
     runs-on: ubuntu-latest
     needs: Setup
     steps:
-      - uses: actions/checkout@v2
       - name: Formatting
         run: |
           yarn prettier
