@@ -8,7 +8,7 @@ jobs:
 
   Prettier:
     runs-on: ubuntu-latest
-    needs: Setup
+    # needs: Setup
     steps:
       - name: Setup
         uses: ./.github/workflows/setup
