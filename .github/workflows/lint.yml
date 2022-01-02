@@ -6,9 +6,9 @@ jobs:
   ESLint:
     runs-on: ubuntu-latest
     steps:
-      uses: ianmitchell/interaction-kit/.github/workflows/install.yml@v1
+      - uses: ianmitchell/interaction-kit/.github/workflows/install.yml@v1
 
-      uses: ianmitchell/interaction-kit/.github/workflows/build.yml@v1
+      - uses: ianmitchell/interaction-kit/.github/workflows/build.yml@v1
 
       - name: Lint
         run: |
@@ -17,7 +17,7 @@ jobs:
   Prettier:
     runs-on: ubuntu-latest
     steps:
-      uses: ianmitchell/interaction-kit/.github/workflows/install.yml@v1
+      - uses: ianmitchell/interaction-kit/.github/workflows/install.yml@v1
 
       - name: Formatting
         run: |

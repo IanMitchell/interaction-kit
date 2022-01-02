@@ -6,9 +6,9 @@ jobs:
   Typecheck:
     runs-on: ubuntu-latest
     steps:
-      uses: ianmitchell/interaction-kit/.github/workflows/install.yml@v1
+      - uses: ianmitchell/interaction-kit/.github/workflows/install.yml@v1
 
-      uses: ianmitchell/interaction-kit/.github/workflows/build.yml@v1
+      - uses: ianmitchell/interaction-kit/.github/workflows/build.yml@v1
 
       - name: Typecheck
         run: |
