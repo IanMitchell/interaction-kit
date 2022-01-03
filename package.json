@@ -11,7 +11,8 @@
 		"typecheck": "turbo run typecheck",
 		"prettier": "turbo run prettier",
 		"lint": "turbo run lint",
-		"test": "turbo run test"
+		"test": "turbo run test",
+		"version": "npx lerna version --no-push"
 	},
 	"engines": {
 		"npm": ">=8.0.0",
