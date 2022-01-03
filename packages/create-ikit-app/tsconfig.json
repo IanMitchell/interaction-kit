@@ -1,9 +1,12 @@
 {
-	"extends": "../../tsconfig.json",
-	"compilerOptions": {
-		"rootDir": ".",
-		"outDir": "dist"
-	},
-	"include": ["src/**/*.ts"],
-	"exclude": ["dist"]
+  "exclude": ["dist", "templates"],
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true
+  }
 }

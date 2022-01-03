@@ -1,6 +1,6 @@
 {
-	"name": "%NAME%",
-	"main": "src/app.%EXT%",
+	"name": "{{ name }}",
+	"main": "src/app.ts",
 	"type": "module",
 	"scripts": {
 		"deploy": "NODE_OPTIONS='--es-module-specifier-resolution=node' ikit deploy",
@@ -8,5 +8,12 @@
 	},
 	"engines": {
 		"node": ">=16"
+	},
+	"dependencies": {
+		"interaction-kit": "^0.1.0",
+		"fastify": "^2.0.0"
+	},
+	"devDependencies": {
+		"typescript": "^4.5.0"
 	}
 }

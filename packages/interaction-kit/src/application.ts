@@ -156,6 +156,8 @@ export default class Application {
 				}
 			}
 		});
+
+		return this;
 	}
 
 	loadMessageComponentDirectory(directoryPath: string) {
@@ -176,6 +178,8 @@ export default class Application {
 				}
 			}
 		});
+
+		return this;
 	}
 
 	handler(
