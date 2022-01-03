@@ -134,18 +134,18 @@ console.log(values);
 
 // insert values into template (only .env?)
 
-// const packages = ["interaction-kit", "fastify"];
-// await new Promise((resolve, reject) => {
-// 	const child = spawn("npm", [`install`, ...packages], {
-// 		stdio: "inherit",
-// 		env: { ...process.env },
-// 	});
-// 	child.on("close", (code) => {
-// 		if (code !== 0) {
-// 			reject(new Error(`npm install ${packages.join(" ")}`));
-// 			return;
-// 		}
+const packages = ["interaction-kit", "fastify"];
+await new Promise((resolve, reject) => {
+	const child = spawn("npm", [`install`, ...packages], {
+		stdio: "inherit",
+		env: { ...process.env },
+	});
+	child.on("close", (code) => {
+		if (code !== 0) {
+			reject(new Error(`npm install ${packages.join(" ")}`));
+			return;
+		}
 
-// 		resolve(true);
-// 	});
-// });
+		resolve(true);
+	});
+});
