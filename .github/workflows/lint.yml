@@ -10,4 +10,4 @@ jobs:
       - uses: ./.github/actions/setup
       - name: Lint
         run: |
-          npm run lint
+          npm run lint --cache-dir=".turbo"

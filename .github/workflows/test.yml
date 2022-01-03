@@ -10,4 +10,4 @@ jobs:
       - uses: ./.github/actions/setup-build
       - name: Test
         run: |
-          npm test
+          npm test --cache-dir=".turbo"

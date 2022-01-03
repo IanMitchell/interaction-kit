@@ -6,4 +6,4 @@ runs:
     - name: Build
       shell: bash
       run: |
-        npm run build
+        npm run build --cache-dir=".turbo"

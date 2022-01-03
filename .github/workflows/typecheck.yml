@@ -10,4 +10,4 @@ jobs:
       - uses: ./.github/actions/setup
       - name: Typecheck
         run: |
-          npm run typecheck
+          npm run typecheck --cache-dir=".turbo"

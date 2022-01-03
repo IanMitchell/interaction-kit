@@ -8,15 +8,18 @@ runs:
         node-version: 16.x
         cache: npm
 
+    - name: Turbo Cache
+      id: turbo-cache
+      uses: actions/cache@v2
+      with:
+        path: .turbo
+          key: turbo-${{ github.job }}-${{ github.ref_name }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ github.job }}-${{ github.ref_name }}-
+
     - name: Install
       env:
         CI: true
       shell: bash
       run: |
         npm install
-
-    - name: Build
-      if: ${{ inputs.build }}
-      shell: bash
-      run: |
-        npm run build
