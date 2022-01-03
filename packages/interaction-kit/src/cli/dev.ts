@@ -27,7 +27,7 @@ function getCommandLogList(commands: ApplicationCommand[]): string {
 async function startDevServer(application: Application) {
 	console.log("Checking for command updates in Development Server");
 
-	const guildID: Snowflake = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
+	const guildID = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
 	const devCommandChangeSet = await getGuildApplicationCommandChanges(
 		application,
 		guildID
