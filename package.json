@@ -28,7 +28,11 @@
 					".next/**"
 				]
 			},
-			"typecheck": {},
+			"typecheck": {
+				"dependsOn": [
+					"build"
+				]
+			},
 			"prettier": {},
 			"lint": {},
 			"test": {
