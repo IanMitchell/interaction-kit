@@ -1,5 +1,5 @@
 {
-	"name": "{{ name }}",
+	"name": "{{name}}",
 	"main": "src/app.ts",
 	"type": "module",
 	"scripts": {
