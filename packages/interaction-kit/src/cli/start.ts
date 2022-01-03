@@ -1,4 +1,4 @@
-import arg from "arg";
+// import arg from "arg";
 
 export default function command(argv?: string[]) {
 	// Handle Help
@@ -13,16 +13,16 @@ export default function command(argv?: string[]) {
 		process.exit(0);
 	}
 
-	// Parse input args
-	const args = arg(
-		{
-			"--port": Number,
-			"-p": "--port",
-		},
-		{
-			permissive: true,
-		}
-	);
+	// // Parse input args
+	// const args = arg(
+	// 	{
+	// 		"--port": Number,
+	// 		"-p": "--port",
+	// 	},
+	// 	{
+	// 		permissive: true,
+	// 	}
+	// );
 
-	const port = args["--port"] ?? 3000;
+	// const port = args["--port"] ?? 3000;
 }
