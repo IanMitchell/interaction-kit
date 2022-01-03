@@ -68,11 +68,6 @@ export default class ApplicationCommandInteraction implements Interaction {
 		};
 	}
 
-	// TODO: Choose between acknowledge and defer
-	acknowledge() {
-		return this.defer();
-	}
-
 	defer() {
 		return this.response.status(200).send({
 			type: InteractionCallbackType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,

@@ -56,7 +56,7 @@ export interface Interaction {
 	// get channel(): ChannelRecord;
 	// get member(): MemberRecord
 
-	acknowledge: () => unknown;
+	defer: () => unknown;
 	reply: (message: InteractionReply) => unknown;
 }
 
