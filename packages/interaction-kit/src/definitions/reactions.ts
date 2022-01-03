@@ -7,7 +7,7 @@ import { Emoji } from "./emoji";
 
 /** @link https://discord.com/developers/docs/resources/channel#reaction-object-reaction-structure */
 export type Reaction = {
-    count: number;
-    me: boolean;
-    emoji: Emoji;
-}
+	count: number;
+	me: boolean;
+	emoji: Emoji;
+};
