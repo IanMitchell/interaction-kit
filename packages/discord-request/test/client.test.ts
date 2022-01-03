@@ -42,7 +42,7 @@ describe("buckets", () => {
 		await bucket.request(new URL("http://localhost:3000"), { method: "GET" });
 
 		expect(spy).toHaveBeenCalled();
-		expect(spy.mock.calls[0][0]).toMatch(/returned a status code/);
+		expect(spy.mock.calls[0][0]).toMatch(/returned status code/);
 	});
 
 	test("should alert to incorrect bucket assignment", async () => {
