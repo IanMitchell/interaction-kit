@@ -6,4 +6,4 @@ export default new Application({
 	token: process.env.TOKEN,
 })
 	.loadApplicationCommandDirectory("./commands")
-	.loadComponentDirectory("./components");
+	.loadMessageComponentDirectory("./components");

@@ -2,7 +2,6 @@ import type { FastifyRequest, FastifyReply } from "fastify";
 
 import fs from "node:fs";
 import path from "node:path";
-import url from "node:url";
 import SlashCommand from "./commands/slash-command";
 import ContextMenu from "./commands/context-menu";
 import Config from "./api/config";
@@ -124,6 +123,7 @@ export default class Application {
 			component.id != null &&
 			!this.#components.has(component.id)
 		) {
+			console.log(`Registering the ${component.id} component`);
 			this.#components.set(component.id, component);
 		}
 
@@ -138,17 +138,15 @@ export default class Application {
 		return this.#commands.get(type).get(name);
 	}
 
-	loadApplicationCommandDirectory(directoryPath: string) {
-		const directory = path.join(
-			path.dirname(url.fileURLToPath(import.meta.url)),
-			directoryPath
-		);
+	loadApplicationCommandDirectory(directory: string) {
+		console.log(`Loading Application Commands from ${directory}`);
 
 		fs.readdir(directory, async (err, files) => {
 			if (err) {
 				throw err;
 			}
 
+			console.log(`\tLoading ${files.length} files`);
 			for (const file of files) {
 				if (file.endsWith(".js")) {
 					const command = await import(path.join(directory, file));
@@ -160,17 +158,15 @@ export default class Application {
 		return this;
 	}
 
-	loadMessageComponentDirectory(directoryPath: string) {
-		const directory = path.join(
-			path.dirname(url.fileURLToPath(import.meta.url)),
-			directoryPath
-		);
+	loadMessageComponentDirectory(directory: string) {
+		console.log(`Loading Message Components from ${directory}`);
 
 		fs.readdir(directory, async (err, files) => {
 			if (err) {
 				throw err;
 			}
 
+			console.log(`\tLoading ${files.length} files`);
 			for (const file of files) {
 				if (file.endsWith(".js")) {
 					const component = await import(path.join(directory, file));

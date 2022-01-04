@@ -7,7 +7,15 @@ const templateRoot = resolve(__dirname, "..", "templates");
 
 void create("create-ikit-app", {
 	templateRoot,
+	promptForTemplate: true,
 	extra: {
+		template: {
+			type: "list",
+			describe: "template",
+			default: "JavaScript",
+			prompt: "if-no-arg",
+			choices: ["JavaScript", "TypeScript"],
+		},
 		applicationID: {
 			type: "input",
 			describe: "Enter your bot's Application ID",
@@ -26,12 +34,6 @@ void create("create-ikit-app", {
 		developmentServerID: {
 			type: "input",
 			describe: "Enter your Development Server ID",
-			prompt: "if-no-arg",
-		},
-		language: {
-			type: "list",
-			describe: "Select Language",
-			choices: ["TypeScript", "JavaScript"],
 			prompt: "if-no-arg",
 		},
 		platform: {

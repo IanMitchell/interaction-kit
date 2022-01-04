@@ -1,6 +1,6 @@
 {
 	"name": "{{name}}",
-	"main": "src/app.ts",
+	"main": "src/app.js",
 	"type": "module",
 	"scripts": {
 		"deploy": "NODE_OPTIONS='--es-module-specifier-resolution=node' ikit deploy",
@@ -10,8 +10,8 @@
 		"node": ">=16"
 	},
 	"dependencies": {
-		"interaction-kit": "^0.1.0",
-		"fastify": "^2.0.0",
+		"interaction-kit": "^0.2.0",
+		"fastify": "^3.25.0",
 		"dotenv": "^10.0.0"
 	}
 }
