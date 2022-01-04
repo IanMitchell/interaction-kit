@@ -13,7 +13,7 @@ const CONFIG_FILES = [".env"];
 const BOT_FILES = ["package.json", "src/**/*"];
 
 /* eslint-disable */
-// @ts-expect-error TS Dumb
+// @ts-expect-error TypeScript doesn't support this API yet
 const listFormatter = new Intl.ListFormat("en", {
 	style: "long",
 	type: "conjunction",
