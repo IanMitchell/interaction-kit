@@ -16,6 +16,7 @@ export default class ActionRow implements SerializableComponent {
 	}
 
 	get id() {
+		// Discord API has this as undefined, not null
 		return undefined;
 	}
 
