@@ -14,7 +14,7 @@ void create("create-ikit-app", {
 			describe: "template",
 			default: "JavaScript",
 			prompt: "if-no-arg",
-			choices: ["JavaScript", "TypeScript"],
+			choices: ["JavaScript" /*"TypeScript"*/],
 		},
 		applicationID: {
 			type: "input",
