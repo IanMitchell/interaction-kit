@@ -1,0 +1,20 @@
+{
+	"name": "create-ikit-app",
+	"version": "0.0.2-alpha.0",
+	"description": "Creates a new Interaction Kit bot application",
+	"author": "Ian Mitchell <ian.mitchell@hey.com>",
+	"license": "MIT",
+	"scripts": {
+		"build": "tsup src/cli.ts --minify",
+		"dev": "tsup src/cli.ts --watch",
+		"prepublishOnly": "npm run build"
+	},
+	"bin": "dist/cli.js",
+	"files": [
+		"dist",
+		"templates"
+	],
+	"dependencies": {
+		"create-create-app": "^7.0.0"
+	}
+}

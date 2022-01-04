@@ -3,7 +3,7 @@ import rawBody from "fastify-raw-body";
 import { Interaction } from "./definitions";
 import { validateRequest } from "./requests/validate";
 
-export default function startInteractionKitServer(
+export default async function startInteractionKitServer(
 	handler: (
 		request: FastifyRequest<{ Body: Interaction }>,
 		response: FastifyReply
@@ -19,9 +19,10 @@ export default function startInteractionKitServer(
 
 	server.addHook("preHandler", async (request, response) => {
 		if (request.method === "POST") {
-			if (!(await validateRequest(request, publicKey))) {
+			const isValid = await validateRequest(request, publicKey);
+			if (!isValid) {
 				console.log("Invalid Discord Request");
-				return response.status(401).send({ error: "Bad request signature " });
+				return response.status(401).send({ error: "Bad request signature" });
 			}
 		}
 	});
@@ -37,5 +38,11 @@ export default function startInteractionKitServer(
 		}
 
 		console.log(`Server listening on ${address}`);
+	});
+
+	return new Promise<typeof server>((resolve) => {
+		server.ready(() => {
+			resolve(server);
+		});
 	});
 }

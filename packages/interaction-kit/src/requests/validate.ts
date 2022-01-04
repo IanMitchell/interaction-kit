@@ -1,4 +1,4 @@
-import { NodeEdKeyImportParams, webcrypto } from "crypto";
+import { webcrypto } from "crypto";
 import type { FastifyRequest } from "fastify";
 import { TextEncoder } from "util";
 
@@ -13,6 +13,22 @@ export function hexToBinary(hex: string) {
 	return buffer;
 }
 
+/* eslint-disable */
+export function getPublicKey(publicKey: string) {
+	// @ts-ignore ????
+	return webcrypto.subtle.importKey(
+		"raw",
+		hexToBinary(publicKey),
+		{
+			name: "NODE-ED25519",
+			namedCurve: "NODE-ED25519",
+			public: true,
+		},
+		true,
+		["verify"]
+	);
+}
+
 export async function validateRequest(
 	request: FastifyRequest,
 	publicKey: string
@@ -23,34 +39,20 @@ export async function validateRequest(
 	const timestamp = request.headers["x-signature-timestamp"] as string;
 	const body = request.rawBody as string;
 
-	const key = async (key: string) =>
-		webcrypto.subtle.importKey(
-			"raw",
-			hexToBinary(key),
-			{
-				name: "NODE-ED25519",
-				namedCurve: "NODE-ED25519",
-				public: true,
-			} as NodeEdKeyImportParams,
-			true,
-			["verify"]
-		);
+	const key = await getPublicKey(publicKey);
 
-	const isVerified = webcrypto.subtle.verify(
+	// @ts-ignore ????
+	const isVerified = await webcrypto.subtle.verify(
 		"NODE-ED25519",
-		await key(publicKey),
+		key,
 		signature,
 		encoder.encode(timestamp + body)
 	);
 
-	if (
-		signature == null ||
-		timestamp == null ||
-		body == null ||
-		!(await isVerified)
-	) {
+	if (signature == null || timestamp == null || body == null || !isVerified) {
 		return false;
 	}
 
 	return true;
 }
+/* eslint-enable */

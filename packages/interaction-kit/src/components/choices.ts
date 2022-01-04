@@ -66,7 +66,7 @@ export class SlashChoiceList<
 			if (typeof value === "string") {
 				values[key] = { name: value, value };
 			} else if (typeof value === "number") {
-				values[key] = { name: value.toString(), value: value.toString() };
+				values[key] = { name: value.toString(), value };
 			} else if (value instanceof Object) {
 				values[key] = value;
 			} else {

@@ -4,18 +4,18 @@
  */
 
 import { User } from "./users";
-import { Snowflake } from "./snowflakes"
+import { Snowflake } from "./snowflakes";
 
 /** @link https://discord.com/developers/docs/resources/guild#guild-member-object-guild-member-structure */
 export type GuildMember = {
-    user?: User;
-    nick?: string | null;
-    avatar?: string | null;
-    roles: Snowflake[];
-    joined_at: Date; // TODO: validate
-    premium_since?: Date | null;
-    deaf: boolean;
-    mute: boolean;
-    pending?: boolean;
-    permissions?: string;
+	user?: User;
+	nick?: string | null;
+	avatar?: string | null;
+	roles: Snowflake[];
+	joined_at: Date; // TODO: validate
+	premium_since?: Date | null;
+	deaf: boolean;
+	mute: boolean;
+	pending?: boolean;
+	permissions?: string;
 };

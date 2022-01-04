@@ -130,8 +130,12 @@ export class Button
 			...options,
 			style: options?.style ?? ButtonStyle.PRIMARY,
 		});
-		this.#customID = options?.customID;
+		this.#customID = options.customID;
 		this.handler = options?.handler;
+
+		if (this.#customID == null) {
+			throw new Error("Custom ID is required");
+		}
 	}
 
 	get id() {

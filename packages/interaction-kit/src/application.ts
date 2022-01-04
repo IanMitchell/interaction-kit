@@ -1,8 +1,7 @@
-/* eslint-disable no-await-in-loop */
-
 import type { FastifyRequest, FastifyReply } from "fastify";
 
-import dotenv from "dotenv";
+import fs from "node:fs";
+import path from "node:path";
 import SlashCommand from "./commands/slash-command";
 import ContextMenu from "./commands/context-menu";
 import Config from "./api/config";
@@ -12,7 +11,6 @@ import {
 	ApplicationCommandType,
 } from "./definitions";
 import * as Interaction from "./interactions";
-import * as API from "./api";
 import { InteractionKitCommand, SerializableComponent } from "./interfaces";
 import startInteractionKitServer from "./server";
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
@@ -24,8 +22,6 @@ type ApplicationArgs = {
 	token: string;
 	port?: number;
 };
-
-dotenv.config();
 
 export interface CommandMap
 	extends Map<
@@ -96,6 +92,12 @@ export default class Application {
 		return this.#applicationID;
 	}
 
+	get commands() {
+		return Array.from(this.#commands.values())
+			.map((map) => Array.from(map.values()))
+			.flat();
+	}
+
 	addCommand(command: InteractionKitCommand<ApplicationCommandInteraction>) {
 		if (this.#commands.get(command.type)?.has(command.name.toLowerCase())) {
 			throw new Error(
@@ -121,6 +123,7 @@ export default class Application {
 			component.id != null &&
 			!this.#components.has(component.id)
 		) {
+			console.log(`Registering the ${component.id} component`);
 			this.#components.set(component.id, component);
 		}
 
@@ -131,70 +134,49 @@ export default class Application {
 		return this.#components.get(customID);
 	}
 
-	getCommand(type: ApplicationCommandType, customID: string) {
-		return this.#commands.get(type).get(customID);
+	getCommand(type: ApplicationCommandType, name: string) {
+		return this.#commands.get(type).get(name);
 	}
 
-	// TODO: Should this be moved into Command?
-	async updateCommands() {
-		console.log("Checking for command updates in Development Server");
+	loadApplicationCommandDirectory(directory: string) {
+		console.log(`Loading Application Commands from ${directory}`);
 
-		if (!process.env.DEVELOPMENT_SERVER_ID) {
-			throw new NoDevelopmentServerEnvironmentVariableError();
-		}
+		fs.readdir(directory, async (err, files) => {
+			if (err) {
+				throw err;
+			}
 
-		const guildID: Snowflake = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
-		const json = await API.getGuildApplicationCommands(guildID);
-
-		// TODO: Handle errors
-		/**
-		 * Not in development server:
-		 *  { message: 'Missing Access', code: 50001 }
-		 */
-
-		const allCommands = Array.from(this.#commands.values())
-			.map((map) => Array.from(map.values()))
-			.flat();
-
-		for (const command of allCommands) {
-			const signature = json.find((cmd) => cmd.name === command.name);
-
-			if (!signature) {
-				console.log(`\tCreating ${command.name}`);
-
-				try {
-					await API.postGuildApplicationCommand(guildID, command.serialize());
-				} catch (e: unknown) {
-					console.error(`\tProblem updating ${command.name}`);
-					console.error(e);
-				}
-			} else if (!command.equals(signature)) {
-				console.log(`\tUpdating ${command.name}`);
-
-				try {
-					await API.patchGuildApplicationCommand(guildID, {
-						...command.serialize(),
-						application_id: this.#applicationID,
-						id: signature.id,
-					});
-				} catch (e: unknown) {
-					console.error(`\tProblem updating ${command.name}`);
-					console.error(e);
+			console.log(`\tLoading ${files.length} files`);
+			for (const file of files) {
+				if (file.endsWith(".js")) {
+					const command = await import(path.join(directory, file));
+					this.addCommand(command.default);
 				}
 			}
-		}
-
-		console.log("Finished checking for updates");
+		});
 
 		return this;
 	}
 
-	// LoadDirectory(path: string) {
-	// TODO: Load all JS files from path
-	// TODO: Create map of file/commandData
-	// TODO: Create file listener on change
-	// TODO: onChange, reload file and maybe emit command change events
-	// }
+	loadMessageComponentDirectory(directory: string) {
+		console.log(`Loading Message Components from ${directory}`);
+
+		fs.readdir(directory, async (err, files) => {
+			if (err) {
+				throw err;
+			}
+
+			console.log(`\tLoading ${files.length} files`);
+			for (const file of files) {
+				if (file.endsWith(".js")) {
+					const component = await import(path.join(directory, file));
+					this.addComponent(component.default);
+				}
+			}
+		});
+
+		return this;
+	}
 
 	handler(
 		request: FastifyRequest<{ Body: InteractionDefinition }>,
@@ -204,6 +186,7 @@ export default class Application {
 		try {
 			Interaction.handler(this, request, response);
 		} catch (exception: unknown) {
+			console.log(exception);
 			void response.status(400).send({
 				error: "Unknown Type",
 			});
@@ -211,24 +194,13 @@ export default class Application {
 		}
 	}
 
-	startServer() {
-		console.log("Starting server...");
-		// TODO: Move this into a dev env check.
-		void this.updateCommands();
-		startInteractionKitServer(
+	async startServer() {
+		return startInteractionKitServer(
 			(...args) => {
 				this.handler(...args);
 			},
 			this.#publicKey,
 			this.#port
-		);
-	}
-}
-
-class NoDevelopmentServerEnvironmentVariableError extends Error {
-	constructor() {
-		super(
-			"interaction-kit requires the environment variable DEVELOPMENT_SERVER_ID to update a single server's commands."
 		);
 	}
 }

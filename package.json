@@ -1,22 +1,48 @@
 {
 	"name": "interaction-kit-workspace",
+	"workspaces": [
+		"packages/*"
+	],
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"clean": "lerna run clean",
-		"build": "lerna run build --stream",
-		"typecheck": "lerna run typecheck --stream",
-		"prettier": "lerna run prettier --stream",
-		"lint": "lerna run lint --stream",
-		"test": "lerna run test --stream"
+		"cli:create": "npm run dev --workspace=create-ikit-app",
+		"build": "turbo run build",
+		"typecheck": "turbo run typecheck",
+		"prettier": "turbo run prettier",
+		"lint": "turbo run lint",
+		"test": "turbo run test",
+		"version": "npx lerna version --no-push"
 	},
 	"engines": {
+		"npm": ">=8.0.0",
 		"node": ">=16.6.0"
 	},
-	"dependencies": {
-		"discord-request": "file:packages/discord-request",
-		"interaction-kit": "file:packages/interaction-kit",
-		"interactionkit.dev": "file:packages/interactionkit.dev"
+	"turbo": {
+		"baseBranch": "origin/main",
+		"pipeline": {
+			"build": {
+				"dependsOn": [
+					"^build"
+				],
+				"outputs": [
+					"dist/**",
+					".next/**"
+				]
+			},
+			"typecheck": {
+				"dependsOn": [
+					"build"
+				]
+			},
+			"prettier": {},
+			"lint": {},
+			"test": {
+				"dependsOn": [
+					"build"
+				]
+			}
+		}
 	},
 	"devDependencies": {
 		"@types/jest": "^27.0.2",
@@ -35,7 +61,8 @@
 		"ts-jest": "^27.0.5",
 		"tsdx": "^0.14.1",
 		"tslib": "^2.3.1",
-		"tsup": "^5.2.0",
+		"tsup": "^5.11.10",
+		"turbo": "^1.0.24",
 		"typescript": "^4.4.3"
 	}
 }

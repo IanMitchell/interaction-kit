@@ -2,3 +2,9 @@
 .DS_Store
 node_modules
 dist
+.env
+.turbo
+.next/**
+
+# We don't want to ignore .env template files
+!packages/create-ikit-app/templates/**/.env

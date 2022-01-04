@@ -114,10 +114,6 @@ export function handler(
 	request: FastifyRequest<{ Body: InteractionDefinition }>,
 	response: FastifyReply
 ) {
-	if (request?.body?.data?.custom_id == null) {
-		throw new Error("Received interaction without Custom ID");
-	}
-
 	switch (request?.body?.type) {
 		case InteractionRequestType.PING: {
 			console.log("Handling Discord Ping");
@@ -126,9 +122,13 @@ export function handler(
 		}
 
 		case InteractionRequestType.APPLICATION_COMMAND: {
+			if (request?.body?.data?.name == null) {
+				throw new Error("Received interaction without Name");
+			}
+
 			const command = application.getCommand(
 				request?.body?.data?.type,
-				request?.body?.data?.custom_id
+				request?.body?.data?.name
 			);
 			handleApplicationCommandInteraction(
 				application,
@@ -140,6 +140,10 @@ export function handler(
 		}
 
 		case InteractionRequestType.MESSAGE_COMPONENT: {
+			if (request?.body?.data?.custom_id == null) {
+				throw new Error("Received interaction without Custom ID");
+			}
+
 			const component = application.getComponent(
 				request?.body?.data?.custom_id
 			);

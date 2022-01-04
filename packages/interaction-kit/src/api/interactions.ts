@@ -1,6 +1,6 @@
 import { URL } from "url";
 import Config from "./config";
-import Client from "../../../discord-request/src/client";
+import Client from "discord-request";
 import {
 	API_URL,
 	InteractionApplicationCommandCallbackData,
