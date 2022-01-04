@@ -80,7 +80,7 @@ export default async function dev(argv?: string[]) {
 				Creates all new commands, updates all changed commands, and deletes all removed commands from Discord.
 
 			Usage
-				$ ikit deploy
+				$ ikit dev [-p <port>]
   	`);
 		process.exit(0);
 	}

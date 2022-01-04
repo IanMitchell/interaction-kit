@@ -5,7 +5,7 @@ export default async function command(argv?: string[]) {
 	if (argv?.includes("--help")) {
 		console.log(`
 			Description
-				Creates all new commands, updates all changed commands, and deletes all removed commands from Discord.
+				Registers all new commands, updates all changed commands, and deletes all removed commands from Discord.
 
 			Usage
 				$ ikit deploy
