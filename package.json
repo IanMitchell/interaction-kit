@@ -12,7 +12,7 @@
 		"prettier": "turbo run prettier",
 		"lint": "turbo run lint",
 		"test": "turbo run test",
-		"version": "npx lerna version --no-push"
+		"version": "npx lerna version --no-push && git commit -am \"Version Bump\" npm i"
 	},
 	"engines": {
 		"npm": ">=8.0.0",
