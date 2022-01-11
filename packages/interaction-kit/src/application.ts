@@ -194,13 +194,13 @@ export default class Application {
 		}
 	}
 
-	async startServer() {
+	async startServer(port?: number) {
 		return startInteractionKitServer(
 			(...args) => {
 				this.handler(...args);
 			},
 			this.#publicKey,
-			this.#port
+			port ?? this.#port
 		);
 	}
 }

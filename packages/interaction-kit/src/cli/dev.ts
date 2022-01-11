@@ -1,76 +1,11 @@
 import ngrok from "ngrok";
 import chokidar from "chokidar";
 import arg from "arg";
-import * as API from "../api";
-import {
-	getApplicationEntrypoint,
-	getGuildApplicationCommandChanges,
-} from "../scripts";
-import Application from "../application";
-import { Snowflake, ApplicationCommand } from "../definitions";
+import spawn from "cross-spawn";
+import { ChildProcess } from "child_process";
 
 const CONFIG_FILES = [".env"];
 const BOT_FILES = ["package.json", "src/**/*"];
-
-/* eslint-disable */
-// @ts-expect-error TypeScript doesn't support this API yet
-const listFormatter = new Intl.ListFormat("en", {
-	style: "long",
-	type: "conjunction",
-});
-
-function getCommandLogList(commands: ApplicationCommand[]): string {
-	return listFormatter.format(commands.map((cmd) => cmd.name));
-}
-/* eslint-enable */
-
-async function startDevServer(application: Application) {
-	console.log("Checking for command updates in Development Server");
-
-	const guildID = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
-	const devCommandChangeSet = await getGuildApplicationCommandChanges(
-		application,
-		guildID
-	);
-
-	console.log(
-		`${devCommandChangeSet.newCommands.size} new commands, ${devCommandChangeSet.updatedCommands.size} changed commands, ${devCommandChangeSet.deletedCommands.size} removed commands, and ${devCommandChangeSet.unchangedCommands.size} unchanged commands.`
-	);
-
-	const commandList = [
-		...devCommandChangeSet.newCommands,
-		...devCommandChangeSet.updatedCommands,
-		...devCommandChangeSet.unchangedCommands,
-	];
-
-	try {
-		if (commandList.length > 0) {
-			await API.putGuildApplicationCommands(guildID, commandList, {
-				applicationID: application.id,
-			});
-		}
-	} catch (error: unknown) {
-		console.log({ error });
-	}
-
-	if (devCommandChangeSet.deletedCommands.size > 0) {
-		const deletedCommandList = Array.from(devCommandChangeSet.deletedCommands);
-		const logList = getCommandLogList(deletedCommandList);
-		console.log(`Deleting ${logList} commands...`);
-		await Promise.all(
-			deletedCommandList.map(async (cmd) =>
-				API.deleteGuildApplicationCommand(guildID, cmd.id, {
-					applicationID: application.id,
-				})
-			)
-		);
-	}
-
-	// TODO: Iterate on guild commands
-
-	console.log("Starting server...");
-	return application.startServer();
-}
 
 export default async function dev(argv?: string[]) {
 	// Handle Help
@@ -102,10 +37,7 @@ export default async function dev(argv?: string[]) {
 	);
 
 	const port = args["--port"] ?? 3000;
-
-	// Start application
-	let application = await getApplicationEntrypoint();
-	let server = await startDevServer(application);
+	let child: ChildProcess | null = null;
 
 	// Listen for config file changes and let user know they need to reload
 	const configWatcher = chokidar.watch(CONFIG_FILES, {
@@ -119,18 +51,15 @@ export default async function dev(argv?: string[]) {
 
 	// Watch for changes requiring application reloads
 	const botWatcher = chokidar.watch(BOT_FILES, {
-		ignoreInitial: true,
+		// ignoreInitial: true,
 	});
 	const handler = async () => {
 		console.log("Reloading application");
 
-		// Reset server and watchers
-		await server.close();
-		console.log("Server shutdown");
-
-		// Reload the application
-		application = await getApplicationEntrypoint();
-		server = await startDevServer(application);
+		child?.kill();
+		child = spawn("ikit", ["server", "-p", port.toString()], {
+			stdio: "inherit",
+		});
 	};
 
 	botWatcher.on("change", (path) => {
@@ -162,7 +91,7 @@ export default async function dev(argv?: string[]) {
 			console.log("ngrok tunnel terminated");
 
 			// Cleanup
-			await server.close();
+			child?.kill();
 			process.exit(0);
 		},
 	});

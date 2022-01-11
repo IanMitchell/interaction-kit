@@ -23,6 +23,7 @@ function getChangeSet(
 	commandList: Map<string, ApplicationCommand>
 ) {
 	const changeSet = {
+		hasChanges: false,
 		newCommands: new Set<ApplicationCommand>(),
 		updatedCommands: new Set<ApplicationCommand>(),
 		deletedCommands: new Set<ApplicationCommand>(),
@@ -46,6 +47,7 @@ function getChangeSet(
 			} else {
 				// @ts-expect-error ????
 				changeSet.updatedCommands.add(command.serialize());
+				changeSet.hasChanges = true;
 			}
 
 			commandList.delete(command.name);
@@ -54,11 +56,16 @@ function getChangeSet(
 		else {
 			// @ts-expect-error ????
 			changeSet.newCommands.add(command.serialize());
+			changeSet.hasChanges = true;
 		}
 	}
 
 	// Any command left in the Discord list no longer exists in the code; eliminate them
 	changeSet.deletedCommands = new Set(Array.from(commandList.values()));
+
+	if (changeSet.deletedCommands.size > 0) {
+		changeSet.hasChanges = true;
+	}
 
 	return changeSet;
 }

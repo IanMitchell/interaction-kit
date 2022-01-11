@@ -225,7 +225,7 @@ export async function postGuildApplicationCommand(
 // TODO: Test, Type, Document
 export async function putGuildApplicationCommands(
 	guildID: Snowflake,
-	commands: ApplicationCommand[],
+	commands: Array<Optional<ApplicationCommand, "id" | "application_id">>,
 	options: {
 		headers?: Record<string, string>;
 		applicationID?: Snowflake;

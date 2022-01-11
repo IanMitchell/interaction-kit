@@ -4,6 +4,7 @@ import arg from "arg";
 import pkg from "../package.json";
 import devCommand from "../src/cli/dev";
 import deployCommand from "../src/cli/deploy";
+import serverCommand from "../src/cli/server";
 
 // Credit to Next.js, which I largely ripped off for this
 
@@ -19,6 +20,7 @@ process.on("SIGINT", () => process.exit(0));
 const commands: Record<string, (argv?: string[]) => void> = {
 	dev: devCommand,
 	deploy: deployCommand,
+	server: serverCommand,
 };
 
 const args = arg(
