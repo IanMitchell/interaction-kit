@@ -9,6 +9,10 @@ type CommandArgs = {
 	description: string;
 	defaultPermission?: boolean;
 	options?: Input[];
+	onAutocomplete?: (
+		interaction: SlashCommandAutocompleteInteraction,
+		application: Application
+	) => unknown;
 	handler: (interaction: SlashCommandInteraction) => unknown;
 };
 
@@ -21,6 +25,10 @@ export default class SlashCommand
 	#description: string;
 	#defaultPermission: boolean;
 	#options: Map<string, Input>;
+	onAutocomplete?: (
+		interaction: SlashCommandAutocompleteInteraction,
+		application: Application
+	) => unknown;
 	handler: (
 		interaction: SlashCommandInteraction,
 		application: Application
@@ -30,6 +38,7 @@ export default class SlashCommand
 		name,
 		description,
 		options,
+		onAutocomplete,
 		handler,
 		defaultPermission = true,
 	}: CommandArgs) {

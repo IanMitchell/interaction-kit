@@ -16,6 +16,16 @@ import Select from "../components/select";
 import { InteractionKitCommand } from "../interfaces";
 import { ApplicationCommandInteraction, PingInteraction } from "..";
 
+const autocompleteTypes = new Set([
+	InteractionRequestType.APPLICATION_COMMAND_AUTOCOMPLETE,
+]);
+
+function isAutocompleteInteraction(
+	request: FastifyRequest<{ Body: InteractionDefinition }>
+) {
+	return autocompleteTypes.has(request?.body?.type);
+}
+
 function handleApplicationCommandInteraction(
 	application: Application,
 	command: InteractionKitCommand<ApplicationCommandInteraction> | undefined,
@@ -28,15 +38,27 @@ function handleApplicationCommandInteraction(
 
 	switch (request.body.data?.type) {
 		case ApplicationCommandType.CHAT_INPUT: {
-			const interaction = new SlashCommandInteraction(
-				application,
-				command,
-				request,
-				response
-			);
+			if (isAutocompleteInteraction(request)) {
+				const interaction = new SlashCommandAutocompleteInteraction(
+					application,
+					command,
+					request,
+					response
+				);
 
-			console.log(`Handling ${interaction.name}`);
-			command.handler(interaction, application);
+				console.log(`Handling ${interaction.name} Autocomplete`);
+				command.onAutocomplete(interaction, application);
+			} else {
+				const interaction = new SlashCommandInteraction(
+					application,
+					command,
+					request,
+					response
+				);
+
+				console.log(`Handling ${interaction.name}`);
+				command.handler(interaction, application);
+			}
 			break;
 		}
 
@@ -121,7 +143,8 @@ export function handler(
 			break;
 		}
 
-		case InteractionRequestType.APPLICATION_COMMAND: {
+		case InteractionRequestType.APPLICATION_COMMAND:
+		case InteractionRequestType.APPLICATION_COMMAND_AUTOCOMPLETE: {
 			if (request?.body?.data?.name == null) {
 				throw new Error("Received interaction without Name");
 			}
