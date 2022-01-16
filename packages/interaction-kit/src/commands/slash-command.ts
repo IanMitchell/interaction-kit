@@ -51,6 +51,7 @@ export default class SlashCommand
 		this.#description = description;
 		this.#defaultPermission = defaultPermission;
 		this.handler = handler;
+		this.onAutocomplete = onAutocomplete;
 		this.#options = new Map();
 
 		options?.forEach((option) => {
