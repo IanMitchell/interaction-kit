@@ -1,7 +1,8 @@
 name: Add Sponsor Labels
 
 on:
-  pull_request_target:
+  pull_request:
+    types: [opened]
   issues:
     types: [opened]
 
@@ -9,6 +10,10 @@ jobs:
   build:
     name: Label Sponsors
     runs-on: ubuntu-latest
+    # Wait for a fix to be merged upsteam:
+    #   https://github.com/JasonEtco/is-sponsor-label-action/pull/30
+    #   https://github.com/JasonEtco/is-sponsor-label-action/issues/28
+    if: ${{ false }}
     steps:
       - uses: JasonEtco/is-sponsor-label-action@v1
         env:

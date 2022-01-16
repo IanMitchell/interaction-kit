@@ -68,11 +68,13 @@ export type NumericApplicationCommandOption =
 export type SubCommandApplicationCommandOption =
 	BaseApplicationCommandOption & {
 		type: ApplicationCommandOptionType.SUB_COMMAND;
-		options?: Exclude<
-			ApplicationCommandOption,
-			| SubCommandGroupApplicationCommandOption
-			| SubCommandApplicationCommandOption
-		>[];
+		options?: Array<
+			Exclude<
+				ApplicationCommandOption,
+				| SubCommandGroupApplicationCommandOption
+				| SubCommandApplicationCommandOption
+			>
+		>;
 	};
 
 export type SubCommandGroupApplicationCommandOption =
