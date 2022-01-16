@@ -34,18 +34,60 @@ export enum ApplicationCommandType {
 }
 
 /** @link https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-structure */
-export type ApplicationCommandOption = {
+export type BaseApplicationCommandOption = {
 	type: ApplicationCommandOptionType;
 	name: string;
 	description: string;
 	required?: boolean;
-	choices?: ApplicationCommandOptionChoice[];
-	options?: ApplicationCommandOption[];
-	channel_types?: ChannelType[];
-	min_value?: number;
-	max_value?: number;
-	autocomplete?: boolean;
 };
+
+export type ChannelApplicationCommandOption = BaseApplicationCommandOption & {
+	type: ApplicationCommandOptionType.CHANNEL;
+	channel_types?: ChannelType[];
+};
+
+export type ApplicationCommandOptionWithChoice =
+	BaseApplicationCommandOption & {
+		type:
+			| ApplicationCommandOptionType.STRING
+			| ApplicationCommandOptionType.INTEGER
+			| ApplicationCommandOptionType.NUMBER;
+		choices?: ApplicationCommandOptionChoice[];
+		autocomplete?: boolean;
+	};
+
+export type NumericApplicationCommandOption =
+	ApplicationCommandOptionWithChoice & {
+		type:
+			| ApplicationCommandOptionType.NUMBER
+			| ApplicationCommandOptionType.INTEGER;
+		min_value?: number;
+		max_value?: number;
+	};
+
+export type SubCommandApplicationCommandOption =
+	BaseApplicationCommandOption & {
+		type: ApplicationCommandOptionType.SUB_COMMAND;
+		options?: Exclude<
+			ApplicationCommandOption,
+			| SubCommandGroupApplicationCommandOption
+			| SubCommandApplicationCommandOption
+		>[];
+	};
+
+export type SubCommandGroupApplicationCommandOption =
+	BaseApplicationCommandOption & {
+		type: ApplicationCommandOptionType.SUB_COMMAND_GROUP;
+		options?: SubCommandApplicationCommandOption[];
+	};
+
+export type ApplicationCommandOption =
+	| SubCommandGroupApplicationCommandOption
+	| SubCommandApplicationCommandOption
+	| NumericApplicationCommandOption
+	| ApplicationCommandOptionWithChoice
+	| ChannelApplicationCommandOption
+	| BaseApplicationCommandOption;
 
 /** @link https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-type */
 export enum ApplicationCommandOptionType {
