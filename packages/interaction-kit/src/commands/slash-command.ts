@@ -4,6 +4,7 @@ import { Input } from "../components/inputs";
 import { Optional, InteractionKitCommand } from "../interfaces";
 import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
 
+// TODO: options OR autocomplete
 type CommandArgs = {
 	name: string;
 	description: string;

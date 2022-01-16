@@ -51,6 +51,7 @@ export enum ApplicationCommandOptionType {
 	CHANNEL = 7,
 	ROLE = 8,
 	MENTIONABLE = 9,
+	NUMBER = 10,
 }
 
 /** @link https://discord.com/developers/docs/interactions/slash-commands#application-command-object-application-command-option-choice-structure */
