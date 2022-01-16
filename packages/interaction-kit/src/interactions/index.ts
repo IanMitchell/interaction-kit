@@ -25,7 +25,7 @@ function handleApplicationCommandInteraction(
 	if (command == null) {
 		throw new Error("Unknown Command");
 	}
-
+	
 	switch (request.body.data?.type) {
 		case ApplicationCommandType.CHAT_INPUT: {
 			const interaction = new SlashCommandInteraction(

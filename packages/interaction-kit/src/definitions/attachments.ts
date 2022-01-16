@@ -17,3 +17,8 @@ export interface Attachment {
 	width?: number | null;
 	ephemeral?: boolean;
 }
+
+export interface PartialAttachment {
+	filename: string;
+	description?: string;
+}

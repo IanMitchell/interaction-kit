@@ -6,21 +6,24 @@
 import type { Snowflake } from "./snowflakes";
 import type { GuildMember } from "./guild-members";
 import { User } from "./users";
-import { AllowedMentions, Channel } from "./channels";
+import { AllowedMentions, Channel, ChannelType } from "./channels";
 import { Embed } from "./embeds";
 import { Role } from "./roles";
 import { Component, ComponentType, SelectOption } from "./components";
 import { Message } from "./messages";
+import { PartialAttachment } from "./attachments";
 
-/** @link https://discord.com/developers/docs/interactions/slash-commands#application-command-object-application-command-structure */
+/** @link https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-structure */
 export type ApplicationCommand = {
 	id: Snowflake;
 	type?: ApplicationCommandType;
 	application_id: Snowflake;
+	guild_id?: Snowflake;
 	name: string;
 	description?: string;
 	options?: ApplicationCommandOption[];
 	default_permission?: boolean;
+	version?: Snowflake;
 };
 
 /** @link https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-types */
@@ -30,7 +33,7 @@ export enum ApplicationCommandType {
 	MESSAGE = 3,
 }
 
-/** @link https://discord.com/developers/docs/interactions/slash-commands#application-command-object-application-command-option-structure */
+/** @link https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-structure */
 export type ApplicationCommandOption = {
 	type: ApplicationCommandOptionType;
 	name: string;
@@ -38,9 +41,13 @@ export type ApplicationCommandOption = {
 	required?: boolean;
 	choices?: ApplicationCommandOptionChoice[];
 	options?: ApplicationCommandOption[];
+	channel_types?: ChannelType[];
+	min_value?: number;
+	max_value?: number;
+	autocomplete?: boolean;
 };
 
-/** @link https://discord.com/developers/docs/interactions/slash-commands#application-command-object-application-command-option-type */
+/** @link https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-type */
 export enum ApplicationCommandOptionType {
 	SUB_COMMAND = 1,
 	SUB_COMMAND_GROUP = 2,
@@ -51,15 +58,16 @@ export enum ApplicationCommandOptionType {
 	CHANNEL = 7,
 	ROLE = 8,
 	MENTIONABLE = 9,
+	NUMBER = 10,
 }
 
-/** @link https://discord.com/developers/docs/interactions/slash-commands#application-command-object-application-command-option-choice-structure */
+/** @link https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-choice-structure */
 export type ApplicationCommandOptionChoice = {
 	name: string;
 	value: string | number;
 };
 
-/** @link https://discord.com/developers/docs/interactions/slash-commands#application-command-permissions-object-guild-application-command-permissions-structure */
+/** @link https://discord.com/developers/docs/interactions/application-commands#application-command-permissions-object */
 export type GuildApplicationCommandPermissions = {
 	id: Snowflake;
 	application_id: Snowflake;
@@ -67,20 +75,20 @@ export type GuildApplicationCommandPermissions = {
 	permissions: ApplicationCommandPermissions[];
 };
 
-/** @link https://discord.com/developers/docs/interactions/slash-commands#application-command-permissions-object-application-command-permissions-structure */
+/** @link https://discord.com/developers/docs/interactions/application-commands#application-command-permissions-object-application-command-permissions-structure */
 export type ApplicationCommandPermissions = {
 	id: Snowflake;
 	type: ApplicationCommandPermissionType;
 	permission: boolean;
 };
 
-/** @link https://discord.com/developers/docs/interactions/slash-commands#application-command-permissions-object-application-command-permission-type */
+/** @link https://discord.com/developers/docs/interactions/application-commands#application-command-permissions-object-application-command-permission-type */
 export enum ApplicationCommandPermissionType {
 	ROLE = 1,
 	USER = 2,
 }
 
-/** @link https://discord.com/developers/docs/interactions/slash-commands#interaction-object-interaction-structure */
+/** @link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-interaction-structure */
 export type Interaction = {
 	id: Snowflake;
 	application_id: Snowflake;
@@ -95,14 +103,15 @@ export type Interaction = {
 	message?: Message;
 };
 
-/** @link https://discord.com/developers/docs/interactions/slash-commands#interaction-object-interaction-request-type */
+/** @link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-interaction-type */
 export enum InteractionRequestType {
 	PING = 1,
 	APPLICATION_COMMAND = 2,
 	MESSAGE_COMPONENT = 3,
+	APPLICATION_COMMAND_AUTOCOMPLETE = 4,
 }
 
-/** @link https://discord.com/developers/docs/interactions/slash-commands#interaction-object-application-command-interaction-data-structure */
+/** @link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-interaction-data-structure */
 export type ApplicationCommandInteractionData = {
 	id: Snowflake;
 	type: ApplicationCommandType;
@@ -115,7 +124,7 @@ export type ApplicationCommandInteractionData = {
 	values?: Array<SelectOption["value"]>;
 };
 
-/** @link https://discord.com/developers/docs/interactions/slash-commands#interaction-object-application-command-interaction-data-resolved-structure */
+/** @link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-resolved-data-structure */
 export type ApplicationCommandInteractionDataResolved = {
 	users?: Record<Snowflake, User>;
 	members?: Record<Snowflake, Omit<GuildMember, "user" | "deaf" | "mute">>;
@@ -127,48 +136,68 @@ export type ApplicationCommandInteractionDataResolved = {
 	messages?: Record<Snowflake, Message>;
 };
 
-/** @link https://discord.com/developers/docs/interactions/slash-commands#interaction-object-application-command-interaction-data-option-structure */
-// TODO: Mutually exclusive, also what is option type?
+/** @link https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-interaction-data-option-structure */
 export type ApplicationCommandInteractionDataOption = {
 	name: string;
 	type: ApplicationCommandOptionType;
-	value?: OptionType; // FIXME: This needs to be set correctly
+	value?: ApplicationCommandInteractionDataOptionValueType;
 	options?: ApplicationCommandInteractionDataOption[];
+	focused?: boolean;
 };
 
 // HACK: This is to fix typechecking
+// this should be ApplicationCommandInteractionDataOptionValueType but when changing it to that some other stuff doesnt want to work any more so I left it like that but added the proper tybe below
 export type OptionType = unknown;
 
-/** @link https://discord.com/developers/docs/interactions/slash-commands#interaction-response-object-interaction-response-structure */
+// to type the value above
+export type ApplicationCommandInteractionDataOptionValueType =
+	| string
+	| number
+	| boolean
+	| Snowflake;
+
+/** @link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-interaction-response-structure */
 // TODO: Check?
 export type InteractionResponse = {
 	type: InteractionCallbackType;
 	data?: InteractionApplicationCommandCallbackData;
 };
 
-/** @link https://discord.com/developers/docs/interactions/slash-commands#interaction-response-object-interaction-callback-type */
+/** @link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-interaction-callback-type */
 export enum InteractionCallbackType {
 	PONG = 1,
 	CHANNEL_MESSAGE_WITH_SOURCE = 4,
 	DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE = 5,
 	DEFERRED_UPDATE_MESSAGE = 6,
 	UPDATE_MESSAGE = 7,
+	APPLICATION_COMMAND_AUTOCOMPLETE_RESULT = 8,
 }
 
-/** @link https://discord.com/developers/docs/interactions/slash-commands#interaction-response-object-interaction-application-command-callback-data-structure */
+/** @link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-messages */
 export type InteractionApplicationCommandCallbackData = {
 	tts?: boolean;
 	content?: string;
 	embeds?: Embed[];
 	allowed_mentions?: AllowedMentions;
-	flags?: number;
+	flags?: InteractionCallbackDataFlags;
 	components?: Component[];
+	attachments?: PartialAttachment[];
 };
 
-/** @link https://discord.com/developers/docs/interactions/slash-commands#message-interaction-object-message-interaction-structure */
+/** @link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-interaction-callback-data-flags */
+export enum InteractionCallbackDataFlags {
+	EPHEMERAL = 1 << 6,
+}
+
+/** @link https://discord.com/developers/docs/interactions/receiving-and-responding#message-interaction-object-message-interaction-structure */
 export type MessageInteraction = {
 	id: Snowflake;
 	type: InteractionRequestType;
 	name: string;
 	user: User;
+};
+
+/** @link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-autocomplete */
+export type InteractionResponseObjectAutocomplete = {
+	choices: ApplicationCommandOptionChoice[];
 };
