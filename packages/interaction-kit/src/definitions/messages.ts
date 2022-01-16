@@ -24,6 +24,7 @@ export enum MessageFlags {
 	HAS_THREAD = 1 << 5,
 	EPHEMERAL = 1 << 6,
 	LOADING = 1 << 7,
+	FAILED_TO_MENTION_SOME_ROLES_IN_THREAD = 1 << 8,
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#message-object-message-structure */
