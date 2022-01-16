@@ -12,7 +12,7 @@ type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 	handler: (
 		interaction: ContextMenuInteraction<T>,
 		application: Application
-	) => unknown;
+	) => void;
 };
 
 export default class ContextMenu<T extends ContextMenuApplicationCommandType>
@@ -27,7 +27,7 @@ export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 	handler: (
 		interaction: ContextMenuInteraction<T>,
 		application: Application
-	) => unknown;
+	) => void;
 
 	constructor({
 		name,

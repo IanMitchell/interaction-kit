@@ -3,6 +3,7 @@ import Application from "../application";
 import { Input } from "../components/inputs";
 import { Optional, InteractionKitCommand } from "../interfaces";
 import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
+import SlashCommandAutocompleteInteraction from "../interactions/autcomplete/application-command-autocomplete";
 
 // TODO: options OR autocomplete
 type CommandArgs = {
@@ -13,8 +14,8 @@ type CommandArgs = {
 	onAutocomplete?: (
 		interaction: SlashCommandAutocompleteInteraction,
 		application: Application
-	) => unknown;
-	handler: (interaction: SlashCommandInteraction) => unknown;
+	) => void;
+	handler: (interaction: SlashCommandInteraction) => void;
 };
 
 export default class SlashCommand
@@ -26,14 +27,16 @@ export default class SlashCommand
 	#description: string;
 	#defaultPermission: boolean;
 	#options: Map<string, Input>;
+
 	onAutocomplete?: (
 		interaction: SlashCommandAutocompleteInteraction,
 		application: Application
-	) => unknown;
+	) => void;
+
 	handler: (
 		interaction: SlashCommandInteraction,
 		application: Application
-	) => unknown;
+	) => void;
 
 	constructor({
 		name,
