@@ -1,6 +1,6 @@
 import { ApplicationCommand, ApplicationCommandType } from "../definitions";
 import Application from "../application";
-import { Input, InputKey } from "../components/inputs";
+import type { InputKey } from "../components/inputs";
 import { Optional, InteractionKitCommand } from "../interfaces";
 import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
 import SlashCommandAutocompleteInteraction from "../interactions/autcomplete/application-command-autocomplete";
@@ -28,8 +28,6 @@ export default class SlashCommand<
 	name: string;
 	#description: string;
 	#defaultPermission: boolean;
-	private readonly options: T;
-
 	onAutocomplete?: (
 		interaction: SlashCommandAutocompleteInteraction,
 		application: Application
@@ -39,6 +37,8 @@ export default class SlashCommand<
 		interaction: SlashCommandInteraction<T>,
 		application: Application
 	) => void;
+
+	private readonly options: T;
 
 	constructor({
 		name,

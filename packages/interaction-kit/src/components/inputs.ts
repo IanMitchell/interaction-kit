@@ -8,7 +8,9 @@ import { SlashChoiceList } from "./choices";
 
 type InputChoiceValue = ApplicationCommandOptionChoice["value"];
 
-export interface InputKey {
+export interface InputKey
+	extends Serializable<ApplicationCommandOption>,
+		Comparable<ApplicationCommandOption> {
 	readonly name: string;
 }
 
@@ -22,7 +24,9 @@ type InputArgs<T extends string> = {
 };
 
 export class Input<Name extends string>
-	implements Serializable, Comparable<ApplicationCommandOption>
+	implements
+		Serializable<ApplicationCommandOption>,
+		Comparable<ApplicationCommandOption>
 {
 	public readonly type;
 	public readonly name: Name;
