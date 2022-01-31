@@ -19,6 +19,7 @@ export * from "./components/choices";
 // API and Structure exports
 export * as SnowflakeUtils from "./structures/snowflake";
 export * as API from "./api/index";
+export * as RESTClient from "./api/instance";
 
 export { default as SlashCommand } from "./commands/slash-command";
 export { default as ContextMenu } from "./commands/context-menu";

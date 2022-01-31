@@ -55,7 +55,7 @@ export default class MessageComponentInteraction implements Interaction {
 			edit: async (
 				data: InteractionApplicationCommandCallbackData,
 				id = "@original"
-			) => API.patchWebhookMessage(this.token, id, data),
+			) => API.patchInteractionFollowup(this.token, id, data),
 
 			delete: async (id = "@original") =>
 				API.deleteWebhookMessage(this.token, id),
@@ -121,7 +121,7 @@ export default class MessageComponentInteraction implements Interaction {
 		}
 
 		// TODO: Verified this sends the ID back (we probably need to extract it)
-		const id = await API.postWebhookMessage(this.token, data);
+		const id = await API.postInteractionFollowup(this.token, data);
 
 		return id;
 	}

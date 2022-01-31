@@ -46,8 +46,8 @@ export type InteractionMessageModifiers = {
 	edit: (
 		data: InteractionApplicationCommandCallbackData,
 		id?: string
-	) => ReturnType<typeof API.patchWebhookMessage>;
-	delete: (id?: string) => ReturnType<typeof API.deleteWebhookMessage>;
+	) => ReturnType<typeof API.patchInteractionFollowup>;
+	delete: (id?: string) => ReturnType<typeof API.deleteInteractionFollowup>;
 };
 
 export interface Interaction {
