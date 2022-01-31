@@ -84,3 +84,8 @@ export class SlashChoiceList<
 		});
 	}
 }
+
+/**
+ * Choices.createSelectOptionList()
+ * Choices.createSlashChoiceList()
+ */

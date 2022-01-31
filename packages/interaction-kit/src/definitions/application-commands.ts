@@ -114,7 +114,7 @@ export type ApplicationCommandInteractionData = {
 	custom_id?: string;
 	component_type?: ComponentType;
 	target_id?: Snowflake;
-	values?: Array<SelectOption["value"]>;
+	value?: Array<SelectOption["value"]>;
 };
 
 /** @link https://discord.com/developers/docs/interactions/slash-commands#interaction-object-application-command-interaction-data-resolved-structure */

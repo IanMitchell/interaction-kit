@@ -8,20 +8,24 @@ import { SlashChoiceList } from "./choices";
 
 type InputChoiceValue = ApplicationCommandOptionChoice["value"];
 
-type InputArgs = {
+export interface InputKey {
+	readonly name: string;
+}
+
+type InputArgs<T extends string> = {
 	type: ApplicationCommandOptionType;
-	name: string;
+	name: T;
 	description: string;
 	required?: boolean;
 	choices?: SlashChoiceList<InputChoiceValue>;
 	options?: ApplicationCommandOption[];
 };
 
-export class Input
+export class Input<Name extends string>
 	implements Serializable, Comparable<ApplicationCommandOption>
 {
 	public readonly type;
-	public readonly name;
+	public readonly name: Name;
 	public readonly description;
 	public readonly required;
 	public readonly options;
@@ -34,7 +38,7 @@ export class Input
 		choices,
 		options,
 		required = false,
-	}: InputArgs) {
+	}: InputArgs<Name>) {
 		this.type = type;
 		this.name = name;
 		this.description = description;
@@ -101,62 +105,65 @@ export class Input
 	}
 }
 
-interface StringInputArgs extends Omit<InputArgs, "type" | "options"> {
+interface StringInputArgs<Name extends string>
+	extends Omit<InputArgs<Name>, "type" | "options"> {
 	choices?: SlashChoiceList<string>;
 }
 
-export class StringInput extends Input {
-	constructor(args: StringInputArgs) {
+export class StringInput<Name extends string> extends Input<Name> {
+	constructor(args: StringInputArgs<Name>) {
 		super({ type: ApplicationCommandOptionType.STRING, ...args });
 	}
 }
 
-interface IntegerInputArgs extends Omit<InputArgs, "type" | "options"> {
+interface IntegerInputArgs<Name extends string>
+	extends Omit<InputArgs<Name>, "type" | "options"> {
 	choices?: SlashChoiceList<number>;
 }
 
-export class IntegerInput extends Input {
-	constructor(args: IntegerInputArgs) {
+export class IntegerInput<Name extends string> extends Input<Name> {
+	constructor(args: IntegerInputArgs<Name>) {
 		super({ type: ApplicationCommandOptionType.INTEGER, ...args });
 	}
 }
 
-interface NumberInputArgs extends Omit<InputArgs, "type" | "options"> {
+interface NumberInputArgs<Name extends string>
+	extends Omit<InputArgs<Name>, "type" | "options"> {
 	choices?: SlashChoiceList<number>;
 }
 
-export class NumberInput extends Input {
-	constructor(args: NumberInputArgs) {
+export class NumberInput<Name extends string> extends Input<Name> {
+	constructor(args: NumberInputArgs<Name>) {
 		super({ type: ApplicationCommandOptionType.NUMBER, ...args });
 	}
 }
 
-export class BooleanInput extends Input {
-	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
+export class BooleanInput<Name extends string> extends Input<Name> {
+	constructor(args: Omit<InputArgs<Name>, "type" | "choices" | "options">) {
 		super({ type: ApplicationCommandOptionType.BOOLEAN, ...args });
 	}
 }
 
-export class UserInput extends Input {
-	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
+export class UserInput<Name extends string> extends Input<Name> {
+	constructor(args: Omit<InputArgs<Name>, "type" | "choices" | "options">) {
 		super({ type: ApplicationCommandOptionType.USER, ...args });
 	}
 }
 
-export class ChannelInput extends Input {
-	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
+export class ChannelInput<Name extends string> extends Input<Name> {
+	constructor(args: Omit<InputArgs<Name>, "type" | "choices" | "options">) {
 		super({ type: ApplicationCommandOptionType.CHANNEL, ...args });
 	}
 }
 
-export class RoleInput extends Input {
-	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
+export class RoleInput<Name extends string> extends Input<Name> {
+	constructor(args: Omit<InputArgs<Name>, "type" | "choices" | "options">) {
 		super({ type: ApplicationCommandOptionType.ROLE, ...args });
 	}
 }
 
-export class MentionableInput extends Input {
-	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
+export class MentionableInput<Name extends string> extends Input<Name> {
+	constructor(args: Omit<InputArgs<Name>, "type" | "choices" | "options">) {
 		super({ type: ApplicationCommandOptionType.MENTIONABLE, ...args });
 	}
 }
