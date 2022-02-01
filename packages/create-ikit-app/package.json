@@ -1,6 +1,6 @@
 {
 	"name": "create-ikit-app",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Creates a new Interaction Kit bot application",
 	"author": "Ian Mitchell <ian.mitchell@hey.com>",
 	"license": "MIT",

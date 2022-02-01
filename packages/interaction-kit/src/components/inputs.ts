@@ -3,10 +3,24 @@ import {
 	ApplicationCommandOption,
 	ApplicationCommandOptionChoice,
 	ApplicationCommandOptionType,
+	ApplicationCommandOptionWithChoice,
 } from "../definitions";
 import { SlashChoiceList } from "./choices";
 
 type InputChoiceValue = ApplicationCommandOptionChoice["value"];
+
+export function isChoiceType(
+	input: ApplicationCommandOption
+): input is ApplicationCommandOptionWithChoice {
+	switch (input.type) {
+		case ApplicationCommandOptionType.STRING:
+		case ApplicationCommandOptionType.INTEGER:
+		case ApplicationCommandOptionType.NUMBER:
+			return true;
+		default:
+			return false;
+	}
+}
 
 export interface InputKey
 	extends Serializable<ApplicationCommandOption>,
@@ -62,8 +76,10 @@ export class Input<
 			required: this.required,
 		};
 
-		if (this.choices != null) {
-			payload.choices = this.choices.serialize();
+		if (isChoiceType(payload)) {
+			if (this.choices != null) {
+				payload.choices = this.choices.serialize();
+			}
 		}
 
 		// TODO: Handle Options (do we want to?)
@@ -81,26 +97,30 @@ export class Input<
 			return false;
 		}
 
-		if ((this.choices?._choices?.size ?? 0) !== (schema.choices?.length ?? 0)) {
-			return false;
-		}
+		if (isChoiceType(schema)) {
+			if (
+				(this.choices?._choices?.size ?? 0) !== (schema.choices?.length ?? 0)
+			) {
+				return false;
+			}
 
-		const choiceMap = new Map();
-		for (const commandOption of this.choices?._choices?.values() ?? []) {
-			choiceMap.set(commandOption.name, commandOption.value);
-		}
+			const choiceMap = new Map();
+			for (const commandOption of this.choices?._choices?.values() ?? []) {
+				choiceMap.set(commandOption.name, commandOption.value);
+			}
 
-		const choiceEquality =
-			schema.choices?.every((choice) => {
-				if (!choiceMap.has(choice.name)) {
-					return false;
-				}
+			const choiceEquality =
+				schema.choices?.every((choice) => {
+					if (!choiceMap.has(choice.name)) {
+						return false;
+					}
 
-				return choiceMap.get(choice.name) === choice.value;
-			}) ?? true;
+					return choiceMap.get(choice.name) === choice.value;
+				}) ?? true;
 
-		if (!choiceEquality) {
-			return false;
+			if (!choiceEquality) {
+				return false;
+			}
 		}
 
 		// TODO: Nothing uses options yet, but eventually verify they're correct somehow

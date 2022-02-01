@@ -14,10 +14,17 @@ import { Reaction } from "./reactions";
 import { StickerItem } from "./stickers";
 import { MessageInteraction } from "./application-commands";
 
-// TODO: Document
-export enum PermissionFlags {
+/** @link https://discord.com/developers/docs/resources/channel#message-object-message-flags */
+export enum MessageFlags {
+	CROSSPOSTED = 1 << 0,
+	IS_CROSSPOSTED = 1 << 1,
+	SUPRESS_EMBEDS = 1 << 2,
+	SOURCE_MESSAGE_DELETED = 1 << 3,
+	URGENT = 1 << 4,
+	HAS_THREAD = 1 << 5,
 	EPHEMERAL = 1 << 6,
 	LOADING = 1 << 7,
+	FAILED_TO_MENTION_SOME_ROLES_IN_THREAD = 1 << 8,
 }
 
 /** @link https://discord.com/developers/docs/resources/channel#message-object-message-structure */
@@ -46,7 +53,7 @@ export type Message = {
 	application?: unknown; // TODO: type this
 	application_id?: Snowflake;
 	message_reference?: MessageReference;
-	flags?: number;
+	flags?: MessageFlags;
 	referenced_message?: Message | null;
 	interaction?: MessageInteraction;
 	thread?: Channel;
