@@ -10,10 +10,10 @@ import ApplicationCommandInteraction from "./application-command-interaction";
 
 type InteractionOptions<T extends readonly [InputKey, ...InputKey[]] | []> = {
 	[Key in T[number]["name"]]: Extract<T[number], { name: Key }> extends {
-		optional: true;
+		required: true;
 	}
-		? Extract<T[number], { name: Key }> | undefined
-		: Extract<T[number], { name: Key }>;
+		? Extract<T[number], { name: Key }>["type"]
+		: Extract<T[number], { name: Key }>["type"] | undefined;
 };
 
 // type SlashCommandInteractionBody<

@@ -12,10 +12,11 @@ export interface InputKey
 	extends Serializable<ApplicationCommandOption>,
 		Comparable<ApplicationCommandOption> {
 	readonly name: string;
+	readonly type: ApplicationCommandOptionType;
 }
 
-type InputArgs<T extends string> = {
-	type: ApplicationCommandOptionType;
+type InputArgs<T extends string, U extends ApplicationCommandOptionType> = {
+	type: U;
 	name: T;
 	description: string;
 	required?: boolean;
@@ -23,13 +24,15 @@ type InputArgs<T extends string> = {
 	options?: ApplicationCommandOption[];
 };
 
-export class Input<Name extends string>
-	implements
+export class Input<
+	Name extends string,
+	OptionType extends ApplicationCommandOptionType
+> implements
 		Serializable<ApplicationCommandOption>,
 		Comparable<ApplicationCommandOption>
 {
-	public readonly type;
 	public readonly name: Name;
+	public readonly type: OptionType;
 	public readonly description;
 	public readonly required;
 	public readonly options;
@@ -42,7 +45,7 @@ export class Input<Name extends string>
 		choices,
 		options,
 		required = false,
-	}: InputArgs<Name>) {
+	}: InputArgs<Name, OptionType>) {
 		this.type = type;
 		this.name = name;
 		this.description = description;
@@ -109,65 +112,126 @@ export class Input<Name extends string>
 	}
 }
 
-interface StringInputArgs<Name extends string>
-	extends Omit<InputArgs<Name>, "type" | "options"> {
+interface StringInputArgs<
+	Name extends string,
+	OptionType extends ApplicationCommandOptionType
+> extends Omit<InputArgs<Name, OptionType>, "type" | "options"> {
 	choices?: SlashChoiceList<string>;
 }
 
-export class StringInput<Name extends string> extends Input<Name> {
-	constructor(args: StringInputArgs<Name>) {
+export class StringInput<Name extends string> extends Input<
+	Name,
+	ApplicationCommandOptionType.STRING
+> {
+	constructor(
+		args: StringInputArgs<Name, ApplicationCommandOptionType.STRING>
+	) {
 		super({ type: ApplicationCommandOptionType.STRING, ...args });
 	}
 }
 
-interface IntegerInputArgs<Name extends string>
-	extends Omit<InputArgs<Name>, "type" | "options"> {
+interface IntegerInputArgs<
+	Name extends string,
+	OptionType extends ApplicationCommandOptionType
+> extends Omit<InputArgs<Name, OptionType>, "type" | "options"> {
 	choices?: SlashChoiceList<number>;
 }
 
-export class IntegerInput<Name extends string> extends Input<Name> {
-	constructor(args: IntegerInputArgs<Name>) {
+export class IntegerInput<Name extends string> extends Input<
+	Name,
+	ApplicationCommandOptionType.INTEGER
+> {
+	constructor(
+		args: IntegerInputArgs<Name, ApplicationCommandOptionType.INTEGER>
+	) {
 		super({ type: ApplicationCommandOptionType.INTEGER, ...args });
 	}
 }
 
-interface NumberInputArgs<Name extends string>
-	extends Omit<InputArgs<Name>, "type" | "options"> {
+interface NumberInputArgs<
+	Name extends string,
+	OptionType extends ApplicationCommandOptionType
+> extends Omit<InputArgs<Name, OptionType>, "type" | "options"> {
 	choices?: SlashChoiceList<number>;
 }
 
-export class NumberInput<Name extends string> extends Input<Name> {
-	constructor(args: NumberInputArgs<Name>) {
+export class NumberInput<Name extends string> extends Input<
+	Name,
+	ApplicationCommandOptionType.NUMBER
+> {
+	constructor(
+		args: NumberInputArgs<Name, ApplicationCommandOptionType.NUMBER>
+	) {
 		super({ type: ApplicationCommandOptionType.NUMBER, ...args });
 	}
 }
 
-export class BooleanInput<Name extends string> extends Input<Name> {
-	constructor(args: Omit<InputArgs<Name>, "type" | "choices" | "options">) {
+export class BooleanInput<Name extends string> extends Input<
+	Name,
+	ApplicationCommandOptionType.BOOLEAN
+> {
+	constructor(
+		args: Omit<
+			InputArgs<Name, ApplicationCommandOptionType.BOOLEAN>,
+			"type" | "choices" | "options"
+		>
+	) {
 		super({ type: ApplicationCommandOptionType.BOOLEAN, ...args });
 	}
 }
 
-export class UserInput<Name extends string> extends Input<Name> {
-	constructor(args: Omit<InputArgs<Name>, "type" | "choices" | "options">) {
+export class UserInput<Name extends string> extends Input<
+	Name,
+	ApplicationCommandOptionType.USER
+> {
+	constructor(
+		args: Omit<
+			InputArgs<Name, ApplicationCommandOptionType.USER>,
+			"type" | "choices" | "options"
+		>
+	) {
 		super({ type: ApplicationCommandOptionType.USER, ...args });
 	}
 }
 
-export class ChannelInput<Name extends string> extends Input<Name> {
-	constructor(args: Omit<InputArgs<Name>, "type" | "choices" | "options">) {
+export class ChannelInput<Name extends string> extends Input<
+	Name,
+	ApplicationCommandOptionType.CHANNEL
+> {
+	constructor(
+		args: Omit<
+			InputArgs<Name, ApplicationCommandOptionType.CHANNEL>,
+			"type" | "choices" | "options"
+		>
+	) {
 		super({ type: ApplicationCommandOptionType.CHANNEL, ...args });
 	}
 }
 
-export class RoleInput<Name extends string> extends Input<Name> {
-	constructor(args: Omit<InputArgs<Name>, "type" | "choices" | "options">) {
+export class RoleInput<Name extends string> extends Input<
+	Name,
+	ApplicationCommandOptionType.ROLE
+> {
+	constructor(
+		args: Omit<
+			InputArgs<Name, ApplicationCommandOptionType.ROLE>,
+			"type" | "choices" | "options"
+		>
+	) {
 		super({ type: ApplicationCommandOptionType.ROLE, ...args });
 	}
 }
 
-export class MentionableInput<Name extends string> extends Input<Name> {
-	constructor(args: Omit<InputArgs<Name>, "type" | "choices" | "options">) {
+export class MentionableInput<Name extends string> extends Input<
+	Name,
+	ApplicationCommandOptionType.MENTIONABLE
+> {
+	constructor(
+		args: Omit<
+			InputArgs<Name, ApplicationCommandOptionType.MENTIONABLE>,
+			"type" | "choices" | "options"
+		>
+	) {
 		super({ type: ApplicationCommandOptionType.MENTIONABLE, ...args });
 	}
 }
