@@ -1,20 +1,19 @@
-import type { FastifyRequest, FastifyReply } from "fastify";
-
+import type { FastifyReply, FastifyRequest } from "fastify";
 import fs from "node:fs";
 import path from "node:path";
-import SlashCommand from "./commands/slash-command";
-import ContextMenu from "./commands/context-menu";
 import Config from "./api/config";
+import ContextMenu from "./commands/context-menu";
+import SlashCommand from "./commands/slash-command";
+import { ExecutableComponent, isExecutableComponent } from "./components";
 import {
+	ApplicationCommandType,
 	Interaction as InteractionDefinition,
 	Snowflake,
-	ApplicationCommandType,
 } from "./definitions";
 import * as Interaction from "./interactions";
+import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
 import { InteractionKitCommand, SerializableComponent } from "./interfaces";
 import startInteractionKitServer from "./server";
-import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
-import { ExecutableComponent, isExecutableComponent } from "./components";
 
 type ApplicationArgs = {
 	applicationID: string;

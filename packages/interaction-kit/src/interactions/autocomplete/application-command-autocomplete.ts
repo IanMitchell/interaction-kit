@@ -1,6 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import SlashCommand from "../../commands/slash-command";
 import Application from "../../application";
+import SlashCommand from "../../commands/slash-command";
+import { InputKey } from "../../components/inputs";
 import {
 	Interaction as InteractionDefinition,
 	InteractionCallbackType,
@@ -8,11 +9,15 @@ import {
 import AutocompleteInteraction from "./autocomplete-interaction";
 import { SlashCommandAutocompleteType } from "./types";
 
-export default class SlashCommandAutocompleteInteraction extends AutocompleteInteraction<SlashCommandAutocompleteType> {
-	public readonly command: SlashCommand;
+export default class SlashCommandAutocompleteInteraction<
+	V extends InputKey,
+	T extends readonly [V, ...V[]] | []
+> extends AutocompleteInteraction<T, SlashCommandAutocompleteType> {
+	public readonly command: SlashCommand<V, T>;
+
 	constructor(
 		application: Application,
-		command: SlashCommand,
+		command: SlashCommand<V, T>,
 		request: FastifyRequest<{ Body: InteractionDefinition }>,
 		response: FastifyReply
 	) {

@@ -1,9 +1,9 @@
-import { ApplicationCommand, ApplicationCommandType } from "../definitions";
 import Application from "../application";
 import type { InputKey } from "../components/inputs";
-import { Optional, InteractionKitCommand } from "../interfaces";
+import { ApplicationCommand, ApplicationCommandType } from "../definitions";
 import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
-import SlashCommandAutocompleteInteraction from "../interactions/autcomplete/application-command-autocomplete";
+import SlashCommandAutocompleteInteraction from "../interactions/autocomplete/application-command-autocomplete";
+import { InteractionKitCommand, Optional } from "../interfaces";
 
 // TODO: options OR autocomplete
 type CommandArgs<V extends InputKey, T extends readonly [V, ...V[]] | []> = {

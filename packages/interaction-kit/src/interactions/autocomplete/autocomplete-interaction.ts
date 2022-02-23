@@ -1,14 +1,17 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import Application from "../../application";
+import { InputKey } from "../../components/inputs";
 import {
 	Interaction as InteractionDefinition,
 	Snowflake,
 } from "../../definitions";
-import Application from "../../application";
 import { Autocomplete } from "../../interfaces";
 import { AutocompleteInteractionTypes, AutocompleteTypes } from "./types";
 
-export default class AutocompleteInteraction<T extends AutocompleteTypes>
-	implements Autocomplete<T>
+export default class AutocompleteInteraction<
+	U extends readonly [InputKey, ...InputKey[]] | [],
+	T extends AutocompleteTypes<U>
+> implements Autocomplete<T>
 {
 	public readonly name: string;
 	public readonly token: string;
