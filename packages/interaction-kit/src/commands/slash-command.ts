@@ -1,42 +1,44 @@
-import { ApplicationCommand, ApplicationCommandType } from "../definitions";
 import Application from "../application";
-import { Input } from "../components/inputs";
-import { Optional, InteractionKitCommand } from "../interfaces";
+import type { InputKey } from "../components/inputs";
+import { ApplicationCommand, ApplicationCommandType } from "../definitions";
 import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
-import SlashCommandAutocompleteInteraction from "../interactions/autcomplete/application-command-autocomplete";
+import SlashCommandAutocompleteInteraction from "../interactions/autocomplete/application-command-autocomplete";
+import { InteractionKitCommand, Optional } from "../interfaces";
 
 // TODO: options OR autocomplete
-type CommandArgs = {
+type CommandArgs<V extends InputKey, T extends readonly [V, ...V[]] | []> = {
 	name: string;
 	description: string;
 	defaultPermission?: boolean;
-	options?: Input[];
+	options?: T;
 	onAutocomplete?: (
 		interaction: SlashCommandAutocompleteInteraction,
 		application: Application
 	) => void;
-	handler: (interaction: SlashCommandInteraction) => void;
+	handler: (interaction: SlashCommandInteraction<T>) => void;
 };
 
-export default class SlashCommand
-	implements InteractionKitCommand<SlashCommandInteraction>
+export default class SlashCommand<
+	V extends InputKey,
+	T extends readonly [V, ...V[]] | []
+> implements InteractionKitCommand<SlashCommandInteraction<T>>
 {
 	public readonly type = ApplicationCommandType.CHAT_INPUT;
 
 	name: string;
 	#description: string;
 	#defaultPermission: boolean;
-	#options: Map<string, Input>;
-
 	onAutocomplete?: (
 		interaction: SlashCommandAutocompleteInteraction,
 		application: Application
 	) => void;
 
 	handler: (
-		interaction: SlashCommandInteraction,
+		interaction: SlashCommandInteraction<T>,
 		application: Application
 	) => void;
+
+	private readonly options: T;
 
 	constructor({
 		name,
@@ -45,25 +47,15 @@ export default class SlashCommand
 		onAutocomplete,
 		handler,
 		defaultPermission = true,
-	}: CommandArgs) {
+	}: CommandArgs<V, T>) {
 		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$
 		this.name = name;
 		this.#description = description;
 		this.#defaultPermission = defaultPermission;
 		this.handler = handler;
 		this.onAutocomplete = onAutocomplete;
-		this.#options = new Map();
 
-		options?.forEach((option) => {
-			const key = option.name.toLowerCase();
-			if (this.#options.has(key)) {
-				throw new Error(
-					`Option names must be unique (case insensitive). Duplicate name detected: ${key}`
-				);
-			}
-
-			this.#options.set(key, option);
-		});
+		this.options = options ?? ([] as T);
 	}
 
 	group() {
@@ -83,13 +75,16 @@ export default class SlashCommand
 			return false;
 		}
 
-		if (this.#options.size !== (schema.options?.length ?? 0)) {
+		if (this.options.length !== (schema.options?.length ?? 0)) {
 			return false;
 		}
 
 		return (
 			schema.options?.every(
-				(option) => this.#options.get(option.name)?.equals(option) ?? false
+				(option) =>
+					this.options
+						.find((opt) => opt.name === option.name)
+						?.equals(option) ?? false
 			) ?? true
 		);
 	}
@@ -105,10 +100,10 @@ export default class SlashCommand
 		}
 
 		// TODO: Sort these so that required options come first
-		if (this.#options.size > 0) {
+		if (this.options.length > 0) {
 			payload.options = [];
 
-			Array.from(this.#options.entries()).forEach(([_, value]) => {
+			this.options.forEach((value) => {
 				payload.options?.push(value.serialize());
 			});
 		}

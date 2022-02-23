@@ -165,7 +165,7 @@ export type ApplicationCommandInteractionData = {
 	custom_id?: string;
 	component_type?: ComponentType;
 	target_id?: Snowflake;
-	values?: Array<SelectOption["value"]>;
+	value?: Array<SelectOption["value"]>;
 };
 
 /** @link https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-resolved-data-structure */

@@ -42,10 +42,8 @@ function getChangeSet(
 			}
 
 			if (command.equals(signature)) {
-				// @ts-expect-error ????
 				changeSet.unchangedCommands.add(command.serialize());
 			} else {
-				// @ts-expect-error ????
 				changeSet.updatedCommands.add(command.serialize());
 				changeSet.hasChanges = true;
 			}
@@ -54,7 +52,6 @@ function getChangeSet(
 		}
 		// If the command does not exist, we add it
 		else {
-			// @ts-expect-error ????
 			changeSet.newCommands.add(command.serialize());
 			changeSet.hasChanges = true;
 		}

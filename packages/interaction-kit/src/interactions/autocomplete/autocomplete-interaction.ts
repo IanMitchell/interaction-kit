@@ -1,29 +1,17 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import Application from "../../application";
+import { InputKey } from "../../components/inputs";
 import {
-	ApplicationCommandInteractionDataOption,
 	Interaction as InteractionDefinition,
-	InteractionApplicationCommandCallbackData,
-	InteractionCallbackType,
-	InteractionResponse,
-	InteractionRequestType,
 	Snowflake,
 } from "../../definitions";
-import { PermissionFlags } from "../../definitions/messages";
-import Embed from "../../components/embed";
-import * as API from "../../api";
-import Application from "../../application";
-import {
-	Autocomplete,
-	Interaction,
-	InteractionMessageModifiers,
-	InteractionReply,
-	SerializableComponent,
-} from "../../interfaces";
-import { isActionRow } from "../../components/action-row";
+import { Autocomplete } from "../../interfaces";
 import { AutocompleteInteractionTypes, AutocompleteTypes } from "./types";
 
-export default class AutocompleteInteraction<T extends AutocompleteTypes>
-	implements Autocomplete<T>
+export default class AutocompleteInteraction<
+	U extends readonly [InputKey, ...InputKey[]] | [],
+	T extends AutocompleteTypes<U>
+> implements Autocomplete<T>
 {
 	public readonly name: string;
 	public readonly token: string;

@@ -1,43 +1,53 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { InputKey } from "../..";
 import Application from "../../application";
 import {
-	ApplicationCommandInteractionDataOption,
 	ApplicationCommandType,
 	Interaction as InteractionDefinition,
-	OptionType,
 } from "../../definitions";
 import { InteractionKitCommand } from "../../interfaces";
 import ApplicationCommandInteraction from "./application-command-interaction";
 
-export default class SlashCommandInteraction extends ApplicationCommandInteraction {
-	readonly #options: Map<string, ApplicationCommandInteractionDataOption>;
+type InteractionOptions<T extends readonly [InputKey, ...InputKey[]] | []> = {
+	[Key in T[number]["name"]]: Extract<T[number], { name: Key }> extends {
+		required: true;
+	}
+		? Extract<T[number], { name: Key }>["type"]
+		: Extract<T[number], { name: Key }>["type"] | undefined;
+};
+
+// type SlashCommandInteractionBody<
+// 	T extends readonly [InputKey, ...InputKey[]] | []
+// > = Omit<InteractionDefinition, "data"> & {
+// 	data: Omit<InteractionDefinition["data"], "options"> & {
+// 		options: InteractionOptions<T>;
+// 	};
+// };
+
+interface SlashCommandInteractionBody<
+	T extends readonly [InputKey, ...InputKey[]] | []
+> extends InteractionDefinition {
+	data: Omit<InteractionDefinition["data"], "options"> & {
+		options: InteractionOptions<T>;
+	};
+}
+
+export default class SlashCommandInteraction<
+	T extends readonly [InputKey, ...InputKey[]] | []
+> extends ApplicationCommandInteraction {
+	public readonly options: InteractionOptions<T>;
 
 	constructor(
 		application: Application,
-		command: InteractionKitCommand<SlashCommandInteraction>,
-		request: FastifyRequest<{ Body: InteractionDefinition }>,
+		command: InteractionKitCommand<SlashCommandInteraction<T>>,
+		request: FastifyRequest<{ Body: SlashCommandInteractionBody<T> }>,
 		response: FastifyReply
 	) {
 		super(application, request, response);
-		this.#options = new Map();
-
-		request.body?.data?.options?.forEach((option) => {
-			this.#options.set(option.name.toLowerCase(), option);
-		});
+		this.options = request.body?.data?.options;
 	}
 
 	get commandType() {
 		return ApplicationCommandType.CHAT_INPUT;
-	}
-
-	// TODO: Type? Should return an object where keys = #options keys, and value = ApplicationCommandInteractionDataOption
-	get options() {
-		return new Proxy(
-			{},
-			{
-				get: (target, property): OptionType | null =>
-					this.#options.get(property.toString())?.value ?? null,
-			}
-		);
 	}
 }

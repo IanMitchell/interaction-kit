@@ -1,20 +1,21 @@
+import type { FastifyReply, FastifyRequest } from "fastify";
+import { ApplicationCommandInteraction, PingInteraction } from "..";
 import Application from "../application";
-import type { FastifyRequest, FastifyReply } from "fastify";
+import { ExecutableComponent } from "../components";
+import { Button } from "../components/button";
+import Select from "../components/select";
 import {
 	ApplicationCommandType,
 	ComponentType,
 	Interaction as InteractionDefinition,
 	InteractionRequestType,
 } from "../definitions";
+import { InteractionKitCommand } from "../interfaces";
+import ContextMenuInteraction from "./application-commands/context-menu-interaction";
+import SlashCommandInteraction from "./application-commands/slash-command-interaction";
+import SlashCommandAutocompleteInteraction from "./autocomplete/application-command-autocomplete";
 import ButtonInteraction from "./message-components/button-interaction";
 import SelectInteraction from "./message-components/select-interaction";
-import SlashCommandInteraction from "./application-commands/slash-command-interaction";
-import ContextMenuInteraction from "./application-commands/context-menu-interaction";
-import { ExecutableComponent } from "../components";
-import { Button } from "../components/button";
-import Select from "../components/select";
-import { InteractionKitCommand } from "../interfaces";
-import { ApplicationCommandInteraction, PingInteraction } from "..";
 
 const autocompleteTypes = new Set([
 	InteractionRequestType.APPLICATION_COMMAND_AUTOCOMPLETE,

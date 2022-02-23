@@ -8,11 +8,9 @@ import {
 	Component,
 	ComponentType,
 	InteractionApplicationCommandCallbackData,
-	InteractionCallbackType,
 	InteractionRequestType,
 	Snowflake,
 } from "./definitions";
-import AutocompleteInteraction from "./interactions/autcomplete/autocomplete-interaction";
 
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
