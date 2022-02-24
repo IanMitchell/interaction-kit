@@ -1,16 +1,21 @@
+import { APIActionRowComponent, ComponentType } from "discord-api-types";
 import type { SerializableComponent } from "../interfaces";
-import { Component, ComponentType } from "../definitions";
+import { Button } from "./button";
+import Select from "./select";
 
 export function isActionRow(
 	component: SerializableComponent
 ): component is ActionRow {
-	return (component as ActionRow).type === ComponentType.ACTION_ROW;
+	return (component as ActionRow).type === ComponentType.ActionRow;
 }
 
-export default class ActionRow implements SerializableComponent {
-	components: SerializableComponent[];
+// TODO: Should this be here?
+export type ActionRowChildren = Button | Select;
 
-	constructor(...components: SerializableComponent[]) {
+export default class ActionRow implements SerializableComponent {
+	components: ActionRowChildren[];
+
+	constructor(...components: ActionRowChildren[]) {
 		this.components = [];
 		this.setComponents(...components);
 	}
@@ -21,7 +26,7 @@ export default class ActionRow implements SerializableComponent {
 	}
 
 	get type() {
-		return ComponentType.ACTION_ROW;
+		return ComponentType.ActionRow;
 	}
 
 	get isFull() {
@@ -29,35 +34,35 @@ export default class ActionRow implements SerializableComponent {
 			return false;
 		}
 
-		if (this.components[0].type === ComponentType.BUTTON) {
+		if (this.components[0].type === ComponentType.Button) {
 			return this.components.length >= 5;
 		}
 
-		if (this.components[0].type === ComponentType.SELECT) {
+		if (this.components[0].type === ComponentType.SelectMenu) {
 			return this.components.length > 0;
 		}
 
 		return false;
 	}
 
-	setComponents(...components: SerializableComponent[]) {
+	setComponents(...components: ActionRowChildren[]) {
 		components.forEach((component) => {
 			this.addComponent(component);
 		});
 	}
 
-	addComponent(component: SerializableComponent) {
-		if (component.type === ComponentType.ACTION_ROW) {
+	addComponent(component: ActionRowChildren) {
+		if (component.type === ComponentType.ActionRow) {
 			throw new TypeError("An Action Row cannot contain another Action Row");
 		} else if (
-			component.type === ComponentType.SELECT &&
+			component.type === ComponentType.SelectMenu &&
 			this.components.length !== 0
 		) {
 			throw new TypeError(
 				"An Action Row must contain exactly 1 Select Component"
 			);
 		} else if (
-			component.type === ComponentType.BUTTON &&
+			component.type === ComponentType.Button &&
 			this.components.length >= 5
 		) {
 			throw new TypeError(
@@ -68,9 +73,9 @@ export default class ActionRow implements SerializableComponent {
 		this.components.push(component);
 	}
 
-	serialize(): Component {
+	serialize(): APIActionRowComponent {
 		return {
-			type: ComponentType.ACTION_ROW,
+			type: ComponentType.ActionRow,
 			components: this.components.map((component) => component.serialize()),
 		};
 	}

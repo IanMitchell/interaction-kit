@@ -1,6 +1,5 @@
 import Config from "./config";
 import rest from "./instance";
-import { Snowflake } from "../definitions";
 import {
 	RESTPostAPIInteractionFollowupJSONBody,
 	RESTPatchAPIInteractionFollowupJSONBody,
@@ -9,15 +8,11 @@ import {
 	Routes,
 } from "discord-api-types/v9";
 
-/**
- * https://discord.com/developers/docs/interactions/slash-commands#followup-messages
- */
-
 // TODO: Test, Type, Document
 export async function postInteractionFollowup(
 	interactionToken: string,
 	data: RESTPostAPIInteractionFollowupJSONBody,
-	applicationID: Snowflake = Config.getApplicationID()
+	applicationID = Config.getApplicationID()
 ) {
 	return rest.post(Routes.webhook(applicationID, interactionToken), {
 		body: data,
@@ -29,7 +24,7 @@ export async function patchInteractionFollowup(
 	interactionToken: string,
 	id: string,
 	data: RESTPatchAPIInteractionFollowupJSONBody,
-	applicationID: string = Config.getApplicationID()
+	applicationID = Config.getApplicationID()
 ) {
 	return rest.patch(
 		Routes.webhookMessage(applicationID, interactionToken, id),
@@ -43,7 +38,7 @@ export async function patchInteractionFollowup(
 export async function deleteInteractionFollowup(
 	interactionToken: string,
 	id: string,
-	applicationID: string = Config.getApplicationID()
+	applicationID = Config.getApplicationID()
 ) {
 	return rest.delete(
 		Routes.webhookMessage(applicationID, interactionToken, id)

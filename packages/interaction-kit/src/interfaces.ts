@@ -2,15 +2,8 @@ import ApplicationCommandInteraction from "./interactions/application-commands/a
 import * as API from "./api";
 import Application from "./application";
 import Embed from "./components/embed";
-import {
-	ApplicationCommand,
-	ApplicationCommandType,
-	Component,
-	ComponentType,
-	InteractionApplicationCommandCallbackData,
-	InteractionRequestType,
-	Snowflake,
-} from "./definitions";
+
+export type Snowflake = `${bigint}`;
 
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 

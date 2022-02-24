@@ -1,9 +1,13 @@
-import { ApplicationCommand, ApplicationCommandType } from "../definitions";
 import Application from "../application";
-import { InteractionKitCommand, Optional } from "../interfaces";
+import { InteractionKitCommand } from "../interfaces";
 import ContextMenuInteraction, {
 	ContextMenuApplicationCommandType,
 } from "../interactions/application-commands/context-menu-interaction";
+import {
+	APIApplicationCommand,
+	ApplicationCommandType,
+	RESTPostAPIApplicationCommandsJSONBody,
+} from "discord-api-types";
 
 type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 	name: string;
@@ -18,8 +22,8 @@ type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 	implements InteractionKitCommand<ContextMenuInteraction<T>>
 {
-	static readonly USER = ApplicationCommandType.USER;
-	static readonly MESSAGE = ApplicationCommandType.MESSAGE;
+	static readonly USER = ApplicationCommandType.User;
+	static readonly MESSAGE = ApplicationCommandType.ChatInput;
 
 	name: string;
 	type: T;
@@ -42,7 +46,7 @@ export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 		this.handler = handler;
 	}
 
-	equals(schema: ApplicationCommand): boolean {
+	equals(schema: APIApplicationCommand): boolean {
 		if (
 			this.name !== schema.name ||
 			this.type !== schema.type ||
@@ -54,8 +58,8 @@ export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 		return true;
 	}
 
-	serialize(): Optional<ApplicationCommand, "id" | "application_id"> {
-		const payload: Optional<ApplicationCommand, "id" | "application_id"> = {
+	serialize(): RESTPostAPIApplicationCommandsJSONBody {
+		const payload: RESTPostAPIApplicationCommandsJSONBody = {
 			name: this.name,
 			type: this.type,
 		};

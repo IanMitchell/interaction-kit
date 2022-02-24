@@ -4,7 +4,7 @@ import {
 	getApplicationEntrypoint,
 	getGuildApplicationCommandChanges,
 } from "../scripts";
-import { Snowflake } from "../definitions";
+import { Snowflake } from "../interfaces";
 
 export default async function server(argv?: string[]) {
 	// Handle Help

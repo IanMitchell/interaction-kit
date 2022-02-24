@@ -1,5 +1,5 @@
 import rest from "./instance";
-import { Snowflake } from "../definitions";
+import { Snowflake } from "../interfaces";
 import { Routes } from "discord-api-types/v9";
 
 // TODO: Test, Type, Document

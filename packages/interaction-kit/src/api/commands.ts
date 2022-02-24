@@ -1,22 +1,27 @@
 import rest from "./instance";
 import Config from "./config";
-import { ApplicationCommand, Snowflake } from "../definitions";
-import { Optional } from "../interfaces";
+import { Snowflake } from "../interfaces";
 import {
 	RESTGetAPIApplicationCommandsResult,
 	RESTGetAPIApplicationGuildCommandsResult,
+	RESTPatchAPIApplicationCommandJSONBody,
 	RESTPatchAPIApplicationCommandResult,
+	RESTPatchAPIApplicationGuildCommandJSONBody,
 	RESTPatchAPIApplicationGuildCommandResult,
+	RESTPostAPIApplicationCommandsJSONBody,
 	RESTPostAPIApplicationCommandsResult,
+	RESTPostAPIApplicationGuildCommandsJSONBody,
 	RESTPostAPIApplicationGuildCommandsResult,
+	RESTPutAPIApplicationCommandsJSONBody,
 	RESTPutAPIApplicationCommandsResult,
+	RESTPutAPIApplicationGuildCommandsJSONBody,
 	RESTPutAPIApplicationGuildCommandsResult,
 	Routes,
 } from "discord-api-types/v9";
 
 // TODO: Test, Type, Document
 export async function getGlobalApplicationCommands(
-	applicationID: Snowflake = Config.getApplicationID()
+	applicationID = Config.getApplicationID()
 ) {
 	return rest.get(
 		Routes.applicationCommands(applicationID)
@@ -25,8 +30,8 @@ export async function getGlobalApplicationCommands(
 
 // TODO: Test, Type, Document
 export async function postGlobalApplicationCommand(
-	command: Omit<ApplicationCommand, "id" | "application_id">,
-	applicationID: Snowflake = Config.getApplicationID()
+	command: RESTPostAPIApplicationCommandsJSONBody,
+	applicationID = Config.getApplicationID()
 ) {
 	return rest.post(Routes.applicationCommands(applicationID), {
 		body: command,
@@ -35,8 +40,8 @@ export async function postGlobalApplicationCommand(
 
 // TODO: Test, Type, Document
 export async function putGlobalApplicationCommands(
-	commands: Array<Optional<ApplicationCommand, "id" | "application_id">>,
-	applicationID: Snowflake = Config.getApplicationID()
+	commands: RESTPutAPIApplicationCommandsJSONBody,
+	applicationID = Config.getApplicationID()
 ) {
 	return rest.put(Routes.applicationCommands(applicationID), {
 		body: commands,
@@ -45,11 +50,8 @@ export async function putGlobalApplicationCommands(
 
 // TODO: Test, Type, Document
 export async function patchGlobalApplicationCommand(
-	command: Optional<
-		ApplicationCommand,
-		"name" | "description" | "options" | "default_permission"
-	>,
-	applicationID: Snowflake = Config.getApplicationID()
+	command: RESTPatchAPIApplicationCommandJSONBody & { id: Snowflake },
+	applicationID = Config.getApplicationID()
 ) {
 	return rest.patch(Routes.applicationCommand(applicationID, command.id), {
 		body: command,
@@ -59,7 +61,7 @@ export async function patchGlobalApplicationCommand(
 // TODO: Test, Type, Document
 export async function deleteGlobalApplicationCommand(
 	commandID: Snowflake,
-	applicationID: Snowflake = Config.getApplicationID()
+	applicationID = Config.getApplicationID()
 ) {
 	return rest.delete(Routes.applicationCommand(applicationID, commandID));
 }
@@ -67,7 +69,7 @@ export async function deleteGlobalApplicationCommand(
 // TODO: Test, Type, Document
 export async function getGuildApplicationCommands(
 	guildID: Snowflake,
-	applicationID: Snowflake = Config.getApplicationID()
+	applicationID = Config.getApplicationID()
 ) {
 	return rest.get(
 		Routes.applicationGuildCommands(applicationID, guildID)
@@ -77,8 +79,8 @@ export async function getGuildApplicationCommands(
 // TODO: Test, Type, Document
 export async function postGuildApplicationCommand(
 	guildID: Snowflake,
-	command: Omit<ApplicationCommand, "id" | "application_id">,
-	applicationID: Snowflake = Config.getApplicationID()
+	command: RESTPostAPIApplicationGuildCommandsJSONBody,
+	applicationID = Config.getApplicationID()
 ) {
 	return rest.post(Routes.applicationGuildCommands(applicationID, guildID), {
 		body: command,
@@ -88,8 +90,8 @@ export async function postGuildApplicationCommand(
 // TODO: Test, Type, Document
 export async function putGuildApplicationCommands(
 	guildID: Snowflake,
-	commands: Array<Optional<ApplicationCommand, "id" | "application_id">>,
-	applicationID: Snowflake = Config.getApplicationID()
+	commands: RESTPutAPIApplicationGuildCommandsJSONBody,
+	applicationID = Config.getApplicationID()
 ) {
 	return rest.put(Routes.applicationGuildCommands(applicationID, guildID), {
 		body: commands,
@@ -99,11 +101,8 @@ export async function putGuildApplicationCommands(
 // TODO: Test, Type, Document
 export async function patchGuildApplicationCommand(
 	guildID: Snowflake,
-	command: Optional<
-		ApplicationCommand,
-		"name" | "description" | "options" | "default_permission"
-	>,
-	applicationID: Snowflake = Config.getApplicationID()
+	command: RESTPatchAPIApplicationGuildCommandJSONBody & { id: Snowflake },
+	applicationID = Config.getApplicationID()
 ) {
 	return rest.patch(
 		Routes.applicationGuildCommand(applicationID, guildID, command.id),
@@ -117,7 +116,7 @@ export async function patchGuildApplicationCommand(
 export async function deleteGuildApplicationCommand(
 	guildID: Snowflake,
 	commandID: Snowflake,
-	applicationID: Snowflake = Config.getApplicationID()
+	applicationID = Config.getApplicationID()
 ) {
 	return rest.delete(
 		Routes.applicationGuildCommand(applicationID, guildID, commandID)
