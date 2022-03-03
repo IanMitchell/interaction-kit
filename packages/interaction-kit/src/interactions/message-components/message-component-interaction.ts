@@ -1,28 +1,24 @@
-import type { FastifyReply, FastifyRequest } from "fastify";
 import * as API from "../../api";
-import {
-	Interaction as InteractionDefinition,
-	InteractionApplicationCommandCallbackData,
-	InteractionCallbackDataFlags,
-	InteractionCallbackType,
-	InteractionRequestType,
-	InteractionResponse,
-	Snowflake,
-} from "../../definitions";
 import Application from "../../application";
 import {
 	Interaction,
 	InteractionMessageModifiers,
 	InteractionReply,
+	RequestBody,
+	ResponseHandler,
 	SerializableComponent,
+	Snowflake,
 } from "../../interfaces";
-import Embed from "../../components/embed";
 import { isActionRow } from "../../components/action-row";
+import {
+	APIMessageComponentInteraction,
+	InteractionType,
+} from "discord-api-types/payloads/v9";
 
 export default class MessageComponentInteraction implements Interaction {
-	public readonly type = InteractionRequestType.MESSAGE_COMPONENT;
+	public readonly type = InteractionType.MessageComponent;
 	public readonly token: string;
-	public readonly response: FastifyReply;
+	public readonly respond: ResponseHandler;
 	public readonly customID: string;
 	public readonly messages: InteractionMessageModifiers;
 	readonly #application: Application;
@@ -36,19 +32,19 @@ export default class MessageComponentInteraction implements Interaction {
 
 	constructor(
 		application: Application,
-		request: FastifyRequest<{ Body: InteractionDefinition }>,
-		response: FastifyReply
+		json: RequestBody<APIMessageComponentInteraction>,
+		respond: ResponseHandler
 	) {
 		this.#application = application;
-		this.response = response;
-		this.token = request.body.token;
-		this.customID = request?.body?.data?.custom_id ?? "";
+		this.respond = respond;
+		this.token = json.token;
+		this.customID = json.data?.custom_id ?? "";
 
 		// TODO: Make these records
-		this.channelID = request.body.channel_id;
-		this.guildID = request.body.guild_id;
-		this.member = request.body.member;
-		this.message = request.body.message;
+		this.channelID = json.channel_id;
+		this.guildID = json.guild_id;
+		this.member = json.member;
+		this.message = json.message;
 
 		// TODO: Rename?
 		this.messages = {

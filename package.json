@@ -45,10 +45,10 @@
 		}
 	},
 	"devDependencies": {
+		"@types/cross-spawn": "^6.0.2",
 		"@types/jest": "^27.0.2",
 		"@types/node": "^16.9.6",
 		"@types/node-fetch": "^2.5.12",
-		"@types/cross-spawn": "^6.0.2",
 		"@typescript-eslint/eslint-plugin": "^4.31.2",
 		"@typescript-eslint/parser": "^4.31.2",
 		"eslint": "^7.32.0",

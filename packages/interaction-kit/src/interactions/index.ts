@@ -13,8 +13,13 @@ import ContextMenuInteraction from "./application-commands/context-menu-interact
 import { ExecutableComponent } from "../components";
 import { Button } from "../components/button";
 import Select from "../components/select";
-import { InteractionKitCommand } from "../interfaces";
+import {
+	InteractionKitCommand,
+	RequestBody,
+	ResponseHandler,
+} from "../interfaces";
 import { ApplicationCommandInteraction, PingInteraction } from "..";
+import { InteractionType } from "discord-api-types/v9";
 
 function handleApplicationCommandInteraction(
 	application: Application,
@@ -111,11 +116,11 @@ function handleMessageComponentInteraction(
 
 export function handler(
 	application: Application,
-	request: FastifyRequest<{ Body: InteractionDefinition }>,
-	response: FastifyReply
+	requestBody: RequestBody,
+	response: ResponseHandler
 ) {
-	switch (request?.body?.type) {
-		case InteractionRequestType.PING: {
+	switch (requestBody.type) {
+		case InteractionType.Ping: {
 			console.log("Handling Discord Ping");
 			new PingInteraction(application, request, response).handler();
 			break;

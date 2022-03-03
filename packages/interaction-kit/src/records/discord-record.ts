@@ -1,4 +1,4 @@
-import type { Snowflake } from "../definitions";
+import type { Snowflake } from "../interfaces";
 
 export interface DiscordRecord {
 	// Static

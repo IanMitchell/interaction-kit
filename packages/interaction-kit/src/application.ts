@@ -11,10 +11,15 @@ import {
 	ApplicationCommandType,
 } from "./definitions";
 import * as Interaction from "./interactions";
-import { InteractionKitCommand, SerializableComponent } from "./interfaces";
+import {
+	FetchEvent,
+	InteractionKitCommand,
+	SerializableComponent,
+} from "./interfaces";
 import startInteractionKitServer from "./server";
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
 import { ExecutableComponent, isExecutableComponent } from "./components";
+import { response, ResponseStatus } from "./requests/response";
 
 type ApplicationArgs = {
 	applicationID: string;
@@ -178,19 +183,20 @@ export default class Application {
 		return this;
 	}
 
-	handler(
-		request: FastifyRequest<{ Body: InteractionDefinition }>,
-		response: FastifyReply
-	) {
+	async handler(event: FetchEvent) {
 		console.log("REQUEST");
 		try {
-			Interaction.handler(this, request, response);
+			// TODO: How to handle this?
+			const json = await event.request.json();
+			Interaction.handler(
+				this,
+				json,
+				async (status: ResponseStatus, json: Record<string, any>) =>
+					event.respondWith(respond(status, json))
+			);
 		} catch (exception: unknown) {
 			console.log(exception);
-			void response.status(400).send({
-				error: "Unknown Type",
-			});
-			throw exception;
+			return response(ResponseStatus.BadRequest, { error: "Unknown Type" });
 		}
 	}
 

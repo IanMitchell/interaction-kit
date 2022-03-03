@@ -1,13 +1,24 @@
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
 import * as API from "./api";
 import Application from "./application";
-import Embed from "./components/embed";
+import { ResponseStatus } from "./requests/response";
 
 export type Snowflake = `${bigint}`;
 
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type ArrayValue<T> = T extends Array<infer U> ? U : T;
+
+// TODO: Is there a better way of handling these next three types?
+export interface FetchEvent extends Event {
+	request: Request;
+	respondWith(response: Promise<Response> | Response): Promise<Response>;
+}
+export type RequestBody<T = Record<string, any>> = T;
+export type ResponseHandler = (
+	status: ResponseStatus,
+	json: Record<string, any>
+) => void;
 
 export interface Mentionable {
 	id: Snowflake;
