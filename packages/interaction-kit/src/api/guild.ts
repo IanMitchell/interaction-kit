@@ -1,6 +1,6 @@
 import rest from "./instance";
 import { Snowflake } from "../interfaces";
-import { Routes } from "discord-api-types/v9";
+import { RESTGetAPIGuildResult, Routes } from "discord-api-types/v9";
 
 // TODO: Test, Type, Document
 export async function getGuild(
@@ -13,5 +13,5 @@ export async function getGuild(
 
 	return rest.get(Routes.guild(id), {
 		query: new URLSearchParams({ with_counts: String(counts) }),
-	});
+	}) as Promise<RESTGetAPIGuildResult>;
 }

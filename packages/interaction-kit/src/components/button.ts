@@ -4,12 +4,14 @@ import Application from "../application";
 import ButtonInteraction from "../interactions/message-components/button-interaction";
 import {
 	APIButtonComponent,
+	APIButtonComponentWithCustomId,
+	APIButtonComponentWithURL,
 	ButtonStyle,
 	ComponentType,
 } from "discord-api-types/v9";
 
 type ButtonBaseArgs = Omit<
-	Component,
+	APIButtonComponent,
 	| "type"
 	| "url"
 	| "custom_id"
@@ -22,12 +24,12 @@ type ButtonBaseArgs = Omit<
 
 type ButtonArgs = {
 	handler: (event: ButtonInteraction, application: Application) => unknown;
-	customID: Component["custom_id"];
+	customID: APIButtonComponentWithCustomId["custom_id"];
 	style: Exclude<ButtonStyle, ButtonStyle.Link>;
 } & ButtonBaseArgs;
 
 type ButtonLinkArgs = Omit<
-	Component,
+	APIButtonComponentWithURL,
 	"type" | "custom_id" | "style" | "components"
 >;
 
@@ -37,7 +39,7 @@ abstract class ButtonBase implements SerializableComponent {
 	#emoji: APIButtonComponent["emoji"];
 	#disabled: APIButtonComponent["disabled"];
 
-	constructor(options: APIButtonComponentBase) {
+	constructor(options: ButtonBaseArgs) {
 		this.#label = options.label;
 		this.#emoji = options.emoji;
 		this.#disabled = options.disabled;
@@ -114,8 +116,8 @@ export class ButtonLink extends ButtonBase {
 		return this;
 	}
 
-	serialize(): APIButtonComponent {
-		const payload = super.serialize();
+	serialize(): APIButtonComponentWithURL {
+		const payload: APIButtonComponentWithURL = super.serialize();
 		payload.url = this.#url;
 
 		return payload;
@@ -161,13 +163,9 @@ export class Button
 		return this;
 	}
 
-	serialize(): APIButtonComponent {
-		const payload = super.serialize();
-
-		if (this.#customID != null) {
-			payload.custom_id = this.#customID;
-		}
-
+	serialize(): APIButtonComponentWithCustomId {
+		const payload: APIButtonComponentWithCustomId = super.serialize();
+		payload.custom_id = this.#customID;
 		return payload;
 	}
 }

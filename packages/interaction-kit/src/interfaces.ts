@@ -41,7 +41,7 @@ export interface Serializable<T = unknown> {
 }
 
 export interface SerializableComponent extends Serializable {
-	get id(): string; // TODO: Type this better
+	get id(): string | undefined; // TODO: Type this better
 	get type(): ComponentType;
 	serialize(): APIMessageComponent;
 }
