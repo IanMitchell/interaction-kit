@@ -1,17 +1,17 @@
 import SelectInteraction from "../interactions/message-components/select-interaction";
 import Application from "../application";
-import { Component, ComponentType } from "../definitions";
 import { Executable, SerializableComponent } from "../interfaces";
 import { SelectOptionList } from "./choices";
+import { APISelectMenuComponent, ComponentType } from "discord-api-types/v9";
 
 type SelectArgs = {
 	handler: (event: SelectInteraction, application: Application) => unknown;
-	customID: Component["custom_id"];
-	min: Component["min_values"];
-	max: Component["max_values"];
+	customID: APISelectMenuComponent["custom_id"];
+	min: APISelectMenuComponent["min_values"];
+	max: APISelectMenuComponent["max_values"];
 	options: SelectOptionList;
 } & Omit<
-	Component,
+	APISelectMenuComponent,
 	| "type"
 	| "url"
 	| "custom_id"
@@ -25,11 +25,11 @@ export default class Select
 	implements SerializableComponent, Executable<SelectInteraction>
 {
 	options: SelectArgs["options"];
-	#customID: SelectArgs["customID"];
-	#placeholder: SelectArgs["placeholder"];
-	#min: SelectArgs["min"];
-	#max: SelectArgs["max"];
-	#disabled: SelectArgs["disabled"];
+	#customID: APISelectMenuComponent["custom_id"];
+	#placeholder: APISelectMenuComponent["placeholder"];
+	#min: APISelectMenuComponent["min_values"];
+	#max: APISelectMenuComponent["max_values"];
+	#disabled: APISelectMenuComponent["disabled"];
 	handler: SelectArgs["handler"];
 
 	constructor(options: SelectArgs) {
@@ -47,7 +47,7 @@ export default class Select
 	}
 
 	get type() {
-		return ComponentType.SELECT;
+		return ComponentType.SelectMenu;
 	}
 
 	setCustomID(customID: SelectArgs["customID"]) {
@@ -80,9 +80,9 @@ export default class Select
 		return this;
 	}
 
-	serialize(): Component {
-		const payload: Component = {
-			type: ComponentType.SELECT,
+	serialize(): APISelectMenuComponent {
+		const payload: APISelectMenuComponent = {
+			type: ComponentType.SelectMenu,
 			custom_id: this.#customID,
 			options: this.options.serialize(),
 		};
