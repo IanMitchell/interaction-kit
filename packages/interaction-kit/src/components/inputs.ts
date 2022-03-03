@@ -1,10 +1,8 @@
-import { Comparable, Serializable } from "../interfaces";
 import {
-	ApplicationCommandOption,
-	ApplicationCommandOptionChoice,
+	APIApplicationCommandOption,
 	ApplicationCommandOptionType,
-	ApplicationCommandOptionWithChoice,
-} from "../definitions";
+} from "discord-api-types/payloads/v9";
+import { Comparable, Serializable } from "../interfaces";
 import { SlashChoiceList } from "./choices";
 
 type InputChoiceValue = ApplicationCommandOptionChoice["value"];
@@ -22,9 +20,9 @@ export function isChoiceType(
 	input: ApplicationCommandOption
 ): input is ApplicationCommandOptionWithChoice {
 	switch (input.type) {
-		case ApplicationCommandOptionType.STRING:
-		case ApplicationCommandOptionType.INTEGER:
-		case ApplicationCommandOptionType.NUMBER:
+		case ApplicationCommandOptionType.String:
+		case ApplicationCommandOptionType.Integer:
+		case ApplicationCommandOptionType.Number:
 			return true;
 		default:
 			return false;
@@ -32,7 +30,7 @@ export function isChoiceType(
 }
 
 export class Input
-	implements Serializable, Comparable<ApplicationCommandOption>
+	implements Serializable, Comparable<APIApplicationCommandOption>
 {
 	public readonly type;
 	public readonly name;
@@ -57,8 +55,8 @@ export class Input
 		this.options = options;
 	}
 
-	serialize(): ApplicationCommandOption {
-		const payload: ApplicationCommandOption = {
+	serialize(): APIApplicationCommandOption {
+		const payload: APIApplicationCommandOption = {
 			type: this.type,
 			name: this.name,
 			description: this.description,
@@ -76,7 +74,7 @@ export class Input
 		return payload;
 	}
 
-	equals(schema: ApplicationCommandOption): boolean {
+	equals(schema: APIApplicationCommandOption): boolean {
 		if (
 			this.type !== schema.type ||
 			this.name !== schema.name ||
@@ -127,7 +125,7 @@ interface StringInputArgs extends Omit<InputArgs, "type" | "options"> {
 
 export class StringInput extends Input {
 	constructor(args: StringInputArgs) {
-		super({ type: ApplicationCommandOptionType.STRING, ...args });
+		super({ type: ApplicationCommandOptionType.String, ...args });
 	}
 }
 
@@ -137,36 +135,36 @@ interface IntegerInputArgs extends Omit<InputArgs, "type" | "options"> {
 
 export class IntegerInput extends Input {
 	constructor(args: IntegerInputArgs) {
-		super({ type: ApplicationCommandOptionType.INTEGER, ...args });
+		super({ type: ApplicationCommandOptionType.Integer, ...args });
 	}
 }
 
 export class BooleanInput extends Input {
 	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
-		super({ type: ApplicationCommandOptionType.BOOLEAN, ...args });
+		super({ type: ApplicationCommandOptionType.Boolean, ...args });
 	}
 }
 
 export class UserInput extends Input {
 	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
-		super({ type: ApplicationCommandOptionType.USER, ...args });
+		super({ type: ApplicationCommandOptionType.User, ...args });
 	}
 }
 
 export class ChannelInput extends Input {
 	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
-		super({ type: ApplicationCommandOptionType.CHANNEL, ...args });
+		super({ type: ApplicationCommandOptionType.Channel, ...args });
 	}
 }
 
 export class RoleInput extends Input {
 	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
-		super({ type: ApplicationCommandOptionType.ROLE, ...args });
+		super({ type: ApplicationCommandOptionType.Role, ...args });
 	}
 }
 
 export class MentionableInput extends Input {
 	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
-		super({ type: ApplicationCommandOptionType.MENTIONABLE, ...args });
+		super({ type: ApplicationCommandOptionType.Mentionable, ...args });
 	}
 }

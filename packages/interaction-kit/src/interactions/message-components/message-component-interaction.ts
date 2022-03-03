@@ -11,9 +11,17 @@ import {
 } from "../../interfaces";
 import { isActionRow } from "../../components/action-row";
 import {
+	APIInteractionGuildMember,
+	APIInteractionResponse,
+	APIMessage,
 	APIMessageComponentInteraction,
+	InteractionResponseType,
 	InteractionType,
+	MessageFlags,
 } from "discord-api-types/payloads/v9";
+import { ResponseStatus } from "../../requests/response";
+import { RESTPatchAPIInteractionFollowupJSONBody } from "discord-api-types/rest/v9";
+import { Embed } from "@discordjs/builders";
 
 export default class MessageComponentInteraction implements Interaction {
 	public readonly type = InteractionType.MessageComponent;
@@ -27,8 +35,8 @@ export default class MessageComponentInteraction implements Interaction {
 	// TODO: Convert these into Records
 	public readonly channelID: Snowflake | undefined;
 	public readonly guildID: Snowflake | undefined;
-	public readonly member: Record<string, unknown> | undefined;
-	public readonly message: Record<string, unknown> | undefined;
+	public readonly member: APIInteractionGuildMember | undefined;
+	public readonly message: APIMessage | undefined;
 
 	constructor(
 		application: Application,
@@ -41,28 +49,28 @@ export default class MessageComponentInteraction implements Interaction {
 		this.customID = json.data?.custom_id ?? "";
 
 		// TODO: Make these records
-		this.channelID = json.channel_id;
-		this.guildID = json.guild_id;
+		this.channelID = json.channel_id as Snowflake;
+		this.guildID = json.guild_id as Snowflake;
 		this.member = json.member;
 		this.message = json.message;
 
 		// TODO: Rename?
 		this.messages = {
 			edit: async (
-				data: InteractionApplicationCommandCallbackData,
+				data: RESTPatchAPIInteractionFollowupJSONBody,
 				id = "@original"
 			) => API.patchInteractionFollowup(this.token, id, data),
 
 			delete: async (id = "@original") =>
-				API.deleteWebhookMessage(this.token, id),
+				API.deleteInteractionFollowup(this.token, id),
 		};
 
 		this.#replied = false;
 	}
 
-	defer() {
-		return this.response.status(200).send({
-			type: InteractionCallbackType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+	async defer() {
+		return this.respond(ResponseStatus.OK, {
+			type: InteractionResponseType.DeferredChannelMessageWithSource,
 		});
 	}
 
@@ -73,20 +81,23 @@ export default class MessageComponentInteraction implements Interaction {
 		ephemeral = false,
 		queue = false,
 	}: InteractionReply) {
-		const data: InteractionResponse["data"] = {};
+		const payload: APIInteractionResponse = {
+			type: InteractionResponseType.ChannelMessageWithSource,
+			data: {},
+		};
 
 		if (message != null) {
-			data.content = message;
+			payload.data.content = message;
 		}
 
 		if (ephemeral) {
-			data.flags = InteractionCallbackDataFlags.EPHEMERAL;
+			payload.data.flags = MessageFlags.Ephemeral;
 		}
 
 		if (embed != null) {
-			data.embeds = ([] as Embed[])
+			payload.data.embeds = ([] as Embed[])
 				.concat(embed)
-				.map((item) => item.serialize());
+				.map((item) => item.toJSON());
 		}
 
 		if (components != null) {
@@ -100,25 +111,21 @@ export default class MessageComponentInteraction implements Interaction {
 				}
 			});
 
-			data.components = ([] as SerializableComponent[])
+			payload.data.components = ([] as SerializableComponent[])
 				.concat(components)
 				.map((component) => component.serialize());
 		}
 
-		const payload: InteractionResponse = {
-			type: InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
-			data,
-		};
-
 		if (!this.#replied && !queue) {
 			this.#replied = true;
-			await this.response.status(200).send(payload);
+			await this.respond(ResponseStatus.OK, payload);
 			return "@original";
 		}
 
-		// TODO: Verified this sends the ID back (we probably need to extract it)
-		const id = await API.postInteractionFollowup(this.token, data);
-
-		return id;
+		const responseData = await API.postInteractionFollowup(
+			this.token,
+			payload.data
+		);
+		return responseData.id;
 	}
 }

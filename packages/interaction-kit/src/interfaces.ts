@@ -2,6 +2,14 @@ import ApplicationCommandInteraction from "./interactions/application-commands/a
 import * as API from "./api";
 import Application from "./application";
 import { ResponseStatus } from "./requests/response";
+import { Embed } from "@discordjs/builders";
+import {
+	APIMessageComponent,
+	ApplicationCommandType,
+	ComponentType,
+	InteractionType,
+	RESTPatchAPIInteractionFollowupJSONBody,
+} from "discord-api-types/v9";
 
 export type Snowflake = `${bigint}`;
 
@@ -18,7 +26,7 @@ export type RequestBody<T = Record<string, any>> = T;
 export type ResponseHandler = (
 	status: ResponseStatus,
 	json: Record<string, any>
-) => void;
+) => Promise<void>;
 
 export interface Mentionable {
 	id: Snowflake;
@@ -33,9 +41,9 @@ export interface Serializable<T = unknown> {
 }
 
 export interface SerializableComponent extends Serializable {
-	get id(): Component["custom_id"];
+	get id(): string; // TODO: Type this better
 	get type(): ComponentType;
-	serialize(): Component;
+	serialize(): APIMessageComponent;
 }
 
 export type InteractionReply = {
@@ -48,14 +56,14 @@ export type InteractionReply = {
 
 export type InteractionMessageModifiers = {
 	edit: (
-		data: InteractionApplicationCommandCallbackData,
+		data: RESTPatchAPIInteractionFollowupJSONBody,
 		id?: string
 	) => ReturnType<typeof API.patchInteractionFollowup>;
 	delete: (id?: string) => ReturnType<typeof API.deleteInteractionFollowup>;
 };
 
 export interface Interaction {
-	readonly type: InteractionRequestType;
+	readonly type: InteractionType;
 	readonly messages: InteractionMessageModifiers;
 	// get channel(): ChannelRecord;
 	// get member(): MemberRecord

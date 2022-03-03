@@ -9,7 +9,6 @@ export function isActionRow(
 	return (component as ActionRow).type === ComponentType.ActionRow;
 }
 
-// TODO: Should this be here?
 export type ActionRowChildren = Button | Select;
 
 export default class ActionRow implements SerializableComponent {

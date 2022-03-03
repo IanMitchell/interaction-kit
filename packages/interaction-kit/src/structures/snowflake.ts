@@ -1,10 +1,15 @@
-import type { Snowflake } from "../definitions";
-import { EPOCH } from "../definitions";
+import type { Snowflake } from "../interfaces";
+
+export const EPOCH = 1420070400000;
 
 /**
  * Snowflake structure is defined here:
  * https://discord.com/developers/docs/reference#snowflakes-snowflake-id-format-structure-left-to-right
  */
+
+export function isSnowflake(id: string): id is Snowflake {
+	return BigInt(id).toString() === id;
+}
 
 export function getTimestamp(snowflake: Snowflake): Date {
 	return new Date(Number((BigInt(snowflake) >> BigInt(22)) + BigInt(EPOCH)));

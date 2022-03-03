@@ -6,6 +6,7 @@ import {
 	RESTDeleteAPIInteractionFollowupResult,
 	RESTPatchAPIInteractionFollowupResult,
 	Routes,
+	RESTPostAPIInteractionFollowupResult,
 } from "discord-api-types/v9";
 
 // TODO: Test, Type, Document
@@ -16,7 +17,7 @@ export async function postInteractionFollowup(
 ) {
 	return rest.post(Routes.webhook(applicationID, interactionToken), {
 		body: data,
-	}) as Promise<RESTPostAPIInteractionFollowupJSONBody>;
+	}) as Promise<RESTPostAPIInteractionFollowupResult>;
 }
 
 // TODO: Test, Type, Document

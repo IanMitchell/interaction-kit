@@ -1,8 +1,12 @@
 import type { Executable, SerializableComponent } from "../interfaces";
 
 import Application from "../application";
-import { ButtonStyle, Component, ComponentType } from "../definitions";
 import ButtonInteraction from "../interactions/message-components/button-interaction";
+import {
+	APIButtonComponent,
+	ButtonStyle,
+	ComponentType,
+} from "discord-api-types/v9";
 
 type ButtonBaseArgs = Omit<
 	Component,
@@ -19,7 +23,7 @@ type ButtonBaseArgs = Omit<
 type ButtonArgs = {
 	handler: (event: ButtonInteraction, application: Application) => unknown;
 	customID: Component["custom_id"];
-	style: Exclude<ButtonStyle, ButtonStyle.LINK>;
+	style: Exclude<ButtonStyle, ButtonStyle.Link>;
 } & ButtonBaseArgs;
 
 type ButtonLinkArgs = Omit<
@@ -29,23 +33,23 @@ type ButtonLinkArgs = Omit<
 
 abstract class ButtonBase implements SerializableComponent {
 	#style: ButtonStyle | undefined;
-	#label: ButtonArgs["label"];
-	#emoji: ButtonArgs["emoji"];
-	#disabled: ButtonArgs["disabled"];
+	#label: APIButtonComponent["label"];
+	#emoji: APIButtonComponent["emoji"];
+	#disabled: APIButtonComponent["disabled"];
 
-	constructor(options: ButtonBaseArgs) {
+	constructor(options: APIButtonComponentBase) {
 		this.#label = options.label;
 		this.#emoji = options.emoji;
 		this.#disabled = options.disabled;
 		this.#style = options.style;
 	}
 
-	get id(): SerializableComponent["id"] {
+	get id() {
 		return undefined;
 	}
 
 	get type() {
-		return ComponentType.BUTTON;
+		return ComponentType.Button;
 	}
 
 	setLabel(label: ButtonArgs["label"]) {
@@ -63,9 +67,9 @@ abstract class ButtonBase implements SerializableComponent {
 		return this;
 	}
 
-	serialize(): Component {
-		const payload: Component = {
-			type: ComponentType.BUTTON,
+	serialize(): APIButtonComponent {
+		const payload: APIButtonComponent = {
+			type: ComponentType.Button,
 		};
 
 		if (this.#style != null) {
@@ -99,7 +103,7 @@ export class ButtonLink extends ButtonBase {
 	constructor(options: ButtonLinkArgs) {
 		super({
 			...options,
-			style: ButtonStyle.LINK,
+			style: ButtonStyle.Link,
 		});
 
 		this.#url = options?.url;
@@ -110,7 +114,7 @@ export class ButtonLink extends ButtonBase {
 		return this;
 	}
 
-	serialize(): Component {
+	serialize(): APIButtonComponent {
 		const payload = super.serialize();
 		payload.url = this.#url;
 
@@ -128,7 +132,7 @@ export class Button
 	constructor(options: ButtonArgs) {
 		super({
 			...options,
-			style: options?.style ?? ButtonStyle.PRIMARY,
+			style: options?.style ?? ButtonStyle.Primary,
 		});
 		this.#customID = options.customID;
 		this.handler = options?.handler;
@@ -147,7 +151,7 @@ export class Button
 		return this;
 	}
 
-	setStyle(style: Exclude<ButtonArgs["style"], ButtonStyle.LINK>) {
+	setStyle(style: Exclude<ButtonArgs["style"], ButtonStyle.Link>) {
 		super.setStyle(style);
 		return this;
 	}
@@ -157,7 +161,7 @@ export class Button
 		return this;
 	}
 
-	serialize(): Component {
+	serialize(): APIButtonComponent {
 		const payload = super.serialize();
 
 		if (this.#customID != null) {

@@ -1,7 +1,10 @@
-import { ApplicationCommandOptionChoice, SelectOption } from "../definitions";
+import {
+	APISelectMenuOption,
+	APIApplicationCommandOptionChoice,
+} from "discord-api-types/v9";
 import { Serializable } from "../interfaces";
 
-type ChoiceType = ApplicationCommandOptionChoice | SelectOption;
+type ChoiceType = APIApplicationCommandOptionChoice | APISelectMenuOption;
 
 export class Choices<T extends ChoiceType> implements Serializable {
 	_choices: Map<string, T>;
@@ -26,9 +29,11 @@ export class Choices<T extends ChoiceType> implements Serializable {
 	}
 }
 
-export class SelectOptionList extends Choices<SelectOption> {
-	constructor(choices: Record<string, SelectOption["value"] | SelectOption>) {
-		const values: Record<string, SelectOption> = {};
+export class SelectOptionList extends Choices<APISelectMenuOption> {
+	constructor(
+		choices: Record<string, APISelectMenuOption["value"] | APISelectMenuOption>
+	) {
+		const values: Record<string, APISelectMenuOption> = {};
 
 		Object.entries(choices).forEach(([key, value]) => {
 			if (typeof value === "string") {
@@ -52,15 +57,15 @@ export class SelectOptionList extends Choices<SelectOption> {
 }
 
 export class SlashChoiceList<
-	T extends ApplicationCommandOptionChoice["value"]
-> extends Choices<ApplicationCommandOptionChoice> {
+	T extends APIApplicationCommandOptionChoice["value"]
+> extends Choices<APIApplicationCommandOptionChoice> {
 	constructor(
 		choices: Record<
 			string,
-			T | (Omit<ApplicationCommandOptionChoice, "value"> & { value: T })
+			T | (Omit<APIApplicationCommandOptionChoice, "value"> & { value: T })
 		>
 	) {
-		const values: Record<string, ApplicationCommandOptionChoice> = {};
+		const values: Record<string, APIApplicationCommandOptionChoice> = {};
 
 		Object.entries(choices).forEach(([key, value]) => {
 			if (typeof value === "string") {

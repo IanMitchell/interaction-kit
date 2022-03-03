@@ -1,11 +1,4 @@
 import Application from "../application";
-import type { FastifyRequest, FastifyReply } from "fastify";
-import {
-	ApplicationCommandType,
-	ComponentType,
-	Interaction as InteractionDefinition,
-	InteractionRequestType,
-} from "../definitions";
 import ButtonInteraction from "./message-components/button-interaction";
 import SelectInteraction from "./message-components/select-interaction";
 import SlashCommandInteraction from "./application-commands/slash-command-interaction";
@@ -19,25 +12,32 @@ import {
 	ResponseHandler,
 } from "../interfaces";
 import { ApplicationCommandInteraction, PingInteraction } from "..";
-import { InteractionType } from "discord-api-types/v9";
+import {
+	APIApplicationCommandInteraction,
+	APIInteraction,
+	APIMessageComponentInteraction,
+	ApplicationCommandType,
+	ComponentType,
+	InteractionType,
+} from "discord-api-types/v9";
 
 function handleApplicationCommandInteraction(
 	application: Application,
 	command: InteractionKitCommand<ApplicationCommandInteraction> | undefined,
-	request: FastifyRequest<{ Body: InteractionDefinition }>,
-	response: FastifyReply
+	json: RequestBody<APIApplicationCommandInteraction>,
+	respond: ResponseHandler
 ) {
 	if (command == null) {
 		throw new Error("Unknown Command");
 	}
 
-	switch (request.body.data?.type) {
-		case ApplicationCommandType.CHAT_INPUT: {
+	switch (json.data.type) {
+		case ApplicationCommandType.ChatInput: {
 			const interaction = new SlashCommandInteraction(
 				application,
 				command,
-				request,
-				response
+				json,
+				respond
 			);
 
 			console.log(`Handling ${interaction.name}`);
@@ -45,13 +45,13 @@ function handleApplicationCommandInteraction(
 			break;
 		}
 
-		case ApplicationCommandType.MESSAGE:
-		case ApplicationCommandType.USER: {
+		case ApplicationCommandType.Message:
+		case ApplicationCommandType.User: {
 			const interaction = new ContextMenuInteraction(
 				application,
 				command,
-				request,
-				response
+				json,
+				respond
 			);
 
 			console.log(`Handling ${interaction.name}`);
@@ -61,9 +61,7 @@ function handleApplicationCommandInteraction(
 
 		default:
 			throw new Error(
-				`Unknown Application Command type: ${
-					request.body.data?.type ?? "[unknown]"
-				}`
+				`Unknown Application Command type: ${json.data.type ?? "[unknown]"}`
 			);
 	}
 }
@@ -71,20 +69,20 @@ function handleApplicationCommandInteraction(
 function handleMessageComponentInteraction(
 	application: Application,
 	component: ExecutableComponent | undefined,
-	request: FastifyRequest<{ Body: InteractionDefinition }>,
-	response: FastifyReply
+	json: RequestBody<APIMessageComponentInteraction>,
+	respond: ResponseHandler
 ) {
 	if (component == null) {
 		throw new Error("Unknown Component");
 	}
 
-	switch (request?.body?.data?.component_type) {
-		case ComponentType.BUTTON: {
+	switch (json.data.component_type) {
+		case ComponentType.Button: {
 			const interaction = new ButtonInteraction(
 				application,
 				component as Button,
-				request,
-				response
+				json,
+				respond
 			);
 
 			console.log(`Handling ${interaction.customID}`);
@@ -92,12 +90,12 @@ function handleMessageComponentInteraction(
 			break;
 		}
 
-		case ComponentType.SELECT: {
+		case ComponentType.SelectMenu: {
 			const interaction = new SelectInteraction(
 				application,
 				component as Select,
-				request,
-				response
+				json,
+				respond
 			);
 
 			console.log(`Handling ${interaction.customID}`);
@@ -108,7 +106,7 @@ function handleMessageComponentInteraction(
 		default:
 			throw new Error(
 				`Unknown Interaction Component type: ${
-					request?.body?.data?.component_type ?? "[unknown]"
+					json.data.component_type ?? "[unknown]"
 				}`
 			);
 	}
@@ -116,56 +114,41 @@ function handleMessageComponentInteraction(
 
 export function handler(
 	application: Application,
-	requestBody: RequestBody,
-	response: ResponseHandler
+	json: RequestBody<APIInteraction>,
+	respond: ResponseHandler
 ) {
-	switch (requestBody.type) {
+	switch (json.type) {
 		case InteractionType.Ping: {
 			console.log("Handling Discord Ping");
-			new PingInteraction(application, request, response).handler();
+			new PingInteraction(application, json, respond).handler();
 			break;
 		}
 
-		case InteractionRequestType.APPLICATION_COMMAND: {
-			if (request?.body?.data?.name == null) {
+		case InteractionType.ApplicationCommand: {
+			if (json.data.name == null) {
 				throw new Error("Received interaction without Name");
 			}
 
-			const command = application.getCommand(
-				request?.body?.data?.type,
-				request?.body?.data?.name
-			);
-			handleApplicationCommandInteraction(
-				application,
-				command,
-				request,
-				response
-			);
+			const command = application.getCommand(json.data.type, json.data?.name);
+			handleApplicationCommandInteraction(application, command, json, respond);
 			break;
 		}
 
-		case InteractionRequestType.MESSAGE_COMPONENT: {
-			if (request?.body?.data?.custom_id == null) {
+		case InteractionType.MessageComponent: {
+			if (json.data.custom_id == null) {
 				throw new Error("Received interaction without Custom ID");
 			}
 
-			const component = application.getComponent(
-				request?.body?.data?.custom_id
-			);
+			const component = application.getComponent(json.data.custom_id);
 
-			handleMessageComponentInteraction(
-				application,
-				component,
-				request,
-				response
-			);
+			handleMessageComponentInteraction(application, component, json, respond);
 			break;
 		}
 
 		default:
 			throw new Error(
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				`Unknown Interaction Type: ${request?.body?.type ?? "[unknown]"}`
+				`Unknown Interaction Type: ${json.type ?? "[unknown]"}`
 			);
 	}
 }
