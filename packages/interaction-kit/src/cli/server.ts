@@ -57,9 +57,11 @@ export default async function server(argv?: string[]) {
 
 	try {
 		if (devCommandChangeSet.hasChanges) {
-			await API.putGuildApplicationCommands(guildID, serializedCommands, {
-				applicationID: application.id,
-			});
+			await API.putGuildApplicationCommands(
+				guildID,
+				serializedCommands,
+				application.id
+			);
 		}
 	} catch (error: unknown) {
 		console.log({ error });

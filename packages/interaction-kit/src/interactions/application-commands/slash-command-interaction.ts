@@ -1,33 +1,35 @@
-import type { FastifyReply, FastifyRequest } from "fastify";
+import {
+	APIApplicationCommandInteractionDataOption,
+	APIChatInputApplicationCommandInteraction,
+	ApplicationCommandType,
+} from "discord-api-types/payloads/v9";
 import Application from "../../application";
 import {
-	ApplicationCommandInteractionDataOption,
-	ApplicationCommandType,
-	Interaction as InteractionDefinition,
-	OptionType,
-} from "../../definitions";
-import { InteractionKitCommand } from "../../interfaces";
+	InteractionKitCommand,
+	RequestBody,
+	ResponseHandler,
+} from "../../interfaces";
 import ApplicationCommandInteraction from "./application-command-interaction";
 
 export default class SlashCommandInteraction extends ApplicationCommandInteraction {
-	readonly #options: Map<string, ApplicationCommandInteractionDataOption>;
+	readonly #options: Map<string, APIApplicationCommandInteractionDataOption>;
 
 	constructor(
 		application: Application,
 		command: InteractionKitCommand<SlashCommandInteraction>,
-		request: FastifyRequest<{ Body: InteractionDefinition }>,
-		response: FastifyReply
+		json: RequestBody<APIChatInputApplicationCommandInteraction>,
+		respond: ResponseHandler
 	) {
-		super(application, request, response);
+		super(application, json, respond);
 		this.#options = new Map();
 
-		request.body?.data?.options?.forEach((option) => {
+		json.data?.options?.forEach((option) => {
 			this.#options.set(option.name.toLowerCase(), option);
 		});
 	}
 
 	get commandType() {
-		return ApplicationCommandType.CHAT_INPUT;
+		return ApplicationCommandType.ChatInput;
 	}
 
 	// TODO: Type? Should return an object where keys = #options keys, and value = ApplicationCommandInteractionDataOption
@@ -35,7 +37,10 @@ export default class SlashCommandInteraction extends ApplicationCommandInteracti
 		return new Proxy(
 			{},
 			{
-				get: (target, property): OptionType | null =>
+				get: (
+					target,
+					property
+				): APIApplicationCommandInteractionDataOption["value"] | null =>
 					this.#options.get(property.toString())?.value ?? null,
 			}
 		);

@@ -1,15 +1,19 @@
-import type { FastifyReply, FastifyRequest } from "fastify";
-import {
-	Interaction as InteractionDefinition,
-	ApplicationCommandType,
-} from "../../definitions";
 import Application from "../../application";
 import ApplicationCommandInteraction from "./application-command-interaction";
-import { InteractionKitCommand } from "../../interfaces";
+import {
+	InteractionKitCommand,
+	RequestBody,
+	ResponseHandler,
+} from "../../interfaces";
+import {
+	APIContextMenuInteraction,
+	ApplicationCommandType,
+} from "discord-api-types/payloads/v9";
+import { ContextMenuCommandType } from "@discordjs/builders";
 
 export type ContextMenuApplicationCommandType = Exclude<
 	ApplicationCommandType,
-	ApplicationCommandType.CHAT_INPUT
+	ApplicationCommandType.ChatInput
 >;
 
 type MessageTargetType = {
@@ -20,10 +24,10 @@ type UserTargetType = {
 	bot: boolean;
 };
 
-type TargetType<T extends ContextMenuApplicationCommandType> =
-	T extends ApplicationCommandType.MESSAGE
+type TargetType<T extends ContextMenuCommandType> =
+	T extends ApplicationCommandType.Message
 		? MessageTargetType
-		: T extends ApplicationCommandType.USER
+		: T extends ApplicationCommandType.User
 		? UserTargetType
 		: unknown;
 
@@ -36,27 +40,29 @@ export default class ContextMenuInteraction<
 	constructor(
 		application: Application,
 		command: InteractionKitCommand<ContextMenuInteraction<T>>,
-		request: FastifyRequest<{ Body: InteractionDefinition }>,
-		response: FastifyReply
+		json: RequestBody<APIContextMenuInteraction>,
+		respond: ResponseHandler
 	) {
-		super(application, request, response);
+		super(application, json, respond);
 
-		const id = request.body.data?.target_id ?? "0";
-		switch (request.body.data?.type) {
-			case ApplicationCommandType.MESSAGE:
+		const id = json.data?.target_id ?? "0";
+
+		// TODO: Clean this up
+		switch (json.data?.type) {
+			case ApplicationCommandType.Message:
 				// @ts-expect-error This is set at runtime but it's guaranteed to be the generic
-				this.commandType = ApplicationCommandType.MESSAGE;
+				this.commandType = ApplicationCommandType.Message;
 				// @ts-expect-error Same as above
-				this.target = (request.body.data?.resolved?.messages?.[id] ??
+				this.target = (json.data?.resolved?.messages?.[id] ??
 					{}) as MessageTargetType;
 				break;
-			case ApplicationCommandType.USER:
+			case ApplicationCommandType.User:
 				// @ts-expect-error This is set at runtime but it's guaranteed to be the generic
-				this.commandType = ApplicationCommandType.USER;
+				this.commandType = ApplicationCommandType.User;
 				// @ts-expect-error Same as above
 				this.target = {
-					...(request.body?.data?.resolved?.members?.[id] ?? {}),
-					...(request.body?.data?.resolved?.users?.[id] ?? {}),
+					...(json.data?.resolved?.members?.[id] ?? {}),
+					...(json.data?.resolved?.users?.[id] ?? {}),
 				};
 				break;
 			default:

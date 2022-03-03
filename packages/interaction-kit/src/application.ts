@@ -199,14 +199,4 @@ export default class Application {
 			return response(ResponseStatus.BadRequest, { error: "Unknown Type" });
 		}
 	}
-
-	async startServer(port?: number) {
-		return startInteractionKitServer(
-			(...args) => {
-				this.handler(...args);
-			},
-			this.#publicKey,
-			port ?? this.#port
-		);
-	}
 }

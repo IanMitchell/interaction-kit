@@ -1,13 +1,13 @@
 import Application from "../application";
 import { InteractionKitCommand } from "../interfaces";
-import ContextMenuInteraction, {
-	ContextMenuApplicationCommandType,
-} from "../interactions/application-commands/context-menu-interaction";
 import {
 	APIApplicationCommand,
 	ApplicationCommandType,
 	RESTPostAPIApplicationCommandsJSONBody,
 } from "discord-api-types/v9";
+import ContextMenuInteraction, {
+	ContextMenuApplicationCommandType,
+} from "../interactions/application-commands/context-menu-interaction";
 
 type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 	name: string;
