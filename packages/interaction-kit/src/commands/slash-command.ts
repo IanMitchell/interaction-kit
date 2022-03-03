@@ -1,8 +1,12 @@
-import { ApplicationCommand, ApplicationCommandType } from "../definitions";
 import Application from "../application";
 import { Input } from "../components/inputs";
-import { Optional, InteractionKitCommand } from "../interfaces";
+import { InteractionKitCommand } from "../interfaces";
 import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
+import {
+	APIApplicationCommand,
+	ApplicationCommandType,
+	RESTPostAPIApplicationCommandsJSONBody,
+} from "discord-api-types/v9";
 
 type CommandArgs = {
 	name: string;
@@ -15,7 +19,7 @@ type CommandArgs = {
 export default class SlashCommand
 	implements InteractionKitCommand<SlashCommandInteraction>
 {
-	public readonly type = ApplicationCommandType.CHAT_INPUT;
+	public readonly type = ApplicationCommandType.ChatInput;
 
 	name: string;
 	#description: string;
@@ -60,7 +64,7 @@ export default class SlashCommand
 		throw new Error("Unimplemented");
 	}
 
-	equals(schema: ApplicationCommand): boolean {
+	equals(schema: APIApplicationCommand): boolean {
 		if (
 			this.name !== schema.name ||
 			this.#description !== schema.description ||
@@ -80,8 +84,8 @@ export default class SlashCommand
 		);
 	}
 
-	serialize(): Optional<ApplicationCommand, "id" | "application_id"> {
-		const payload: Optional<ApplicationCommand, "id" | "application_id"> = {
+	serialize(): RESTPostAPIApplicationCommandsJSONBody {
+		const payload: RESTPostAPIApplicationCommandsJSONBody = {
 			name: this.name,
 			description: this.#description,
 		};
