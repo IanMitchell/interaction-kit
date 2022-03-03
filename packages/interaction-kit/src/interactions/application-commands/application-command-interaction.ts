@@ -6,10 +6,8 @@ import {
 	InteractionReply,
 	RequestBody,
 	ResponseHandler,
-	SerializableComponent,
 	Snowflake,
 } from "../../interfaces";
-import { isActionRow } from "../../components/action-row";
 import {
 	APIApplicationCommandInteraction,
 	APIInteractionGuildMember,
@@ -104,19 +102,15 @@ export default class ApplicationCommandInteraction implements Interaction {
 		}
 
 		if (components != null) {
-			components.forEach((component: SerializableComponent) => {
-				if (isActionRow(component)) {
-					component.components.forEach((child) => {
-						this.#application.addComponent(child);
-					});
-				} else {
-					this.#application.addComponent(component);
-				}
+			components.forEach((component) => {
+				component.components.forEach((child) => {
+					this.#application.addComponent(child);
+				});
 			});
 
-			payload.data.components = ([] as SerializableComponent[])
-				.concat(components)
-				.map((component) => component.serialize());
+			payload.data.components = components.map((component) =>
+				component.serialize()
+			);
 		}
 
 		if (!this.#replied && !queue) {

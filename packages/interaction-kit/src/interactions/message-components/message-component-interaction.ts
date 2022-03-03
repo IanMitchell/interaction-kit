@@ -111,9 +111,9 @@ export default class MessageComponentInteraction implements Interaction {
 				}
 			});
 
-			payload.data.components = ([] as SerializableComponent[])
-				.concat(components)
-				.map((component) => component.serialize());
+			payload.data.components = components?.map((component) =>
+				component.serialize()
+			);
 		}
 
 		if (!this.#replied && !queue) {

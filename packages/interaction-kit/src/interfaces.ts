@@ -10,6 +10,7 @@ import {
 	InteractionType,
 	RESTPatchAPIInteractionFollowupJSONBody,
 } from "discord-api-types/v9";
+import ActionRow from "./components/action-row";
 
 export type Snowflake = `${bigint}`;
 
@@ -49,7 +50,7 @@ export interface SerializableComponent extends Serializable {
 export type InteractionReply = {
 	message?: string;
 	embed?: Embed | Embed[] | null;
-	components?: SerializableComponent[] | null;
+	components?: ActionRow[] | null;
 	ephemeral?: boolean;
 	queue?: boolean;
 };
