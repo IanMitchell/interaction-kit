@@ -1,4 +1,4 @@
-import { APIActionRowComponent, ComponentType } from "discord-api-types";
+import { APIActionRowComponent, ComponentType } from "discord-api-types/v9";
 import type { SerializableComponent } from "../interfaces";
 import { Button } from "./button";
 import Select from "./select";
