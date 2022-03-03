@@ -7,7 +7,7 @@ import {
 	APIApplicationCommand,
 	ApplicationCommandType,
 	RESTPostAPIApplicationCommandsJSONBody,
-} from "discord-api-types";
+} from "discord-api-types/v9";
 
 type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 	name: string;
