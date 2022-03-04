@@ -1,6 +1,7 @@
 import {
-	APIApplicationCommandInteractionDataOption,
+	APIApplicationCommandInteractionDataBasicOption,
 	APIChatInputApplicationCommandInteraction,
+	ApplicationCommandOptionType,
 	ApplicationCommandType,
 } from "discord-api-types/payloads/v9";
 import Application from "../../application";
@@ -12,7 +13,11 @@ import {
 import ApplicationCommandInteraction from "./application-command-interaction";
 
 export default class SlashCommandInteraction extends ApplicationCommandInteraction {
-	readonly #options: Map<string, APIApplicationCommandInteractionDataOption>;
+	// TODO: lol u know subcommands and subgroups are a thing right mr discord developer
+	readonly #options: Map<
+		string,
+		APIApplicationCommandInteractionDataBasicOption
+	>;
 
 	constructor(
 		application: Application,
@@ -24,7 +29,12 @@ export default class SlashCommandInteraction extends ApplicationCommandInteracti
 		this.#options = new Map();
 
 		json.data?.options?.forEach((option) => {
-			this.#options.set(option.name.toLowerCase(), option);
+			if (
+				option.type !== ApplicationCommandOptionType.Subcommand &&
+				option.type !== ApplicationCommandOptionType.SubcommandGroup
+			) {
+				this.#options.set(option.name.toLowerCase(), option);
+			}
 		});
 	}
 
@@ -40,7 +50,7 @@ export default class SlashCommandInteraction extends ApplicationCommandInteracti
 				get: (
 					target,
 					property
-				): APIApplicationCommandInteractionDataOption["value"] | null =>
+				): APIApplicationCommandInteractionDataBasicOption["value"] | null =>
 					this.#options.get(property.toString())?.value ?? null,
 			}
 		);

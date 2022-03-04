@@ -1,5 +1,5 @@
 import { APIApplicationCommand } from "discord-api-types/payloads/v9";
-import { RESTPostAPIChatInputApplicationCommandsJSONBody } from "discord-api-types/rest/v9";
+import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/rest/v9";
 import path from "node:path";
 import * as API from "./api";
 import Application from "./application";
@@ -26,11 +26,10 @@ function getChangeSet(
 ) {
 	const changeSet = {
 		hasChanges: false,
-		newCommands: new Set<RESTPostAPIChatInputApplicationCommandsJSONBody>(),
-		updatedCommands: new Set<RESTPostAPIChatInputApplicationCommandsJSONBody>(),
-		deletedCommands: new Set<RESTPostAPIChatInputApplicationCommandsJSONBody>(),
-		unchangedCommands:
-			new Set<RESTPostAPIChatInputApplicationCommandsJSONBody>(),
+		newCommands: new Set<RESTPostAPIApplicationCommandsJSONBody>(),
+		updatedCommands: new Set<RESTPostAPIApplicationCommandsJSONBody>(),
+		deletedCommands: new Set<RESTPostAPIApplicationCommandsJSONBody>(),
+		unchangedCommands: new Set<RESTPostAPIApplicationCommandsJSONBody>(),
 	};
 
 	// Compare all existing commands against registered ones

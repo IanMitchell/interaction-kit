@@ -33,7 +33,6 @@ export default class ApplicationCommandInteraction implements Interaction {
 	public readonly guildID: Snowflake | undefined;
 	public readonly member: APIInteractionGuildMember | undefined;
 
-	readonly #options: Map<string, ApplicationCommandInteractionDataOption>;
 	readonly #application: Application;
 	#replied: boolean;
 
@@ -46,14 +45,9 @@ export default class ApplicationCommandInteraction implements Interaction {
 		this.respond = respond;
 		this.token = json.token;
 		this.name = json.data.name.toLowerCase() ?? "";
-		this.#options = new Map();
 
 		// TEMPORARY
 		this.member = json.member;
-
-		json.data.options?.forEach((option) => {
-			this.#options.set(option.name.toLowerCase(), option);
-		});
 
 		this.#replied = false;
 
