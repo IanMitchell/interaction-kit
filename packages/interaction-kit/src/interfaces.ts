@@ -4,11 +4,13 @@ import Application from "./application";
 import { ResponseStatus } from "./requests/response";
 import { Embed } from "@discordjs/builders";
 import {
+	APIApplicationCommand,
 	APIMessageComponent,
 	ApplicationCommandType,
 	ComponentType,
 	InteractionType,
 	RESTPatchAPIInteractionFollowupJSONBody,
+	RESTPostAPIApplicationCommandsJSONBody,
 } from "discord-api-types/v9";
 import ActionRow from "./components/action-row";
 
@@ -32,6 +34,10 @@ export type ResponseHandler = (
 export interface Mentionable {
 	id: Snowflake;
 }
+
+export type Module<T> = {
+	default: T;
+};
 
 export interface Comparable<T> {
 	equals: (schema: T) => boolean;
@@ -79,8 +85,8 @@ export interface Executable<T extends Interaction = Interaction> {
 
 export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
 	extends Executable<T>,
-		Serializable<Optional<ApplicationCommand, "id" | "application_id">>,
-		Comparable<ApplicationCommand> {
+		Serializable<RESTPostAPIApplicationCommandsJSONBody>,
+		Comparable<APIApplicationCommand> {
 	name: string;
 	handler: (interaction: T, application: Application) => unknown;
 	get type(): ApplicationCommandType;

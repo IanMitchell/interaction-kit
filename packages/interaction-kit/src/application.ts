@@ -1,25 +1,21 @@
-import type { FastifyRequest, FastifyReply } from "fastify";
-
 import fs from "node:fs";
 import path from "node:path";
 import SlashCommand from "./commands/slash-command";
 import ContextMenu from "./commands/context-menu";
 import Config from "./api/config";
-import {
-	Interaction as InteractionDefinition,
-	Snowflake,
-	ApplicationCommandType,
-} from "./definitions";
 import * as Interaction from "./interactions";
 import {
+	Snowflake,
 	FetchEvent,
 	InteractionKitCommand,
 	SerializableComponent,
+	Module,
 } from "./interfaces";
-import startInteractionKitServer from "./server";
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
 import { ExecutableComponent, isExecutableComponent } from "./components";
 import { response, ResponseStatus } from "./requests/response";
+import { APIInteraction, ApplicationCommandType } from "discord-api-types/v9";
+import { isValidRequest } from "./requests/validate";
 
 type ApplicationArgs = {
 	applicationID: string;
@@ -34,17 +30,17 @@ export interface CommandMap
 		Map<
 			string,
 			| SlashCommand
-			| ContextMenu<ApplicationCommandType.MESSAGE>
-			| ContextMenu<ApplicationCommandType.USER>
+			| ContextMenu<ApplicationCommandType.Message>
+			| ContextMenu<ApplicationCommandType.User>
 		>
 	> {
-	get(key: ApplicationCommandType.CHAT_INPUT): Map<string, SlashCommand>;
+	get(key: ApplicationCommandType.ChatInput): Map<string, SlashCommand>;
 	get(
-		key: ApplicationCommandType.MESSAGE
-	): Map<string, ContextMenu<ApplicationCommandType.MESSAGE>>;
+		key: ApplicationCommandType.Message
+	): Map<string, ContextMenu<ApplicationCommandType.Message>>;
 	get(
-		key: ApplicationCommandType.USER
-	): Map<string, ContextMenu<ApplicationCommandType.USER>>;
+		key: ApplicationCommandType.User
+	): Map<string, ContextMenu<ApplicationCommandType.User>>;
 	get(
 		key: ApplicationCommandType
 	): Map<string, InteractionKitCommand<ApplicationCommandInteraction>>;
@@ -83,9 +79,9 @@ export default class Application {
 
 		// Set up internal data structures
 		this.#commands = new Map([
-			[ApplicationCommandType.CHAT_INPUT, new Map()],
-			[ApplicationCommandType.MESSAGE, new Map()],
-			[ApplicationCommandType.USER, new Map()],
+			[ApplicationCommandType.ChatInput, new Map()],
+			[ApplicationCommandType.Message, new Map()],
+			[ApplicationCommandType.User, new Map()],
 		]) as CommandMap;
 
 		// Configure API Defaults
@@ -154,7 +150,9 @@ export default class Application {
 			console.log(`\tLoading ${files.length} files`);
 			for (const file of files) {
 				if (file.endsWith(".js")) {
-					const command = await import(path.join(directory, file));
+					const command = (await import(path.join(directory, file))) as Module<
+						InteractionKitCommand<ApplicationCommandInteraction>
+					>;
 					this.addCommand(command.default);
 				}
 			}
@@ -174,7 +172,9 @@ export default class Application {
 			console.log(`\tLoading ${files.length} files`);
 			for (const file of files) {
 				if (file.endsWith(".js")) {
-					const component = await import(path.join(directory, file));
+					const component = (await import(
+						path.join(directory, file)
+					)) as Module<SerializableComponent>;
 					this.addComponent(component.default);
 				}
 			}
@@ -185,14 +185,29 @@ export default class Application {
 
 	async handler(event: FetchEvent) {
 		console.log("REQUEST");
+
+		if (event.request.method !== "POST") {
+			await event.respondWith(
+				response(ResponseStatus.MethodNotAllowed, { error: "Invalid Method" })
+			);
+			return;
+		}
+
+		const valid = await isValidRequest(event.request, this.#publicKey);
+		if (!valid) {
+			await event.respondWith(
+				response(ResponseStatus.Unauthorized, { error: "Invalid Request" })
+			);
+		}
+
 		try {
-			// TODO: How to handle this?
-			const json = await event.request.json();
+			const json = (await event.request.json()) as APIInteraction;
 			Interaction.handler(
 				this,
 				json,
-				async (status: ResponseStatus, json: Record<string, any>) =>
-					event.respondWith(respond(status, json))
+				async (status: ResponseStatus, json: Record<string, any>) => {
+					void event.respondWith(response(status, json));
+				}
 			);
 		} catch (exception: unknown) {
 			console.log(exception);

@@ -139,6 +139,16 @@ export class IntegerInput extends Input {
 	}
 }
 
+interface NumberInputArgs extends Omit<InputArgs, "type" | "options"> {
+	choices?: SlashChoiceList<number>;
+}
+
+export class NumberInput extends Input {
+	constructor(args: NumberInputArgs) {
+		super({ type: ApplicationCommandOptionType.Number, ...args });
+	}
+}
+
 export class BooleanInput extends Input {
 	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
 		super({ type: ApplicationCommandOptionType.Boolean, ...args });

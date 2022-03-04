@@ -1,4 +1,3 @@
-import arg from "arg";
 import * as API from "../api";
 import {
 	getApplicationEntrypoint,
@@ -24,18 +23,6 @@ export default async function server(argv?: string[]) {
 		process.exit(0);
 	}
 
-	// Parse input args
-	const args = arg(
-		{
-			"--port": Number,
-			"-p": "--port",
-		},
-		{
-			permissive: true,
-		}
-	);
-
-	const port = args["--port"] ?? 3000;
 	const guildID = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
 
 	// Start application
@@ -66,10 +53,4 @@ export default async function server(argv?: string[]) {
 	} catch (error: unknown) {
 		console.log({ error });
 	}
-
-	console.log("Starting server...");
-	const server = await application.startServer(port);
-
-	process.on("SIGTERM", async () => server.close());
-	process.on("SIGINT", async () => server.close());
 }
