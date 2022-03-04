@@ -116,8 +116,8 @@ export class ButtonLink extends ButtonBase {
 		return this;
 	}
 
-	serialize(): APIButtonComponentWithURL {
-		const payload: APIButtonComponentWithURL = super.serialize();
+	serialize() {
+		const payload = super.serialize() as APIButtonComponentWithURL;
 		payload.url = this.#url;
 
 		return payload;

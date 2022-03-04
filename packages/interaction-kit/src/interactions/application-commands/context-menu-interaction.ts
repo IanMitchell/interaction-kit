@@ -9,7 +9,6 @@ import {
 	APIContextMenuInteraction,
 	ApplicationCommandType,
 } from "discord-api-types/payloads/v9";
-import { ContextMenuCommandType } from "@discordjs/builders";
 
 export type ContextMenuApplicationCommandType = Exclude<
 	ApplicationCommandType,
@@ -24,7 +23,7 @@ type UserTargetType = {
 	bot: boolean;
 };
 
-type TargetType<T extends ContextMenuCommandType> =
+type TargetType<T extends ContextMenuApplicationCommandType> =
 	T extends ApplicationCommandType.Message
 		? MessageTargetType
 		: T extends ApplicationCommandType.User

@@ -18,9 +18,9 @@ import {
 	InteractionResponseType,
 	InteractionType,
 	MessageFlags,
-} from "discord-api-types/payloads/v9";
+	RESTPatchAPIInteractionFollowupJSONBody,
+} from "discord-api-types/v9";
 import { ResponseStatus } from "../../requests/response";
-import { RESTPatchAPIInteractionFollowupJSONBody } from "discord-api-types/rest/v9";
 import { Embed } from "@discordjs/builders";
 
 export default class MessageComponentInteraction implements Interaction {
