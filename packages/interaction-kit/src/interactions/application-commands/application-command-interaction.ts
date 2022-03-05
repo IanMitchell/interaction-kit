@@ -44,7 +44,7 @@ export default class ApplicationCommandInteraction implements Interaction {
 		this.#application = application;
 		this.respond = respond;
 		this.token = json.token;
-		this.name = json.data.name.toLowerCase() ?? "";
+		this.name = json.data.name ?? "";
 
 		// TEMPORARY
 		this.member = json.member;

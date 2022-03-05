@@ -1,6 +1,6 @@
 export type Snowflake = `${bigint}`;
 
-export const EPOCH = 1420070400000;
+export const EPOCH = 1420070400000n;
 
 /**
  * Snowflake structure is defined here:
@@ -12,7 +12,7 @@ export function isSnowflake(id: string): id is Snowflake {
 }
 
 export function getTimestamp(snowflake: Snowflake): Date {
-	return new Date(Number((BigInt(snowflake) >> BigInt(22)) + BigInt(EPOCH)));
+	return new Date(Number((BigInt(snowflake) >> BigInt(22)) + EPOCH));
 }
 
 export function getWorkerID(snowflake: Snowflake): number {

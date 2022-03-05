@@ -33,7 +33,7 @@ export default class SlashCommandInteraction extends ApplicationCommandInteracti
 				option.type !== ApplicationCommandOptionType.Subcommand &&
 				option.type !== ApplicationCommandOptionType.SubcommandGroup
 			) {
-				this.#options.set(option.name.toLowerCase(), option);
+				this.#options.set(option.name, option);
 			}
 		});
 	}

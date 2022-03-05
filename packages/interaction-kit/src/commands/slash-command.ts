@@ -5,7 +5,7 @@ import SlashCommandInteraction from "../interactions/application-commands/slash-
 import {
 	APIApplicationCommand,
 	ApplicationCommandType,
-	RESTPostAPIApplicationCommandsJSONBody,
+	RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from "discord-api-types/v9";
 
 type CommandArgs = {
@@ -84,8 +84,8 @@ export default class SlashCommand
 		);
 	}
 
-	serialize(): RESTPostAPIApplicationCommandsJSONBody {
-		const payload: RESTPostAPIApplicationCommandsJSONBody = {
+	serialize(): RESTPostAPIChatInputApplicationCommandsJSONBody {
+		const payload: RESTPostAPIChatInputApplicationCommandsJSONBody = {
 			name: this.name,
 			description: this.#description,
 		};

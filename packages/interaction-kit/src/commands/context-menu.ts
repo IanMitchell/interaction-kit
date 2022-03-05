@@ -2,8 +2,7 @@ import Application from "../application";
 import { InteractionKitCommand } from "../interfaces";
 import {
 	APIApplicationCommand,
-	ApplicationCommandType,
-	RESTPostAPIApplicationCommandsJSONBody,
+	RESTPostAPIContextMenuApplicationCommandsJSONBody,
 } from "discord-api-types/v9";
 import ContextMenuInteraction, {
 	ContextMenuApplicationCommandType,
@@ -22,9 +21,6 @@ type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 	implements InteractionKitCommand<ContextMenuInteraction<T>>
 {
-	static readonly USER = ApplicationCommandType.User;
-	static readonly MESSAGE = ApplicationCommandType.ChatInput;
-
 	name: string;
 	type: T;
 	#defaultPermission: boolean;
@@ -58,8 +54,8 @@ export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 		return true;
 	}
 
-	serialize(): RESTPostAPIApplicationCommandsJSONBody {
-		const payload: RESTPostAPIApplicationCommandsJSONBody = {
+	serialize(): RESTPostAPIContextMenuApplicationCommandsJSONBody {
+		const payload: RESTPostAPIContextMenuApplicationCommandsJSONBody = {
 			name: this.name,
 			type: this.type,
 		};

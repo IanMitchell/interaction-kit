@@ -58,7 +58,7 @@ export class Option
 	}
 
 	serialize(): APIApplicationCommandOption {
-		// TypeScript and discord-api-types don't play well with our usage of
+		// TypeScript and discord-api-types don't play well with our usage
 		// of generic fields for the `type` field. We need to cast instead
 		const payload = {
 			type: this.type,

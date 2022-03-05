@@ -198,6 +198,7 @@ export default class Application {
 			await event.respondWith(
 				response(ResponseStatus.Unauthorized, { error: "Invalid Request" })
 			);
+			return;
 		}
 
 		try {
