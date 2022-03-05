@@ -12,6 +12,7 @@ import {
 	ResponseHandler,
 } from "../interfaces";
 import { ApplicationCommandInteraction, PingInteraction } from "..";
+import SlashCommandAutocompleteInteraction from "./autocomplete/application-command-autocomplete";
 import {
 	APIApplicationCommandInteraction,
 	APIChatInputApplicationCommandInteraction,
@@ -71,7 +72,7 @@ function handleApplicationCommandInteraction(
 		);
 
 		console.log(`Handling ${interaction.name}`);
-		command.handler(interaction, application);
+		command.onInteraction(interaction, application);
 	} else if (isContextMenuApplicationCommandInteraction(json)) {
 		const interaction = new ContextMenuInteraction(
 			application,
@@ -81,7 +82,7 @@ function handleApplicationCommandInteraction(
 		);
 
 		console.log(`Handling ${interaction.name}`);
-		command.handler(interaction, application);
+		command.onInteraction(interaction, application);
 	} else {
 		throw new Error(
 			// @ts-expect-error TS doesn't think this will happen, but theoretically it can
@@ -144,20 +145,27 @@ export function handler(
 		}
 
 		case InteractionType.ApplicationCommand: {
-			if (json.data.name == null) {
-				throw new Error("Received interaction without Name");
-			}
-
-			const command = application.getCommand(json.data.type, json.data?.name);
+			const command = application.getCommand(json.data.type, json.data.name);
 			handleApplicationCommandInteraction(application, command, json, respond);
 			break;
 		}
 
-		case InteractionType.MessageComponent: {
-			if (json.data.custom_id == null) {
-				throw new Error("Received interaction without Custom ID");
-			}
+		case InteractionType.ApplicationCommandAutocomplete: {
+			const command = application.getCommand(json.data.type, json.data.name);
+			const interaction = new SlashCommandAutocompleteInteraction(
+				application,
+				command,
+				json,
+				respond
+			);
 
+			console.log(`Handling ${interaction.name} Autocomplete`);
+			// TODO: Check for active option on command. Does it have onAutocomplete? Call that. Otherwise....
+			command.onAutocomplete?.(interaction, application);
+			break;
+		}
+
+		case InteractionType.MessageComponent: {
 			const component = application.getComponent(json.data.custom_id);
 
 			handleMessageComponentInteraction(application, component, json, respond);

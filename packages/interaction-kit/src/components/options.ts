@@ -4,6 +4,8 @@ import {
 	APIApplicationCommandOptionChoice,
 	ApplicationCommandOptionType,
 } from "discord-api-types/payloads/v9";
+import Application from "../application";
+import SlashCommandAutocompleteInteraction from "../interactions/autocomplete/application-command-autocomplete";
 import { Comparable, Serializable } from "../interfaces";
 import { SlashChoiceList } from "./choices";
 
@@ -16,6 +18,10 @@ type OptionArgs = {
 	required?: boolean;
 	choices?: SlashChoiceList<OptionChoiceValue>;
 	options?: APIApplicationCommandOption[];
+	onAutocomplete?: (
+		interaction: SlashCommandAutocompleteInteraction,
+		application: Application
+	) => void;
 };
 
 export function isChoiceType(
@@ -41,12 +47,18 @@ export class Option
 	public readonly options;
 	public readonly choices;
 
+	onAutocomplete?: (
+		interaction: SlashCommandAutocompleteInteraction,
+		application: Application
+	) => void;
+
 	constructor({
 		type,
 		name,
 		description,
 		choices,
 		options,
+		onAutocomplete,
 		required = false,
 	}: OptionArgs) {
 		this.type = type;
@@ -55,6 +67,7 @@ export class Option
 		this.required = required;
 		this.choices = choices;
 		this.options = options;
+		this.onAutocomplete = onAutocomplete;
 	}
 
 	serialize(): APIApplicationCommandOption {

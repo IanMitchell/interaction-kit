@@ -41,9 +41,9 @@ export interface CommandMap
 	get(
 		key: ApplicationCommandType.User
 	): Map<string, ContextMenu<ApplicationCommandType.User>>;
-	get(
-		key: ApplicationCommandType
-	): Map<string, InteractionKitCommand<ApplicationCommandInteraction>>;
+	// get(
+	// 	key: ApplicationCommandType
+	// ): Map<string, InteractionKitCommand<ApplicationCommandInteraction>>;
 }
 
 export default class Application {

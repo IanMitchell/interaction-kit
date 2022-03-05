@@ -14,6 +14,7 @@ import {
 } from "discord-api-types/v9";
 import ActionRow from "./components/action-row";
 import type { Snowflake } from "./structures/snowflake";
+import AutocompleteInteraction from "./interactions/autcomplete/autocomplete-interaction";
 
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -25,9 +26,9 @@ export interface FetchEvent extends Event {
 	respondWith(response: Promise<Response> | Response): Promise<Response>;
 }
 export type RequestBody<T = Record<string, any>> = T;
-export type ResponseHandler = (
+export type ResponseHandler<T = Record<string, any>> = (
 	status: ResponseStatus,
-	json: Record<string, any>
+	json: T
 ) => Promise<void>;
 
 export interface Mentionable {
@@ -78,8 +79,12 @@ export interface Interaction {
 	reply: (message: InteractionReply) => unknown;
 }
 
+export interface Autocomplete<T> {
+	reply: (options: T[]) => unknown;
+}
+
 export interface Executable<T extends Interaction = Interaction> {
-	handler: (
+	onInteraction: (
 		interaction: T,
 		application: Application
 		// TODO: Add request?
@@ -92,7 +97,7 @@ export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
 		Serializable<RESTPostAPIApplicationCommandsJSONBody>,
 		Comparable<APIApplicationCommand> {
 	name: string;
-	handler: (
+	onInteraction: (
 		interaction: T,
 		application: Application
 		// TODO: Add request?
