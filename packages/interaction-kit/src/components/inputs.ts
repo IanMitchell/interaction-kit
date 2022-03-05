@@ -1,11 +1,13 @@
 import {
+	APIApplicationCommandBasicOption,
 	APIApplicationCommandOption,
+	APIApplicationCommandOptionChoice,
 	ApplicationCommandOptionType,
 } from "discord-api-types/payloads/v9";
 import { Comparable, Serializable } from "../interfaces";
 import { SlashChoiceList } from "./choices";
 
-type InputChoiceValue = ApplicationCommandOptionChoice["value"];
+type InputChoiceValue = string | number;
 
 type InputArgs = {
 	type: ApplicationCommandOptionType;
@@ -13,12 +15,12 @@ type InputArgs = {
 	description: string;
 	required?: boolean;
 	choices?: SlashChoiceList<InputChoiceValue>;
-	options?: ApplicationCommandOption[];
+	options?: APIApplicationCommandOption[];
 };
 
 export function isChoiceType(
-	input: ApplicationCommandOption
-): input is ApplicationCommandOptionWithChoice {
+	input: APIApplicationCommandBasicOption
+): input is APIApplicationCommandOptionChoice {
 	switch (input.type) {
 		case ApplicationCommandOptionType.String:
 		case ApplicationCommandOptionType.Integer:
@@ -176,5 +178,11 @@ export class RoleInput extends Input {
 export class MentionableInput extends Input {
 	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
 		super({ type: ApplicationCommandOptionType.Mentionable, ...args });
+	}
+}
+
+export class AttachmentInput extends Input {
+	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
+		super({ type: ApplicationCommandOptionType.Attachment, ...args });
 	}
 }
