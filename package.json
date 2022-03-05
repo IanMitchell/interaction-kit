@@ -30,18 +30,10 @@
 					".next/**"
 				]
 			},
-			"typecheck": {
-				"dependsOn": [
-					"build"
-				]
-			},
+			"typecheck": {},
 			"prettier": {},
 			"lint": {},
-			"test": {
-				"dependsOn": [
-					"build"
-				]
-			}
+			"test": {}
 		}
 	},
 	"devDependencies": {

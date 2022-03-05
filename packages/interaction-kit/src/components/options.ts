@@ -60,6 +60,7 @@ export class Option
 	serialize(): APIApplicationCommandOption {
 		// TypeScript and discord-api-types don't play well with our usage
 		// of generic fields for the `type` field. We need to cast instead
+		// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 		const payload = {
 			type: this.type,
 			name: this.name,
@@ -102,15 +103,13 @@ export class Option
 			}
 
 			const choiceEquality =
-				schema.choices
-					.filter((choice) => choice.autocomplete === false);
-					?.every((choice) => {
-						if (!choiceMap.has(choice.name)) {
-							return false;
-						}
+				schema.choices?.every((choice) => {
+					if (!choiceMap.has(choice.name)) {
+						return false;
+					}
 
-						return choiceMap.get(choice.name) === choice.value;
-					}) ?? true;
+					return choiceMap.get(choice.name) === choice.value;
+				}) ?? true;
 
 			if (!choiceEquality) {
 				return false;
