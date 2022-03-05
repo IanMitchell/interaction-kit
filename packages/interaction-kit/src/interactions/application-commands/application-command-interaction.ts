@@ -96,15 +96,14 @@ export default class ApplicationCommandInteraction implements Interaction {
 		}
 
 		if (components != null) {
-			components.forEach((component) => {
+			payload.data.components = components.map((component) => {
+				// Register all child components while we're here
 				component.components.forEach((child) => {
 					this.#application.addComponent(child);
 				});
-			});
 
-			payload.data.components = components.map((component) =>
-				component.serialize()
-			);
+				return component.serialize();
+			});
 		}
 
 		if (!this.#replied && !queue) {
