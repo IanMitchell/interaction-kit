@@ -44,7 +44,7 @@ export default class ContextMenuInteraction<
 	) {
 		super(application, json, respond);
 
-		const id = json.data?.target_id ?? "0";
+		const id = json.data.target_id;
 
 		// TODO: Clean this up
 		switch (json.data?.type) {
