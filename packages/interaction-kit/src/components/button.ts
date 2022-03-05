@@ -3,14 +3,25 @@ import type { Executable, SerializableComponent } from "../interfaces";
 import Application from "../application";
 import ButtonInteraction from "../interactions/message-components/button-interaction";
 import {
+	APIBaseComponent,
 	APIButtonComponent,
 	APIButtonComponentWithCustomId,
 	APIButtonComponentWithURL,
+	APIMessageComponentEmoji,
 	ButtonStyle,
 	ComponentType,
 } from "discord-api-types/v9";
 
-type ButtonBaseArgs = Omit<
+// Testing the API Base
+interface APIButtonComponentBase<Style extends ButtonStyle>
+	extends APIBaseComponent<ComponentType.Button> {
+	label?: string;
+	style: Style;
+	emoji?: APIMessageComponentEmoji;
+	disabled?: boolean;
+}
+
+type ButtonBaseArgs<T extends ButtonStyle> = Omit<
 	APIButtonComponent,
 	| "type"
 	| "url"
@@ -20,26 +31,27 @@ type ButtonBaseArgs = Omit<
 	| "placeholder"
 	| "min_values"
 	| "max_values"
->;
+	| "style"
+> & { style: T };
 
 type ButtonArgs = {
 	handler: (event: ButtonInteraction, application: Application) => unknown;
 	customID: APIButtonComponentWithCustomId["custom_id"];
 	style: Exclude<ButtonStyle, ButtonStyle.Link>;
-} & ButtonBaseArgs;
+} & ButtonBaseArgs<Exclude<ButtonStyle, ButtonStyle.Link>>;
 
 type ButtonLinkArgs = Omit<
 	APIButtonComponentWithURL,
 	"type" | "custom_id" | "style" | "components"
 >;
 
-abstract class ButtonBase implements SerializableComponent {
-	#style: ButtonStyle | undefined;
+abstract class ButtonBase<T extends ButtonStyle> {
+	#style: T;
 	#label: APIButtonComponent["label"];
 	#emoji: APIButtonComponent["emoji"];
 	#disabled: APIButtonComponent["disabled"];
 
-	constructor(options: ButtonBaseArgs) {
+	constructor(options: ButtonBaseArgs<T>) {
 		this.#label = options.label;
 		this.#emoji = options.emoji;
 		this.#disabled = options.disabled;
@@ -69,14 +81,11 @@ abstract class ButtonBase implements SerializableComponent {
 		return this;
 	}
 
-	serialize(): APIBaseComponent<ComponentType.Button> {
-		const payload: APIButtonComponent = {
+	serialize(): APIButtonComponentBase<T> {
+		const payload: APIButtonComponentBase<T> = {
 			type: ComponentType.Button,
+			style: this.#style,
 		};
-
-		if (this.#style != null) {
-			payload.style = this.#style;
-		}
 
 		if (this.#label != null) {
 			payload.label = this.#label;
@@ -93,13 +102,13 @@ abstract class ButtonBase implements SerializableComponent {
 		return payload;
 	}
 
-	protected setStyle(style: ButtonStyle) {
+	protected setStyle(style: T) {
 		this.#style = style;
 		return this;
 	}
 }
 
-export class ButtonLink extends ButtonBase {
+export class ButtonLink extends ButtonBase<ButtonStyle.Link> {
 	#url: ButtonLinkArgs["url"];
 
 	constructor(options: ButtonLinkArgs) {
@@ -117,15 +126,17 @@ export class ButtonLink extends ButtonBase {
 	}
 
 	serialize(): APIButtonComponentWithURL {
-		const payload: APIButtonComponentWithURL = super.serialize();
-		payload.url = this.#url;
+		const base = super.serialize();
 
-		return payload;
+		return {
+			...base,
+			url: this.#url,
+		};
 	}
 }
 
 export class Button
-	extends ButtonBase
+	extends ButtonBase<Exclude<ButtonStyle, ButtonStyle.Link>>
 	implements SerializableComponent, Executable<ButtonInteraction>
 {
 	#customID: ButtonArgs["customID"];
@@ -164,8 +175,11 @@ export class Button
 	}
 
 	serialize(): APIButtonComponentWithCustomId {
-		const payload: APIButtonComponentWithCustomId = super.serialize();
-		payload.custom_id = this.#customID;
-		return payload;
+		const base = super.serialize();
+
+		return {
+			...base,
+			custom_id: this.#customID,
+		};
 	}
 }
