@@ -1,4 +1,8 @@
-import { APIActionRowComponent, ComponentType } from "discord-api-types/v9";
+import {
+	APIActionRowComponent,
+	APIMessageActionRowComponent,
+	ComponentType,
+} from "discord-api-types/v9";
 import type { SerializableComponent } from "../interfaces";
 import { Button } from "./button";
 import Select from "./select";
@@ -72,7 +76,7 @@ export default class ActionRow implements SerializableComponent {
 		this.components.push(component);
 	}
 
-	serialize(): APIActionRowComponent {
+	serialize(): APIActionRowComponent<APIMessageActionRowComponent> {
 		return {
 			type: ComponentType.ActionRow,
 			components: this.components.map((component) => component.serialize()),

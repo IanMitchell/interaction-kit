@@ -46,7 +46,7 @@ abstract class ButtonBase implements SerializableComponent {
 		this.#style = options.style;
 	}
 
-	get id() {
+	get id(): SerializableComponent["id"] {
 		return undefined;
 	}
 
@@ -69,7 +69,7 @@ abstract class ButtonBase implements SerializableComponent {
 		return this;
 	}
 
-	serialize(): APIButtonComponent {
+	serialize(): APIBaseComponent<ComponentType.Button> {
 		const payload: APIButtonComponent = {
 			type: ComponentType.Button,
 		};
@@ -116,8 +116,8 @@ export class ButtonLink extends ButtonBase {
 		return this;
 	}
 
-	serialize() {
-		const payload = super.serialize() as APIButtonComponentWithURL;
+	serialize(): APIButtonComponentWithURL {
+		const payload: APIButtonComponentWithURL = super.serialize();
 		payload.url = this.#url;
 
 		return payload;
