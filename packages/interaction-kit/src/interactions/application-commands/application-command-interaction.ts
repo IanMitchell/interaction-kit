@@ -6,8 +6,8 @@ import {
 	InteractionReply,
 	RequestBody,
 	ResponseHandler,
-	Snowflake,
 } from "../../interfaces";
+import type { Snowflake } from "../../structures/snowflake";
 import {
 	APIApplicationCommandInteraction,
 	APIInteractionGuildMember,

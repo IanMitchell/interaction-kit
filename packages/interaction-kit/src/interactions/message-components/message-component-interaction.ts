@@ -7,8 +7,8 @@ import {
 	RequestBody,
 	ResponseHandler,
 	SerializableComponent,
-	Snowflake,
 } from "../../interfaces";
+import type { Snowflake } from "../../structures/snowflake";
 import { isActionRow } from "../../components/action-row";
 import {
 	APIInteractionGuildMember,

@@ -3,7 +3,7 @@ import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/rest/v
 import path from "node:path";
 import * as API from "./api";
 import Application from "./application";
-import { Snowflake } from "./interfaces";
+import type { Snowflake } from "./structures/snowflake";
 
 export async function getApplicationEntrypoint(): Promise<Application> {
 	try {

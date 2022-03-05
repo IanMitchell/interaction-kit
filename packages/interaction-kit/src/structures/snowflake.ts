@@ -1,4 +1,4 @@
-import type { Snowflake } from "../interfaces";
+export type Snowflake = `${bigint}`;
 
 export const EPOCH = 1420070400000;
 

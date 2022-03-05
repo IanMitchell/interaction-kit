@@ -5,12 +5,12 @@ import ContextMenu from "./commands/context-menu";
 import Config from "./api/config";
 import * as Interaction from "./interactions";
 import {
-	Snowflake,
 	FetchEvent,
 	InteractionKitCommand,
 	SerializableComponent,
 	Module,
 } from "./interfaces";
+import type { Snowflake } from "./structures/snowflake";
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
 import { ExecutableComponent, isExecutableComponent } from "./components";
 import { response, ResponseStatus } from "./requests/response";

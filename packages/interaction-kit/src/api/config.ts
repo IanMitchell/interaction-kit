@@ -1,4 +1,4 @@
-import { Snowflake } from "../interfaces";
+import type { Snowflake } from "../structures/snowflake";
 import rest from "./instance";
 
 export default (() => {

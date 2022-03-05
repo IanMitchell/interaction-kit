@@ -1,6 +1,6 @@
 import rest from "./instance";
 import Config from "./config";
-import { Snowflake } from "../interfaces";
+import type { Snowflake } from "../structures/snowflake";
 import {
 	RESTGetAPIApplicationCommandsResult,
 	RESTGetAPIApplicationGuildCommandsResult,

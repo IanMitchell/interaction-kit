@@ -13,8 +13,7 @@ import {
 	RESTPostAPIApplicationCommandsJSONBody,
 } from "discord-api-types/v9";
 import ActionRow from "./components/action-row";
-
-export type Snowflake = `${bigint}`;
+import type { Snowflake } from "./structures/snowflake";
 
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
