@@ -13,7 +13,7 @@ export { default as ButtonInteraction } from "./interactions/message-components/
 export { default as SelectInteraction } from "./interactions/message-components/select-interaction";
 
 // Command and Component Helpers
-export * from "./components/inputs";
+export * from "./components/options";
 export * from "./components/choices";
 
 // API and Structure exports

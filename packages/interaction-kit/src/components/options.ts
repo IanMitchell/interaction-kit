@@ -7,14 +7,14 @@ import {
 import { Comparable, Serializable } from "../interfaces";
 import { SlashChoiceList } from "./choices";
 
-type InputChoiceValue = string | number;
+type OptionChoiceValue = string | number;
 
-type InputArgs = {
+type OptionArgs = {
 	type: ApplicationCommandOptionType;
 	name: string;
 	description: string;
 	required?: boolean;
-	choices?: SlashChoiceList<InputChoiceValue>;
+	choices?: SlashChoiceList<OptionChoiceValue>;
 	options?: APIApplicationCommandOption[];
 };
 
@@ -31,7 +31,7 @@ export function isChoiceType(
 	}
 }
 
-export class Input
+export class Option
 	implements Serializable, Comparable<APIApplicationCommandOption>
 {
 	public readonly type;
@@ -48,7 +48,7 @@ export class Input
 		choices,
 		options,
 		required = false,
-	}: InputArgs) {
+	}: OptionArgs) {
 		this.type = type;
 		this.name = name;
 		this.description = description;
@@ -58,18 +58,20 @@ export class Input
 	}
 
 	serialize(): APIApplicationCommandOption {
-		const payload: APIApplicationCommandOption = {
+		// TypeScript and discord-api-types don't play well with our usage of
+		// of generic fields for the `type` field. We need to cast instead
+		const payload = {
 			type: this.type,
 			name: this.name,
 			description: this.description,
 			required: this.required,
-		};
+		} as APIApplicationCommandOption;
 
-		if (isChoiceType(payload)) {
-			if (this.choices != null) {
-				payload.choices = this.choices.serialize();
-			}
-		}
+		// if (isChoiceType(payload)) {
+		// 	if (this.choices != null) {
+		// 		payload.choices = this.choices.serialize();
+		// 	}
+		// }
 
 		// TODO: Handle Options (do we want to?)
 
@@ -86,7 +88,8 @@ export class Input
 			return false;
 		}
 
-		if (isChoiceType(schema)) {
+		// TODO: Typeguard instead of this
+		if ("choices" in schema && schema.choices !== undefined) {
 			if (
 				(this.choices?._choices?.size ?? 0) !== (schema.choices?.length ?? 0)
 			) {
@@ -99,13 +102,15 @@ export class Input
 			}
 
 			const choiceEquality =
-				schema.choices?.every((choice) => {
-					if (!choiceMap.has(choice.name)) {
-						return false;
-					}
+				schema.choices
+					.filter((choice) => choice.autocomplete === false);
+					?.every((choice) => {
+						if (!choiceMap.has(choice.name)) {
+							return false;
+						}
 
-					return choiceMap.get(choice.name) === choice.value;
-				}) ?? true;
+						return choiceMap.get(choice.name) === choice.value;
+					}) ?? true;
 
 			if (!choiceEquality) {
 				return false;
@@ -121,68 +126,68 @@ export class Input
 	}
 }
 
-interface StringInputArgs extends Omit<InputArgs, "type" | "options"> {
+interface StringOptionArgs extends Omit<OptionArgs, "type" | "options"> {
 	choices?: SlashChoiceList<string>;
 }
 
-export class StringInput extends Input {
-	constructor(args: StringInputArgs) {
+export class StringOption extends Option {
+	constructor(args: StringOptionArgs) {
 		super({ type: ApplicationCommandOptionType.String, ...args });
 	}
 }
 
-interface IntegerInputArgs extends Omit<InputArgs, "type" | "options"> {
+interface IntegerOptionArgs extends Omit<OptionArgs, "type" | "options"> {
 	choices?: SlashChoiceList<number>;
 }
 
-export class IntegerInput extends Input {
-	constructor(args: IntegerInputArgs) {
+export class IntegerOption extends Option {
+	constructor(args: IntegerOptionArgs) {
 		super({ type: ApplicationCommandOptionType.Integer, ...args });
 	}
 }
 
-interface NumberInputArgs extends Omit<InputArgs, "type" | "options"> {
+interface NumberOptionArgs extends Omit<OptionArgs, "type" | "options"> {
 	choices?: SlashChoiceList<number>;
 }
 
-export class NumberInput extends Input {
-	constructor(args: NumberInputArgs) {
+export class NumberOption extends Option {
+	constructor(args: NumberOptionArgs) {
 		super({ type: ApplicationCommandOptionType.Number, ...args });
 	}
 }
 
-export class BooleanInput extends Input {
-	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
+export class BooleanOption extends Option {
+	constructor(args: Omit<OptionArgs, "type" | "choices" | "options">) {
 		super({ type: ApplicationCommandOptionType.Boolean, ...args });
 	}
 }
 
-export class UserInput extends Input {
-	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
+export class UserOption extends Option {
+	constructor(args: Omit<OptionArgs, "type" | "choices" | "options">) {
 		super({ type: ApplicationCommandOptionType.User, ...args });
 	}
 }
 
-export class ChannelInput extends Input {
-	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
+export class ChannelOption extends Option {
+	constructor(args: Omit<OptionArgs, "type" | "choices" | "options">) {
 		super({ type: ApplicationCommandOptionType.Channel, ...args });
 	}
 }
 
-export class RoleInput extends Input {
-	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
+export class RoleOption extends Option {
+	constructor(args: Omit<OptionArgs, "type" | "choices" | "options">) {
 		super({ type: ApplicationCommandOptionType.Role, ...args });
 	}
 }
 
-export class MentionableInput extends Input {
-	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
+export class MentionableOption extends Option {
+	constructor(args: Omit<OptionArgs, "type" | "choices" | "options">) {
 		super({ type: ApplicationCommandOptionType.Mentionable, ...args });
 	}
 }
 
-export class AttachmentInput extends Input {
-	constructor(args: Omit<InputArgs, "type" | "choices" | "options">) {
+export class AttachmentOption extends Option {
+	constructor(args: Omit<OptionArgs, "type" | "choices" | "options">) {
 		super({ type: ApplicationCommandOptionType.Attachment, ...args });
 	}
 }

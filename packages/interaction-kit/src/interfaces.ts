@@ -80,7 +80,12 @@ export interface Interaction {
 }
 
 export interface Executable<T extends Interaction = Interaction> {
-	handler: (interaction: T, application: Application) => unknown;
+	handler: (
+		interaction: T,
+		application: Application
+		// TODO: Add request?
+		// request: Request
+	) => unknown;
 }
 
 export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
@@ -88,6 +93,11 @@ export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
 		Serializable<RESTPostAPIApplicationCommandsJSONBody>,
 		Comparable<APIApplicationCommand> {
 	name: string;
-	handler: (interaction: T, application: Application) => unknown;
+	handler: (
+		interaction: T,
+		application: Application
+		// TODO: Add request?
+		// request: Request
+	) => unknown;
 	get type(): ApplicationCommandType;
 }

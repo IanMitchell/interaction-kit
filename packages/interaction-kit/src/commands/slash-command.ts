@@ -1,5 +1,5 @@
 import Application from "../application";
-import { Input } from "../components/inputs";
+import { Option } from "../components/options";
 import { InteractionKitCommand } from "../interfaces";
 import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
 import {
@@ -12,7 +12,7 @@ type CommandArgs = {
 	name: string;
 	description: string;
 	defaultPermission?: boolean;
-	options?: Input[];
+	options?: Option[];
 	handler: (interaction: SlashCommandInteraction) => unknown;
 };
 
@@ -24,7 +24,7 @@ export default class SlashCommand
 	name: string;
 	#description: string;
 	#defaultPermission: boolean;
-	#options: Map<string, Input>;
+	#options: Map<string, Option>;
 	handler: (
 		interaction: SlashCommandInteraction,
 		application: Application
