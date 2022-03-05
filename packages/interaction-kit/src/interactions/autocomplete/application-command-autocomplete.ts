@@ -1,25 +1,19 @@
 import Application from "../../application";
 import AutocompleteInteraction from "./autocomplete-interaction";
-import {
-	InteractionKitCommand,
-	RequestBody,
-	ResponseHandler,
-} from "../../interfaces";
+import { RequestBody, ResponseHandler } from "../../interfaces";
 import {
 	APIApplicationCommandAutocompleteInteraction,
 	InteractionResponseType,
 } from "discord-api-types/v9";
 import { SlashCommandAutocompleteType } from "./types";
-import ApplicationCommandInteraction from "../application-commands/application-command-interaction";
+import SlashCommand from "../../commands/slash-command";
 
 export default class SlashCommandAutocompleteInteraction extends AutocompleteInteraction<SlashCommandAutocompleteType> {
-	public readonly command:
-		| InteractionKitCommand<ApplicationCommandInteraction>
-		| undefined;
+	public readonly command: SlashCommand | undefined;
 
 	constructor(
 		application: Application,
-		command: InteractionKitCommand<ApplicationCommandInteraction> | undefined,
+		command: SlashCommand | undefined,
 		json: RequestBody<APIApplicationCommandAutocompleteInteraction>,
 		respond: ResponseHandler
 	) {

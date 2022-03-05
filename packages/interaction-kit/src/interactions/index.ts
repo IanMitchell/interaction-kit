@@ -152,6 +152,7 @@ export function handler(
 
 		case InteractionType.ApplicationCommandAutocomplete: {
 			const command = application.getCommand(json.data.type, json.data.name);
+
 			const interaction = new SlashCommandAutocompleteInteraction(
 				application,
 				command,
@@ -161,7 +162,7 @@ export function handler(
 
 			console.log(`Handling ${interaction.name} Autocomplete`);
 			// TODO: Check for active option on command. Does it have onAutocomplete? Call that. Otherwise....
-			command.onAutocomplete?.(interaction, application);
+			command?.onAutocomplete?.(interaction, application);
 			break;
 		}
 

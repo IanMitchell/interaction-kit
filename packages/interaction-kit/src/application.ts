@@ -21,41 +21,29 @@ type ApplicationArgs = {
 	applicationID: string;
 	publicKey: string;
 	token: string;
-	port?: number;
 };
 
-export interface CommandMap
-	extends Map<
-		ApplicationCommandType,
-		Map<
-			string,
-			| SlashCommand
-			| ContextMenu<ApplicationCommandType.Message>
-			| ContextMenu<ApplicationCommandType.User>
-		>
-	> {
-	get(key: ApplicationCommandType.ChatInput): Map<string, SlashCommand>;
-	get(
-		key: ApplicationCommandType.Message
-	): Map<string, ContextMenu<ApplicationCommandType.Message>>;
-	get(
-		key: ApplicationCommandType.User
-	): Map<string, ContextMenu<ApplicationCommandType.User>>;
-	// get(
-	// 	key: ApplicationCommandType
-	// ): Map<string, InteractionKitCommand<ApplicationCommandInteraction>>;
-}
+type MapValue<T extends ApplicationCommandType> =
+	T extends ApplicationCommandType.ChatInput
+		? SlashCommand
+		: T extends ApplicationCommandType.Message
+		? ContextMenu<ApplicationCommandType.Message>
+		: T extends ApplicationCommandType.User
+		? ContextMenu<ApplicationCommandType.User>
+		: never;
+
+type CommandMap = {
+	[T in ApplicationCommandType]: Map<string, MapValue<T>>;
+};
 
 export default class Application {
 	#applicationID: Snowflake;
 	#publicKey: string;
 	#token: string;
 	#commands: CommandMap;
-
 	#components: Map<string, ExecutableComponent> = new Map();
-	#port: number;
 
-	constructor({ applicationID, publicKey, token, port }: ApplicationArgs) {
+	constructor({ applicationID, publicKey, token }: ApplicationArgs) {
 		if (!applicationID) {
 			throw new Error(
 				"Please provide an Application ID. You can find this value <here>"
@@ -75,14 +63,13 @@ export default class Application {
 		this.#applicationID = applicationID as Snowflake;
 		this.#publicKey = publicKey;
 		this.#token = token as Snowflake;
-		this.#port = port ?? 3000;
 
 		// Set up internal data structures
-		this.#commands = new Map([
-			[ApplicationCommandType.ChatInput, new Map()],
-			[ApplicationCommandType.Message, new Map()],
-			[ApplicationCommandType.User, new Map()],
-		]) as CommandMap;
+		this.#commands = {
+			[ApplicationCommandType.ChatInput]: new Map(),
+			[ApplicationCommandType.Message]: new Map(),
+			[ApplicationCommandType.User]: new Map(),
+		};
 
 		// Configure API Defaults
 		Config.setToken(this.#token);
@@ -94,20 +81,20 @@ export default class Application {
 	}
 
 	get commands() {
-		return Array.from(this.#commands.values())
+		return Array.from(Object.values(this.#commands))
 			.map((map) => Array.from(map.values()))
 			.flat();
 	}
 
 	addCommand(command: InteractionKitCommand<ApplicationCommandInteraction>) {
-		if (this.#commands.get(command.type)?.has(command.name.toLowerCase())) {
+		if (this.#commands[command.type]?.has(command.name.toLowerCase())) {
 			throw new Error(
 				`Error registering ${command.name.toLowerCase()}: Duplicate names are not allowed`
 			);
 		}
 
 		console.log(`Registering the ${command.name.toLowerCase()} command`);
-		this.#commands.get(command.type)?.set(command.name.toLowerCase(), command);
+		this.#commands[command.type]?.set(command.name.toLowerCase(), command);
 		return this;
 	}
 
@@ -135,8 +122,11 @@ export default class Application {
 		return this.#components.get(customID);
 	}
 
-	getCommand(type: ApplicationCommandType, name: string) {
-		return this.#commands.get(type).get(name);
+	getCommand<T extends ApplicationCommandType>(
+		type: T,
+		name: string
+	): MapValue<T> | undefined {
+		return this.#commands[type].get(name);
 	}
 
 	loadApplicationCommandDirectory(directory: string) {
