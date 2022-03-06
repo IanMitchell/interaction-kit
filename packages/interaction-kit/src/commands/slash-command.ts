@@ -33,7 +33,7 @@ export default class SlashCommand
 	name: string;
 	#description: string;
 	#defaultPermission: boolean;
-	#options: Map<string, Option>;
+	options: Map<string, Option>;
 
 	onInteraction: (
 		interaction: SlashCommandInteraction,
@@ -57,19 +57,19 @@ export default class SlashCommand
 		this.name = name;
 		this.#description = description;
 		this.#defaultPermission = defaultPermission;
-		this.#options = new Map();
+		this.options = new Map();
 		this.onInteraction = onInteraction;
 		this.onAutocomplete = onAutocomplete;
 
 		options?.forEach((option) => {
 			const key = option.name.toLowerCase();
-			if (this.#options.has(key)) {
+			if (this.options.has(key)) {
 				throw new Error(
 					`Option names must be unique (case insensitive). Duplicate name detected: ${key}`
 				);
 			}
 
-			this.#options.set(key, option);
+			this.options.set(key, option);
 		});
 	}
 
@@ -90,13 +90,13 @@ export default class SlashCommand
 			return false;
 		}
 
-		if (this.#options.size !== (schema.options?.length ?? 0)) {
+		if (this.options.size !== (schema.options?.length ?? 0)) {
 			return false;
 		}
 
 		return (
 			schema.options?.every(
-				(option) => this.#options.get(option.name)?.equals(option) ?? false
+				(option) => this.options.get(option.name)?.equals(option) ?? false
 			) ?? true
 		);
 	}
@@ -112,10 +112,10 @@ export default class SlashCommand
 		}
 
 		// TODO: Sort these so that required options come first
-		if (this.#options.size > 0) {
+		if (this.options.size > 0) {
 			payload.options = [];
 
-			Array.from(this.#options.entries()).forEach(([_, value]) => {
+			Array.from(this.options.entries()).forEach(([_, value]) => {
 				payload.options?.push(value.serialize());
 			});
 		}

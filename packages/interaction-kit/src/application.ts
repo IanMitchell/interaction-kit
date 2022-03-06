@@ -80,9 +80,9 @@ export default class Application {
 		return this.#applicationID;
 	}
 
-	get commands() {
-		return Array.from(Object.values(this.#commands))
-			.map((map) => Array.from(map.values()))
+	get commands(): InteractionKitCommand<ApplicationCommandInteraction> {
+		return Object.values(this.#commands)
+			.map((map) => [...map.values()])
 			.flat();
 	}
 

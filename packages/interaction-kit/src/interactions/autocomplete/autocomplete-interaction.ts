@@ -4,7 +4,6 @@ import { AutocompleteInteractionTypes, AutocompleteTypes } from "./types";
 import {
 	APIApplicationCommandAutocompleteInteraction,
 	APIApplicationCommandAutocompleteResponse,
-	APIApplicationCommandInteraction,
 	APIInteractionGuildMember,
 } from "discord-api-types/v9";
 import { ResponseStatus } from "../../requests/response";

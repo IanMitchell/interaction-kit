@@ -169,37 +169,49 @@ export class NumberOption extends Option {
 }
 
 export class BooleanOption extends Option {
-	constructor(args: Omit<OptionArgs, "type" | "choices" | "options">) {
+	constructor(
+		args: Omit<OptionArgs, "type" | "choices" | "options" | "onAutocomplete">
+	) {
 		super({ type: ApplicationCommandOptionType.Boolean, ...args });
 	}
 }
 
 export class UserOption extends Option {
-	constructor(args: Omit<OptionArgs, "type" | "choices" | "options">) {
+	constructor(
+		args: Omit<OptionArgs, "type" | "choices" | "options" | "onAutocomplete">
+	) {
 		super({ type: ApplicationCommandOptionType.User, ...args });
 	}
 }
 
 export class ChannelOption extends Option {
-	constructor(args: Omit<OptionArgs, "type" | "choices" | "options">) {
+	constructor(
+		args: Omit<OptionArgs, "type" | "choices" | "options" | "onAutocomplete">
+	) {
 		super({ type: ApplicationCommandOptionType.Channel, ...args });
 	}
 }
 
 export class RoleOption extends Option {
-	constructor(args: Omit<OptionArgs, "type" | "choices" | "options">) {
+	constructor(
+		args: Omit<OptionArgs, "type" | "choices" | "options" | "onAutocomplete">
+	) {
 		super({ type: ApplicationCommandOptionType.Role, ...args });
 	}
 }
 
 export class MentionableOption extends Option {
-	constructor(args: Omit<OptionArgs, "type" | "choices" | "options">) {
+	constructor(
+		args: Omit<OptionArgs, "type" | "choices" | "options" | "onAutocomplete">
+	) {
 		super({ type: ApplicationCommandOptionType.Mentionable, ...args });
 	}
 }
 
 export class AttachmentOption extends Option {
-	constructor(args: Omit<OptionArgs, "type" | "choices" | "options">) {
+	constructor(
+		args: Omit<OptionArgs, "type" | "choices" | "options" | "onAutocomplete">
+	) {
 		super({ type: ApplicationCommandOptionType.Attachment, ...args });
 	}
 }
