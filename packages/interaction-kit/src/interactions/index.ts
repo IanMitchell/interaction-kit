@@ -47,10 +47,22 @@ function isMessageComponentButtonInteraction(
 	return interaction.data.component_type === ComponentType.Button;
 }
 
+function isButtonComponent(
+	component: ExecutableComponent
+): component is Button {
+	return component instanceof Button;
+}
+
 function isMessageComponentSelectMenuInteraction(
 	interaction: APIMessageComponentInteraction
 ): interaction is APIMessageComponentSelectMenuInteraction {
 	return interaction.data.component_type === ComponentType.SelectMenu;
+}
+
+function isSelectComponent(
+	component: ExecutableComponent
+): component is Select {
+	return component instanceof Select;
 }
 
 function handleApplicationCommandInteraction(
@@ -102,32 +114,38 @@ function handleMessageComponentInteraction(
 		throw new Error("Unknown Component");
 	}
 
-	if (isMessageComponentButtonInteraction(json)) {
+	if (
+		isMessageComponentButtonInteraction(json) &&
+		isButtonComponent(component)
+	) {
 		const interaction = new ButtonInteraction(
 			application,
-			component as Button,
+			component,
 			json,
 			respond
 		);
 
 		console.log(`Handling ${interaction.customID}`);
-		(component as Button).handler(interaction, application);
-	} else if (isMessageComponentSelectMenuInteraction(json)) {
+		component.onInteraction(interaction, application);
+	} else if (
+		isMessageComponentSelectMenuInteraction(json) &&
+		isSelectComponent(component)
+	) {
 		const interaction = new SelectInteraction(
 			application,
-			component as Select,
+			component,
 			json,
 			respond
 		);
 
 		console.log(`Handling ${interaction.customID}`);
-		(component as Select).handler(interaction, application);
+		component.onInteraction(interaction, application);
 	} else {
 		throw new Error(
-			`Unknown Interaction Component type: ${
+			`Unknown Interaction Component type (${
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
 				json.data.component_type ?? "[unknown]"
-			}`
+			}) or component mismatch. `
 		);
 	}
 }
