@@ -169,7 +169,7 @@ export function handler(
 				json.data.options.find((option) => option.focused)
 			);
 
-			if (option?.onAutocomplete != null) {
+			if (option.isAutocomplete()) {
 				option.onAutocomplete(interaction, application);
 			} else {
 				command?.onAutocomplete?.(interaction, application);

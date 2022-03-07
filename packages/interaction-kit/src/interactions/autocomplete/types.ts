@@ -3,7 +3,7 @@ import {
 	IntegerOption,
 	NumberOption,
 	StringOption,
-} from "../../components/options";
+} from "../../commands/options";
 
 export type AutocompleteInteractionTypes =
 	InteractionResponseType.ApplicationCommandAutocompleteResult;

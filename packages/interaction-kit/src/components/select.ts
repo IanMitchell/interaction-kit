@@ -1,11 +1,14 @@
 import SelectInteraction from "../interactions/message-components/select-interaction";
 import Application from "../application";
 import { Executable, SerializableComponent } from "../interfaces";
-import { SelectOptionList } from "./choices";
+import { SelectOptionList } from "../commands/options";
 import { APISelectMenuComponent, ComponentType } from "discord-api-types/v9";
 
 type SelectArgs = {
-	handler: (event: SelectInteraction, application: Application) => unknown;
+	onInteraction: (
+		event: SelectInteraction,
+		application: Application
+	) => unknown;
 	customID: APISelectMenuComponent["custom_id"];
 	min: APISelectMenuComponent["min_values"];
 	max: APISelectMenuComponent["max_values"];
@@ -30,16 +33,24 @@ export default class Select
 	#min: APISelectMenuComponent["min_values"];
 	#max: APISelectMenuComponent["max_values"];
 	#disabled: APISelectMenuComponent["disabled"];
-	handler: SelectArgs["handler"];
+	onInteraction: SelectArgs["onInteraction"];
 
-	constructor(options: SelectArgs) {
-		this.#customID = options.customID;
-		this.options = options.options;
-		this.#placeholder = options.placeholder;
-		this.#min = options.min;
-		this.#max = options.max;
-		this.#disabled = options.disabled;
-		this.handler = options.handler;
+	constructor({
+		customID,
+		options,
+		placeholder,
+		min,
+		max,
+		disabled,
+		onInteraction,
+	}: SelectArgs) {
+		this.#customID = customID;
+		this.options = options;
+		this.#placeholder = placeholder;
+		this.#min = min;
+		this.#max = max;
+		this.#disabled = disabled;
+		this.onInteraction = onInteraction;
 	}
 
 	get id() {
@@ -75,8 +86,8 @@ export default class Select
 		return this;
 	}
 
-	setHandler(fn: SelectArgs["handler"]) {
-		this.handler = fn;
+	setInteractionHandler(fn: SelectArgs["onInteraction"]) {
+		this.onInteraction = fn;
 		return this;
 	}
 

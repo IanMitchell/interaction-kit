@@ -1,5 +1,5 @@
 import Application from "../application";
-import { Option } from "../components/options";
+import Option from "./options/option";
 import { InteractionKitCommand } from "../interfaces";
 import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
 import {

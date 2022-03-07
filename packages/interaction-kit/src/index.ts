@@ -12,9 +12,8 @@ export { default as MessageComponentInteraction } from "./interactions/message-c
 export { default as ButtonInteraction } from "./interactions/message-components/button-interaction";
 export { default as SelectInteraction } from "./interactions/message-components/select-interaction";
 
-// Command and Component Helpers
-export * from "./components/options";
-export * from "./components/choices";
+// Application Command Options and Choices
+export * from "./commands/options";
 
 // API and Structure exports
 export * as SnowflakeUtils from "./structures/snowflake";

@@ -35,7 +35,10 @@ type ButtonBaseArgs<T extends ButtonStyle> = Omit<
 > & { style: T };
 
 type ButtonArgs = {
-	handler: (event: ButtonInteraction, application: Application) => unknown;
+	onInteraction: (
+		event: ButtonInteraction,
+		application: Application
+	) => unknown;
 	customID: APIButtonComponentWithCustomId["custom_id"];
 	style: Exclude<ButtonStyle, ButtonStyle.Link>;
 } & ButtonBaseArgs<Exclude<ButtonStyle, ButtonStyle.Link>>;
@@ -140,7 +143,7 @@ export class Button
 	implements SerializableComponent, Executable<ButtonInteraction>
 {
 	#customID: ButtonArgs["customID"];
-	handler: ButtonArgs["handler"];
+	onInteraction: ButtonArgs["onInteraction"];
 
 	constructor(options: ButtonArgs) {
 		super({
@@ -148,7 +151,7 @@ export class Button
 			style: options?.style ?? ButtonStyle.Primary,
 		});
 		this.#customID = options.customID;
-		this.handler = options?.handler;
+		this.onInteraction = options?.onInteraction;
 
 		if (this.#customID == null) {
 			throw new Error("Custom ID is required");
@@ -169,8 +172,8 @@ export class Button
 		return this;
 	}
 
-	setHandler(fn: ButtonArgs["handler"]) {
-		this.handler = fn;
+	setInteractionHandler(fn: ButtonArgs["onInteraction"]) {
+		this.onInteraction = fn;
 		return this;
 	}
 

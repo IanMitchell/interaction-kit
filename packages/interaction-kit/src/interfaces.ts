@@ -14,7 +14,6 @@ import {
 } from "discord-api-types/v9";
 import ActionRow from "./components/action-row";
 import type { Snowflake } from "./structures/snowflake";
-import AutocompleteInteraction from "./interactions/autcomplete/autocomplete-interaction";
 
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
