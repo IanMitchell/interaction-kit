@@ -44,6 +44,10 @@ export default class Option
 		this.options = options;
 	}
 
+	isAutocomplete(_payload: APIApplicationCommandOption) {
+		return false;
+	}
+
 	serialize(): APIApplicationCommandOption {
 		// TypeScript and discord-api-types don't play well with our usage
 		// of generic fields for the `type` field. We need to cast instead

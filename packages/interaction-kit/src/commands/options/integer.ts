@@ -9,9 +9,11 @@ import Option, { BaseOptionArgs, Autocomplete } from "./option";
 
 interface IntegerOptionChoiceArgs extends BaseOptionArgs {
 	choices?: SlashChoiceList<number>;
+	onAutocomplete: never;
 }
 
 interface IntegerAutocompleteArgs extends BaseOptionArgs {
+	choices: never;
 	onAutocomplete: (
 		interaction: SlashCommandAutocompleteInteraction,
 		application: Application
@@ -19,7 +21,7 @@ interface IntegerAutocompleteArgs extends BaseOptionArgs {
 }
 
 export default class IntegerOption extends Option {
-	public readonly choices: SlashChoiceList<number>;
+	public readonly choices?: SlashChoiceList<number>;
 
 	onAutocomplete?: (
 		interaction: SlashCommandAutocompleteInteraction,
@@ -40,8 +42,12 @@ export default class IntegerOption extends Option {
 			required,
 		});
 
-		this.choices = choices;
-		this.onAutocomplete = onAutocomplete;
+		/* eslint-disable-next-line no-negated-condition */
+		if (onAutocomplete != null) {
+			this.onAutocomplete = onAutocomplete;
+		} else {
+			this.choices = choices;
+		}
 	}
 
 	isAutocomplete(

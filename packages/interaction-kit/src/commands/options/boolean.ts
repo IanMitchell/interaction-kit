@@ -1,7 +1,7 @@
 import { ApplicationCommandOptionType } from "discord-api-types/v9";
-import BaseOption, { BaseOptionArgs } from "./option";
+import Option, { BaseOptionArgs } from "./option";
 
-export default class BooleanOption extends BaseOption {
+export default class BooleanOption extends Option {
 	constructor({ name, description, required }: BaseOptionArgs) {
 		super({
 			type: ApplicationCommandOptionType.Boolean,
