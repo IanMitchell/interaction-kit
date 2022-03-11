@@ -23,18 +23,20 @@ type ApplicationArgs = {
 	token: string;
 };
 
-type MapValue<T extends ApplicationCommandType> =
-	T extends ApplicationCommandType.ChatInput
-		? SlashCommand
-		: T extends ApplicationCommandType.Message
-		? ContextMenu<ApplicationCommandType.Message>
-		: T extends ApplicationCommandType.User
-		? ContextMenu<ApplicationCommandType.User>
-		: never;
-
 type CommandMap = {
-	[T in ApplicationCommandType]: Map<string, MapValue<T>>;
+	[ApplicationCommandType.ChatInput]: Map<string, SlashCommand>;
+	[ApplicationCommandType.Message]: Map<
+		string,
+		ContextMenu<ApplicationCommandType.Message>
+	>;
+	[ApplicationCommandType.User]: Map<
+		string,
+		ContextMenu<ApplicationCommandType.User>
+	>;
 };
+
+type CommandMapValue<K extends ApplicationCommandType> =
+	CommandMap[K] extends Map<unknown, infer V> ? V : never;
 
 export default class Application {
 	#applicationID: Snowflake;
@@ -80,7 +82,7 @@ export default class Application {
 		return this.#applicationID;
 	}
 
-	get commands(): InteractionKitCommand<ApplicationCommandInteraction> {
+	get commands() {
 		return Object.values(this.#commands)
 			.map((map) => [...map.values()])
 			.flat();
@@ -94,7 +96,7 @@ export default class Application {
 		}
 
 		console.log(`Registering the ${command.name.toLowerCase()} command`);
-		this.#commands[command.type]?.set(command.name.toLowerCase(), command);
+		this.#commands[command.type].set(command.name.toLowerCase(), command);
 		return this;
 	}
 
@@ -125,7 +127,7 @@ export default class Application {
 	getCommand<T extends ApplicationCommandType>(
 		type: T,
 		name: string
-	): MapValue<T> | undefined {
+	): CommandMapValue<T> | undefined {
 		return this.#commands[type].get(name);
 	}
 

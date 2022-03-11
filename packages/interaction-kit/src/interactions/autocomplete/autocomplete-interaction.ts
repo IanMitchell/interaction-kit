@@ -4,10 +4,12 @@ import { AutocompleteInteractionTypes, AutocompleteTypes } from "./types";
 import {
 	APIApplicationCommandAutocompleteInteraction,
 	APIApplicationCommandAutocompleteResponse,
+	APIApplicationCommandOptionChoice,
 	APIInteractionGuildMember,
 } from "discord-api-types/v9";
 import { ResponseStatus } from "../../requests/response";
 import type { Snowflake } from "../../structures/snowflake";
+import { Choices } from "../../commands/options/choices";
 
 export default class AutocompleteInteraction<T extends AutocompleteTypes>
 	implements Autocomplete<T>
@@ -50,11 +52,11 @@ export default class AutocompleteInteraction<T extends AutocompleteTypes>
 		});
 	}
 
-	async reply(options: T[]) {
+	async reply(options: Choices<APIApplicationCommandOptionChoice>) {
 		return this.respond(ResponseStatus.OK, {
 			type: this.#type,
 			data: {
-				choices: options.map((option) => option.serialize()),
+				choices: options.serialize(),
 			},
 		});
 	}

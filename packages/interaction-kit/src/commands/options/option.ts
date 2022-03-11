@@ -44,7 +44,7 @@ export default class Option
 		this.options = options;
 	}
 
-	isAutocomplete(_payload: APIApplicationCommandOption) {
+	isAutocomplete(_payload?: APIApplicationCommandOption) {
 		return false;
 	}
 
