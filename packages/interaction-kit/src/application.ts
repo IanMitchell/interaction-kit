@@ -35,8 +35,8 @@ type CommandMap = {
 	>;
 };
 
-type CommandMapValue<K extends ApplicationCommandType> =
-	CommandMap[K] extends Map<unknown, infer V> ? V : never;
+type MapValue<T> = T extends Map<unknown, infer V> ? V : never;
+type CommandMapValue<K extends keyof CommandMap> = MapValue<CommandMap[K]>;
 
 export default class Application {
 	#applicationID: Snowflake;
@@ -96,7 +96,15 @@ export default class Application {
 		}
 
 		console.log(`Registering the ${command.name.toLowerCase()} command`);
-		this.#commands[command.type].set(command.name.toLowerCase(), command);
+
+		this.#commands[command.type].set(
+			command.name.toLowerCase(),
+			// TypeScript constraint due to command being all possible command types, it's difficult to
+			// type tersely
+			// https://canary.discord.com/channels/508357248330760243/746364189710483546/900780684690485300
+			command as never
+		);
+
 		return this;
 	}
 
@@ -124,11 +132,11 @@ export default class Application {
 		return this.#components.get(customID);
 	}
 
-	getCommand<T extends ApplicationCommandType>(
+	getCommand<T extends keyof CommandMap>(
 		type: T,
 		name: string
 	): CommandMapValue<T> | undefined {
-		return this.#commands[type].get(name);
+		return this.#commands[type].get(name) as CommandMapValue<T>;
 	}
 
 	loadApplicationCommandDirectory(directory: string) {
