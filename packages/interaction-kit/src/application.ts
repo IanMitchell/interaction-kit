@@ -19,7 +19,7 @@ import { APIInteraction, ApplicationCommandType } from "discord-api-types/v9";
 import { isValidRequest } from "./requests/validate";
 
 type ApplicationArgs = {
-	applicationID: string;
+	applicationId: string;
 	publicKey: string;
 	token: string;
 };
@@ -39,14 +39,14 @@ type CommandMap = {
 type CommandMapValue<K extends keyof CommandMap> = MapValue<CommandMap[K]>;
 
 export default class Application {
-	#applicationID: Snowflake;
+	#applicationId: Snowflake;
 	#publicKey: string;
 	#token: string;
 	#commands: CommandMap;
 	#components: Map<string, ExecutableComponent> = new Map();
 
-	constructor({ applicationID, publicKey, token }: ApplicationArgs) {
-		if (!applicationID) {
+	constructor({ applicationId, publicKey, token }: ApplicationArgs) {
+		if (!applicationId) {
 			throw new Error(
 				"Please provide an Application ID. You can find this value <here>"
 			);
@@ -62,7 +62,7 @@ export default class Application {
 			throw new Error("Please provide a Token. You can find this value <here>");
 		}
 
-		this.#applicationID = applicationID as Snowflake;
+		this.#applicationId = applicationId as Snowflake;
 		this.#publicKey = publicKey;
 		this.#token = token as Snowflake;
 
@@ -81,11 +81,11 @@ export default class Application {
 
 		// Configure API Defaults
 		Config.setToken(this.#token);
-		Config.setApplicationID(this.#applicationID);
+		Config.setApplicationId(this.#applicationId);
 	}
 
 	get id() {
-		return this.#applicationID;
+		return this.#applicationId;
 	}
 
 	get commands() {
@@ -133,10 +133,6 @@ export default class Application {
 		return this;
 	}
 
-	getComponent(customID: string) {
-		return this.#components.get(customID);
-	}
-
 	getCommand<T extends keyof CommandMap>(
 		type: T,
 		name: string
@@ -153,6 +149,37 @@ export default class Application {
 		return this.#commands[type].get(name) as
 			| InteractionKitCommand<ApplicationCommandInteraction>
 			| undefined;
+	}
+
+	findCommand(
+		name: string
+	): InteractionKitCommand<ApplicationCommandInteraction> | undefined {
+		return Object.values(this.#commands)
+			.map((map) => [...map.values()])
+			.flat()
+			.find((command) => command.trigger?.(name)) as
+			| InteractionKitCommand<ApplicationCommandInteraction>
+			| undefined;
+	}
+
+	findCommandByType<T extends keyof CommandMap>(
+		type: T,
+		name: string
+	): CommandMapValue<T> | undefined {
+		// I'm not sure why, but this needs to be cast to prevent an error
+		return [...this.#commands[type].values()].find((command) =>
+			command.trigger?.(name)
+		) as CommandMapValue<T> | undefined;
+	}
+
+	getComponent(customId: string) {
+		return this.#components.get(customId);
+	}
+
+	findComponent(customId: string) {
+		return Array.from(this.#components.values()).find((component) =>
+			component.trigger?.(customId)
+		);
 	}
 
 	loadApplicationCommandDirectory(directory: string) {

@@ -29,8 +29,8 @@ export default class ApplicationCommandInteraction implements Interaction {
 	public readonly messages: InteractionMessageModifiers;
 
 	// TODO: Convert these into Records
-	public readonly channelID: Snowflake | undefined;
-	public readonly guildID: Snowflake | undefined;
+	public readonly channelId: Snowflake | undefined;
+	public readonly guildId: Snowflake | undefined;
 	public readonly member: APIInteractionGuildMember | undefined;
 
 	readonly #application: Application;

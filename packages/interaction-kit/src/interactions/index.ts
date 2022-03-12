@@ -71,14 +71,10 @@ function isSelectComponent(
 
 function handleApplicationCommandInteraction(
 	application: Application,
-	command: InteractionKitCommand<ApplicationCommandInteraction> | undefined,
+	command: InteractionKitCommand<ApplicationCommandInteraction>,
 	json: RequestBody<APIApplicationCommandInteraction>,
 	respond: ResponseHandler
 ) {
-	if (command == null) {
-		throw new Error("Unknown Command");
-	}
-
 	if (isChatInputApplicationCommandInteraction(json)) {
 		const interaction = new SlashCommandInteraction(
 			application,
@@ -110,14 +106,10 @@ function handleApplicationCommandInteraction(
 
 function handleMessageComponentInteraction(
 	application: Application,
-	component: ExecutableComponent | undefined,
+	component: ExecutableComponent,
 	json: RequestBody<APIMessageComponentInteraction>,
 	respond: ResponseHandler
 ) {
-	if (component == null) {
-		throw new Error("Unknown Component");
-	}
-
 	if (
 		isMessageComponentButtonInteraction(json) &&
 		isButtonComponent(component)
@@ -129,7 +121,7 @@ function handleMessageComponentInteraction(
 			respond
 		);
 
-		console.log(`Handling ${interaction.customID}`);
+		console.log(`Handling ${interaction.customId}`);
 		component.onInteraction(interaction, application);
 	} else if (
 		isMessageComponentSelectMenuInteraction(json) &&
@@ -142,7 +134,7 @@ function handleMessageComponentInteraction(
 			respond
 		);
 
-		console.log(`Handling ${interaction.customID}`);
+		console.log(`Handling ${interaction.customId}`);
 		component.onInteraction(interaction, application);
 	} else {
 		throw new Error(
@@ -167,16 +159,29 @@ export function handler(
 		}
 
 		case InteractionType.ApplicationCommand: {
-			const command = application.getGenericCommand(
+			let command = application.getGenericCommand(
 				json.data.type,
 				json.data.name
 			);
+
+			if (command == null) {
+				command = application.findCommand(json.data.name);
+			}
+
+			if (command == null) {
+				throw new Error("Unknown Command");
+			}
+
 			handleApplicationCommandInteraction(application, command, json, respond);
 			break;
 		}
 
 		case InteractionType.ApplicationCommandAutocomplete: {
-			const command = application.getCommand(json.data.type, json.data.name);
+			let command = application.getCommand(json.data.type, json.data.name);
+
+			if (command == null) {
+				command = application.findCommandByType(json.data.type, json.data.name);
+			}
 
 			if (command == null) {
 				throw new Error("Unknown Command");
@@ -217,7 +222,15 @@ export function handler(
 		}
 
 		case InteractionType.MessageComponent: {
-			const component = application.getComponent(json.data.custom_id);
+			let component = application.getComponent(json.data.custom_id);
+
+			if (component == null) {
+				component = application.findComponent(json.data.custom_id);
+			}
+
+			if (component == null) {
+				throw new Error("Could not find matching component");
+			}
 
 			handleMessageComponentInteraction(application, component, json, respond);
 			break;

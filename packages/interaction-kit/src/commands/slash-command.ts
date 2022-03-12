@@ -9,12 +9,25 @@ import {
 } from "discord-api-types/v9";
 import SlashCommandAutocompleteInteraction from "../interactions/autocomplete/application-command-autocomplete";
 
-// TODO: options OR autocomplete
 type CommandArgs = {
 	name: string;
 	description: string;
 	defaultPermission?: boolean;
 	options?: Option[];
+	trigger?: (name: string) => boolean;
+	onInteraction: (
+		interaction: SlashCommandInteraction,
+		application: Application
+	) => void;
+	onAutocomplete?: never;
+};
+
+type AutocompleteCommandArgs = {
+	name: string;
+	description: string;
+	defaultPermission?: boolean;
+	options?: never;
+	trigger?: (name: string) => boolean;
 	onInteraction: (
 		interaction: SlashCommandInteraction,
 		application: Application
@@ -45,14 +58,17 @@ export default class SlashCommand
 		application: Application
 	) => void;
 
+	trigger?: (name: string) => boolean;
+
 	constructor({
 		name,
 		description,
 		options,
 		onInteraction,
 		onAutocomplete,
+		trigger,
 		defaultPermission = true,
-	}: CommandArgs) {
+	}: CommandArgs | AutocompleteCommandArgs) {
 		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$
 		this.name = name;
 		this.#description = description;
@@ -60,6 +76,7 @@ export default class SlashCommand
 		this.options = new Map();
 		this.onInteraction = onInteraction;
 		this.onAutocomplete = onAutocomplete;
+		this.trigger = trigger;
 
 		options?.forEach((option) => {
 			const key = option.name.toLowerCase();

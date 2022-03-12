@@ -79,10 +79,10 @@ export async function getGlobalApplicationCommandChanges(
 
 export async function getGuildApplicationCommandChanges(
 	application: Application,
-	guildID: Snowflake
+	guildId: Snowflake
 ) {
 	const response = await API.getGuildApplicationCommands(
-		guildID,
+		guildId,
 		application.id
 	);
 	const commandList = new Map(response.map((cmd) => [cmd.name, cmd]));

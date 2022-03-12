@@ -86,6 +86,7 @@ export interface Autocomplete<T extends ChoiceType> {
 }
 
 export interface Executable<T extends Interaction = Interaction> {
+	trigger?: (customId: string) => boolean;
 	onInteraction: (
 		interaction: T,
 		application: Application
@@ -99,6 +100,7 @@ export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
 		Serializable<RESTPostAPIApplicationCommandsJSONBody>,
 		Comparable<APIApplicationCommand> {
 	name: string;
+	trigger?: (name: string) => boolean;
 	onInteraction: (
 		interaction: T,
 		application: Application

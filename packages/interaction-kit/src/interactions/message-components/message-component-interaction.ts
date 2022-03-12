@@ -27,14 +27,14 @@ export default class MessageComponentInteraction implements Interaction {
 	public readonly type = InteractionType.MessageComponent;
 	public readonly token: string;
 	public readonly respond: ResponseHandler;
-	public readonly customID: string;
+	public readonly customId: string;
 	public readonly messages: InteractionMessageModifiers;
 	readonly #application: Application;
 	#replied: boolean;
 
 	// TODO: Convert these into Records
-	public readonly channelID: Snowflake | undefined;
-	public readonly guildID: Snowflake | undefined;
+	public readonly channelId: Snowflake | undefined;
+	public readonly guildId: Snowflake | undefined;
 	public readonly member: APIInteractionGuildMember | undefined;
 	public readonly message: APIMessage | undefined;
 
@@ -46,11 +46,11 @@ export default class MessageComponentInteraction implements Interaction {
 		this.#application = application;
 		this.respond = respond;
 		this.token = json.token;
-		this.customID = json.data?.custom_id ?? "";
+		this.customId = json.data?.custom_id ?? "";
 
 		// TODO: Make these records
-		this.channelID = json.channel_id as Snowflake;
-		this.guildID = json.guild_id as Snowflake;
+		this.channelId = json.channel_id as Snowflake;
+		this.guildId = json.guild_id as Snowflake;
 		this.member = json.member;
 		this.message = json.message;
 
