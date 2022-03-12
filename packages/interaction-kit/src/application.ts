@@ -139,16 +139,6 @@ export default class Application {
 		return this.#commands[type].get(name) as CommandMapValue<T> | undefined;
 	}
 
-	getGenericCommand(
-		type: ApplicationCommandType,
-		name: string
-	): InteractionKitCommand<ApplicationCommandInteraction> | undefined {
-		// I'm not sure why, but this needs to be cast to prevent an error
-		return this.#commands[type].get(name) as
-			| InteractionKitCommand<ApplicationCommandInteraction>
-			| undefined;
-	}
-
 	loadApplicationCommandDirectory(directory: string) {
 		console.log(`Loading Application Commands from ${directory}`);
 
