@@ -100,7 +100,6 @@ export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
 		Serializable<RESTPostAPIApplicationCommandsJSONBody>,
 		Comparable<APIApplicationCommand> {
 	name: string;
-	trigger?: (name: string) => boolean;
 	onInteraction: (
 		interaction: T,
 		application: Application

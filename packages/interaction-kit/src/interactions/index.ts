@@ -139,7 +139,6 @@ function handleMessageComponentInteraction(
 	} else {
 		throw new Error(
 			`Unknown Interaction Component type (${
-				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
 				json.data.component_type ?? "[unknown]"
 			}) or component mismatch. `
 		);
@@ -227,9 +226,6 @@ export function handler(
 		}
 
 		default:
-			throw new Error(
-				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				`Unknown Interaction Type: ${json.type ?? "[unknown]"}`
-			);
+			throw new Error(`Unknown Interaction Type: ${json.type ?? "[unknown]"}`);
 	}
 }
