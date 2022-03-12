@@ -133,7 +133,7 @@ export default class Application {
 		return this;
 	}
 
-	getCommand<T extends keyof CommandMap>(
+	getCommand<T extends ApplicationCommandType>(
 		type: T,
 		name: string
 	): CommandMapValue<T> | undefined {
@@ -149,27 +149,6 @@ export default class Application {
 		return this.#commands[type].get(name) as
 			| InteractionKitCommand<ApplicationCommandInteraction>
 			| undefined;
-	}
-
-	findCommand(
-		name: string
-	): InteractionKitCommand<ApplicationCommandInteraction> | undefined {
-		return Object.values(this.#commands)
-			.map((map) => [...map.values()])
-			.flat()
-			.find((command) => command.trigger?.(name)) as
-			| InteractionKitCommand<ApplicationCommandInteraction>
-			| undefined;
-	}
-
-	findCommandByType<T extends keyof CommandMap>(
-		type: T,
-		name: string
-	): CommandMapValue<T> | undefined {
-		// I'm not sure why, but this needs to be cast to prevent an error
-		return [...this.#commands[type].values()].find((command) =>
-			command.trigger?.(name)
-		) as CommandMapValue<T> | undefined;
 	}
 
 	getComponent(customId: string) {

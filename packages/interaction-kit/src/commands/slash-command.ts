@@ -27,7 +27,6 @@ type AutocompleteCommandArgs = {
 	description: string;
 	defaultPermission?: boolean;
 	options?: never;
-	trigger?: (name: string) => boolean;
 	onInteraction: (
 		interaction: SlashCommandInteraction,
 		application: Application
@@ -58,15 +57,12 @@ export default class SlashCommand
 		application: Application
 	) => void;
 
-	trigger?: (name: string) => boolean;
-
 	constructor({
 		name,
 		description,
 		options,
 		onInteraction,
 		onAutocomplete,
-		trigger,
 		defaultPermission = true,
 	}: CommandArgs | AutocompleteCommandArgs) {
 		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$
@@ -76,7 +72,6 @@ export default class SlashCommand
 		this.options = new Map();
 		this.onInteraction = onInteraction;
 		this.onAutocomplete = onAutocomplete;
-		this.trigger = trigger;
 
 		options?.forEach((option) => {
 			const key = option.name.toLowerCase();

@@ -159,9 +159,10 @@ export function handler(
 		}
 
 		case InteractionType.ApplicationCommand: {
-			const command =
-				application.getGenericCommand(json.data.type, json.data.name) ??
-				application.findCommand(json.data.name);
+			const command = application.getGenericCommand(
+				json.data.type,
+				json.data.name
+			);
 
 			if (command == null) {
 				throw new Error("Unknown Command");
@@ -172,9 +173,7 @@ export function handler(
 		}
 
 		case InteractionType.ApplicationCommandAutocomplete: {
-			const command =
-				application.getCommand(json.data.type, json.data.name) ??
-				application.findCommandByType(json.data.type, json.data.name);
+			const command = application.getCommand(json.data.type, json.data.name);
 
 			if (command == null) {
 				throw new Error("Unknown Command");
