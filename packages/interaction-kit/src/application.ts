@@ -155,10 +155,15 @@ export default class Application {
 		return this.#components.get(customId);
 	}
 
-	findComponent(customId: string) {
-		return Array.from(this.#components.values()).find((component) =>
-			component.trigger?.(customId)
-		);
+	async findComponent(customId: string) {
+		for (const component of this.#components.values()) {
+			const match = await component.trigger?.(customId);
+			if (match) {
+				return component;
+			}
+		}
+
+		return undefined;
 	}
 
 	loadApplicationCommandDirectory(directory: string) {
@@ -225,7 +230,7 @@ export default class Application {
 
 		try {
 			const json = (await event.request.json()) as APIInteraction;
-			Interaction.handler(
+			void Interaction.handler(
 				this,
 				json,
 				async (status: ResponseStatus, json: Record<string, any>) => {

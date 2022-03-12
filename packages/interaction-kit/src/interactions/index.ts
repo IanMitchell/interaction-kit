@@ -145,7 +145,7 @@ function handleMessageComponentInteraction(
 	}
 }
 
-export function handler(
+export async function handler(
 	application: Application,
 	json: RequestBody<APIInteraction>,
 	respond: ResponseHandler
@@ -213,9 +213,11 @@ export function handler(
 		}
 
 		case InteractionType.MessageComponent: {
-			const component =
-				application.getComponent(json.data.custom_id) ??
-				application.findComponent(json.data.custom_id);
+			let component = application.getComponent(json.data.custom_id);
+
+			if (component == null) {
+				component = await application.findComponent(json.data.custom_id);
+			}
 
 			if (component == null) {
 				throw new Error("Could not find matching component");

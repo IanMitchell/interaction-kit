@@ -5,7 +5,7 @@ import { SelectOptionList } from "../commands/options";
 import { APISelectMenuComponent, ComponentType } from "discord-api-types/v9";
 
 type SelectArgs = {
-	trigger?: (customId: string) => boolean;
+	trigger?: Executable<SelectInteraction>["trigger"];
 	onInteraction: (
 		event: SelectInteraction,
 		application: Application

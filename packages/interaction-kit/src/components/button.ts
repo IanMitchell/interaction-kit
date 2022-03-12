@@ -41,7 +41,7 @@ type ButtonArgs = {
 	) => unknown;
 	customId: APIButtonComponentWithCustomId["custom_id"];
 	style: Exclude<ButtonStyle, ButtonStyle.Link>;
-	trigger?: (customId: string) => boolean;
+	trigger?: Executable<ButtonInteraction>["trigger"];
 } & ButtonBaseArgs<Exclude<ButtonStyle, ButtonStyle.Link>>;
 
 type ButtonLinkArgs = Omit<
