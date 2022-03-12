@@ -19,6 +19,8 @@ export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type ArrayValue<T> = T extends Array<infer U> ? U : T;
 
+export type MapValue<T> = T extends Map<unknown, infer V> ? V : never;
+
 // TODO: Is there a better way of handling these next three types?
 export interface FetchEvent extends Event {
 	request: Request;

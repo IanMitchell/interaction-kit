@@ -1,10 +1,18 @@
 import {
 	APIApplicationCommandBasicOption,
+	APIApplicationCommandInteractionDataBasicOption,
+	APIApplicationCommandInteractionDataIntegerOption,
+	APIApplicationCommandInteractionDataNumberOption,
+	APIApplicationCommandInteractionDataOption,
+	APIApplicationCommandInteractionDataStringOption,
 	APIApplicationCommandOption,
 	ApplicationCommandOptionType,
 } from "discord-api-types/payloads/v9";
 import { APIApplicationCommandOptionBase } from "discord-api-types/payloads/v9/_interactions/_applicationCommands/_chatInput/base";
 import { Comparable, Serializable } from "../../interfaces";
+import IntegerOption from "./integer";
+import NumberOption from "./number";
+import StringOption from "./string";
 
 type OptionArgs = {
 	type: ApplicationCommandOptionType;
@@ -15,6 +23,51 @@ type OptionArgs = {
 };
 
 export type BaseOptionArgs = Omit<OptionArgs, "type" | "options">;
+
+type APIApplicationCommandInteractionDataAutocompleteOption =
+	| APIApplicationCommandInteractionDataStringOption
+	| APIApplicationCommandInteractionDataIntegerOption
+	| APIApplicationCommandInteractionDataNumberOption;
+
+type AutocompleteOptionTypes =
+	| Autocomplete<ApplicationCommandOptionType.String>
+	| Autocomplete<ApplicationCommandOptionType.Number>
+	| Autocomplete<ApplicationCommandOptionType.Integer>;
+
+export function isAutocompleteExecutableOption(
+	option: Option | undefined
+): option is StringOption | NumberOption | IntegerOption {
+	if (option == null) {
+		return false;
+	}
+
+	return (
+		option instanceof StringOption ||
+		option instanceof NumberOption ||
+		option instanceof IntegerOption
+	);
+}
+
+// TODO: Upstream?
+export function isBasicOption(
+	option: APIApplicationCommandInteractionDataOption
+): option is APIApplicationCommandInteractionDataBasicOption {
+	return (
+		option.type !== ApplicationCommandOptionType.Subcommand &&
+		option.type !== ApplicationCommandOptionType.SubcommandGroup
+	);
+}
+
+// TODO: Upstream?
+export function isAutocompleteOption(
+	option: APIApplicationCommandInteractionDataOption
+): option is APIApplicationCommandInteractionDataAutocompleteOption {
+	return (
+		option.type === ApplicationCommandOptionType.String ||
+		option.type === ApplicationCommandOptionType.Integer ||
+		option.type === ApplicationCommandOptionType.Number
+	);
+}
 
 export type Autocomplete<T extends ApplicationCommandOptionType> =
 	APIApplicationCommandOptionBase<T> & {
@@ -44,7 +97,9 @@ export default class Option
 		this.options = options;
 	}
 
-	isAutocomplete(_payload?: APIApplicationCommandOption) {
+	isAutocomplete(
+		_payload?: APIApplicationCommandOption
+	): _payload is AutocompleteOptionTypes {
 		return false;
 	}
 

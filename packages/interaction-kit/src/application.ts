@@ -9,6 +9,7 @@ import {
 	InteractionKitCommand,
 	SerializableComponent,
 	Module,
+	MapValue,
 } from "./interfaces";
 import type { Snowflake } from "./structures/snowflake";
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
@@ -35,7 +36,6 @@ type CommandMap = {
 	>;
 };
 
-type MapValue<T> = T extends Map<unknown, infer V> ? V : never;
 type CommandMapValue<K extends keyof CommandMap> = MapValue<CommandMap[K]>;
 
 export default class Application {
@@ -68,10 +68,16 @@ export default class Application {
 
 		// Set up internal data structures
 		this.#commands = {
-			[ApplicationCommandType.ChatInput]: new Map(),
-			[ApplicationCommandType.Message]: new Map(),
-			[ApplicationCommandType.User]: new Map(),
-		};
+			[ApplicationCommandType.ChatInput]: new Map<string, SlashCommand>(),
+			[ApplicationCommandType.Message]: new Map<
+				string,
+				ContextMenu<ApplicationCommandType.Message>
+			>(),
+			[ApplicationCommandType.User]: new Map<
+				string,
+				ContextMenu<ApplicationCommandType.User>
+			>(),
+		} as const;
 
 		// Configure API Defaults
 		Config.setToken(this.#token);
@@ -99,8 +105,7 @@ export default class Application {
 
 		this.#commands[command.type].set(
 			command.name.toLowerCase(),
-			// TypeScript constraint due to command being all possible command types, it's difficult to
-			// type tersely
+			// TypeScript constraint due to command being all possible command types, it's difficult to type tersely
 			// https://canary.discord.com/channels/508357248330760243/746364189710483546/900780684690485300
 			command as never
 		);
@@ -136,7 +141,18 @@ export default class Application {
 		type: T,
 		name: string
 	): CommandMapValue<T> | undefined {
-		return this.#commands[type].get(name) as CommandMapValue<T>;
+		// I'm not sure why, but this needs to be cast to prevent an error
+		return this.#commands[type].get(name) as CommandMapValue<T> | undefined;
+	}
+
+	getGenericCommand(
+		type: ApplicationCommandType,
+		name: string
+	): InteractionKitCommand<ApplicationCommandInteraction> | undefined {
+		// I'm not sure why, but this needs to be cast to prevent an error
+		return this.#commands[type].get(name) as
+			| InteractionKitCommand<ApplicationCommandInteraction>
+			| undefined;
 	}
 
 	loadApplicationCommandDirectory(directory: string) {

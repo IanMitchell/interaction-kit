@@ -25,6 +25,10 @@ import {
 	APIMessageComponentButtonInteraction,
 	APIMessageComponentSelectMenuInteraction,
 } from "discord-api-types/v9";
+import {
+	isAutocompleteExecutableOption,
+	isAutocompleteOption,
+} from "../commands/options/option";
 
 function isChatInputApplicationCommandInteraction(
 	interaction: APIApplicationCommandInteraction
@@ -163,7 +167,10 @@ export function handler(
 		}
 
 		case InteractionType.ApplicationCommand: {
-			const command = application.getCommand(json.data.type, json.data.name);
+			const command = application.getGenericCommand(
+				json.data.type,
+				json.data.name
+			);
 			handleApplicationCommandInteraction(application, command, json, respond);
 			break;
 		}
@@ -183,11 +190,24 @@ export function handler(
 			);
 
 			console.log(`Handling ${interaction.name} Autocomplete`);
-			const option = command.options.get(
-				json.data.options.find((option) => option.focused)
-			);
+			const focused = json.data.options.find((option) => {
+				if (isAutocompleteOption(option)) {
+					return option.focused;
+				}
 
-			if (option?.isAutocomplete()) {
+				return false;
+			});
+
+			if (focused == null) {
+				throw new Error("No focused option");
+			}
+
+			const option = command.options.get(focused.name);
+
+			if (
+				isAutocompleteExecutableOption(option) &&
+				option.onAutocomplete != null
+			) {
 				option.onAutocomplete(interaction, application);
 			} else {
 				command?.onAutocomplete?.(interaction, application);
