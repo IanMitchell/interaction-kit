@@ -147,7 +147,7 @@ export class Button
 {
 	#customId: ButtonArgs["customId"];
 	onInteraction: ButtonArgs["onInteraction"];
-	trigger?: ButtonArgs["trigger"];
+	trigger: ButtonArgs["trigger"];
 
 	constructor({
 		onInteraction,
