@@ -4,7 +4,9 @@ import {
 } from "discord-api-types/v9";
 import { Serializable } from "../../interfaces";
 
-type ChoiceType = APIApplicationCommandOptionChoice | APISelectMenuOption;
+export type ChoiceType =
+	| APIApplicationCommandOptionChoice
+	| APISelectMenuOption;
 
 export class Choices<T extends ChoiceType> implements Serializable {
 	_choices: Map<string, T>;

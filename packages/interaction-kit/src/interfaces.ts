@@ -14,6 +14,7 @@ import {
 } from "discord-api-types/v9";
 import ActionRow from "./components/action-row";
 import type { Snowflake } from "./structures/snowflake";
+import { Choices, ChoiceType } from "./commands/options/choices";
 
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -80,8 +81,8 @@ export interface Interaction {
 	reply: (message: InteractionReply) => unknown;
 }
 
-export interface Autocomplete<T> {
-	reply: (options: T[]) => unknown;
+export interface Autocomplete<T extends ChoiceType> {
+	reply: (options: Choices<T>) => unknown;
 }
 
 export interface Executable<T extends Interaction = Interaction> {

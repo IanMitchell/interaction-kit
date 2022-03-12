@@ -3,12 +3,12 @@ import AutocompleteInteraction from "./autocomplete-interaction";
 import { RequestBody, ResponseHandler } from "../../interfaces";
 import {
 	APIApplicationCommandAutocompleteInteraction,
+	APIApplicationCommandOptionChoice,
 	InteractionResponseType,
 } from "discord-api-types/v9";
-import { SlashCommandAutocompleteType } from "./types";
 import SlashCommand from "../../commands/slash-command";
 
-export default class SlashCommandAutocompleteInteraction extends AutocompleteInteraction<SlashCommandAutocompleteType> {
+export default class SlashCommandAutocompleteInteraction extends AutocompleteInteraction<APIApplicationCommandOptionChoice> {
 	public readonly command: SlashCommand | undefined;
 
 	constructor(

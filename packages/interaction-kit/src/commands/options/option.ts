@@ -24,12 +24,12 @@ type OptionArgs = {
 
 export type BaseOptionArgs = Omit<OptionArgs, "type" | "options">;
 
-type APIApplicationCommandInteractionDataAutocompleteOption =
+export type APIApplicationCommandInteractionDataAutocompleteOption =
 	| APIApplicationCommandInteractionDataStringOption
 	| APIApplicationCommandInteractionDataIntegerOption
 	| APIApplicationCommandInteractionDataNumberOption;
 
-type AutocompleteOptionTypes =
+export type AutocompleteOptionTypes =
 	| Autocomplete<ApplicationCommandOptionType.String>
 	| Autocomplete<ApplicationCommandOptionType.Number>
 	| Autocomplete<ApplicationCommandOptionType.Integer>;
