@@ -159,14 +159,9 @@ export function handler(
 		}
 
 		case InteractionType.ApplicationCommand: {
-			let command = application.getGenericCommand(
-				json.data.type,
-				json.data.name
-			);
-
-			if (command == null) {
-				command = application.findCommand(json.data.name);
-			}
+			const command =
+				application.getGenericCommand(json.data.type, json.data.name) ??
+				application.findCommand(json.data.name);
 
 			if (command == null) {
 				throw new Error("Unknown Command");
@@ -177,11 +172,9 @@ export function handler(
 		}
 
 		case InteractionType.ApplicationCommandAutocomplete: {
-			let command = application.getCommand(json.data.type, json.data.name);
-
-			if (command == null) {
-				command = application.findCommandByType(json.data.type, json.data.name);
-			}
+			const command =
+				application.getCommand(json.data.type, json.data.name) ??
+				application.findCommandByType(json.data.type, json.data.name);
 
 			if (command == null) {
 				throw new Error("Unknown Command");
@@ -222,11 +215,9 @@ export function handler(
 		}
 
 		case InteractionType.MessageComponent: {
-			let component = application.getComponent(json.data.custom_id);
-
-			if (component == null) {
-				component = application.findComponent(json.data.custom_id);
-			}
+			const component =
+				application.getComponent(json.data.custom_id) ??
+				application.findComponent(json.data.custom_id);
 
 			if (component == null) {
 				throw new Error("Could not find matching component");
