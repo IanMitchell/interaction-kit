@@ -68,16 +68,10 @@ export default class Application {
 
 		// Set up internal data structures
 		this.#commands = {
-			[ApplicationCommandType.ChatInput]: new Map<string, SlashCommand>(),
-			[ApplicationCommandType.Message]: new Map<
-				string,
-				ContextMenu<ApplicationCommandType.Message>
-			>(),
-			[ApplicationCommandType.User]: new Map<
-				string,
-				ContextMenu<ApplicationCommandType.User>
-			>(),
-		} as const;
+			[ApplicationCommandType.ChatInput]: new Map(),
+			[ApplicationCommandType.Message]: new Map(),
+			[ApplicationCommandType.User]: new Map(),
+		};
 
 		// Configure API Defaults
 		Config.setToken(this.#token);
