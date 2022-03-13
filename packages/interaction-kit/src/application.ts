@@ -157,7 +157,7 @@ export default class Application {
 
 	async findComponent(customId: string) {
 		for (const component of this.#components.values()) {
-			const match = await component.trigger?.(customId);
+			const match = await component.matches?.(customId);
 			if (match) {
 				return component;
 			}

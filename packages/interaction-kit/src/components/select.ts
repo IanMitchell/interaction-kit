@@ -5,7 +5,7 @@ import { SelectOptionList } from "../commands/options";
 import { APISelectMenuComponent, ComponentType } from "discord-api-types/v9";
 
 type SelectArgs = {
-	trigger?: Executable<SelectInteraction>["trigger"];
+	matches?: Executable<SelectInteraction>["matches"];
 	onInteraction: (
 		event: SelectInteraction,
 		application: Application
@@ -35,7 +35,7 @@ export default class Select
 	#max: APISelectMenuComponent["max_values"];
 	#disabled: APISelectMenuComponent["disabled"];
 	onInteraction: SelectArgs["onInteraction"];
-	trigger: SelectArgs["trigger"];
+	matches: SelectArgs["matches"];
 
 	constructor({
 		customId,
@@ -45,7 +45,7 @@ export default class Select
 		max,
 		disabled,
 		onInteraction,
-		trigger,
+		matches,
 	}: SelectArgs) {
 		this.#customId = customId;
 		this.options = options;
@@ -54,7 +54,7 @@ export default class Select
 		this.#max = max;
 		this.#disabled = disabled;
 		this.onInteraction = onInteraction;
-		this.trigger = trigger;
+		this.matches = matches;
 	}
 
 	get id() {
@@ -95,8 +95,8 @@ export default class Select
 		return this;
 	}
 
-	setTrigger(fn: SelectArgs["trigger"]) {
-		this.trigger = fn;
+	setmatches(fn: SelectArgs["matches"]) {
+		this.matches = fn;
 		return this;
 	}
 

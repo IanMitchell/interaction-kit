@@ -41,7 +41,7 @@ type ButtonArgs = {
 	) => unknown;
 	customId: APIButtonComponentWithCustomId["custom_id"];
 	style: Exclude<ButtonStyle, ButtonStyle.Link>;
-	trigger?: Executable<ButtonInteraction>["trigger"];
+	matches?: Executable<ButtonInteraction>["matches"];
 } & ButtonBaseArgs<Exclude<ButtonStyle, ButtonStyle.Link>>;
 
 type ButtonLinkArgs = Omit<
@@ -147,13 +147,13 @@ export class Button
 {
 	#customId: ButtonArgs["customId"];
 	onInteraction: ButtonArgs["onInteraction"];
-	trigger: ButtonArgs["trigger"];
+	matches: ButtonArgs["matches"];
 
 	constructor({
 		onInteraction,
 		customId,
 		style,
-		trigger,
+		matches,
 		disabled,
 		emoji,
 		label,
@@ -166,7 +166,7 @@ export class Button
 		});
 		this.#customId = customId;
 		this.onInteraction = onInteraction;
-		this.trigger = trigger;
+		this.matches = matches;
 
 		if (this.#customId == null) {
 			throw new Error("Custom ID is required");
@@ -192,8 +192,8 @@ export class Button
 		return this;
 	}
 
-	setTrigger(fn: ButtonArgs["trigger"]) {
-		this.trigger = fn;
+	setmatches(fn: ButtonArgs["matches"]) {
+		this.matches = fn;
 		return this;
 	}
 

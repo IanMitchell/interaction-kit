@@ -14,7 +14,6 @@ type CommandArgs = {
 	description: string;
 	defaultPermission?: boolean;
 	options?: Option[];
-	trigger?: (name: string) => boolean;
 	onInteraction: (
 		interaction: SlashCommandInteraction,
 		application: Application

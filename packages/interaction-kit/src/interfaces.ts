@@ -86,7 +86,7 @@ export interface Autocomplete<T extends ChoiceType> {
 }
 
 export interface Executable<T extends Interaction = Interaction> {
-	trigger?: (customId: string) => Promise<boolean>;
+	matches?: (customId: string) => Promise<boolean>;
 	onInteraction: (
 		interaction: T,
 		application: Application
