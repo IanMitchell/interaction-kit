@@ -158,16 +158,17 @@ export async function handler(
 		}
 
 		case InteractionType.ApplicationCommand: {
-			const command = application.getGenericCommand(
-				json.data.type,
-				json.data.name
-			);
+			// Safe to cast, related to `application.ts#L103`
+			const command = application.getCommand(json.data.type, json.data.name) as
+				| InteractionKitCommand<ApplicationCommandInteraction>
+				| undefined;
 
 			if (command == null) {
 				throw new Error("Unknown Command");
 			}
 
 			handleApplicationCommandInteraction(application, command, json, respond);
+
 			break;
 		}
 

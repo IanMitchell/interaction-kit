@@ -113,6 +113,14 @@ export default class Application {
 		commands.forEach((command) => this.addCommand(command));
 		return this;
 	}
+  
+  getCommand<T extends ApplicationCommandType>(
+		type: T,
+		name: string
+	): CommandMapValue<T> | undefined {
+		// I'm not sure why, but this needs to be cast to prevent an error
+		return this.#commands[type].get(name) as CommandMapValue<T> | undefined;
+	}
 
 	addComponent(component: SerializableComponent) {
 		if (
@@ -125,24 +133,6 @@ export default class Application {
 		}
 
 		return this;
-	}
-
-	getCommand<T extends ApplicationCommandType>(
-		type: T,
-		name: string
-	): CommandMapValue<T> | undefined {
-		// I'm not sure why, but this needs to be cast to prevent an error
-		return this.#commands[type].get(name) as CommandMapValue<T> | undefined;
-	}
-
-	getGenericCommand(
-		type: ApplicationCommandType,
-		name: string
-	): InteractionKitCommand<ApplicationCommandInteraction> | undefined {
-		// I'm not sure why, but this needs to be cast to prevent an error
-		return this.#commands[type].get(name) as
-			| InteractionKitCommand<ApplicationCommandInteraction>
-			| undefined;
 	}
 
 	getComponent(customId: string) {
