@@ -1,6 +1,5 @@
 import type { Executable, SerializableComponent } from "../interfaces";
 
-import Application from "../application";
 import ButtonInteraction from "../interactions/message-components/button-interaction";
 import {
 	APIBaseComponent,
@@ -35,7 +34,7 @@ type ButtonBaseArgs<T extends ButtonStyle> = Omit<
 > & { style: T };
 
 type ButtonArgs = {
-	handler: (event: ButtonInteraction, application: Application) => unknown;
+	handler: Executable<ButtonInteraction>["handler"];
 	customID: APIButtonComponentWithCustomId["custom_id"];
 	style: Exclude<ButtonStyle, ButtonStyle.Link>;
 } & ButtonBaseArgs<Exclude<ButtonStyle, ButtonStyle.Link>>;

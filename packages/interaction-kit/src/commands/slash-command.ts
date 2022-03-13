@@ -1,4 +1,3 @@
-import Application from "../application";
 import Option from "./options/option";
 import { InteractionKitCommand } from "../interfaces";
 import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
@@ -8,6 +7,7 @@ import {
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from "discord-api-types/v9";
 import SlashCommandAutocompleteInteraction from "../interactions/autocomplete/application-command-autocomplete";
+import { RenameThisAutocompleteInterface } from "../interactions/autocomplete/types";
 
 // TODO: options OR autocomplete
 type CommandArgs = {
@@ -15,18 +15,14 @@ type CommandArgs = {
 	description: string;
 	defaultPermission?: boolean;
 	options?: Option[];
-	handler: (
-		interaction: SlashCommandInteraction,
-		application: Application
-	) => void;
-	autocomplete?: (
-		interaction: SlashCommandAutocompleteInteraction,
-		application: Application
-	) => void;
+	handler: InteractionKitCommand<SlashCommandInteraction>["handler"];
+	autocomplete?: RenameThisAutocompleteInterface<SlashCommandAutocompleteInteraction>["autocomplete"];
 };
 
 export default class SlashCommand
-	implements InteractionKitCommand<SlashCommandInteraction>
+	implements
+		InteractionKitCommand<SlashCommandInteraction>,
+		RenameThisAutocompleteInterface<SlashCommandAutocompleteInteraction>
 {
 	public readonly type = ApplicationCommandType.ChatInput;
 
@@ -35,15 +31,9 @@ export default class SlashCommand
 	#defaultPermission: boolean;
 	options: Map<string, Option>;
 
-	handler: (
-		interaction: SlashCommandInteraction,
-		application: Application
-	) => void;
+	handler: InteractionKitCommand<SlashCommandInteraction>["handler"];
 
-	autocomplete?: (
-		interaction: SlashCommandAutocompleteInteraction,
-		application: Application
-	) => void;
+	autocomplete?: RenameThisAutocompleteInterface<SlashCommandAutocompleteInteraction>["autocomplete"];
 
 	constructor({
 		name,

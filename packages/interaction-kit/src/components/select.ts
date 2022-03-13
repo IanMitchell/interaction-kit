@@ -1,11 +1,10 @@
 import SelectInteraction from "../interactions/message-components/select-interaction";
-import Application from "../application";
 import { Executable, SerializableComponent } from "../interfaces";
 import { SelectOptionList } from "../commands/options";
 import { APISelectMenuComponent, ComponentType } from "discord-api-types/v9";
 
 type SelectArgs = {
-	handler: (event: SelectInteraction, application: Application) => unknown;
+	handler: Executable<SelectInteraction>["handler"];
 	customID: APISelectMenuComponent["custom_id"];
 	min: APISelectMenuComponent["min_values"];
 	max: APISelectMenuComponent["max_values"];

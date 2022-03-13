@@ -2,8 +2,8 @@ import {
 	APIApplicationCommandNumberOption,
 	ApplicationCommandOptionType,
 } from "discord-api-types/payloads/v9";
-import Application from "../../application";
 import SlashCommandAutocompleteInteraction from "../../interactions/autocomplete/application-command-autocomplete";
+import { RenameThisAutocompleteInterface } from "../../interactions/autocomplete/types";
 import { SlashChoiceList } from "./choices";
 import Option, { BaseOptionArgs, Autocomplete } from "./option";
 
@@ -14,19 +14,19 @@ interface NumberOptionChoiceArgs extends BaseOptionArgs {
 
 interface NumberAutocompleteArgs extends BaseOptionArgs {
 	choices: never;
-	autocomplete: (
-		interaction: SlashCommandAutocompleteInteraction,
-		application: Application
-	) => void;
+	autocomplete: NonNullable<
+		RenameThisAutocompleteInterface<SlashCommandAutocompleteInteraction>["autocomplete"]
+	>;
 }
 
-export default class NumberOption extends Option {
+export default class NumberOption
+	extends Option
+	implements
+		RenameThisAutocompleteInterface<SlashCommandAutocompleteInteraction>
+{
 	public readonly choices?: SlashChoiceList<number>;
 
-	autocomplete?: (
-		interaction: SlashCommandAutocompleteInteraction,
-		application: Application
-	) => void;
+	autocomplete?: RenameThisAutocompleteInterface<SlashCommandAutocompleteInteraction>["autocomplete"];
 
 	constructor({
 		choices,

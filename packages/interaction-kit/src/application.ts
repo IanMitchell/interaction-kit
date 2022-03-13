@@ -203,7 +203,7 @@ export default class Application {
 
 		try {
 			const json = (await event.request.json()) as APIInteraction;
-			Interaction.handler(
+			void Interaction.handler(
 				this,
 				json,
 				async (status: ResponseStatus, json: Record<string, any>) => {

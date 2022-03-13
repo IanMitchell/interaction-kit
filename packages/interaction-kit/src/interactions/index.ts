@@ -69,7 +69,7 @@ function isSelectComponent(
 	return component instanceof Select;
 }
 
-function handleApplicationCommandInteraction(
+async function handleApplicationCommandInteraction(
 	application: Application,
 	command: InteractionKitCommand<ApplicationCommandInteraction> | undefined,
 	json: RequestBody<APIApplicationCommandInteraction>,
@@ -88,8 +88,10 @@ function handleApplicationCommandInteraction(
 		);
 
 		console.log(`Handling ${interaction.name}`);
-		command.handler(interaction, application);
-	} else if (isContextMenuApplicationCommandInteraction(json)) {
+		return command.handler(interaction, application);
+	}
+
+	if (isContextMenuApplicationCommandInteraction(json)) {
 		const interaction = new ContextMenuInteraction(
 			application,
 			command,
@@ -98,17 +100,17 @@ function handleApplicationCommandInteraction(
 		);
 
 		console.log(`Handling ${interaction.name}`);
-		command.handler(interaction, application);
-	} else {
-		throw new Error(
-			// @ts-expect-error TS doesn't think this will happen, but theoretically it can
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
-			`Unknown Application Command type: ${json.data.type ?? "[unknown]"}`
-		);
+		return command.handler(interaction, application);
 	}
+
+	throw new Error(
+		// @ts-expect-error TS doesn't think this will happen, but theoretically it can
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
+		`Unknown Application Command type: ${json.data.type ?? "[unknown]"}`
+	);
 }
 
-function handleMessageComponentInteraction(
+async function handleMessageComponentInteraction(
 	application: Application,
 	component: ExecutableComponent | undefined,
 	json: RequestBody<APIMessageComponentInteraction>,
@@ -130,8 +132,10 @@ function handleMessageComponentInteraction(
 		);
 
 		console.log(`Handling ${interaction.customID}`);
-		component.handler(interaction, application);
-	} else if (
+		return component.handler(interaction, application);
+	}
+
+	if (
 		isMessageComponentSelectMenuInteraction(json) &&
 		isSelectComponent(component)
 	) {
@@ -143,15 +147,15 @@ function handleMessageComponentInteraction(
 		);
 
 		console.log(`Handling ${interaction.customID}`);
-		component.handler(interaction, application);
-	} else {
-		throw new Error(
-			`Unknown Interaction Component type (${
-				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
-				json.data.component_type ?? "[unknown]"
-			}) or component mismatch. `
-		);
+		return component.handler(interaction, application);
 	}
+
+	throw new Error(
+		`Unknown Interaction Component type (${
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
+			json.data.component_type ?? "[unknown]"
+		}) or component mismatch. `
+	);
 }
 
 export function handler(
@@ -172,9 +176,12 @@ export function handler(
 				| InteractionKitCommand<ApplicationCommandInteraction>
 				| undefined;
 
-			handleApplicationCommandInteraction(application, command, json, respond);
-
-			break;
+			return handleApplicationCommandInteraction(
+				application,
+				command,
+				json,
+				respond
+			);
 		}
 
 		case InteractionType.ApplicationCommandAutocomplete: {
@@ -210,19 +217,21 @@ export function handler(
 				isAutocompleteExecutableOption(option) &&
 				option.autocomplete != null
 			) {
-				option.autocomplete(interaction, application);
-			} else {
-				command?.autocomplete?.(interaction, application);
+				return option.autocomplete(interaction, application);
 			}
 
-			break;
+			return command?.autocomplete?.(interaction, application);
 		}
 
 		case InteractionType.MessageComponent: {
 			const component = application.getComponent(json.data.custom_id);
 
-			handleMessageComponentInteraction(application, component, json, respond);
-			break;
+			return handleMessageComponentInteraction(
+				application,
+				component,
+				json,
+				respond
+			);
 		}
 
 		default:
