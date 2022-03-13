@@ -9,12 +9,12 @@ import Option, { BaseOptionArgs, Autocomplete } from "./option";
 
 interface StringOptionChoiceArgs extends BaseOptionArgs {
 	choices?: SlashChoiceList<string>;
-	onAutocomplete: never;
+	autocomplete: never;
 }
 
 interface StringAutocompleteArgs extends BaseOptionArgs {
 	choices: never;
-	onAutocomplete: (
+	autocomplete: (
 		interaction: SlashCommandAutocompleteInteraction,
 		application: Application
 	) => void;
@@ -23,14 +23,14 @@ interface StringAutocompleteArgs extends BaseOptionArgs {
 export default class StringOption extends Option {
 	public readonly choices?: SlashChoiceList<string>;
 
-	onAutocomplete?: (
+	autocomplete?: (
 		interaction: SlashCommandAutocompleteInteraction,
 		application: Application
 	) => void;
 
 	constructor({
 		choices,
-		onAutocomplete,
+		autocomplete,
 		name,
 		description,
 		required,
@@ -43,8 +43,8 @@ export default class StringOption extends Option {
 		});
 
 		/* eslint-disable-next-line no-negated-condition */
-		if (onAutocomplete != null) {
-			this.onAutocomplete = onAutocomplete;
+		if (autocomplete != null) {
+			this.autocomplete = autocomplete;
 		} else {
 			this.choices = choices;
 		}
@@ -53,12 +53,12 @@ export default class StringOption extends Option {
 	isAutocomplete(
 		_payload: APIApplicationCommandStringOption
 	): _payload is Autocomplete<ApplicationCommandOptionType.String> {
-		return this.onAutocomplete != null;
+		return this.autocomplete != null;
 	}
 
 	equals(schema: APIApplicationCommandStringOption): boolean {
 		if (schema.autocomplete) {
-			if (this.onAutocomplete == null) {
+			if (this.autocomplete == null) {
 				return false;
 			}
 		} else {

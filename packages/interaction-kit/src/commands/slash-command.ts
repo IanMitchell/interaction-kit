@@ -15,11 +15,11 @@ type CommandArgs = {
 	description: string;
 	defaultPermission?: boolean;
 	options?: Option[];
-	onInteraction: (
+	handler: (
 		interaction: SlashCommandInteraction,
 		application: Application
 	) => void;
-	onAutocomplete?: (
+	autocomplete?: (
 		interaction: SlashCommandAutocompleteInteraction,
 		application: Application
 	) => void;
@@ -35,12 +35,12 @@ export default class SlashCommand
 	#defaultPermission: boolean;
 	options: Map<string, Option>;
 
-	onInteraction: (
+	handler: (
 		interaction: SlashCommandInteraction,
 		application: Application
 	) => void;
 
-	onAutocomplete?: (
+	autocomplete?: (
 		interaction: SlashCommandAutocompleteInteraction,
 		application: Application
 	) => void;
@@ -49,8 +49,8 @@ export default class SlashCommand
 		name,
 		description,
 		options,
-		onInteraction,
-		onAutocomplete,
+		handler,
+		autocomplete,
 		defaultPermission = true,
 	}: CommandArgs) {
 		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$
@@ -58,8 +58,8 @@ export default class SlashCommand
 		this.#description = description;
 		this.#defaultPermission = defaultPermission;
 		this.options = new Map();
-		this.onInteraction = onInteraction;
-		this.onAutocomplete = onAutocomplete;
+		this.handler = handler;
+		this.autocomplete = autocomplete;
 
 		options?.forEach((option) => {
 			const key = option.name.toLowerCase();

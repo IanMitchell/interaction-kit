@@ -88,7 +88,7 @@ function handleApplicationCommandInteraction(
 		);
 
 		console.log(`Handling ${interaction.name}`);
-		command.onInteraction(interaction, application);
+		command.handler(interaction, application);
 	} else if (isContextMenuApplicationCommandInteraction(json)) {
 		const interaction = new ContextMenuInteraction(
 			application,
@@ -98,7 +98,7 @@ function handleApplicationCommandInteraction(
 		);
 
 		console.log(`Handling ${interaction.name}`);
-		command.onInteraction(interaction, application);
+		command.handler(interaction, application);
 	} else {
 		throw new Error(
 			// @ts-expect-error TS doesn't think this will happen, but theoretically it can
@@ -130,7 +130,7 @@ function handleMessageComponentInteraction(
 		);
 
 		console.log(`Handling ${interaction.customID}`);
-		component.onInteraction(interaction, application);
+		component.handler(interaction, application);
 	} else if (
 		isMessageComponentSelectMenuInteraction(json) &&
 		isSelectComponent(component)
@@ -143,7 +143,7 @@ function handleMessageComponentInteraction(
 		);
 
 		console.log(`Handling ${interaction.customID}`);
-		component.onInteraction(interaction, application);
+		component.handler(interaction, application);
 	} else {
 		throw new Error(
 			`Unknown Interaction Component type (${
@@ -208,11 +208,11 @@ export function handler(
 
 			if (
 				isAutocompleteExecutableOption(option) &&
-				option.onAutocomplete != null
+				option.autocomplete != null
 			) {
-				option.onAutocomplete(interaction, application);
+				option.autocomplete(interaction, application);
 			} else {
-				command?.onAutocomplete?.(interaction, application);
+				command?.autocomplete?.(interaction, application);
 			}
 
 			break;

@@ -5,10 +5,7 @@ import { SelectOptionList } from "../commands/options";
 import { APISelectMenuComponent, ComponentType } from "discord-api-types/v9";
 
 type SelectArgs = {
-	onInteraction: (
-		event: SelectInteraction,
-		application: Application
-	) => unknown;
+	handler: (event: SelectInteraction, application: Application) => unknown;
 	customID: APISelectMenuComponent["custom_id"];
 	min: APISelectMenuComponent["min_values"];
 	max: APISelectMenuComponent["max_values"];
@@ -33,7 +30,7 @@ export default class Select
 	#min: APISelectMenuComponent["min_values"];
 	#max: APISelectMenuComponent["max_values"];
 	#disabled: APISelectMenuComponent["disabled"];
-	onInteraction: SelectArgs["onInteraction"];
+	handler: SelectArgs["handler"];
 
 	constructor({
 		customID,
@@ -42,7 +39,7 @@ export default class Select
 		min,
 		max,
 		disabled,
-		onInteraction,
+		handler,
 	}: SelectArgs) {
 		this.#customID = customID;
 		this.options = options;
@@ -50,7 +47,7 @@ export default class Select
 		this.#min = min;
 		this.#max = max;
 		this.#disabled = disabled;
-		this.onInteraction = onInteraction;
+		this.handler = handler;
 	}
 
 	get id() {
@@ -86,8 +83,8 @@ export default class Select
 		return this;
 	}
 
-	setInteractionHandler(fn: SelectArgs["onInteraction"]) {
-		this.onInteraction = fn;
+	setHandler(fn: SelectArgs["handler"]) {
+		this.handler = fn;
 		return this;
 	}
 

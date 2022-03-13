@@ -86,7 +86,7 @@ export interface Autocomplete<T extends ChoiceType> {
 }
 
 export interface Executable<T extends Interaction = Interaction> {
-	onInteraction: (
+	handler: (
 		interaction: T,
 		application: Application
 		// TODO: Add request?
@@ -99,7 +99,7 @@ export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
 		Serializable<RESTPostAPIApplicationCommandsJSONBody>,
 		Comparable<APIApplicationCommand> {
 	name: string;
-	onInteraction: (
+	handler: (
 		interaction: T,
 		application: Application
 		// TODO: Add request?
