@@ -95,7 +95,7 @@ export default class Select
 		return this;
 	}
 
-	setmatches(fn: SelectArgs["matches"]) {
+	setMatches(fn: SelectArgs["matches"]) {
 		this.matches = fn;
 		return this;
 	}

@@ -192,7 +192,7 @@ export class Button
 		return this;
 	}
 
-	setmatches(fn: ButtonArgs["matches"]) {
+	setMatches(fn: ButtonArgs["matches"]) {
 		this.matches = fn;
 		return this;
 	}
