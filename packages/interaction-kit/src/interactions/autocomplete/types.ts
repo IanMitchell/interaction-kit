@@ -8,6 +8,7 @@ import {
 export type AutocompleteInteractionTypes =
 	InteractionResponseType.ApplicationCommandAutocompleteResult;
 
+// 🥺 selects when, discord?
 export type AutocompleteTypes = SlashCommandAutocompleteType;
 
 export type SlashCommandAutocompleteType =
