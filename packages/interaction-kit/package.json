@@ -30,6 +30,8 @@
 		"@discordjs/builders": "^0.11.0",
 		"@discordjs/rest": "^0.3.0",
 		"arg": "^5.0.1",
+		"boxen": "6.2.1",
+		"chalk": "^5.0.1",
 		"chokidar": "^3.5.2",
 		"cross-spawn": "^7.0.3",
 		"discord-api-types": "0.29.0",

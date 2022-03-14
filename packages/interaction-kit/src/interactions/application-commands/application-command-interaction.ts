@@ -90,6 +90,8 @@ export default class ApplicationCommandInteraction implements Interaction {
 		}
 
 		if (embed != null) {
+			// @ts-expect-error discord-api-types and @discordjs/rest and @discordjs/builders
+			// version mismatch
 			payload.data.embeds = ([] as Embed[])
 				.concat(embed)
 				.map((item) => item.toJSON());

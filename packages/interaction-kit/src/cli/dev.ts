@@ -3,6 +3,8 @@ import chokidar from "chokidar";
 import arg from "arg";
 import spawn from "cross-spawn";
 import { ChildProcess } from "child_process";
+import chalk from "chalk";
+import boxen from "boxen";
 import { Snowflake } from "../structures/snowflake";
 import {
 	getApplicationEntrypoint,
@@ -90,7 +92,7 @@ export default async function dev(argv?: string[]) {
 
 	// Watch for changes requiring application reloads
 	const botWatcher = chokidar.watch(BOT_FILES, {
-		// ignoreInitial: true,
+		ignoreInitial: true,
 	});
 	const handler = async () => {
 		console.log("Reloading application");
@@ -135,7 +137,17 @@ export default async function dev(argv?: string[]) {
 			process.exit(0);
 		},
 	});
+	void handler();
 
 	console.log(`ngrok tunnel started for http://localhost:${port}\n${url}`);
 	console.log("Add this as your test bot thing. More info: <url>");
+	console.log(
+		boxen(`Set your Application Interactions URL to:\n${chalk.blue(url)}`, {
+			padding: 1,
+			margin: 1,
+			align: "center",
+			borderColor: "yellow",
+			borderStyle: "round",
+		})
+	);
 }
