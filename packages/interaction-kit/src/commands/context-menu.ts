@@ -1,4 +1,3 @@
-import Application from "../application";
 import { InteractionKitCommand } from "../interfaces";
 import {
 	APIApplicationCommand,
@@ -12,10 +11,7 @@ type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 	name: string;
 	type: T;
 	defaultPermission?: boolean;
-	onInteraction: (
-		interaction: ContextMenuInteraction<T>,
-		application: Application
-	) => void;
+	handler: InteractionKitCommand<ContextMenuInteraction<T>>["handler"];
 };
 
 export default class ContextMenu<T extends ContextMenuApplicationCommandType>
@@ -24,23 +20,19 @@ export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 	name: string;
 	type: T;
 	#defaultPermission: boolean;
-
-	onInteraction: (
-		interaction: ContextMenuInteraction<T>,
-		application: Application
-	) => unknown;
+	handler: InteractionKitCommand<ContextMenuInteraction<T>>["handler"];
 
 	constructor({
 		name,
 		type,
-		onInteraction,
+		handler,
 		defaultPermission = true,
 	}: ContextMenuArgs<T>) {
 		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$
 		this.name = name;
 		this.type = type;
 		this.#defaultPermission = defaultPermission;
-		this.onInteraction = onInteraction;
+		this.handler = handler;
 	}
 
 	equals(schema: APIApplicationCommand): boolean {

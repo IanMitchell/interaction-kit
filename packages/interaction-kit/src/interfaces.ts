@@ -16,30 +16,46 @@ import ActionRow from "./components/action-row";
 import type { Snowflake } from "./structures/snowflake";
 import { Choices, ChoiceType } from "./commands/options/choices";
 
+/**
+ * TypeScript Helpers
+ */
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type ArrayValue<T> = T extends Array<infer U> ? U : T;
 
 export type MapValue<T> = T extends Map<unknown, infer V> ? V : never;
 
-// TODO: Is there a better way of handling these next three types?
+/**
+ * Polyfills and HTTP Definitions
+ */
+
+export type Module<T> = {
+	default: T;
+};
+
 export interface FetchEvent extends Event {
 	request: Request;
 	respondWith(response: Promise<Response> | Response): Promise<Response>;
 }
+
 export type RequestBody<T = Record<string, any>> = T;
+
 export type ResponseHandler<T = Record<string, any>> = (
 	status: ResponseStatus,
 	json: T
 ) => Promise<void>;
 
+/**
+ * Discord Structures
+ */
+
 export interface Mentionable {
 	id: Snowflake;
 }
 
-export type Module<T> = {
-	default: T;
-};
+/**
+ * Internal Structures
+ */
 
 export interface Comparable<T> {
 	equals: (schema: T) => boolean;
@@ -87,12 +103,12 @@ export interface Autocomplete<T extends ChoiceType> {
 
 export interface Executable<T extends Interaction = Interaction> {
 	matches?: (customId: string) => Promise<boolean>;
-	onInteraction: (
+	handler: (
 		interaction: T,
 		application: Application
 		// TODO: Add request?
 		// request: Request
-	) => unknown;
+	) => Promise<void>;
 }
 
 export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
@@ -100,11 +116,11 @@ export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
 		Serializable<RESTPostAPIApplicationCommandsJSONBody>,
 		Comparable<APIApplicationCommand> {
 	name: string;
-	onInteraction: (
+	handler: (
 		interaction: T,
 		application: Application
 		// TODO: Add request?
 		// request: Request
-	) => unknown;
+	) => Promise<void>;
 	get type(): ApplicationCommandType;
 }

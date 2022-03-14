@@ -1,4 +1,3 @@
-import Application from "../application";
 import Option from "./options/option";
 import { InteractionKitCommand } from "../interfaces";
 import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
@@ -8,36 +7,26 @@ import {
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from "discord-api-types/v9";
 import SlashCommandAutocompleteInteraction from "../interactions/autocomplete/application-command-autocomplete";
+import { Autocomplete } from "../interactions/autocomplete/types";
 
 type CommandArgs = {
 	name: string;
 	description: string;
 	defaultPermission?: boolean;
 	options?: Option[];
-	onInteraction: (
-		interaction: SlashCommandInteraction,
-		application: Application
-	) => void;
-	onAutocomplete?: never;
+	handler: InteractionKitCommand<SlashCommandInteraction>["handler"];
+	autocomplete?: never;
 };
 
-type AutocompleteCommandArgs = {
-	name: string;
-	description: string;
-	defaultPermission?: boolean;
+type AutocompleteCommandArgs = CommandArgs & {
 	options?: never;
-	onInteraction: (
-		interaction: SlashCommandInteraction,
-		application: Application
-	) => void;
-	onAutocomplete?: (
-		interaction: SlashCommandAutocompleteInteraction,
-		application: Application
-	) => void;
+	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 };
 
 export default class SlashCommand
-	implements InteractionKitCommand<SlashCommandInteraction>
+	implements
+		InteractionKitCommand<SlashCommandInteraction>,
+		Autocomplete<SlashCommandAutocompleteInteraction>
 {
 	public readonly type = ApplicationCommandType.ChatInput;
 
@@ -46,22 +35,16 @@ export default class SlashCommand
 	#defaultPermission: boolean;
 	options: Map<string, Option>;
 
-	onInteraction: (
-		interaction: SlashCommandInteraction,
-		application: Application
-	) => void;
+	handler: InteractionKitCommand<SlashCommandInteraction>["handler"];
 
-	onAutocomplete?: (
-		interaction: SlashCommandAutocompleteInteraction,
-		application: Application
-	) => void;
+	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 
 	constructor({
 		name,
 		description,
 		options,
-		onInteraction,
-		onAutocomplete,
+		handler,
+		autocomplete,
 		defaultPermission = true,
 	}: CommandArgs | AutocompleteCommandArgs) {
 		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$
@@ -69,8 +52,8 @@ export default class SlashCommand
 		this.#description = description;
 		this.#defaultPermission = defaultPermission;
 		this.options = new Map();
-		this.onInteraction = onInteraction;
-		this.onAutocomplete = onAutocomplete;
+		this.handler = handler;
+		this.autocomplete = autocomplete;
 
 		options?.forEach((option) => {
 			const key = option.name.toLowerCase();

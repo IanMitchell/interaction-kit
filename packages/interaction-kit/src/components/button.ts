@@ -1,6 +1,5 @@
 import type { Executable, SerializableComponent } from "../interfaces";
 
-import Application from "../application";
 import ButtonInteraction from "../interactions/message-components/button-interaction";
 import {
 	APIBaseComponent,
@@ -35,11 +34,9 @@ type ButtonBaseArgs<T extends ButtonStyle> = Omit<
 > & { style: T };
 
 type ButtonArgs = {
-	onInteraction: (
-		event: ButtonInteraction,
-		application: Application
-	) => unknown;
 	customId: APIButtonComponentWithCustomId["custom_id"];
+	handler: Executable<ButtonInteraction>["handler"];
+	customID: APIButtonComponentWithCustomId["custom_id"];
 	style: Exclude<ButtonStyle, ButtonStyle.Link>;
 	matches?: Executable<ButtonInteraction>["matches"];
 } & ButtonBaseArgs<Exclude<ButtonStyle, ButtonStyle.Link>>;
@@ -146,11 +143,11 @@ export class Button
 	implements SerializableComponent, Executable<ButtonInteraction>
 {
 	#customId: ButtonArgs["customId"];
-	onInteraction: ButtonArgs["onInteraction"];
 	matches: ButtonArgs["matches"];
+	handler: ButtonArgs["handler"];
 
 	constructor({
-		onInteraction,
+		handler,
 		customId,
 		style,
 		matches,
@@ -165,8 +162,8 @@ export class Button
 			style: style ?? ButtonStyle.Primary,
 		});
 		this.#customId = customId;
-		this.onInteraction = onInteraction;
 		this.matches = matches;
+		this.handler = handler;
 
 		if (this.#customId == null) {
 			throw new Error("Custom ID is required");
@@ -187,8 +184,8 @@ export class Button
 		return this;
 	}
 
-	setInteractionHandler(fn: ButtonArgs["onInteraction"]) {
-		this.onInteraction = fn;
+	setHandler(fn: ButtonArgs["handler"]) {
+		this.handler = fn;
 		return this;
 	}
 

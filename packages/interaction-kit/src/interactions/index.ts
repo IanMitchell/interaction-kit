@@ -69,7 +69,7 @@ function isSelectComponent(
 	return component instanceof Select;
 }
 
-function handleApplicationCommandInteraction(
+async function handleApplicationCommandInteraction(
 	application: Application,
 	command: InteractionKitCommand<ApplicationCommandInteraction>,
 	json: RequestBody<APIApplicationCommandInteraction>,
@@ -84,8 +84,10 @@ function handleApplicationCommandInteraction(
 		);
 
 		console.log(`Handling ${interaction.name}`);
-		command.onInteraction(interaction, application);
-	} else if (isContextMenuApplicationCommandInteraction(json)) {
+		return command.handler(interaction, application);
+	}
+
+	if (isContextMenuApplicationCommandInteraction(json)) {
 		const interaction = new ContextMenuInteraction(
 			application,
 			command,
@@ -94,17 +96,17 @@ function handleApplicationCommandInteraction(
 		);
 
 		console.log(`Handling ${interaction.name}`);
-		command.onInteraction(interaction, application);
-	} else {
-		throw new Error(
-			// @ts-expect-error TS doesn't think this will happen, but theoretically it can
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
-			`Unknown Application Command type: ${json.data.type ?? "[unknown]"}`
-		);
+		return command.handler(interaction, application);
 	}
+
+	throw new Error(
+		// @ts-expect-error TS doesn't think this will happen, but theoretically it can
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
+		`Unknown Application Command type: ${json.data.type ?? "[unknown]"}`
+	);
 }
 
-function handleMessageComponentInteraction(
+async function handleMessageComponentInteraction(
 	application: Application,
 	component: ExecutableComponent,
 	json: RequestBody<APIMessageComponentInteraction>,
@@ -122,8 +124,10 @@ function handleMessageComponentInteraction(
 		);
 
 		console.log(`Handling ${interaction.customId}`);
-		component.onInteraction(interaction, application);
-	} else if (
+		return component.handler(interaction, application);
+	}
+
+	if (
 		isMessageComponentSelectMenuInteraction(json) &&
 		isSelectComponent(component)
 	) {
@@ -135,14 +139,15 @@ function handleMessageComponentInteraction(
 		);
 
 		console.log(`Handling ${interaction.customId}`);
-		component.onInteraction(interaction, application);
-	} else {
-		throw new Error(
-			`Unknown Interaction Component type (${
-				json.data.component_type ?? "[unknown]"
-			}) or component mismatch. `
-		);
+		return component.handler(interaction, application);
 	}
+
+	throw new Error(
+		`Unknown Interaction Component type (${
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
+			json.data.component_type ?? "[unknown]"
+		}) or component mismatch. `
+	);
 }
 
 export async function handler(
@@ -167,9 +172,12 @@ export async function handler(
 				throw new Error("Unknown Command");
 			}
 
-			handleApplicationCommandInteraction(application, command, json, respond);
-
-			break;
+			return handleApplicationCommandInteraction(
+				application,
+				command,
+				json,
+				respond
+			);
 		}
 
 		case InteractionType.ApplicationCommandAutocomplete: {
@@ -203,26 +211,29 @@ export async function handler(
 
 			if (
 				isAutocompleteExecutableOption(option) &&
-				option.onAutocomplete != null
+				option.autocomplete != null
 			) {
-				option.onAutocomplete(interaction, application);
-			} else {
-				command?.onAutocomplete?.(interaction, application);
+				return option.autocomplete(interaction, application);
 			}
 
-			break;
+			return command?.autocomplete?.(interaction, application);
 		}
 
 		case InteractionType.MessageComponent: {
-			const component = application.getComponent(json.data.custom_id) 
-				?? await application.findComponent(json.data.custom_id);
+			const component =
+				application.getComponent(json.data.custom_id) ??
+				(await application.findComponent(json.data.custom_id));
 
 			if (component == null) {
 				throw new Error("Could not find matching component");
 			}
 
-			handleMessageComponentInteraction(application, component, json, respond);
-			break;
+			return handleMessageComponentInteraction(
+				application,
+				component,
+				json,
+				respond
+			);
 		}
 
 		default:

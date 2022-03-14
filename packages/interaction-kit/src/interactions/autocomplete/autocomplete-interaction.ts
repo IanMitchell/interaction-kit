@@ -1,6 +1,6 @@
 import Application from "../../application";
 import { Autocomplete, RequestBody, ResponseHandler } from "../../interfaces";
-import { AutocompleteInteractionTypes } from "./types";
+import { AutocompleteInteractionResponseTypes } from "./types";
 import {
 	APIApplicationCommandAutocompleteInteraction,
 	APIApplicationCommandAutocompleteResponse,
@@ -38,7 +38,7 @@ export default class AutocompleteInteraction<
 	public readonly member: APIInteractionGuildMember | undefined;
 
 	readonly #application: Application;
-	readonly #type: AutocompleteInteractionTypes;
+	readonly #type: AutocompleteInteractionResponseTypes;
 
 	constructor(
 		application: Application,
@@ -46,7 +46,7 @@ export default class AutocompleteInteraction<
 		// is the only type
 		json: RequestBody<APIApplicationCommandAutocompleteInteraction>,
 		respond: ResponseHandler,
-		type: AutocompleteInteractionTypes
+		type: AutocompleteInteractionResponseTypes
 	) {
 		this.#type = type;
 		this.#application = application;

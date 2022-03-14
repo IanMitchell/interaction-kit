@@ -2,35 +2,37 @@ import {
 	APIApplicationCommandIntegerOption,
 	ApplicationCommandOptionType,
 } from "discord-api-types/payloads/v9";
-import Application from "../../application";
 import SlashCommandAutocompleteInteraction from "../../interactions/autocomplete/application-command-autocomplete";
+import { Autocomplete } from "../../interactions/autocomplete/types";
 import { SlashChoiceList } from "./choices";
-import Option, { BaseOptionArgs, Autocomplete } from "./option";
+import Option, {
+	BaseOptionArgs,
+	AutocompleteCommandOptionType,
+} from "./option";
 
 interface IntegerOptionChoiceArgs extends BaseOptionArgs {
 	choices?: SlashChoiceList<number>;
-	onAutocomplete: never;
+	autocomplete: never;
 }
 
 interface IntegerAutocompleteArgs extends BaseOptionArgs {
 	choices: never;
-	onAutocomplete: (
-		interaction: SlashCommandAutocompleteInteraction,
-		application: Application
-	) => void;
+	autocomplete: NonNullable<
+		Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"]
+	>;
 }
 
-export default class IntegerOption extends Option {
+export default class IntegerOption
+	extends Option
+	implements Autocomplete<SlashCommandAutocompleteInteraction>
+{
 	public readonly choices?: SlashChoiceList<number>;
 
-	onAutocomplete?: (
-		interaction: SlashCommandAutocompleteInteraction,
-		application: Application
-	) => void;
+	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 
 	constructor({
 		choices,
-		onAutocomplete,
+		autocomplete,
 		name,
 		description,
 		required,
@@ -43,8 +45,8 @@ export default class IntegerOption extends Option {
 		});
 
 		/* eslint-disable-next-line no-negated-condition */
-		if (onAutocomplete != null) {
-			this.onAutocomplete = onAutocomplete;
+		if (autocomplete != null) {
+			this.autocomplete = autocomplete;
 		} else {
 			this.choices = choices;
 		}
@@ -52,16 +54,24 @@ export default class IntegerOption extends Option {
 
 	isAutocomplete(
 		_payload: APIApplicationCommandIntegerOption
-	): _payload is Autocomplete<ApplicationCommandOptionType.Integer> {
-		return this.onAutocomplete != null;
+	): _payload is AutocompleteCommandOptionType<ApplicationCommandOptionType.Integer> {
+		return this.autocomplete != null;
 	}
 
 	equals(schema: APIApplicationCommandIntegerOption): boolean {
 		if (schema.autocomplete) {
-			if (this.onAutocomplete == null) {
+			if (this.autocomplete == null) {
+				return false;
+			}
+
+			if (this.choices?._choices.size !== 0) {
 				return false;
 			}
 		} else {
+			if (this.autocomplete != null) {
+				return false;
+			}
+
 			if (
 				(this.choices?._choices?.size ?? 0) !== (schema.choices?.length ?? 0)
 			) {

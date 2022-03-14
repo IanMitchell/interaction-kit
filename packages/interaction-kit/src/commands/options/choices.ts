@@ -62,10 +62,7 @@ export class SlashChoiceList<
 	T extends APIApplicationCommandOptionChoice["value"]
 > extends Choices<APIApplicationCommandOptionChoice<T>> {
 	constructor(
-		choices: Record<
-			string,
-			T | (Omit<APIApplicationCommandOptionChoice, "value"> & { value: T })
-		>
+		choices: Record<string, T | APIApplicationCommandOptionChoice<T>>
 	) {
 		const values: Record<string, APIApplicationCommandOptionChoice<T>> = {};
 
