@@ -14,3 +14,6 @@ Give us a quick code demo, command, or another example that couldn't be solved w
 
 **Additional context**
 Add any other context about the request here!
+
+**Does this increase our chances of an iCrawl Acquisition?**
+If this increases our chance of acquisition, explain how!

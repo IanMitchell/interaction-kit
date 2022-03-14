@@ -1,20 +1,25 @@
-import type { Snowflake } from "../definitions";
-import { EPOCH } from "../definitions";
+export type Snowflake = `${bigint}`;
+
+export const EPOCH = 1420070400000n;
 
 /**
  * Snowflake structure is defined here:
  * https://discord.com/developers/docs/reference#snowflakes-snowflake-id-format-structure-left-to-right
  */
 
-export function getTimestamp(snowflake: Snowflake): Date {
-	return new Date(Number((BigInt(snowflake) >> BigInt(22)) + BigInt(EPOCH)));
+export function isSnowflake(id: string): id is Snowflake {
+	return BigInt(id).toString() === id;
 }
 
-export function getWorkerID(snowflake: Snowflake): number {
+export function getTimestamp(snowflake: Snowflake): Date {
+	return new Date(Number((BigInt(snowflake) >> BigInt(22)) + EPOCH));
+}
+
+export function getWorkerId(snowflake: Snowflake): number {
 	return Number((BigInt(snowflake) & BigInt(0x3e0000)) >> BigInt(17));
 }
 
-export function getProcessID(snowflake: Snowflake): number {
+export function getProcessId(snowflake: Snowflake): number {
 	return Number((BigInt(snowflake) & BigInt(0x1f000)) >> BigInt(12));
 }
 

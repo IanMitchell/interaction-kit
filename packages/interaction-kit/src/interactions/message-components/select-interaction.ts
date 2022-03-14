@@ -1,28 +1,28 @@
 import MessageComponentInteraction from "./message-component-interaction";
-import type { FastifyReply, FastifyRequest } from "fastify";
-import {
-	Interaction as InteractionDefinition,
-	SelectOption,
-} from "../../definitions";
 import Application from "../../application";
 import Select from "../../components/select";
+import type {
+	APIMessageComponentSelectMenuInteraction,
+	APISelectMenuOption,
+} from "discord-api-types/v9";
+import { RequestBody, ResponseHandler } from "../../interfaces";
 
 export default class SelectInteraction extends MessageComponentInteraction {
-	public readonly values: Set<SelectOption>;
+	public readonly values: Set<APISelectMenuOption>;
 
 	constructor(
 		application: Application,
 		component: Select,
-		request: FastifyRequest<{ Body: InteractionDefinition }>,
-		response: FastifyReply
+		json: RequestBody<APIMessageComponentSelectMenuInteraction>,
+		respond: ResponseHandler
 	) {
-		super(application, request, response);
+		super(application, json, respond);
 
-		const options: SelectOption[] =
-			request?.body?.data?.values
+		const options: APISelectMenuOption[] =
+			json.data?.values
 				?.map((value) => component.options._choices.get(value))
-				?.filter((value): value is SelectOption => value != null) ?? [];
+				?.filter((value): value is APISelectMenuOption => value != null) ?? [];
 
-		this.values = new Set<SelectOption>(options);
+		this.values = new Set<APISelectMenuOption>(options);
 	}
 }

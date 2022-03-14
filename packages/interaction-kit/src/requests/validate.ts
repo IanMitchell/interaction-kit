@@ -1,10 +1,15 @@
-import { webcrypto } from "crypto";
-import type { FastifyRequest } from "fastify";
-import { TextEncoder } from "util";
+import { webcrypto } from "node:crypto";
+import { TextEncoder } from "node:util";
 
 const encoder = new TextEncoder();
 
-export function hexToBinary(hex: string) {
+const KEYS: Record<string, CryptoKey> = {};
+
+export function hexToBinary(hex: string | null) {
+	if (hex == null) {
+		return new Uint8Array(0);
+	}
+
 	const buffer = new Uint8Array(Math.ceil(hex.length / 2));
 	for (let i = 0; i < buffer.length; i++) {
 		buffer[i] = parseInt(hex.substr(i * 2, 2), 16);
@@ -13,10 +18,14 @@ export function hexToBinary(hex: string) {
 	return buffer;
 }
 
-/* eslint-disable */
-export function getPublicKey(publicKey: string) {
-	// @ts-ignore ????
-	return webcrypto.subtle.importKey(
+async function getCryptoKey(publicKey: string) {
+	if (KEYS[publicKey] != null) {
+		return KEYS[publicKey];
+	}
+
+	/* eslint-disable */
+	// @ts-expect-error Unimplemented core TypeScript / Node types
+	const key = (await webcrypto.subtle.importKey(
 		"raw",
 		hexToBinary(publicKey),
 		{
@@ -26,27 +35,24 @@ export function getPublicKey(publicKey: string) {
 		},
 		true,
 		["verify"]
-	);
+	)) as CryptoKey;
+	/* eslint-enable */
+
+	KEYS[publicKey] = key;
+	return key;
 }
 
-export async function validateRequest(
-	request: FastifyRequest,
-	publicKey: string
-) {
-	const signature = hexToBinary(
-		request.headers["x-signature-ed25519"] as string
-	);
-	const timestamp = request.headers["x-signature-timestamp"] as string;
-	const body = request.rawBody as string;
+export async function isValidRequest(request: Request, publicKey: string) {
+	const key = await getCryptoKey(publicKey);
+	const signature = hexToBinary(request.headers.get("X-Signature-Ed25519"));
+	const timestamp = request.headers.get("X-Signature-Timestamp");
+	const body = await request.text();
 
-	const key = await getPublicKey(publicKey);
-
-	// @ts-ignore ????
-	const isVerified = await webcrypto.subtle.verify(
+	const isVerified = await crypto.subtle.verify(
 		"NODE-ED25519",
 		key,
 		signature,
-		encoder.encode(timestamp + body)
+		encoder.encode(`${timestamp ?? ""}${body}`)
 	);
 
 	if (signature == null || timestamp == null || body == null || !isVerified) {
@@ -55,4 +61,3 @@ export async function validateRequest(
 
 	return true;
 }
-/* eslint-enable */

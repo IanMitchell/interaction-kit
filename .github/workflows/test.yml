@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup-build
+      - uses: ./.github/actions/setup
       - name: Test
         run: |
           npm test --cache-dir=".turbo"

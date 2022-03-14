@@ -1,111 +1,47 @@
-import { URL } from "url";
 import Config from "./config";
-import Client from "discord-request";
+import rest from "./instance";
 import {
-	API_URL,
-	InteractionApplicationCommandCallbackData,
-	Snowflake,
-} from "../definitions";
-
-/**
- * https://discord.com/developers/docs/interactions/slash-commands#followup-messages
- */
+	RESTPostAPIInteractionFollowupJSONBody,
+	RESTPatchAPIInteractionFollowupJSONBody,
+	RESTDeleteAPIInteractionFollowupResult,
+	RESTPatchAPIInteractionFollowupResult,
+	Routes,
+	RESTPostAPIInteractionFollowupResult,
+} from "discord-api-types/v9";
 
 // TODO: Test, Type, Document
-export async function postWebhookMessage(
+export async function postInteractionFollowup(
 	interactionToken: string,
-	data: InteractionApplicationCommandCallbackData,
-	options: {
-		headers?: Record<string, string>;
-		applicationID?: Snowflake;
-	} = {}
+	data: RESTPostAPIInteractionFollowupJSONBody,
+	applicationId = Config.getApplicationId()
 ) {
-	const {
-		applicationID = Config.getApplicationID(),
-		headers = Config.getHeaders(),
-	} = options;
-
-	const url = new URL(
-		`${API_URL}/webhooks/${applicationID}/${interactionToken}`
-	);
-
-	return Client.post(
-		url,
-		{
-			headers,
-			body: JSON.stringify(data),
-		},
-		{
-			route: "[GET] /webhooks/{application.id}/{interaction.token}",
-			identifier: `${applicationID}${interactionToken}`,
-		}
-	);
+	return rest.post(Routes.webhook(applicationId, interactionToken), {
+		body: data,
+	}) as Promise<RESTPostAPIInteractionFollowupResult>;
 }
 
 // TODO: Test, Type, Document
-export async function patchWebhookMessage(
+export async function patchInteractionFollowup(
 	interactionToken: string,
 	id: string,
-	data: InteractionApplicationCommandCallbackData,
-	options: {
-		headers?: Record<string, string>;
-		applicationID?: string;
-	} = {}
+	data: RESTPatchAPIInteractionFollowupJSONBody,
+	applicationId = Config.getApplicationId()
 ) {
-	const {
-		applicationID = Config.getApplicationID(),
-		headers = Config.getHeaders(),
-	} = options;
-
-	const url = new URL(
-		`${API_URL}/webhooks/${applicationID}/${interactionToken}/messages/${id}`
-	);
-
-	return Client.patch(
-		url,
+	return rest.patch(
+		Routes.webhookMessage(applicationId, interactionToken, id),
 		{
-			headers,
-			body: JSON.stringify(data),
-		},
-		{
-			route: `[PATCH] /webhooks/{application.id}/{interaction.token}/messages/${
-				id === "@original" ? "@original" : "{message_id}"
-			}`,
-			identifier: `${applicationID}${interactionToken}`,
+			body: data,
 		}
-	);
+	) as Promise<RESTPatchAPIInteractionFollowupResult>;
 }
 
 // TODO: Test, Type, Document
-export async function deleteWebhookMessage(
+export async function deleteInteractionFollowup(
 	interactionToken: string,
 	id: string,
-	options: {
-		headers?: Record<string, string>;
-		applicationID?: string;
-	} = {}
-): Promise<boolean> {
-	const {
-		applicationID = Config.getApplicationID(),
-		headers = Config.getHeaders(),
-	} = options;
-
-	const url = new URL(
-		`${API_URL}/webhooks/${applicationID}/${interactionToken}/messages/${id}`
-	);
-
-	const response = await Client.delete(
-		url,
-		{
-			headers,
-		},
-		{
-			route: `[DELETE] /webhooks/{application.id}/{interaction.token}/messages/${
-				id === "@original" ? "@original" : "{message_id}"
-			}`,
-			identifier: `${applicationID}${interactionToken}`,
-		}
-	);
-
-	return response.ok;
+	applicationId = Config.getApplicationId()
+) {
+	return rest.delete(
+		Routes.webhookMessage(applicationId, interactionToken, id)
+	) as Promise<RESTDeleteAPIInteractionFollowupResult>;
 }

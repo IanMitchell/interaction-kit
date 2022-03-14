@@ -1,72 +1,76 @@
-import type { FastifyReply, FastifyRequest } from "fastify";
 import * as API from "../../api";
-import {
-	Interaction as InteractionDefinition,
-	InteractionApplicationCommandCallbackData,
-	InteractionCallbackDataFlags,
-	InteractionCallbackType,
-	InteractionRequestType,
-	InteractionResponse,
-	Snowflake,
-} from "../../definitions";
 import Application from "../../application";
 import {
 	Interaction,
 	InteractionMessageModifiers,
 	InteractionReply,
+	RequestBody,
+	ResponseHandler,
 	SerializableComponent,
 } from "../../interfaces";
-import Embed from "../../components/embed";
+import type { Snowflake } from "../../structures/snowflake";
 import { isActionRow } from "../../components/action-row";
+import {
+	APIInteractionGuildMember,
+	APIInteractionResponse,
+	APIMessage,
+	APIMessageComponentInteraction,
+	InteractionResponseType,
+	InteractionType,
+	MessageFlags,
+	RESTPatchAPIInteractionFollowupJSONBody,
+} from "discord-api-types/v9";
+import { ResponseStatus } from "../../requests/response";
+import { Embed } from "@discordjs/builders";
 
 export default class MessageComponentInteraction implements Interaction {
-	public readonly type = InteractionRequestType.MESSAGE_COMPONENT;
+	public readonly type = InteractionType.MessageComponent;
 	public readonly token: string;
-	public readonly response: FastifyReply;
-	public readonly customID: string;
+	public readonly respond: ResponseHandler;
+	public readonly customId: string;
 	public readonly messages: InteractionMessageModifiers;
 	readonly #application: Application;
 	#replied: boolean;
 
 	// TODO: Convert these into Records
-	public readonly channelID: Snowflake | undefined;
-	public readonly guildID: Snowflake | undefined;
-	public readonly member: Record<string, unknown> | undefined;
-	public readonly message: Record<string, unknown> | undefined;
+	public readonly channelId: Snowflake | undefined;
+	public readonly guildId: Snowflake | undefined;
+	public readonly member: APIInteractionGuildMember | undefined;
+	public readonly message: APIMessage | undefined;
 
 	constructor(
 		application: Application,
-		request: FastifyRequest<{ Body: InteractionDefinition }>,
-		response: FastifyReply
+		json: RequestBody<APIMessageComponentInteraction>,
+		respond: ResponseHandler
 	) {
 		this.#application = application;
-		this.response = response;
-		this.token = request.body.token;
-		this.customID = request?.body?.data?.custom_id ?? "";
+		this.respond = respond;
+		this.token = json.token;
+		this.customId = json.data?.custom_id ?? "";
 
 		// TODO: Make these records
-		this.channelID = request.body.channel_id;
-		this.guildID = request.body.guild_id;
-		this.member = request.body.member;
-		this.message = request.body.message;
+		this.channelId = json.channel_id as Snowflake;
+		this.guildId = json.guild_id as Snowflake;
+		this.member = json.member;
+		this.message = json.message;
 
 		// TODO: Rename?
 		this.messages = {
 			edit: async (
-				data: InteractionApplicationCommandCallbackData,
+				data: RESTPatchAPIInteractionFollowupJSONBody,
 				id = "@original"
-			) => API.patchWebhookMessage(this.token, id, data),
+			) => API.patchInteractionFollowup(this.token, id, data),
 
 			delete: async (id = "@original") =>
-				API.deleteWebhookMessage(this.token, id),
+				API.deleteInteractionFollowup(this.token, id),
 		};
 
 		this.#replied = false;
 	}
 
-	defer() {
-		return this.response.status(200).send({
-			type: InteractionCallbackType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE,
+	async defer() {
+		return this.respond(ResponseStatus.OK, {
+			type: InteractionResponseType.DeferredChannelMessageWithSource,
 		});
 	}
 
@@ -77,20 +81,23 @@ export default class MessageComponentInteraction implements Interaction {
 		ephemeral = false,
 		queue = false,
 	}: InteractionReply) {
-		const data: InteractionResponse["data"] = {};
+		const payload: APIInteractionResponse = {
+			type: InteractionResponseType.ChannelMessageWithSource,
+			data: {},
+		};
 
 		if (message != null) {
-			data.content = message;
+			payload.data.content = message;
 		}
 
 		if (ephemeral) {
-			data.flags = InteractionCallbackDataFlags.EPHEMERAL;
+			payload.data.flags = MessageFlags.Ephemeral;
 		}
 
 		if (embed != null) {
-			data.embeds = ([] as Embed[])
+			payload.data.embeds = ([] as Embed[])
 				.concat(embed)
-				.map((item) => item.serialize());
+				.map((item) => item.toJSON());
 		}
 
 		if (components != null) {
@@ -104,25 +111,21 @@ export default class MessageComponentInteraction implements Interaction {
 				}
 			});
 
-			data.components = ([] as SerializableComponent[])
-				.concat(components)
-				.map((component) => component.serialize());
+			payload.data.components = components?.map((component) =>
+				component.serialize()
+			);
 		}
-
-		const payload: InteractionResponse = {
-			type: InteractionCallbackType.CHANNEL_MESSAGE_WITH_SOURCE,
-			data,
-		};
 
 		if (!this.#replied && !queue) {
 			this.#replied = true;
-			await this.response.status(200).send(payload);
+			await this.respond(ResponseStatus.OK, payload);
 			return "@original";
 		}
 
-		// TODO: Verified this sends the ID back (we probably need to extract it)
-		const id = await API.postWebhookMessage(this.token, data);
-
-		return id;
+		const responseData = await API.postInteractionFollowup(
+			this.token,
+			payload.data
+		);
+		return responseData.id;
 	}
 }

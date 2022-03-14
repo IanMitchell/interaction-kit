@@ -18,11 +18,6 @@ export default async function command(argv?: string[]) {
 		command.serialize()
 	);
 
-	await API.putGlobalApplicationCommands(serializedCommands, {
-		applicationID: application.id,
-	});
-
-	// TODO: Enable once Guild Commands are figured out
-
+	await API.putGlobalApplicationCommands(serializedCommands, application.id);
 	process.exit(0);
 }

@@ -1,32 +1,17 @@
-import { URL } from "url";
-import Client from "discord-request";
-import Config from "./config";
-import { API_URL, Snowflake } from "../definitions";
+import rest from "./instance";
+import type { Snowflake } from "../structures/snowflake";
+import { RESTGetAPIGuildResult, Routes } from "discord-api-types/v9";
 
 // TODO: Test, Type, Document
 export async function getGuild(
 	id: Snowflake,
 	options: {
-		headers?: Record<string, string>;
 		counts?: boolean;
 	} = {}
 ) {
-	const { headers = Config.getHeaders(), counts = false } = options;
+	const { counts = false } = options;
 
-	const url = new URL(`${API_URL}/guilds/${id}`);
-
-	if (counts) {
-		url.searchParams.set("with_counts", "true");
-	}
-
-	return Client.get(
-		url,
-		{
-			headers,
-		},
-		{
-			route: "[GET] /guilds/{guild.id}",
-			identifier: id,
-		}
-	);
+	return rest.get(Routes.guild(id), {
+		query: new URLSearchParams({ with_counts: String(counts) }),
+	}) as Promise<RESTGetAPIGuildResult>;
 }
