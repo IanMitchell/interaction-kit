@@ -9,13 +9,17 @@ import {
 import SlashCommandAutocompleteInteraction from "../interactions/autocomplete/application-command-autocomplete";
 import { Autocomplete } from "../interactions/autocomplete/types";
 
-// TODO: options OR autocomplete
 type CommandArgs = {
 	name: string;
 	description: string;
 	defaultPermission?: boolean;
 	options?: Option[];
 	handler: InteractionKitCommand<SlashCommandInteraction>["handler"];
+	autocomplete?: never;
+};
+
+type AutocompleteCommandArgs = CommandArgs & {
+	options?: never;
 	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 };
 
@@ -42,7 +46,7 @@ export default class SlashCommand
 		handler,
 		autocomplete,
 		defaultPermission = true,
-	}: CommandArgs) {
+	}: CommandArgs | AutocompleteCommandArgs) {
 		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$
 		this.name = name;
 		this.#description = description;

@@ -4,8 +4,9 @@ import { SelectOptionList } from "../commands/options";
 import { APISelectMenuComponent, ComponentType } from "discord-api-types/v9";
 
 type SelectArgs = {
+	matches?: Executable<SelectInteraction>["matches"];
+	customId: APISelectMenuComponent["custom_id"];
 	handler: Executable<SelectInteraction>["handler"];
-	customID: APISelectMenuComponent["custom_id"];
 	min: APISelectMenuComponent["min_values"];
 	max: APISelectMenuComponent["max_values"];
 	options: SelectOptionList;
@@ -24,41 +25,44 @@ export default class Select
 	implements SerializableComponent, Executable<SelectInteraction>
 {
 	options: SelectArgs["options"];
-	#customID: APISelectMenuComponent["custom_id"];
+	#customId: APISelectMenuComponent["custom_id"];
 	#placeholder: APISelectMenuComponent["placeholder"];
 	#min: APISelectMenuComponent["min_values"];
 	#max: APISelectMenuComponent["max_values"];
 	#disabled: APISelectMenuComponent["disabled"];
+	matches: SelectArgs["matches"];
 	handler: SelectArgs["handler"];
 
 	constructor({
-		customID,
+		customId,
 		options,
 		placeholder,
 		min,
 		max,
 		disabled,
+		matches,
 		handler,
 	}: SelectArgs) {
-		this.#customID = customID;
+		this.#customId = customId;
 		this.options = options;
 		this.#placeholder = placeholder;
 		this.#min = min;
 		this.#max = max;
 		this.#disabled = disabled;
+		this.matches = matches;
 		this.handler = handler;
 	}
 
 	get id() {
-		return this.#customID;
+		return this.#customId;
 	}
 
 	get type() {
 		return ComponentType.SelectMenu;
 	}
 
-	setCustomID(customID: SelectArgs["customID"]) {
-		this.#customID = customID;
+	setCustomId(customId: SelectArgs["customId"]) {
+		this.#customId = customId;
 		return this;
 	}
 
@@ -87,10 +91,15 @@ export default class Select
 		return this;
 	}
 
+	setMatches(fn: SelectArgs["matches"]) {
+		this.matches = fn;
+		return this;
+	}
+
 	serialize(): APISelectMenuComponent {
 		const payload: APISelectMenuComponent = {
 			type: ComponentType.SelectMenu,
-			custom_id: this.#customID,
+			custom_id: this.#customId,
 			options: this.options.serialize(),
 		};
 

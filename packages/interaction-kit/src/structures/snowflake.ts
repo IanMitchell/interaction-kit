@@ -15,11 +15,11 @@ export function getTimestamp(snowflake: Snowflake): Date {
 	return new Date(Number((BigInt(snowflake) >> BigInt(22)) + EPOCH));
 }
 
-export function getWorkerID(snowflake: Snowflake): number {
+export function getWorkerId(snowflake: Snowflake): number {
 	return Number((BigInt(snowflake) & BigInt(0x3e0000)) >> BigInt(17));
 }
 
-export function getProcessID(snowflake: Snowflake): number {
+export function getProcessId(snowflake: Snowflake): number {
 	return Number((BigInt(snowflake) & BigInt(0x1f000)) >> BigInt(12));
 }
 

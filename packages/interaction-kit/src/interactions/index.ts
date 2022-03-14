@@ -71,14 +71,10 @@ function isSelectComponent(
 
 async function handleApplicationCommandInteraction(
 	application: Application,
-	command: InteractionKitCommand<ApplicationCommandInteraction> | undefined,
+	command: InteractionKitCommand<ApplicationCommandInteraction>,
 	json: RequestBody<APIApplicationCommandInteraction>,
 	respond: ResponseHandler
 ) {
-	if (command == null) {
-		throw new Error("Unknown Command");
-	}
-
 	if (isChatInputApplicationCommandInteraction(json)) {
 		const interaction = new SlashCommandInteraction(
 			application,
@@ -112,14 +108,10 @@ async function handleApplicationCommandInteraction(
 
 async function handleMessageComponentInteraction(
 	application: Application,
-	component: ExecutableComponent | undefined,
+	component: ExecutableComponent,
 	json: RequestBody<APIMessageComponentInteraction>,
 	respond: ResponseHandler
 ) {
-	if (component == null) {
-		throw new Error("Unknown Component");
-	}
-
 	if (
 		isMessageComponentButtonInteraction(json) &&
 		isButtonComponent(component)
@@ -131,7 +123,7 @@ async function handleMessageComponentInteraction(
 			respond
 		);
 
-		console.log(`Handling ${interaction.customID}`);
+		console.log(`Handling ${interaction.customId}`);
 		return component.handler(interaction, application);
 	}
 
@@ -146,7 +138,7 @@ async function handleMessageComponentInteraction(
 			respond
 		);
 
-		console.log(`Handling ${interaction.customID}`);
+		console.log(`Handling ${interaction.customId}`);
 		return component.handler(interaction, application);
 	}
 
@@ -158,7 +150,7 @@ async function handleMessageComponentInteraction(
 	);
 }
 
-export function handler(
+export async function handler(
 	application: Application,
 	json: RequestBody<APIInteraction>,
 	respond: ResponseHandler
@@ -175,6 +167,10 @@ export function handler(
 			const command = application.getCommand(json.data.type, json.data.name) as
 				| InteractionKitCommand<ApplicationCommandInteraction>
 				| undefined;
+
+			if (command == null) {
+				throw new Error("Unknown Command");
+			}
 
 			return handleApplicationCommandInteraction(
 				application,
@@ -224,7 +220,13 @@ export function handler(
 		}
 
 		case InteractionType.MessageComponent: {
-			const component = application.getComponent(json.data.custom_id);
+			const component =
+				application.getComponent(json.data.custom_id) ??
+				(await application.findComponent(json.data.custom_id));
+
+			if (component == null) {
+				throw new Error("Could not find matching component");
+			}
 
 			return handleMessageComponentInteraction(
 				application,
@@ -235,9 +237,6 @@ export function handler(
 		}
 
 		default:
-			throw new Error(
-				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				`Unknown Interaction Type: ${json.type ?? "[unknown]"}`
-			);
+			throw new Error(`Unknown Interaction Type: ${json.type ?? "[unknown]"}`);
 	}
 }

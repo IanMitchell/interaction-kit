@@ -13,9 +13,9 @@ import {
 export async function postInteractionFollowup(
 	interactionToken: string,
 	data: RESTPostAPIInteractionFollowupJSONBody,
-	applicationID = Config.getApplicationID()
+	applicationId = Config.getApplicationId()
 ) {
-	return rest.post(Routes.webhook(applicationID, interactionToken), {
+	return rest.post(Routes.webhook(applicationId, interactionToken), {
 		body: data,
 	}) as Promise<RESTPostAPIInteractionFollowupResult>;
 }
@@ -25,10 +25,10 @@ export async function patchInteractionFollowup(
 	interactionToken: string,
 	id: string,
 	data: RESTPatchAPIInteractionFollowupJSONBody,
-	applicationID = Config.getApplicationID()
+	applicationId = Config.getApplicationId()
 ) {
 	return rest.patch(
-		Routes.webhookMessage(applicationID, interactionToken, id),
+		Routes.webhookMessage(applicationId, interactionToken, id),
 		{
 			body: data,
 		}
@@ -39,9 +39,9 @@ export async function patchInteractionFollowup(
 export async function deleteInteractionFollowup(
 	interactionToken: string,
 	id: string,
-	applicationID = Config.getApplicationID()
+	applicationId = Config.getApplicationId()
 ) {
 	return rest.delete(
-		Routes.webhookMessage(applicationID, interactionToken, id)
+		Routes.webhookMessage(applicationId, interactionToken, id)
 	) as Promise<RESTDeleteAPIInteractionFollowupResult>;
 }
