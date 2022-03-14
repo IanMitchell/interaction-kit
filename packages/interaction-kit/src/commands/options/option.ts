@@ -30,9 +30,9 @@ export type APIApplicationCommandInteractionDataAutocompleteOption =
 	| APIApplicationCommandInteractionDataNumberOption;
 
 export type AutocompleteOptionTypes =
-	| Autocomplete<ApplicationCommandOptionType.String>
-	| Autocomplete<ApplicationCommandOptionType.Number>
-	| Autocomplete<ApplicationCommandOptionType.Integer>;
+	| AutocompleteCommandOptionType<ApplicationCommandOptionType.String>
+	| AutocompleteCommandOptionType<ApplicationCommandOptionType.Number>
+	| AutocompleteCommandOptionType<ApplicationCommandOptionType.Integer>;
 
 export function isAutocompleteExecutableOption(
 	option: Option | undefined
@@ -69,10 +69,11 @@ export function isAutocompleteOption(
 	);
 }
 
-export type Autocomplete<T extends ApplicationCommandOptionType> =
-	APIApplicationCommandOptionBase<T> & {
-		autocomplete: true;
-	};
+export type AutocompleteCommandOptionType<
+	T extends ApplicationCommandOptionType
+> = APIApplicationCommandOptionBase<T> & {
+	autocomplete: true;
+};
 
 export default class Option
 	implements Serializable, Comparable<APIApplicationCommandOption>

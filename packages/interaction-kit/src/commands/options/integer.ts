@@ -3,9 +3,12 @@ import {
 	ApplicationCommandOptionType,
 } from "discord-api-types/payloads/v9";
 import SlashCommandAutocompleteInteraction from "../../interactions/autocomplete/application-command-autocomplete";
-import { RenameThisAutocompleteInterface } from "../../interactions/autocomplete/types";
+import { Autocomplete } from "../../interactions/autocomplete/types";
 import { SlashChoiceList } from "./choices";
-import Option, { BaseOptionArgs, Autocomplete } from "./option";
+import Option, {
+	BaseOptionArgs,
+	AutocompleteCommandOptionType,
+} from "./option";
 
 interface IntegerOptionChoiceArgs extends BaseOptionArgs {
 	choices?: SlashChoiceList<number>;
@@ -15,18 +18,17 @@ interface IntegerOptionChoiceArgs extends BaseOptionArgs {
 interface IntegerAutocompleteArgs extends BaseOptionArgs {
 	choices: never;
 	autocomplete: NonNullable<
-		RenameThisAutocompleteInterface<SlashCommandAutocompleteInteraction>["autocomplete"]
+		Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"]
 	>;
 }
 
 export default class IntegerOption
 	extends Option
-	implements
-		RenameThisAutocompleteInterface<SlashCommandAutocompleteInteraction>
+	implements Autocomplete<SlashCommandAutocompleteInteraction>
 {
 	public readonly choices?: SlashChoiceList<number>;
 
-	autocomplete?: RenameThisAutocompleteInterface<SlashCommandAutocompleteInteraction>["autocomplete"];
+	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 
 	constructor({
 		choices,
@@ -52,7 +54,7 @@ export default class IntegerOption
 
 	isAutocomplete(
 		_payload: APIApplicationCommandIntegerOption
-	): _payload is Autocomplete<ApplicationCommandOptionType.Integer> {
+	): _payload is AutocompleteCommandOptionType<ApplicationCommandOptionType.Integer> {
 		return this.autocomplete != null;
 	}
 
@@ -61,7 +63,15 @@ export default class IntegerOption
 			if (this.autocomplete == null) {
 				return false;
 			}
+
+			if (this.choices?._choices.size !== 0) {
+				return false;
+			}
 		} else {
+			if (this.autocomplete != null) {
+				return false;
+			}
+
 			if (
 				(this.choices?._choices?.size ?? 0) !== (schema.choices?.length ?? 0)
 			) {

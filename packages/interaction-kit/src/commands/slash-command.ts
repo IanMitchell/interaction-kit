@@ -7,7 +7,7 @@ import {
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from "discord-api-types/v9";
 import SlashCommandAutocompleteInteraction from "../interactions/autocomplete/application-command-autocomplete";
-import { RenameThisAutocompleteInterface } from "../interactions/autocomplete/types";
+import { Autocomplete } from "../interactions/autocomplete/types";
 
 // TODO: options OR autocomplete
 type CommandArgs = {
@@ -16,13 +16,13 @@ type CommandArgs = {
 	defaultPermission?: boolean;
 	options?: Option[];
 	handler: InteractionKitCommand<SlashCommandInteraction>["handler"];
-	autocomplete?: RenameThisAutocompleteInterface<SlashCommandAutocompleteInteraction>["autocomplete"];
+	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 };
 
 export default class SlashCommand
 	implements
 		InteractionKitCommand<SlashCommandInteraction>,
-		RenameThisAutocompleteInterface<SlashCommandAutocompleteInteraction>
+		Autocomplete<SlashCommandAutocompleteInteraction>
 {
 	public readonly type = ApplicationCommandType.ChatInput;
 
@@ -33,7 +33,7 @@ export default class SlashCommand
 
 	handler: InteractionKitCommand<SlashCommandInteraction>["handler"];
 
-	autocomplete?: RenameThisAutocompleteInterface<SlashCommandAutocompleteInteraction>["autocomplete"];
+	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 
 	constructor({
 		name,

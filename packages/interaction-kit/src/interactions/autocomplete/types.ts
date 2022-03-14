@@ -19,8 +19,6 @@ export type SlashCommandAutocompleteType =
 	| IntegerOption
 	| NumberOption;
 
-export interface RenameThisAutocompleteInterface<
-	T extends AutocompleteInteractionTypes
-> {
+export interface Autocomplete<T extends AutocompleteInteractionTypes> {
 	autocomplete?: (interaction: T, application: Application) => Promise<void>;
 }
