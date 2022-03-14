@@ -9,6 +9,7 @@ import {
 	InteractionKitCommand,
 	SerializableComponent,
 	Module,
+	MapValue,
 } from "./interfaces";
 import type { Snowflake } from "./structures/snowflake";
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
@@ -18,45 +19,34 @@ import { APIInteraction, ApplicationCommandType } from "discord-api-types/v9";
 import { isValidRequest } from "./requests/validate";
 
 type ApplicationArgs = {
-	applicationID: string;
+	applicationId: string;
 	publicKey: string;
 	token: string;
-	port?: number;
 };
 
-export interface CommandMap
-	extends Map<
-		ApplicationCommandType,
-		Map<
-			string,
-			| SlashCommand
-			| ContextMenu<ApplicationCommandType.Message>
-			| ContextMenu<ApplicationCommandType.User>
-		>
-	> {
-	get(key: ApplicationCommandType.ChatInput): Map<string, SlashCommand>;
-	get(
-		key: ApplicationCommandType.Message
-	): Map<string, ContextMenu<ApplicationCommandType.Message>>;
-	get(
-		key: ApplicationCommandType.User
-	): Map<string, ContextMenu<ApplicationCommandType.User>>;
-	get(
-		key: ApplicationCommandType
-	): Map<string, InteractionKitCommand<ApplicationCommandInteraction>>;
-}
+type CommandMap = {
+	[ApplicationCommandType.ChatInput]: Map<string, SlashCommand>;
+	[ApplicationCommandType.Message]: Map<
+		string,
+		ContextMenu<ApplicationCommandType.Message>
+	>;
+	[ApplicationCommandType.User]: Map<
+		string,
+		ContextMenu<ApplicationCommandType.User>
+	>;
+};
+
+type CommandMapValue<K extends keyof CommandMap> = MapValue<CommandMap[K]>;
 
 export default class Application {
-	#applicationID: Snowflake;
+	#applicationId: Snowflake;
 	#publicKey: string;
 	#token: string;
 	#commands: CommandMap;
-
 	#components: Map<string, ExecutableComponent> = new Map();
-	#port: number;
 
-	constructor({ applicationID, publicKey, token, port }: ApplicationArgs) {
-		if (!applicationID) {
+	constructor({ applicationId, publicKey, token }: ApplicationArgs) {
+		if (!applicationId) {
 			throw new Error(
 				"Please provide an Application ID. You can find this value <here>"
 			);
@@ -72,42 +62,48 @@ export default class Application {
 			throw new Error("Please provide a Token. You can find this value <here>");
 		}
 
-		this.#applicationID = applicationID as Snowflake;
+		this.#applicationId = applicationId as Snowflake;
 		this.#publicKey = publicKey;
 		this.#token = token as Snowflake;
-		this.#port = port ?? 3000;
 
 		// Set up internal data structures
-		this.#commands = new Map([
-			[ApplicationCommandType.ChatInput, new Map()],
-			[ApplicationCommandType.Message, new Map()],
-			[ApplicationCommandType.User, new Map()],
-		]) as CommandMap;
+		this.#commands = {
+			[ApplicationCommandType.ChatInput]: new Map(),
+			[ApplicationCommandType.Message]: new Map(),
+			[ApplicationCommandType.User]: new Map(),
+		};
 
 		// Configure API Defaults
 		Config.setToken(this.#token);
-		Config.setApplicationID(this.#applicationID);
+		Config.setApplicationId(this.#applicationId);
 	}
 
 	get id() {
-		return this.#applicationID;
+		return this.#applicationId;
 	}
 
 	get commands() {
-		return Array.from(this.#commands.values())
-			.map((map) => Array.from(map.values()))
+		return Object.values(this.#commands)
+			.map((map) => [...map.values()])
 			.flat();
 	}
 
 	addCommand(command: InteractionKitCommand<ApplicationCommandInteraction>) {
-		if (this.#commands.get(command.type)?.has(command.name.toLowerCase())) {
+		if (this.#commands[command.type]?.has(command.name.toLowerCase())) {
 			throw new Error(
 				`Error registering ${command.name.toLowerCase()}: Duplicate names are not allowed`
 			);
 		}
 
 		console.log(`Registering the ${command.name.toLowerCase()} command`);
-		this.#commands.get(command.type)?.set(command.name.toLowerCase(), command);
+
+		this.#commands[command.type].set(
+			command.name.toLowerCase(),
+			// TypeScript constraint due to command being all possible command types, it's difficult to type tersely
+			// https://canary.discord.com/channels/508357248330760243/746364189710483546/900780684690485300
+			command as never
+		);
+
 		return this;
 	}
 
@@ -116,6 +112,14 @@ export default class Application {
 	) {
 		commands.forEach((command) => this.addCommand(command));
 		return this;
+	}
+  
+  getCommand<T extends ApplicationCommandType>(
+		type: T,
+		name: string
+	): CommandMapValue<T> | undefined {
+		// I'm not sure why, but this needs to be cast to prevent an error
+		return this.#commands[type].get(name) as CommandMapValue<T> | undefined;
 	}
 
 	addComponent(component: SerializableComponent) {
@@ -131,12 +135,19 @@ export default class Application {
 		return this;
 	}
 
-	getComponent(customID: string) {
-		return this.#components.get(customID);
+	getComponent(customId: string) {
+		return this.#components.get(customId);
 	}
 
-	getCommand(type: ApplicationCommandType, name: string) {
-		return this.#commands.get(type).get(name);
+	async findComponent(customId: string) {
+		for (const component of this.#components.values()) {
+			const match = await component.matches?.(customId);
+			if (match) {
+				return component;
+			}
+		}
+
+		return undefined;
 	}
 
 	loadApplicationCommandDirectory(directory: string) {
@@ -203,7 +214,7 @@ export default class Application {
 
 		try {
 			const json = (await event.request.json()) as APIInteraction;
-			Interaction.handler(
+			void Interaction.handler(
 				this,
 				json,
 				async (status: ResponseStatus, json: Record<string, any>) => {

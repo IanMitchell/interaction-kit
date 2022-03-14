@@ -1,12 +1,12 @@
 import SelectInteraction from "../interactions/message-components/select-interaction";
-import Application from "../application";
 import { Executable, SerializableComponent } from "../interfaces";
-import { SelectOptionList } from "./choices";
+import { SelectOptionList } from "../commands/options";
 import { APISelectMenuComponent, ComponentType } from "discord-api-types/v9";
 
 type SelectArgs = {
-	handler: (event: SelectInteraction, application: Application) => unknown;
-	customID: APISelectMenuComponent["custom_id"];
+	matches?: Executable<SelectInteraction>["matches"];
+	customId: APISelectMenuComponent["custom_id"];
+	handler: Executable<SelectInteraction>["handler"];
 	min: APISelectMenuComponent["min_values"];
 	max: APISelectMenuComponent["max_values"];
 	options: SelectOptionList;
@@ -25,33 +25,44 @@ export default class Select
 	implements SerializableComponent, Executable<SelectInteraction>
 {
 	options: SelectArgs["options"];
-	#customID: APISelectMenuComponent["custom_id"];
+	#customId: APISelectMenuComponent["custom_id"];
 	#placeholder: APISelectMenuComponent["placeholder"];
 	#min: APISelectMenuComponent["min_values"];
 	#max: APISelectMenuComponent["max_values"];
 	#disabled: APISelectMenuComponent["disabled"];
+	matches: SelectArgs["matches"];
 	handler: SelectArgs["handler"];
 
-	constructor(options: SelectArgs) {
-		this.#customID = options.customID;
-		this.options = options.options;
-		this.#placeholder = options.placeholder;
-		this.#min = options.min;
-		this.#max = options.max;
-		this.#disabled = options.disabled;
-		this.handler = options.handler;
+	constructor({
+		customId,
+		options,
+		placeholder,
+		min,
+		max,
+		disabled,
+		matches,
+		handler,
+	}: SelectArgs) {
+		this.#customId = customId;
+		this.options = options;
+		this.#placeholder = placeholder;
+		this.#min = min;
+		this.#max = max;
+		this.#disabled = disabled;
+		this.matches = matches;
+		this.handler = handler;
 	}
 
 	get id() {
-		return this.#customID;
+		return this.#customId;
 	}
 
 	get type() {
 		return ComponentType.SelectMenu;
 	}
 
-	setCustomID(customID: SelectArgs["customID"]) {
-		this.#customID = customID;
+	setCustomId(customId: SelectArgs["customId"]) {
+		this.#customId = customId;
 		return this;
 	}
 
@@ -80,10 +91,15 @@ export default class Select
 		return this;
 	}
 
+	setMatches(fn: SelectArgs["matches"]) {
+		this.matches = fn;
+		return this;
+	}
+
 	serialize(): APISelectMenuComponent {
 		const payload: APISelectMenuComponent = {
 			type: ComponentType.SelectMenu,
-			custom_id: this.#customID,
+			custom_id: this.#customId,
 			options: this.options.serialize(),
 		};
 

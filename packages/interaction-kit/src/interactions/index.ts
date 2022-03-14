@@ -12,6 +12,7 @@ import {
 	ResponseHandler,
 } from "../interfaces";
 import { ApplicationCommandInteraction, PingInteraction } from "..";
+import SlashCommandAutocompleteInteraction from "./autocomplete/application-command-autocomplete";
 import {
 	APIApplicationCommandInteraction,
 	APIChatInputApplicationCommandInteraction,
@@ -24,6 +25,10 @@ import {
 	APIMessageComponentButtonInteraction,
 	APIMessageComponentSelectMenuInteraction,
 } from "discord-api-types/v9";
+import {
+	isAutocompleteExecutableOption,
+	isAutocompleteOption,
+} from "../commands/options/option";
 
 function isChatInputApplicationCommandInteraction(
 	interaction: APIApplicationCommandInteraction
@@ -46,22 +51,30 @@ function isMessageComponentButtonInteraction(
 	return interaction.data.component_type === ComponentType.Button;
 }
 
+function isButtonComponent(
+	component: ExecutableComponent
+): component is Button {
+	return component instanceof Button;
+}
+
 function isMessageComponentSelectMenuInteraction(
 	interaction: APIMessageComponentInteraction
 ): interaction is APIMessageComponentSelectMenuInteraction {
 	return interaction.data.component_type === ComponentType.SelectMenu;
 }
 
-function handleApplicationCommandInteraction(
+function isSelectComponent(
+	component: ExecutableComponent
+): component is Select {
+	return component instanceof Select;
+}
+
+async function handleApplicationCommandInteraction(
 	application: Application,
-	command: InteractionKitCommand<ApplicationCommandInteraction> | undefined,
+	command: InteractionKitCommand<ApplicationCommandInteraction>,
 	json: RequestBody<APIApplicationCommandInteraction>,
 	respond: ResponseHandler
 ) {
-	if (command == null) {
-		throw new Error("Unknown Command");
-	}
-
 	if (isChatInputApplicationCommandInteraction(json)) {
 		const interaction = new SlashCommandInteraction(
 			application,
@@ -71,8 +84,10 @@ function handleApplicationCommandInteraction(
 		);
 
 		console.log(`Handling ${interaction.name}`);
-		command.handler(interaction, application);
-	} else if (isContextMenuApplicationCommandInteraction(json)) {
+		return command.handler(interaction, application);
+	}
+
+	if (isContextMenuApplicationCommandInteraction(json)) {
 		const interaction = new ContextMenuInteraction(
 			application,
 			command,
@@ -81,57 +96,61 @@ function handleApplicationCommandInteraction(
 		);
 
 		console.log(`Handling ${interaction.name}`);
-		command.handler(interaction, application);
-	} else {
-		throw new Error(
-			// @ts-expect-error TS doesn't think this will happen, but theoretically it can
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
-			`Unknown Application Command type: ${json.data.type ?? "[unknown]"}`
-		);
+		return command.handler(interaction, application);
 	}
+
+	throw new Error(
+		// @ts-expect-error TS doesn't think this will happen, but theoretically it can
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
+		`Unknown Application Command type: ${json.data.type ?? "[unknown]"}`
+	);
 }
 
-function handleMessageComponentInteraction(
+async function handleMessageComponentInteraction(
 	application: Application,
-	component: ExecutableComponent | undefined,
+	component: ExecutableComponent,
 	json: RequestBody<APIMessageComponentInteraction>,
 	respond: ResponseHandler
 ) {
-	if (component == null) {
-		throw new Error("Unknown Component");
-	}
-
-	if (isMessageComponentButtonInteraction(json)) {
+	if (
+		isMessageComponentButtonInteraction(json) &&
+		isButtonComponent(component)
+	) {
 		const interaction = new ButtonInteraction(
 			application,
-			component as Button,
+			component,
 			json,
 			respond
 		);
 
-		console.log(`Handling ${interaction.customID}`);
-		(component as Button).handler(interaction, application);
-	} else if (isMessageComponentSelectMenuInteraction(json)) {
+		console.log(`Handling ${interaction.customId}`);
+		return component.handler(interaction, application);
+	}
+
+	if (
+		isMessageComponentSelectMenuInteraction(json) &&
+		isSelectComponent(component)
+	) {
 		const interaction = new SelectInteraction(
 			application,
-			component as Select,
+			component,
 			json,
 			respond
 		);
 
-		console.log(`Handling ${interaction.customID}`);
-		(component as Select).handler(interaction, application);
-	} else {
-		throw new Error(
-			`Unknown Interaction Component type: ${
-				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
-				json.data.component_type ?? "[unknown]"
-			}`
-		);
+		console.log(`Handling ${interaction.customId}`);
+		return component.handler(interaction, application);
 	}
+
+	throw new Error(
+		`Unknown Interaction Component type (${
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
+			json.data.component_type ?? "[unknown]"
+		}) or component mismatch. `
+	);
 }
 
-export function handler(
+export async function handler(
 	application: Application,
 	json: RequestBody<APIInteraction>,
 	respond: ResponseHandler
@@ -144,30 +163,80 @@ export function handler(
 		}
 
 		case InteractionType.ApplicationCommand: {
-			if (json.data.name == null) {
-				throw new Error("Received interaction without Name");
+			// Safe to cast, related to `application.ts#L103`
+			const command = application.getCommand(json.data.type, json.data.name) as
+				| InteractionKitCommand<ApplicationCommandInteraction>
+				| undefined;
+
+			if (command == null) {
+				throw new Error("Unknown Command");
 			}
 
-			const command = application.getCommand(json.data.type, json.data?.name);
-			handleApplicationCommandInteraction(application, command, json, respond);
-			break;
+			return handleApplicationCommandInteraction(
+				application,
+				command,
+				json,
+				respond
+			);
+		}
+
+		case InteractionType.ApplicationCommandAutocomplete: {
+			const command = application.getCommand(json.data.type, json.data.name);
+
+			if (command == null) {
+				throw new Error("Unknown Command");
+			}
+
+			const interaction = new SlashCommandAutocompleteInteraction(
+				application,
+				command,
+				json,
+				respond
+			);
+
+			console.log(`Handling ${interaction.name} Autocomplete`);
+			const focused = json.data.options.find((option) => {
+				if (isAutocompleteOption(option)) {
+					return option.focused;
+				}
+
+				return false;
+			});
+
+			if (focused == null) {
+				throw new Error("No focused option");
+			}
+
+			const option = command.options.get(focused.name);
+
+			if (
+				isAutocompleteExecutableOption(option) &&
+				option.autocomplete != null
+			) {
+				return option.autocomplete(interaction, application);
+			}
+
+			return command?.autocomplete?.(interaction, application);
 		}
 
 		case InteractionType.MessageComponent: {
-			if (json.data.custom_id == null) {
-				throw new Error("Received interaction without Custom ID");
+			const component =
+				application.getComponent(json.data.custom_id) ??
+				(await application.findComponent(json.data.custom_id));
+
+			if (component == null) {
+				throw new Error("Could not find matching component");
 			}
 
-			const component = application.getComponent(json.data.custom_id);
-
-			handleMessageComponentInteraction(application, component, json, respond);
-			break;
+			return handleMessageComponentInteraction(
+				application,
+				component,
+				json,
+				respond
+			);
 		}
 
 		default:
-			throw new Error(
-				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				`Unknown Interaction Type: ${json.type ?? "[unknown]"}`
-			);
+			throw new Error(`Unknown Interaction Type: ${json.type ?? "[unknown]"}`);
 	}
 }

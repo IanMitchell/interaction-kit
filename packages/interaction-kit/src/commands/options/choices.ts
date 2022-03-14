@@ -2,9 +2,11 @@ import {
 	APISelectMenuOption,
 	APIApplicationCommandOptionChoice,
 } from "discord-api-types/v9";
-import { Serializable } from "../interfaces";
+import { Serializable } from "../../interfaces";
 
-type ChoiceType = APIApplicationCommandOptionChoice | APISelectMenuOption;
+export type ChoiceType =
+	| APIApplicationCommandOptionChoice
+	| APISelectMenuOption;
 
 export class Choices<T extends ChoiceType> implements Serializable {
 	_choices: Map<string, T>;
@@ -58,14 +60,11 @@ export class SelectOptionList extends Choices<APISelectMenuOption> {
 
 export class SlashChoiceList<
 	T extends APIApplicationCommandOptionChoice["value"]
-> extends Choices<APIApplicationCommandOptionChoice> {
+> extends Choices<APIApplicationCommandOptionChoice<T>> {
 	constructor(
-		choices: Record<
-			string,
-			T | (Omit<APIApplicationCommandOptionChoice, "value"> & { value: T })
-		>
+		choices: Record<string, T | APIApplicationCommandOptionChoice<T>>
 	) {
-		const values: Record<string, APIApplicationCommandOptionChoice> = {};
+		const values: Record<string, APIApplicationCommandOptionChoice<T>> = {};
 
 		Object.entries(choices).forEach(([key, value]) => {
 			if (typeof value === "string") {

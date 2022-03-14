@@ -23,7 +23,7 @@ export default async function server(argv?: string[]) {
 		process.exit(0);
 	}
 
-	const guildID = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
+	const guildId = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
 
 	// Start application
 	const application = await getApplicationEntrypoint();
@@ -31,7 +31,7 @@ export default async function server(argv?: string[]) {
 	console.log("Checking for command updates in Development Server");
 	const devCommandChangeSet = await getGuildApplicationCommandChanges(
 		application,
-		guildID
+		guildId
 	);
 
 	console.log(
@@ -45,7 +45,7 @@ export default async function server(argv?: string[]) {
 	try {
 		if (devCommandChangeSet.hasChanges) {
 			await API.putGuildApplicationCommands(
-				guildID,
+				guildId,
 				serializedCommands,
 				application.id
 			);

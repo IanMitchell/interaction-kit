@@ -1,6 +1,5 @@
 import type { Executable, SerializableComponent } from "../interfaces";
 
-import Application from "../application";
 import ButtonInteraction from "../interactions/message-components/button-interaction";
 import {
 	APIBaseComponent,
@@ -35,9 +34,11 @@ type ButtonBaseArgs<T extends ButtonStyle> = Omit<
 > & { style: T };
 
 type ButtonArgs = {
-	handler: (event: ButtonInteraction, application: Application) => unknown;
+	customId: APIButtonComponentWithCustomId["custom_id"];
+	handler: Executable<ButtonInteraction>["handler"];
 	customID: APIButtonComponentWithCustomId["custom_id"];
 	style: Exclude<ButtonStyle, ButtonStyle.Link>;
+	matches?: Executable<ButtonInteraction>["matches"];
 } & ButtonBaseArgs<Exclude<ButtonStyle, ButtonStyle.Link>>;
 
 type ButtonLinkArgs = Omit<
@@ -51,11 +52,11 @@ abstract class ButtonBase<T extends ButtonStyle> {
 	#emoji: APIButtonComponent["emoji"];
 	#disabled: APIButtonComponent["disabled"];
 
-	constructor(options: ButtonBaseArgs<T>) {
-		this.#label = options.label;
-		this.#emoji = options.emoji;
-		this.#disabled = options.disabled;
-		this.#style = options.style;
+	constructor({ label, emoji, disabled, style }: ButtonBaseArgs<T>) {
+		this.#label = label;
+		this.#emoji = emoji;
+		this.#disabled = disabled;
+		this.#style = style;
 	}
 
 	get id(): SerializableComponent["id"] {
@@ -111,13 +112,15 @@ abstract class ButtonBase<T extends ButtonStyle> {
 export class ButtonLink extends ButtonBase<ButtonStyle.Link> {
 	#url: ButtonLinkArgs["url"];
 
-	constructor(options: ButtonLinkArgs) {
+	constructor({ disabled, emoji, label, url }: ButtonLinkArgs) {
 		super({
-			...options,
+			disabled,
+			emoji,
+			label,
 			style: ButtonStyle.Link,
 		});
 
-		this.#url = options?.url;
+		this.#url = url;
 	}
 
 	setURL(url: ButtonLinkArgs["url"]) {
@@ -139,28 +142,40 @@ export class Button
 	extends ButtonBase<Exclude<ButtonStyle, ButtonStyle.Link>>
 	implements SerializableComponent, Executable<ButtonInteraction>
 {
-	#customID: ButtonArgs["customID"];
+	#customId: ButtonArgs["customId"];
+	matches: ButtonArgs["matches"];
 	handler: ButtonArgs["handler"];
 
-	constructor(options: ButtonArgs) {
+	constructor({
+		handler,
+		customId,
+		style,
+		matches,
+		disabled,
+		emoji,
+		label,
+	}: ButtonArgs) {
 		super({
-			...options,
-			style: options?.style ?? ButtonStyle.Primary,
+			disabled,
+			emoji,
+			label,
+			style: style ?? ButtonStyle.Primary,
 		});
-		this.#customID = options.customID;
-		this.handler = options?.handler;
+		this.#customId = customId;
+		this.matches = matches;
+		this.handler = handler;
 
-		if (this.#customID == null) {
+		if (this.#customId == null) {
 			throw new Error("Custom ID is required");
 		}
 	}
 
 	get id() {
-		return this.#customID;
+		return this.#customId;
 	}
 
-	setCustomID(customID: ButtonArgs["customID"]) {
-		this.#customID = customID;
+	setCustomId(customId: ButtonArgs["customId"]) {
+		this.#customId = customId;
 		return this;
 	}
 
@@ -174,12 +189,17 @@ export class Button
 		return this;
 	}
 
+	setMatches(fn: ButtonArgs["matches"]) {
+		this.matches = fn;
+		return this;
+	}
+
 	serialize(): APIButtonComponentWithCustomId {
 		const base = super.serialize();
 
 		return {
 			...base,
-			custom_id: this.#customID,
+			custom_id: this.#customId,
 		};
 	}
 }

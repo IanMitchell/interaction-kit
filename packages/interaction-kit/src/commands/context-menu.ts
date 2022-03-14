@@ -1,4 +1,3 @@
-import Application from "../application";
 import { InteractionKitCommand } from "../interfaces";
 import {
 	APIApplicationCommand,
@@ -12,10 +11,7 @@ type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 	name: string;
 	type: T;
 	defaultPermission?: boolean;
-	handler: (
-		interaction: ContextMenuInteraction<T>,
-		application: Application
-	) => unknown;
+	handler: InteractionKitCommand<ContextMenuInteraction<T>>["handler"];
 };
 
 export default class ContextMenu<T extends ContextMenuApplicationCommandType>
@@ -24,10 +20,7 @@ export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 	name: string;
 	type: T;
 	#defaultPermission: boolean;
-	handler: (
-		interaction: ContextMenuInteraction<T>,
-		application: Application
-	) => unknown;
+	handler: InteractionKitCommand<ContextMenuInteraction<T>>["handler"];
 
 	constructor({
 		name,

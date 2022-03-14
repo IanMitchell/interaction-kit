@@ -14,29 +14,48 @@ import {
 } from "discord-api-types/v9";
 import ActionRow from "./components/action-row";
 import type { Snowflake } from "./structures/snowflake";
+import { Choices, ChoiceType } from "./commands/options/choices";
 
+/**
+ * TypeScript Helpers
+ */
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type ArrayValue<T> = T extends Array<infer U> ? U : T;
 
-// TODO: Is there a better way of handling these next three types?
+export type MapValue<T> = T extends Map<unknown, infer V> ? V : never;
+
+/**
+ * Polyfills and HTTP Definitions
+ */
+
+export type Module<T> = {
+	default: T;
+};
+
 export interface FetchEvent extends Event {
 	request: Request;
 	respondWith(response: Promise<Response> | Response): Promise<Response>;
 }
+
 export type RequestBody<T = Record<string, any>> = T;
-export type ResponseHandler = (
+
+export type ResponseHandler<T = Record<string, any>> = (
 	status: ResponseStatus,
-	json: Record<string, any>
+	json: T
 ) => Promise<void>;
+
+/**
+ * Discord Structures
+ */
 
 export interface Mentionable {
 	id: Snowflake;
 }
 
-export type Module<T> = {
-	default: T;
-};
+/**
+ * Internal Structures
+ */
 
 export interface Comparable<T> {
 	equals: (schema: T) => boolean;
@@ -78,13 +97,18 @@ export interface Interaction {
 	reply: (message: InteractionReply) => unknown;
 }
 
+export interface Autocomplete<T extends ChoiceType> {
+	reply: (options: Choices<T>) => unknown;
+}
+
 export interface Executable<T extends Interaction = Interaction> {
+	matches?: (customId: string) => Promise<boolean>;
 	handler: (
 		interaction: T,
 		application: Application
 		// TODO: Add request?
 		// request: Request
-	) => unknown;
+	) => Promise<void>;
 }
 
 export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
@@ -97,6 +121,6 @@ export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
 		application: Application
 		// TODO: Add request?
 		// request: Request
-	) => unknown;
+	) => Promise<void>;
 	get type(): ApplicationCommandType;
 }
