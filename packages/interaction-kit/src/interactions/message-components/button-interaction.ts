@@ -1,16 +1,16 @@
 import MessageComponentInteraction from "./message-component-interaction";
-import type { FastifyReply, FastifyRequest } from "fastify";
-import { Interaction as InteractionDefinition } from "../../definitions";
 import Application from "../../application";
 import { Button } from "../../components/button";
+import { RequestBody, ResponseHandler } from "../../interfaces";
+import { APIMessageComponentButtonInteraction } from "discord-api-types/v9";
 
 export default class ButtonInteraction extends MessageComponentInteraction {
 	constructor(
 		application: Application,
 		component: Button,
-		request: FastifyRequest<{ Body: InteractionDefinition }>,
-		response: FastifyReply
+		json: RequestBody<APIMessageComponentButtonInteraction>,
+		respond: ResponseHandler
 	) {
-		super(application, request, response);
+		super(application, json, respond);
 	}
 }

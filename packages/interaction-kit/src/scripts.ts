@@ -1,7 +1,9 @@
+import { APIApplicationCommand } from "discord-api-types/payloads/v9";
+import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/rest/v9";
 import path from "node:path";
 import * as API from "./api";
 import Application from "./application";
-import { ApplicationCommand, Snowflake } from "./definitions";
+import type { Snowflake } from "./structures/snowflake";
 
 export async function getApplicationEntrypoint(): Promise<Application> {
 	try {
@@ -20,14 +22,14 @@ export async function getApplicationEntrypoint(): Promise<Application> {
 
 function getChangeSet(
 	application: Application,
-	commandList: Map<string, ApplicationCommand>
+	commandList: Map<string, APIApplicationCommand>
 ) {
 	const changeSet = {
 		hasChanges: false,
-		newCommands: new Set<ApplicationCommand>(),
-		updatedCommands: new Set<ApplicationCommand>(),
-		deletedCommands: new Set<ApplicationCommand>(),
-		unchangedCommands: new Set<ApplicationCommand>(),
+		newCommands: new Set<RESTPostAPIApplicationCommandsJSONBody>(),
+		updatedCommands: new Set<RESTPostAPIApplicationCommandsJSONBody>(),
+		deletedCommands: new Set<RESTPostAPIApplicationCommandsJSONBody>(),
+		unchangedCommands: new Set<RESTPostAPIApplicationCommandsJSONBody>(),
 	};
 
 	// Compare all existing commands against registered ones
@@ -42,10 +44,8 @@ function getChangeSet(
 			}
 
 			if (command.equals(signature)) {
-				// @ts-expect-error ????
 				changeSet.unchangedCommands.add(command.serialize());
 			} else {
-				// @ts-expect-error ????
 				changeSet.updatedCommands.add(command.serialize());
 				changeSet.hasChanges = true;
 			}
@@ -54,7 +54,6 @@ function getChangeSet(
 		}
 		// If the command does not exist, we add it
 		else {
-			// @ts-expect-error ????
 			changeSet.newCommands.add(command.serialize());
 			changeSet.hasChanges = true;
 		}
@@ -73,20 +72,19 @@ function getChangeSet(
 export async function getGlobalApplicationCommandChanges(
 	application: Application
 ) {
-	const response = await API.getGlobalApplicationCommands({
-		applicationID: application.id,
-	});
+	const response = await API.getGlobalApplicationCommands(application.id);
 	const commandList = new Map(response.map((cmd) => [cmd.name, cmd]));
 	return getChangeSet(application, commandList);
 }
 
 export async function getGuildApplicationCommandChanges(
 	application: Application,
-	guildID: Snowflake
+	guildId: Snowflake
 ) {
-	const response = await API.getGuildApplicationCommands(guildID, {
-		applicationID: application.id,
-	});
+	const response = await API.getGuildApplicationCommands(
+		guildId,
+		application.id
+	);
 	const commandList = new Map(response.map((cmd) => [cmd.name, cmd]));
 	return getChangeSet(application, commandList);
 }

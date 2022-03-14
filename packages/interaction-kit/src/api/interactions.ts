@@ -1,27 +1,23 @@
 import Config from "./config";
 import rest from "./instance";
-import { Snowflake } from "../definitions";
 import {
 	RESTPostAPIInteractionFollowupJSONBody,
 	RESTPatchAPIInteractionFollowupJSONBody,
 	RESTDeleteAPIInteractionFollowupResult,
 	RESTPatchAPIInteractionFollowupResult,
 	Routes,
+	RESTPostAPIInteractionFollowupResult,
 } from "discord-api-types/v9";
-
-/**
- * https://discord.com/developers/docs/interactions/slash-commands#followup-messages
- */
 
 // TODO: Test, Type, Document
 export async function postInteractionFollowup(
 	interactionToken: string,
 	data: RESTPostAPIInteractionFollowupJSONBody,
-	applicationID: Snowflake = Config.getApplicationID()
+	applicationId = Config.getApplicationId()
 ) {
-	return rest.post(Routes.webhook(applicationID, interactionToken), {
+	return rest.post(Routes.webhook(applicationId, interactionToken), {
 		body: data,
-	}) as Promise<RESTPostAPIInteractionFollowupJSONBody>;
+	}) as Promise<RESTPostAPIInteractionFollowupResult>;
 }
 
 // TODO: Test, Type, Document
@@ -29,10 +25,10 @@ export async function patchInteractionFollowup(
 	interactionToken: string,
 	id: string,
 	data: RESTPatchAPIInteractionFollowupJSONBody,
-	applicationID: string = Config.getApplicationID()
+	applicationId = Config.getApplicationId()
 ) {
 	return rest.patch(
-		Routes.webhookMessage(applicationID, interactionToken, id),
+		Routes.webhookMessage(applicationId, interactionToken, id),
 		{
 			body: data,
 		}
@@ -43,9 +39,9 @@ export async function patchInteractionFollowup(
 export async function deleteInteractionFollowup(
 	interactionToken: string,
 	id: string,
-	applicationID: string = Config.getApplicationID()
+	applicationId = Config.getApplicationId()
 ) {
 	return rest.delete(
-		Routes.webhookMessage(applicationID, interactionToken, id)
+		Routes.webhookMessage(applicationId, interactionToken, id)
 	) as Promise<RESTDeleteAPIInteractionFollowupResult>;
 }

@@ -1,6 +1,8 @@
-import { ApplicationCommand, ApplicationCommandType } from "../definitions";
-import Application from "../application";
-import { InteractionKitCommand, Optional } from "../interfaces";
+import { InteractionKitCommand } from "../interfaces";
+import {
+	APIApplicationCommand,
+	RESTPostAPIContextMenuApplicationCommandsJSONBody,
+} from "discord-api-types/v9";
 import ContextMenuInteraction, {
 	ContextMenuApplicationCommandType,
 } from "../interactions/application-commands/context-menu-interaction";
@@ -9,25 +11,16 @@ type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 	name: string;
 	type: T;
 	defaultPermission?: boolean;
-	handler: (
-		interaction: ContextMenuInteraction<T>,
-		application: Application
-	) => unknown;
+	handler: InteractionKitCommand<ContextMenuInteraction<T>>["handler"];
 };
 
 export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 	implements InteractionKitCommand<ContextMenuInteraction<T>>
 {
-	static readonly USER = ApplicationCommandType.USER;
-	static readonly MESSAGE = ApplicationCommandType.MESSAGE;
-
 	name: string;
 	type: T;
 	#defaultPermission: boolean;
-	handler: (
-		interaction: ContextMenuInteraction<T>,
-		application: Application
-	) => unknown;
+	handler: InteractionKitCommand<ContextMenuInteraction<T>>["handler"];
 
 	constructor({
 		name,
@@ -42,7 +35,7 @@ export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 		this.handler = handler;
 	}
 
-	equals(schema: ApplicationCommand): boolean {
+	equals(schema: APIApplicationCommand): boolean {
 		if (
 			this.name !== schema.name ||
 			this.type !== schema.type ||
@@ -54,8 +47,8 @@ export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 		return true;
 	}
 
-	serialize(): Optional<ApplicationCommand, "id" | "application_id"> {
-		const payload: Optional<ApplicationCommand, "id" | "application_id"> = {
+	serialize(): RESTPostAPIContextMenuApplicationCommandsJSONBody {
+		const payload: RESTPostAPIContextMenuApplicationCommandsJSONBody = {
 			name: this.name,
 			type: this.type,
 		};

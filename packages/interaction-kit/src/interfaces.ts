@@ -1,24 +1,61 @@
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
 import * as API from "./api";
 import Application from "./application";
-import Embed from "./components/embed";
+import { ResponseStatus } from "./requests/response";
+import { Embed } from "@discordjs/builders";
 import {
-	ApplicationCommand,
+	APIApplicationCommand,
+	APIMessageComponent,
 	ApplicationCommandType,
-	Component,
 	ComponentType,
-	InteractionApplicationCommandCallbackData,
-	InteractionRequestType,
-	Snowflake,
-} from "./definitions";
+	InteractionType,
+	RESTPatchAPIInteractionFollowupJSONBody,
+	RESTPostAPIApplicationCommandsJSONBody,
+} from "discord-api-types/v9";
+import ActionRow from "./components/action-row";
+import type { Snowflake } from "./structures/snowflake";
+import { Choices, ChoiceType } from "./commands/options/choices";
 
+/**
+ * TypeScript Helpers
+ */
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type ArrayValue<T> = T extends Array<infer U> ? U : T;
 
+export type MapValue<T> = T extends Map<unknown, infer V> ? V : never;
+
+/**
+ * Polyfills and HTTP Definitions
+ */
+
+export type Module<T> = {
+	default: T;
+};
+
+export interface FetchEvent extends Event {
+	request: Request;
+	respondWith(response: Promise<Response> | Response): Promise<Response>;
+}
+
+export type RequestBody<T = Record<string, any>> = T;
+
+export type ResponseHandler<T = Record<string, any>> = (
+	status: ResponseStatus,
+	json: T
+) => Promise<void>;
+
+/**
+ * Discord Structures
+ */
+
 export interface Mentionable {
 	id: Snowflake;
 }
+
+/**
+ * Internal Structures
+ */
 
 export interface Comparable<T> {
 	equals: (schema: T) => boolean;
@@ -29,29 +66,29 @@ export interface Serializable<T = unknown> {
 }
 
 export interface SerializableComponent extends Serializable {
-	get id(): Component["custom_id"];
+	get id(): string | undefined; // TODO: Type this better
 	get type(): ComponentType;
-	serialize(): Component;
+	serialize(): APIMessageComponent;
 }
 
 export type InteractionReply = {
 	message?: string;
 	embed?: Embed | Embed[] | null;
-	components?: SerializableComponent[] | null;
+	components?: ActionRow[] | null;
 	ephemeral?: boolean;
 	queue?: boolean;
 };
 
 export type InteractionMessageModifiers = {
 	edit: (
-		data: InteractionApplicationCommandCallbackData,
+		data: RESTPatchAPIInteractionFollowupJSONBody,
 		id?: string
 	) => ReturnType<typeof API.patchInteractionFollowup>;
 	delete: (id?: string) => ReturnType<typeof API.deleteInteractionFollowup>;
 };
 
 export interface Interaction {
-	readonly type: InteractionRequestType;
+	readonly type: InteractionType;
 	readonly messages: InteractionMessageModifiers;
 	// get channel(): ChannelRecord;
 	// get member(): MemberRecord
@@ -60,15 +97,30 @@ export interface Interaction {
 	reply: (message: InteractionReply) => unknown;
 }
 
+export interface Autocomplete<T extends ChoiceType> {
+	reply: (options: Choices<T>) => unknown;
+}
+
 export interface Executable<T extends Interaction = Interaction> {
-	handler: (interaction: T, application: Application) => unknown;
+	matches?: (customId: string) => Promise<boolean>;
+	handler: (
+		interaction: T,
+		application: Application
+		// TODO: Add request?
+		// request: Request
+	) => Promise<void>;
 }
 
 export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
 	extends Executable<T>,
-		Serializable<Optional<ApplicationCommand, "id" | "application_id">>,
-		Comparable<ApplicationCommand> {
+		Serializable<RESTPostAPIApplicationCommandsJSONBody>,
+		Comparable<APIApplicationCommand> {
 	name: string;
-	handler: (interaction: T, application: Application) => unknown;
+	handler: (
+		interaction: T,
+		application: Application
+		// TODO: Add request?
+		// request: Request
+	) => Promise<void>;
 	get type(): ApplicationCommandType;
 }

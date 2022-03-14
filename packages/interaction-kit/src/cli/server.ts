@@ -1,10 +1,9 @@
-import arg from "arg";
 import * as API from "../api";
 import {
 	getApplicationEntrypoint,
 	getGuildApplicationCommandChanges,
 } from "../scripts";
-import { Snowflake } from "../definitions";
+import type { Snowflake } from "../structures/snowflake";
 
 export default async function server(argv?: string[]) {
 	// Handle Help
@@ -24,19 +23,7 @@ export default async function server(argv?: string[]) {
 		process.exit(0);
 	}
 
-	// Parse input args
-	const args = arg(
-		{
-			"--port": Number,
-			"-p": "--port",
-		},
-		{
-			permissive: true,
-		}
-	);
-
-	const port = args["--port"] ?? 3000;
-	const guildID = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
+	const guildId = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
 
 	// Start application
 	const application = await getApplicationEntrypoint();
@@ -44,7 +31,7 @@ export default async function server(argv?: string[]) {
 	console.log("Checking for command updates in Development Server");
 	const devCommandChangeSet = await getGuildApplicationCommandChanges(
 		application,
-		guildID
+		guildId
 	);
 
 	console.log(
@@ -57,17 +44,13 @@ export default async function server(argv?: string[]) {
 
 	try {
 		if (devCommandChangeSet.hasChanges) {
-			await API.putGuildApplicationCommands(guildID, serializedCommands, {
-				applicationID: application.id,
-			});
+			await API.putGuildApplicationCommands(
+				guildId,
+				serializedCommands,
+				application.id
+			);
 		}
 	} catch (error: unknown) {
 		console.log({ error });
 	}
-
-	console.log("Starting server...");
-	const server = await application.startServer(port);
-
-	process.on("SIGTERM", async () => server.close());
-	process.on("SIGINT", async () => server.close());
 }

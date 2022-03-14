@@ -1,26 +1,27 @@
-import type { FastifyReply, FastifyRequest } from "fastify";
-import Application from "../application";
 import {
-	Interaction as InteractionDefinition,
-	InteractionCallbackType,
-	InteractionRequestType,
-} from "../definitions";
+	InteractionType,
+	InteractionResponseType,
+	APIPingInteraction,
+} from "discord-api-types/v9";
+import Application from "../application";
+import { RequestBody, ResponseHandler } from "../interfaces";
+import { ResponseStatus } from "../requests/response";
 
 export default class PingInteraction {
-	public readonly type = InteractionRequestType.PING;
-	public readonly response: FastifyReply;
+	public readonly type = InteractionType.Ping;
+	public readonly respond: ResponseHandler;
 
 	constructor(
 		application: Application,
-		request: FastifyRequest<{ Body: InteractionDefinition }>,
-		response: FastifyReply
+		json: RequestBody<APIPingInteraction>,
+		respond: ResponseHandler
 	) {
-		this.response = response;
+		this.respond = respond;
 	}
 
 	handler() {
-		void this.response.send({
-			type: InteractionCallbackType.PONG,
+		void this.respond(ResponseStatus.OK, {
+			type: InteractionResponseType.Pong,
 		});
 	}
 }

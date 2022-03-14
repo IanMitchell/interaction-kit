@@ -12,9 +12,8 @@ export { default as MessageComponentInteraction } from "./interactions/message-c
 export { default as ButtonInteraction } from "./interactions/message-components/button-interaction";
 export { default as SelectInteraction } from "./interactions/message-components/select-interaction";
 
-// Command and Component Helpers
-export * from "./components/inputs";
-export * from "./components/choices";
+// Application Command Options and Choices
+export * from "./commands/options";
 
 // API and Structure exports
 export * as SnowflakeUtils from "./structures/snowflake";
@@ -28,8 +27,8 @@ export { default as ContextMenu } from "./commands/context-menu";
 export { default as ActionRow } from "./components/action-row";
 export { Button, ButtonLink } from "./components/button";
 export { default as Select } from "./components/select";
-export { ButtonStyle } from "./definitions/components";
-export { default as Embed } from "./components/embed";
+export { ButtonStyle } from "discord-api-types/v9";
+// export { default as Embed } from "./components/embed";
 
 // Export Markup
 export * as Markdown from "./structures/markdown";

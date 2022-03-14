@@ -1,54 +1,69 @@
-import { ApplicationCommand, ApplicationCommandType } from "../definitions";
-import Application from "../application";
-import { Input } from "../components/inputs";
-import { Optional, InteractionKitCommand } from "../interfaces";
+import Option from "./options/option";
+import { InteractionKitCommand } from "../interfaces";
 import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
+import {
+	APIApplicationCommand,
+	ApplicationCommandType,
+	RESTPostAPIChatInputApplicationCommandsJSONBody,
+} from "discord-api-types/v9";
+import SlashCommandAutocompleteInteraction from "../interactions/autocomplete/application-command-autocomplete";
+import { Autocomplete } from "../interactions/autocomplete/types";
 
 type CommandArgs = {
 	name: string;
 	description: string;
 	defaultPermission?: boolean;
-	options?: Input[];
-	handler: (interaction: SlashCommandInteraction) => unknown;
+	options?: Option[];
+	handler: InteractionKitCommand<SlashCommandInteraction>["handler"];
+	autocomplete?: never;
+};
+
+type AutocompleteCommandArgs = CommandArgs & {
+	options?: never;
+	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 };
 
 export default class SlashCommand
-	implements InteractionKitCommand<SlashCommandInteraction>
+	implements
+		InteractionKitCommand<SlashCommandInteraction>,
+		Autocomplete<SlashCommandAutocompleteInteraction>
 {
-	public readonly type = ApplicationCommandType.CHAT_INPUT;
+	public readonly type = ApplicationCommandType.ChatInput;
 
 	name: string;
 	#description: string;
 	#defaultPermission: boolean;
-	#options: Map<string, Input>;
-	handler: (
-		interaction: SlashCommandInteraction,
-		application: Application
-	) => unknown;
+	options: Map<string, Option>;
+
+	handler: InteractionKitCommand<SlashCommandInteraction>["handler"];
+
+	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 
 	constructor({
 		name,
 		description,
 		options,
 		handler,
+		autocomplete,
 		defaultPermission = true,
-	}: CommandArgs) {
+	}: CommandArgs | AutocompleteCommandArgs) {
 		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$
 		this.name = name;
 		this.#description = description;
 		this.#defaultPermission = defaultPermission;
+		this.options = new Map();
 		this.handler = handler;
-		this.#options = new Map();
+		this.autocomplete = autocomplete;
 
 		options?.forEach((option) => {
 			const key = option.name.toLowerCase();
-			if (this.#options.has(key)) {
+			if (this.options.has(key)) {
 				throw new Error(
 					`Option names must be unique (case insensitive). Duplicate name detected: ${key}`
 				);
 			}
 
-			this.#options.set(key, option);
+			this.options.set(key, option);
 		});
 	}
 
@@ -60,7 +75,7 @@ export default class SlashCommand
 		throw new Error("Unimplemented");
 	}
 
-	equals(schema: ApplicationCommand): boolean {
+	equals(schema: APIApplicationCommand): boolean {
 		if (
 			this.name !== schema.name ||
 			this.#description !== schema.description ||
@@ -69,19 +84,19 @@ export default class SlashCommand
 			return false;
 		}
 
-		if (this.#options.size !== (schema.options?.length ?? 0)) {
+		if (this.options.size !== (schema.options?.length ?? 0)) {
 			return false;
 		}
 
 		return (
 			schema.options?.every(
-				(option) => this.#options.get(option.name)?.equals(option) ?? false
+				(option) => this.options.get(option.name)?.equals(option) ?? false
 			) ?? true
 		);
 	}
 
-	serialize(): Optional<ApplicationCommand, "id" | "application_id"> {
-		const payload: Optional<ApplicationCommand, "id" | "application_id"> = {
+	serialize(): RESTPostAPIChatInputApplicationCommandsJSONBody {
+		const payload: RESTPostAPIChatInputApplicationCommandsJSONBody = {
 			name: this.name,
 			description: this.#description,
 		};
@@ -91,10 +106,10 @@ export default class SlashCommand
 		}
 
 		// TODO: Sort these so that required options come first
-		if (this.#options.size > 0) {
+		if (this.options.size > 0) {
 			payload.options = [];
 
-			Array.from(this.#options.entries()).forEach(([_, value]) => {
+			Array.from(this.options.entries()).forEach(([_, value]) => {
 				payload.options?.push(value.serialize());
 			});
 		}
