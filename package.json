@@ -5,6 +5,7 @@
   ],
   "version": "0.0.1",
   "private": true,
+  "packageManager": "npm@8.5.1",
   "scripts": {
     "cli:create": "npm run dev --workspace=create-ikit-app",
     "build": "turbo run build",
