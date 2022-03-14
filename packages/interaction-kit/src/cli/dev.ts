@@ -99,6 +99,7 @@ export default async function dev(argv?: string[]) {
 		await updateCommands(guildId);
 
 		child?.kill();
+		console.log("Starting Wrangler");
 		child = spawn("wrangler", ["dev", "-p", port.toString()], {
 			stdio: "inherit",
 		});

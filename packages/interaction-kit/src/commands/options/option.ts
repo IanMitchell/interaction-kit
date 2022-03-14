@@ -34,20 +34,6 @@ export type AutocompleteOptionTypes =
 	| AutocompleteCommandOptionType<ApplicationCommandOptionType.Number>
 	| AutocompleteCommandOptionType<ApplicationCommandOptionType.Integer>;
 
-export function isAutocompleteExecutableOption(
-	option: Option | undefined
-): option is StringOption | NumberOption | IntegerOption {
-	if (option == null) {
-		return false;
-	}
-
-	return (
-		option instanceof StringOption ||
-		option instanceof NumberOption ||
-		option instanceof IntegerOption
-	);
-}
-
 // TODO: Upstream?
 export function isBasicOption(
 	option: APIApplicationCommandInteractionDataOption

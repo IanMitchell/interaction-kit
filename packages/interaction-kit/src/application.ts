@@ -113,8 +113,8 @@ export default class Application {
 		commands.forEach((command) => this.addCommand(command));
 		return this;
 	}
-  
-  getCommand<T extends ApplicationCommandType>(
+
+	getCommand<T extends ApplicationCommandType>(
 		type: T,
 		name: string
 	): CommandMapValue<T> | undefined {

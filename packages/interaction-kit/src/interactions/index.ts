@@ -25,10 +25,22 @@ import {
 	APIMessageComponentButtonInteraction,
 	APIMessageComponentSelectMenuInteraction,
 } from "discord-api-types/v9";
-import {
-	isAutocompleteExecutableOption,
-	isAutocompleteOption,
-} from "../commands/options/option";
+import Option, { isAutocompleteOption } from "../commands/options/option";
+import { StringOption, NumberOption, IntegerOption } from "../commands/options";
+
+export function isAutocompleteExecutableOption(
+	option: Option | undefined
+): option is StringOption | NumberOption | IntegerOption {
+	if (option == null) {
+		return false;
+	}
+
+	return (
+		option instanceof StringOption ||
+		option instanceof NumberOption ||
+		option instanceof IntegerOption
+	);
+}
 
 function isChatInputApplicationCommandInteraction(
 	interaction: APIApplicationCommandInteraction
@@ -84,10 +96,8 @@ async function handleApplicationCommandInteraction(
 		);
 
 		console.log(`Handling ${interaction.name}`);
-		return command.handler(interaction, application);
-	}
-
-	if (isContextMenuApplicationCommandInteraction(json)) {
+		command.handler(interaction, application);
+	} else if (isContextMenuApplicationCommandInteraction(json)) {
 		const interaction = new ContextMenuInteraction(
 			application,
 			command,
@@ -96,14 +106,14 @@ async function handleApplicationCommandInteraction(
 		);
 
 		console.log(`Handling ${interaction.name}`);
-		return command.handler(interaction, application);
+		command.handler(interaction, application);
+	} else {
+		throw new Error(
+			// @ts-expect-error TS doesn't think this will happen, but theoretically it can
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
+			`Unknown Application Command type: ${json.data.type ?? "[unknown]"}`
+		);
 	}
-
-	throw new Error(
-		// @ts-expect-error TS doesn't think this will happen, but theoretically it can
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
-		`Unknown Application Command type: ${json.data.type ?? "[unknown]"}`
-	);
 }
 
 async function handleMessageComponentInteraction(
@@ -124,10 +134,8 @@ async function handleMessageComponentInteraction(
 		);
 
 		console.log(`Handling ${interaction.customId}`);
-		return component.handler(interaction, application);
-	}
-
-	if (
+		component.handler(interaction, application);
+	} else if (
 		isMessageComponentSelectMenuInteraction(json) &&
 		isSelectComponent(component)
 	) {
@@ -139,15 +147,15 @@ async function handleMessageComponentInteraction(
 		);
 
 		console.log(`Handling ${interaction.customId}`);
-		return component.handler(interaction, application);
+		component.handler(interaction, application);
+	} else {
+		throw new Error(
+			`Unknown Interaction Component type (${
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
+				json.data.component_type ?? "[unknown]"
+			}) or component mismatch. `
+		);
 	}
-
-	throw new Error(
-		`Unknown Interaction Component type (${
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
-			json.data.component_type ?? "[unknown]"
-		}) or component mismatch. `
-	);
 }
 
 export async function handler(
