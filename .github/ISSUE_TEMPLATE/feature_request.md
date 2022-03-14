@@ -15,5 +15,5 @@ Give us a quick code demo, command, or another example that couldn't be solved w
 **Additional context**
 Add any other context about the request here!
 
-**How does this increase our chances of an iCrawl Acquisition?**
-Please explain how this will increase our relative value to iCrawl in order to further our goal of acquisition
+**Does this increase our chances of an iCrawl Acquisition?**
+If this increases our chance of acquisition, explain how!
