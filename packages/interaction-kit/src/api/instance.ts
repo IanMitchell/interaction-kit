@@ -1,4 +1,4 @@
-import pkg from "../../package.json";
+import pkg from "../../package.json" assert { type: "json" };
 import { REST } from "@discordjs/rest";
 
 const instance = new REST({

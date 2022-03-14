@@ -8,7 +8,9 @@ import type { Snowflake } from "./structures/snowflake";
 export async function getApplicationEntrypoint(): Promise<Application> {
 	try {
 		/* eslint-disable*/
-		const json = await import(path.join(process.cwd(), "package.json"));
+		const json = await import(path.join(process.cwd(), "package.json"), {
+			assert: { type: "json" },
+		});
 		const app = await import(path.join(process.cwd(), json?.default?.main));
 		return app?.default as Application;
 		/* eslint-enable */

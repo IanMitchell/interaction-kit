@@ -108,7 +108,7 @@ export interface Executable<T extends Interaction = Interaction> {
 		application: Application
 		// TODO: Add request?
 		// request: Request
-	) => Promise<void>;
+	) => void;
 }
 
 export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
@@ -121,6 +121,6 @@ export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
 		application: Application
 		// TODO: Add request?
 		// request: Request
-	) => Promise<void>;
+	) => void;
 	get type(): ApplicationCommandType;
 }

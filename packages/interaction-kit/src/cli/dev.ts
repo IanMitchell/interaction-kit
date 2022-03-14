@@ -3,9 +3,46 @@ import chokidar from "chokidar";
 import arg from "arg";
 import spawn from "cross-spawn";
 import { ChildProcess } from "child_process";
+import { Snowflake } from "../structures/snowflake";
+import {
+	getApplicationEntrypoint,
+	getGuildApplicationCommandChanges,
+} from "../scripts";
+import * as API from "../api";
 
 const CONFIG_FILES = [".env"];
 const BOT_FILES = ["package.json", "src/**/*"];
+
+async function updateCommands(guildId: Snowflake) {
+	// Start application
+	const application = await getApplicationEntrypoint();
+
+	console.log("Checking for command updates in Development Server");
+	const devCommandChangeSet = await getGuildApplicationCommandChanges(
+		application,
+		guildId
+	);
+
+	console.log(
+		`${devCommandChangeSet.newCommands.size} new commands, ${devCommandChangeSet.updatedCommands.size} changed commands, ${devCommandChangeSet.deletedCommands.size} removed commands, and ${devCommandChangeSet.unchangedCommands.size} unchanged commands.`
+	);
+
+	const serializedCommands = application.commands.map((command) =>
+		command.serialize()
+	);
+
+	try {
+		if (devCommandChangeSet.hasChanges) {
+			await API.putGuildApplicationCommands(
+				guildId,
+				serializedCommands,
+				application.id
+			);
+		}
+	} catch (error: unknown) {
+		console.log({ error });
+	}
+}
 
 export default async function dev(argv?: string[]) {
 	// Handle Help
@@ -24,6 +61,8 @@ export default async function dev(argv?: string[]) {
 		console.error("Missing `DEVELOPMENT_SERVER_ID` env variable. <link>");
 		process.exit(0);
 	}
+
+	const guildId = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
 
 	// Parse input args
 	const args = arg(
@@ -55,9 +94,10 @@ export default async function dev(argv?: string[]) {
 	});
 	const handler = async () => {
 		console.log("Reloading application");
+		await updateCommands(guildId);
 
 		child?.kill();
-		child = spawn("ikit", ["server", "-p", port.toString()], {
+		child = spawn("wrangler", ["dev", "-p", port.toString()], {
 			stdio: "inherit",
 		});
 	};
