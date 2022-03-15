@@ -32,6 +32,3 @@ export { ButtonStyle } from "discord-api-types/v9";
 
 // Export Markup
 export * as Markdown from "./structures/markdown";
-
-// Export Scripts
-export * as Scripts from "./scripts";

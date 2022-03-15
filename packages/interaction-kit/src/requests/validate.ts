@@ -1,6 +1,3 @@
-import { webcrypto } from "node:crypto";
-import { TextEncoder } from "node:util";
-
 const encoder = new TextEncoder();
 
 const KEYS: Record<string, CryptoKey> = {};

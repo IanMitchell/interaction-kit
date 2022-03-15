@@ -1,5 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
 import SlashCommand from "./commands/slash-command";
 import ContextMenu from "./commands/context-menu";
 import Config from "./api/config";
@@ -8,7 +6,6 @@ import {
 	FetchEvent,
 	InteractionKitCommand,
 	SerializableComponent,
-	Module,
 	MapValue,
 } from "./interfaces";
 import type { Snowflake } from "./structures/snowflake";
@@ -148,50 +145,6 @@ export default class Application {
 		}
 
 		return undefined;
-	}
-
-	loadApplicationCommandDirectory(directory: string) {
-		console.log(`Loading Application Commands from ${directory}`);
-
-		fs.readdir(directory, async (err, files) => {
-			if (err) {
-				throw err;
-			}
-
-			console.log(`\tLoading ${files.length} files`);
-			for (const file of files) {
-				if (file.endsWith(".js")) {
-					const command = (await import(path.join(directory, file))) as Module<
-						InteractionKitCommand<ApplicationCommandInteraction>
-					>;
-					this.addCommand(command.default);
-				}
-			}
-		});
-
-		return this;
-	}
-
-	loadMessageComponentDirectory(directory: string) {
-		console.log(`Loading Message Components from ${directory}`);
-
-		fs.readdir(directory, async (err, files) => {
-			if (err) {
-				throw err;
-			}
-
-			console.log(`\tLoading ${files.length} files`);
-			for (const file of files) {
-				if (file.endsWith(".js")) {
-					const component = (await import(
-						path.join(directory, file)
-					)) as Module<SerializableComponent>;
-					this.addComponent(component.default);
-				}
-			}
-		});
-
-		return this;
 	}
 
 	async handler(event: FetchEvent) {

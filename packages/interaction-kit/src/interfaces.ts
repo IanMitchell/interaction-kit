@@ -29,10 +29,6 @@ export type MapValue<T> = T extends Map<unknown, infer V> ? V : never;
  * Polyfills and HTTP Definitions
  */
 
-export type Module<T> = {
-	default: T;
-};
-
 export interface FetchEvent extends Event {
 	request: Request;
 	respondWith(response: Promise<Response> | Response): Promise<Response>;
