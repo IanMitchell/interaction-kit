@@ -1,3 +1,4 @@
+import type { Snowflake } from "discord-snowflake";
 import SlashCommand from "./commands/slash-command";
 import ContextMenu from "./commands/context-menu";
 import Config from "./api/config";
@@ -8,7 +9,6 @@ import {
 	SerializableComponent,
 	MapValue,
 } from "./interfaces";
-import type { Snowflake } from "./structures/snowflake";
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
 import { ExecutableComponent, isExecutableComponent } from "./components";
 import { response, ResponseStatus } from "./requests/response";
@@ -178,5 +178,9 @@ export default class Application {
 			console.log(exception);
 			return response(ResponseStatus.BadRequest, { error: "Unknown Type" });
 		}
+	}
+
+	shutdown() {
+		// TODO: Send abort controller
 	}
 }

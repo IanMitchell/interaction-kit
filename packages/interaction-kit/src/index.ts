@@ -1,3 +1,5 @@
+import * as SnowflakeUtils from "discord-snowflake";
+
 // Application level exports
 export { default as Application } from "./application";
 
@@ -16,7 +18,8 @@ export { default as SelectInteraction } from "./interactions/message-components/
 export * from "./commands/options";
 
 // API and Structure exports
-export * as SnowflakeUtils from "./structures/snowflake";
+export { default as Embed } from "./structures/embed";
+export { SnowflakeUtils };
 export * as API from "./api/index";
 export * as RESTClient from "./api/instance";
 
@@ -28,7 +31,6 @@ export { default as ActionRow } from "./components/action-row";
 export { Button, ButtonLink } from "./components/button";
 export { default as Select } from "./components/select";
 export { ButtonStyle } from "discord-api-types/v9";
-// export { default as Embed } from "./components/embed";
 
 // Export Markup
 export * as Markdown from "./structures/markdown";

@@ -1,3 +1,4 @@
+import type { Snowflake } from "discord-snowflake";
 import * as API from "../../api";
 import Application from "../../application";
 import {
@@ -7,7 +8,7 @@ import {
 	RequestBody,
 	ResponseHandler,
 } from "../../interfaces";
-import type { Snowflake } from "../../structures/snowflake";
+import Embed from "../../structures/embed";
 import {
 	APIApplicationCommandInteraction,
 	APIInteractionGuildMember,
@@ -18,7 +19,6 @@ import {
 	RESTPatchAPIInteractionFollowupJSONBody,
 } from "discord-api-types/v9";
 import { ResponseStatus } from "../../requests/response";
-import { Embed } from "@discordjs/builders";
 
 export default class ApplicationCommandInteraction implements Interaction {
 	public readonly type = InteractionType.ApplicationCommand;
@@ -90,11 +90,9 @@ export default class ApplicationCommandInteraction implements Interaction {
 		}
 
 		if (embed != null) {
-			// @ts-expect-error discord-api-types and @discordjs/rest and @discordjs/builders
-			// version mismatch
 			payload.data.embeds = ([] as Embed[])
 				.concat(embed)
-				.map((item) => item.toJSON());
+				.map((item) => item.serialize());
 		}
 
 		if (components != null) {

@@ -1,3 +1,4 @@
+import type { Snowflake } from "discord-snowflake";
 import * as API from "../../api";
 import Application from "../../application";
 import {
@@ -8,7 +9,6 @@ import {
 	ResponseHandler,
 	SerializableComponent,
 } from "../../interfaces";
-import type { Snowflake } from "../../structures/snowflake";
 import { isActionRow } from "../../components/action-row";
 import {
 	APIInteractionGuildMember,

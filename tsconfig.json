@@ -27,7 +27,12 @@
 		"module": "esnext",
 		"target": "es2021",
 		"moduleResolution": "node",
-		"resolveJsonModule": true
+		"resolveJsonModule": true,
+		"types": [
+			"@cloudflare/workers-types",
+			"@types/jest",
+			"@types/service-worker-mock"
+		]
 	},
 	// ignore node_modules and dist
 	"exclude": ["node_modules"]

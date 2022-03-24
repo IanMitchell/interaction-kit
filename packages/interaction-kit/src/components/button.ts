@@ -36,7 +36,6 @@ type ButtonBaseArgs<T extends ButtonStyle> = Omit<
 type ButtonArgs = {
 	customId: APIButtonComponentWithCustomId["custom_id"];
 	handler: Executable<ButtonInteraction>["handler"];
-	customID: APIButtonComponentWithCustomId["custom_id"];
 	style: Exclude<ButtonStyle, ButtonStyle.Link>;
 	matches?: Executable<ButtonInteraction>["matches"];
 } & ButtonBaseArgs<Exclude<ButtonStyle, ButtonStyle.Link>>;

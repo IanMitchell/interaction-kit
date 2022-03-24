@@ -1,8 +1,9 @@
+import type { Snowflake } from "discord-snowflake";
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
 import * as API from "./api";
 import Application from "./application";
 import { ResponseStatus } from "./requests/response";
-import { Embed } from "@discordjs/builders";
+import Embed from "./structures/embed";
 import {
 	APIApplicationCommand,
 	APIMessageComponent,
@@ -13,7 +14,6 @@ import {
 	RESTPostAPIApplicationCommandsJSONBody,
 } from "discord-api-types/v9";
 import ActionRow from "./components/action-row";
-import type { Snowflake } from "./structures/snowflake";
 import { Choices, ChoiceType } from "./commands/options/choices";
 
 /**

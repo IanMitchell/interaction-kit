@@ -1,3 +1,4 @@
+import type { Snowflake } from "discord-snowflake";
 import Application from "../../application";
 import { Autocomplete, RequestBody, ResponseHandler } from "../../interfaces";
 import { AutocompleteInteractionResponseTypes } from "./types";
@@ -9,7 +10,6 @@ import {
 	APIInteractionGuildMember,
 } from "discord-api-types/v9";
 import { ResponseStatus } from "../../requests/response";
-import type { Snowflake } from "../../structures/snowflake";
 import { Choices } from "../../commands/options/choices";
 import {
 	APIApplicationCommandInteractionDataAutocompleteOption,

@@ -1,4 +1,4 @@
-import type { Snowflake } from "../structures/snowflake";
+import type { Snowflake } from "discord-snowflake";
 import rest from "./instance";
 
 export default (() => {

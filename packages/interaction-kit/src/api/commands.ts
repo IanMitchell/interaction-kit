@@ -1,6 +1,6 @@
+import type { Snowflake } from "discord-snowflake";
 import rest from "./instance";
 import Config from "./config";
-import type { Snowflake } from "../structures/snowflake";
 import {
 	RESTGetAPIApplicationCommandsResult,
 	RESTGetAPIApplicationGuildCommandsResult,
