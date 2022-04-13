@@ -12,7 +12,11 @@ export function isSnowflake(id: string): id is Snowflake {
 }
 
 export function getTimestamp(snowflake: Snowflake) {
-	return new Date(Number((BigInt(snowflake) >> BigInt(22)) + EPOCH));
+	return Number((BigInt(snowflake) >> BigInt(22)) + EPOCH);
+}
+
+export function getDate(snowflake: Snowflake) {
+	return new Date(getTimestamp(snowflake));
 }
 
 export function getWorkerId(snowflake: Snowflake) {
