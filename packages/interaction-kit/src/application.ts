@@ -1,4 +1,5 @@
 import type { Snowflake } from "discord-snowflake";
+import isValidRequest from "discord-verify";
 import SlashCommand from "./commands/slash-command";
 import ContextMenu from "./commands/context-menu";
 import Config from "./api/config";
@@ -13,7 +14,6 @@ import ApplicationCommandInteraction from "./interactions/application-commands/a
 import { ExecutableComponent, isExecutableComponent } from "./components";
 import { response, ResponseStatus } from "./requests/response";
 import { APIInteraction, ApplicationCommandType } from "discord-api-types/v9";
-import { isValidRequest } from "./requests/validate";
 
 type ApplicationArgs = {
 	applicationId: string;

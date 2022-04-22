@@ -1,0 +1,29 @@
+{
+	"name": "discord-verify",
+	"version": "0.0.1",
+	"author": "Ian Mitchell",
+	"description": "TODO",
+	"license": "MIT",
+	"exports": "./dist/src/verify.js",
+	"main": "./dist/src/verify.js",
+	"typings": "dist/src/verify.d.ts",
+	"type": "module",
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -r dist/",
+		"typecheck": "tsc --noEmit",
+		"prettier": "prettier src/**/*.ts --check",
+		"lint": "eslint ./src/**/*.ts",
+		"test": "jest"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"engines": {
+		"node": ">=17"
+	},
+	"dependencies": {
+		"debug": "^4.3.4"
+	}
+}

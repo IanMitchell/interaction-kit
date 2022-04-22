@@ -2,7 +2,7 @@ const encoder = new TextEncoder();
 
 const KEYS: Record<string, CryptoKey> = {};
 
-export function hexToBinary(hex: string | null) {
+function hexToBinary(hex: string | null) {
 	if (hex == null) {
 		return new Uint8Array(0);
 	}
@@ -39,7 +39,10 @@ async function getCryptoKey(publicKey: string) {
 	return key;
 }
 
-export async function isValidRequest(request: Request, publicKey: string) {
+export default async function isValidRequest(
+	request: Request,
+	publicKey: string
+) {
 	const key = await getCryptoKey(publicKey);
 	const signature = hexToBinary(request.headers.get("X-Signature-Ed25519"));
 	const timestamp = request.headers.get("X-Signature-Timestamp");
