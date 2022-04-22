@@ -1,18 +1,13 @@
 {
-  "baseBranch": "origin/main",
-  "pipeline": {
-    "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        "dist/**",
-        ".next/**"
-      ]
-    },
-    "typecheck": {},
-    "prettier": {},
-    "lint": {},
-    "test": {}
-  }
+	"baseBranch": "origin/main",
+	"pipeline": {
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": ["dist/**"]
+		},
+		"typecheck": {},
+		"prettier": {},
+		"lint": {},
+		"test": {}
+	}
 }
