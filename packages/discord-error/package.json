@@ -1,0 +1,26 @@
+{
+	"name": "discord-error",
+	"version": "0.0.1",
+	"author": "Ian Mitchell",
+	"description": "TODO",
+	"license": "MIT",
+	"exports": "./dist/src/discord-error.js",
+	"main": "./dist/src/discord-error.js",
+	"typings": "dist/src/discord-error.d.ts",
+	"type": "module",
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -r dist/",
+		"typecheck": "tsc --noEmit",
+		"prettier": "prettier src/**/*.ts --check",
+		"lint": "eslint ./src/**/*.ts",
+		"test": "jest"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"engines": {
+		"node": ">=17"
+	}
+}
