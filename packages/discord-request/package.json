@@ -24,6 +24,7 @@
 		"node": ">=17"
 	},
 	"dependencies": {
+		"discord-error": "0.0.1",
 		"debug": "^4.3.4"
 	}
 }

@@ -21,7 +21,7 @@ import {
 	RESTPatchAPIInteractionFollowupJSONBody,
 } from "discord-api-types/v9";
 import { ResponseStatus } from "../../requests/response";
-import { Embed } from "@discordjs/builders";
+import Embed from "../../structures/embed";
 
 export default class MessageComponentInteraction implements Interaction {
 	public readonly type = InteractionType.MessageComponent;
@@ -95,11 +95,9 @@ export default class MessageComponentInteraction implements Interaction {
 		}
 
 		if (embed != null) {
-			// @ts-expect-error discord-api-types and @discordjs/rest and @discordjs/builders
-			// version mismatch
 			payload.data.embeds = ([] as Embed[])
 				.concat(embed)
-				.map((item) => item.toJSON());
+				.map((item) => item.serialize());
 		}
 
 		if (components != null) {

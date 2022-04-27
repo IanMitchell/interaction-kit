@@ -29,17 +29,12 @@ export type MapValue<T> = T extends Map<unknown, infer V> ? V : never;
  * Polyfills and HTTP Definitions
  */
 
-export interface FetchEvent extends Event {
-	request: Request;
-	respondWith(response: Promise<Response> | Response): Promise<Response>;
-}
-
 export type RequestBody<T = Record<string, any>> = T;
 
 export type ResponseHandler<T = Record<string, any>> = (
 	status: ResponseStatus,
 	json: T
-) => Promise<void>;
+) => void;
 
 /**
  * Discord Structures

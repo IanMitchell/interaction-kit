@@ -20,20 +20,16 @@ async function getCryptoKey(publicKey: string) {
 		return KEYS[publicKey];
 	}
 
-	/* eslint-disable */
-	// @ts-expect-error Unimplemented core TypeScript / Node types
-	const key = (await webcrypto.subtle.importKey(
+	const key = await crypto.subtle.importKey(
 		"raw",
 		hexToBinary(publicKey),
 		{
 			name: "NODE-ED25519",
 			namedCurve: "NODE-ED25519",
-			public: true,
 		},
 		true,
 		["verify"]
-	)) as CryptoKey;
-	/* eslint-enable */
+	);
 
 	KEYS[publicKey] = key;
 	return key;
@@ -43,10 +39,11 @@ export default async function isValidRequest(
 	request: Request,
 	publicKey: string
 ) {
+	const clone = request.clone();
 	const key = await getCryptoKey(publicKey);
-	const signature = hexToBinary(request.headers.get("X-Signature-Ed25519"));
-	const timestamp = request.headers.get("X-Signature-Timestamp");
-	const body = await request.text();
+	const signature = hexToBinary(clone.headers.get("X-Signature-Ed25519"));
+	const timestamp = clone.headers.get("X-Signature-Timestamp");
+	const body = await clone.text();
 
 	const isVerified = await crypto.subtle.verify(
 		"NODE-ED25519",

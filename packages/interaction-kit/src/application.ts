@@ -5,7 +5,6 @@ import ContextMenu from "./commands/context-menu";
 import Config from "./api/config";
 import * as Interaction from "./interactions";
 import {
-	FetchEvent,
 	InteractionKitCommand,
 	SerializableComponent,
 	MapValue,
@@ -147,33 +146,37 @@ export default class Application {
 		return undefined;
 	}
 
-	async handler(event: FetchEvent) {
+	async handler(request: Request) {
 		console.log("REQUEST");
 
-		if (event.request.method !== "POST") {
-			await event.respondWith(
-				response(ResponseStatus.MethodNotAllowed, { error: "Invalid Method" })
-			);
-			return;
+		if (request.method !== "POST") {
+			return response(ResponseStatus.MethodNotAllowed, {
+				error: "Invalid Method",
+			});
 		}
 
-		const valid = await isValidRequest(event.request, this.#publicKey);
+		const valid = await isValidRequest(request, this.#publicKey);
 		if (!valid) {
-			await event.respondWith(
-				response(ResponseStatus.Unauthorized, { error: "Invalid Request" })
-			);
-			return;
+			return response(ResponseStatus.Unauthorized, {
+				error: "Invalid Request",
+			});
 		}
 
 		try {
-			const json = (await event.request.json()) as APIInteraction;
-			void Interaction.handler(
-				this,
-				json,
-				async (status: ResponseStatus, json: Record<string, any>) => {
-					void event.respondWith(response(status, json));
-				}
-			);
+			const json = await request.json<APIInteraction>();
+			console.log({ json });
+			return await new Promise((resolve) => {
+				void Interaction.handler(
+					this,
+					json,
+					(status: ResponseStatus, json: Record<string, any>) => {
+						console.log("responding");
+						console.log(status);
+						console.log(JSON.stringify(json));
+						resolve(response(status, json));
+					}
+				);
+			});
 		} catch (exception: unknown) {
 			console.log(exception);
 			return response(ResponseStatus.BadRequest, { error: "Unknown Type" });

@@ -8,18 +8,24 @@ export const enum RequestMethod {
 	Put = "put",
 }
 
-export interface RawFile {
+export type Route = {
+	identifier: string;
+	path: string;
+};
+
+export interface Attachment {
 	id?: Snowflake;
 	name: string;
-	data: string | number | boolean | Buffer;
+	data: Blob;
 }
 
+// TODO: Update
 export interface RequestOptions {
 	auth?: boolean;
 	authPrefix?: "Bot" | "Bearer";
 	formData?: FormData;
 	body?: BodyInit | unknown;
-	files?: RawFile[] | undefined;
+	files?: Attachment[] | undefined;
 	headers?: Record<string, string>;
 	passThroughBody?: boolean;
 	query?: URLSearchParams;
@@ -27,16 +33,13 @@ export interface RequestOptions {
 	versioned?: boolean;
 }
 
+// TODO: Update
 export interface RequestData extends RequestOptions {
 	path: string;
 	method: RequestMethod;
 }
 
-export type Route = {
-	identifier: string;
-	path: string;
-};
-
+// TODO: Update
 export interface RateLimitData {
 	/**
 	 * The time, in milliseconds, until the request-lock is reset

@@ -1,13 +1,15 @@
 import debug from "debug";
+import DiscordError, { ErrorBody, isDiscordError } from "discord-error";
+import { RequestError } from "./errors/request-error";
 import { Manager } from "./manager";
-import { RequestMethod, Route } from "./types";
-import { isSublimitedRoute } from "./util/routes";
-import { OFFSET, ONE_HOUR, ONE_MINUTE, sleep } from "./util/time";
+import { RequestMethod, RequestOptions, Route } from "./types";
+import { getRouteKey } from "./util/routes";
+import { OFFSET, ONE_HOUR, sleep } from "./util/time";
 
 const log = debug("discord-request:queue");
 
 export default class Queue {
-	lastProcessed = -1;
+	lastRequest = -1;
 	reset = -1;
 	remaining = 1;
 	limit = Infinity;
@@ -15,9 +17,6 @@ export default class Queue {
 	id: string;
 
 	#queue: Promise<void>;
-	#sublimitQueue: Promise<void> | null;
-	#sublimitQueueSize = 0;
-
 	#shutdownSignal?: AbortSignal | null;
 
 	constructor(
@@ -29,72 +28,43 @@ export default class Queue {
 		this.id = id;
 
 		this.#queue = Promise.resolve();
-		this.#sublimitQueue = null;
 		this.#shutdownSignal = shutdownSignal;
 	}
 
 	get inactive() {
-		// TODO: Check this
-		return this.lastProcessed > Date.now() - 4 * ONE_HOUR;
+		return Date.now() > this.lastRequest + 2 * ONE_HOUR;
 	}
 
 	isLocalLimited() {
-		return this.remaining <= 0 && Date.now() < this.reset;
+		return this.remaining <= 0 && this.reset > Date.now();
 	}
 
 	getResetDelay() {
 		return this.reset + OFFSET - Date.now();
 	}
 
-	isSublimited(
-		bucketRoute: string,
-		body: RequestInit["body"],
-		method: RequestMethod
+	async add(
+		route: Route,
+		resource: string,
+		init: RequestInit,
+		options: RequestOptions
 	) {
-		return (
-			this.#sublimitQueue != null &&
-			isSublimitedRoute(bucketRoute, body, method)
-		);
-	}
-
-	async add(parameters: Route, resource: string, init: RequestInit, options) {
-		let target = this.#queue;
-
-		if (
-			this.isSublimited(
-				parameters.path,
-				init.body,
-				(init.method as RequestMethod) ?? RequestMethod.Get
-			)
-		) {
-			target = this.#sublimitQueue!;
-			this.#sublimitQueueSize += 1;
-		}
-
 		return new Promise((resolve) => {
-			void target
-				.then(async () => {
-					const value = await this.#process(routeId, url, options, requestData);
-					resolve(value);
-				})
-				.finally(() => {
-					this.#sublimitQueueSize -= 1;
-
-					if (this.#sublimitQueueSize === 0) {
-						this.#sublimitQueue = null;
-					}
-				});
+			void this.#queue.then(async () => {
+				const value = await this.#process(route, resource, init, options);
+				resolve(value);
+			});
 		});
 	}
 
 	async #process(
-		parameters: Route,
+		route: Route,
 		resource: string,
 		init: RequestInit,
-		options,
+		options: RequestOptions,
 		retries = 0
 	): Promise<unknown> {
-		await this.#rateLimitThrottle(parameters, init.method as RequestMethod);
+		await this.#rateLimitThrottle(route, init.method as RequestMethod);
 
 		// As the request goes out, update the global request counter
 		if (this.manager.globalReset < Date.now()) {
@@ -104,8 +74,6 @@ export default class Queue {
 		}
 
 		this.manager.globalRequestCounter -= 1;
-
-		this.manager.onRequest?.(parameters, resource, init, options, retries);
 
 		// Setup the timeout signal
 		const signal = new AbortController();
@@ -118,24 +86,24 @@ export default class Queue {
 
 		this.#shutdownSignal?.addEventListener("signal", clearAbort);
 
-		let response: Response;
+		// Callbacks
+		this.manager.onRequest?.(route, resource, init, options, retries);
 
 		// Send the request
+		// TODO: merge init and options
+		const request = new Request(resource, init);
+		let response: Response;
+
 		try {
-			response = await fetch(resource, { ...options, signal: signal.signal });
+			response = await fetch(request, { signal: signal.signal });
 		} catch (error: unknown) {
+			// Handle timeout aborts
 			if (
 				error instanceof Error &&
 				error.name === "AbortError" &&
 				retries < this.manager.config.retries
 			) {
-				return await this.#process(
-					parameters,
-					resource,
-					init,
-					options,
-					retries + 1
-				);
+				return await this.#process(route, resource, init, options, retries + 1);
 			}
 
 			throw error;
@@ -144,6 +112,7 @@ export default class Queue {
 			clearAbort();
 		}
 
+		// Parse Rate Limit information
 		let retryAfter = 0;
 
 		const global = Boolean(response.headers.get("X-RateLimit-Global"));
@@ -164,8 +133,14 @@ export default class Queue {
 			retryAfter = Number(retry) * 1000 + OFFSET;
 		}
 
+		// Handle global rate limits
+		if (global && retryAfter > 0) {
+			this.manager.globalRequestCounter = 0;
+			this.manager.globalReset = Date.now() + retryAfter;
+		}
+
 		// Update bucket hashes as needed
-		const identifier = `${init.method ?? "get"}:${parameters.path}`;
+		const identifier = getRouteKey(init.method as RequestMethod, route);
 
 		if (key != null && key !== this.id) {
 			log(`Received new bucket hash. ${this.id} -> ${key}`);
@@ -181,18 +156,6 @@ export default class Queue {
 			});
 		}
 
-		// Handle rate limits
-		let sublimitTimeout: number | null = null;
-
-		if (retryAfter > 0) {
-			if (global) {
-				this.manager.globalRequestCounter = 0;
-				this.manager.globalReset = Date.now() + retryAfter;
-			} else if (!this.isLocalLimited()) {
-				sublimitTimeout = retryAfter;
-			}
-		}
-
 		// Successful Requests
 		if (response.ok) {
 			return response.json();
@@ -200,25 +163,16 @@ export default class Queue {
 
 		// Rate Limited Requests
 		if (response.status === 429) {
-			const isGlobal = this.manager.isGlobalLimited();
-
-			const limit = isGlobal
-				? this.manager.config.globalRequestsPerSecond
-				: this.limit;
-			const timeout = isGlobal
-				? this.manager.globalTimeout
-				: this.getResetDelay();
-
-			this.manager.onRateLimit({
-				// timeout,
-				// limit,
-				// method,
-				// hash: this.hash,
-				// url,
-				// route: routeId.bucketRoute,
-				// majorParameter: this.majorParameter,
-				// global: isGlobal,
-			});
+			// this.manager.onRateLimit({
+			// timeout,
+			// limit,
+			// method,
+			// hash: this.hash,
+			// url,
+			// route: routeId.bucketRoute,
+			// majorParameter: this.majorParameter,
+			// global: isGlobal,
+			// });
 
 			// this.debug(
 			// 	[
@@ -238,55 +192,38 @@ export default class Queue {
 			// );
 
 			// If caused by a sublimit, wait it out here so other requests on the route can be handled
-			if (sublimitTimeout) {
-				if (this.#sublimitQueue == null) {
-					this.#sublimitedQueue = Promise.resolve();
-					// void this.#sublimitedQueue.wait();
-					// this.#asyncQueue.shift();
-				}
-				this.#sublimitPromise?.resolve();
-				this.#sublimitPromise = null;
-				await sleep(sublimitTimeout, undefined, { ref: false });
-				let resolve: () => void;
-				const promise = new Promise<void>((res) => (resolve = res));
-				this.#sublimitPromise = { promise, resolve: resolve! };
-				if (firstSublimit) {
-					// Re-queue this request so it can be shifted by the finally
-					await this.#asyncQueue.wait();
-					this.#shiftSublimit = true;
-				}
-			}
+			await sleep(retryAfter, this.#shutdownSignal);
 
 			// Don't bump retries for a non-server issue (the request is expected to succeed)
-			return this.#process(parameters, resource, init, options, retries);
+			return this.#process(route, resource, init, options, retries);
 		}
 
 		// If given a server error, retry the request
 		if (response.status >= 500 && response.status < 600) {
 			if (retries < this.manager.config.retries) {
-				return this.#process(parameters, resource, init, options, retries + 1);
+				return this.#process(route, resource, init, options, retries + 1);
 			}
 
-			throw new RequestError(resource, init, response);
+			throw new RequestError(
+				resource,
+				init,
+				response,
+				`Discord Server Error encountered: ${response.statusText}`
+			);
 		}
 
+		// Handle non-ratelimited bad requests
 		if (response.status >= 400 && response.status < 500) {
 			// If we receive this status code, it means the token we had is no longer valid.
-			if (response.status === 401 && requestData.auth) {
-				this.manager.setToken(null!);
+			if (response.status === 401 && options.auth) {
+				this.manager.setToken(null);
 			}
-			// The request will not succeed for some reason, parse the error returned from the api
-			const data = (await response.json()) as DiscordErrorData | OAuthErrorData;
 
-			// throw the API error
-			throw new APIError(
-				data,
-				"code" in data ? data.code : data.error,
-				res.status,
-				method,
-				url,
-				requestData
-			);
+			// Handle unknown API errors
+			const data: ErrorBody = await response.json();
+			const label = isDiscordError(data) ? data.code : data.error;
+
+			throw new DiscordError(request, response, label, data);
 		}
 
 		return response;
@@ -299,6 +236,7 @@ export default class Queue {
 			const limit = isGlobal
 				? this.manager.config.globalRequestsPerSecond
 				: this.limit;
+			// TODO: Make this use retryAfter
 			const timeout = isGlobal
 				? this.manager.globalTimeout
 				: this.getResetDelay();
@@ -306,16 +244,17 @@ export default class Queue {
 				? this.manager.globalDelay ?? this.manager.setGlobalDelay(timeout)
 				: sleep(timeout);
 
-			this.manager.onRateLimit?.({
-				timeToReset: timeout,
-				limit,
-				method: method ?? RequestMethod.Get,
-				id: this.id,
-				url,
-				path: route.path,
-				majorParameter: route.primaryId,
-				global: isGlobal,
-			});
+			// TODO: Design Callback
+			// this.manager.onRateLimit?.({
+			// 	timeToReset: timeout,
+			// 	limit,
+			// 	method: method ?? RequestMethod.Get,
+			// 	id: this.id,
+			// 	url,
+			// 	path: route.path,
+			// 	majorParameter: route.primaryId,
+			// 	global: isGlobal,
+			// });
 
 			if (isGlobal) {
 				log(

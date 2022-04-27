@@ -11,13 +11,13 @@ export interface DiscordErrorBody {
 	errors?: APIError;
 }
 
+export interface ErrorGroup {
+	_errors: APIError[];
+}
+
 export interface ErrorField {
 	code: string;
 	message: string;
-}
-
-export interface ErrorGroup {
-	_errors: APIError[];
 }
 
 export type APIError =
@@ -27,9 +27,7 @@ export type APIError =
 	| { [k: string]: APIError }
 	| string;
 
-export function isDiscordError(
-	error: DiscordErrorBody | OAuthErrorBody
-): error is DiscordErrorBody {
+export function isDiscordError(error: ErrorBody): error is DiscordErrorBody {
 	return "code" in error;
 }
 
@@ -46,7 +44,7 @@ export function isErrorField(error: APIError): error is ErrorField {
 }
 
 export default class DiscordError extends Error {
-	code: string;
+	code: string | number;
 	request: Request;
 	response: Response;
 	raw: ErrorBody;
@@ -54,7 +52,7 @@ export default class DiscordError extends Error {
 	constructor(
 		request: Request,
 		response: Response,
-		code: string,
+		code: string | number,
 		raw: ErrorBody
 	) {
 		super(DiscordError.#getMessage(raw));

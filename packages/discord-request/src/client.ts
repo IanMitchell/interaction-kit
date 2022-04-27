@@ -1,7 +1,7 @@
 import { RequestData, RequestOptions, RequestMethod } from "./types";
 import { Manager } from "./manager";
 
-export class Client {
+export default class Client {
 	#manager: Manager;
 
 	constructor(options = {}) {
@@ -53,8 +53,7 @@ export class Client {
 		});
 	}
 
-	// TODO: Remove return type
-	async #request(data: RequestData): Promise<unknown> {
+	async #request(data: RequestData) {
 		return this.#manager.queue(data);
 	}
 }

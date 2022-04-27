@@ -1,33 +1,17 @@
-// import type { InternalRequest } from "../RequestManager";
-// import { RequestMethod } from "../types";
-// import type { RequestBody } from "./DiscordAPIError";
-
-import type { RequestData, RequestMethod } from "../types";
-
 export class RequestError extends Error {
-	name: string;
-	url: string;
-	method: RequestMethod;
-	status: number;
-	data: RequestData["files"] & { json: Record<string, unknown> };
+	resource: string;
+	init: RequestInit;
+	response: Response;
 
 	constructor(
-		name: string,
-		message: string,
-		url: string,
-		method: RequestMethod,
-		status: number,
-		body: Pick<RequestData, "files" | "body">
+		resource: string,
+		init: RequestInit,
+		response: Response,
+		message: string
 	) {
 		super(message);
-
-		this.name = name;
-		this.url = url;
-		this.method = method;
-		this.status = status;
-		this.data = {
-			files: body.files,
-			json: body.body as Record<string, unknown>,
-		};
+		this.resource = resource;
+		this.init = init;
+		this.response = response;
 	}
 }

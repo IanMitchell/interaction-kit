@@ -1,8 +1,8 @@
 import debug from "debug";
 import { OFFSET, ONE_DAY, ONE_SECOND, sleep } from "./util/time";
-import { getPathParameters } from "./util/routes";
+import { getRouteInformation, getRouteKey } from "./util/routes";
 import Queue from "./queue";
-import { RateLimitData, RequestData, Route } from "./types";
+import { RateLimitData, RequestData, RequestOptions, Route } from "./types";
 
 const log = debug("discord-request:manager");
 
@@ -33,7 +33,7 @@ type ManagerArgs = {
 		parameters: Route,
 		resource: string,
 		init: RequestInit,
-		options,
+		options: RequestOptions,
 		retries: number
 	) => void;
 };
@@ -63,7 +63,7 @@ export class Manager {
 		parameters: Route,
 		resource: string,
 		init: RequestInit,
-		options,
+		options: RequestOptions,
 		retries: number
 	) => void;
 
@@ -124,30 +124,29 @@ export class Manager {
 		this.#startQueueSweep();
 	}
 
-	// TODO: Remove return statement
-	async queue(data: RequestData): Promise<unknown> {
-		const parameters = getPathParameters(data.path);
+	async queue(data: RequestData) {
+		const route = getRouteInformation(data.path);
 
-		const key = `${data.method}:${parameters.route}`;
+		const key = getRouteKey(data.method, route);
 		const bucket = this.#getBucket(key);
-		const queue = this.#getBucketQueue(bucket, parameters.primaryId);
+		const queue = this.#getBucketQueue(bucket, route.identifier);
 
 		const { resource, init } = this.#resolve(data);
 
-		return queue.add(parameters, resource, init, {
-			body: request.body,
-			files: request.files,
-			auth: Boolean(request.auth),
+		return queue.add(route, resource, init, {
+			body: data.body,
+			files: data.files,
+			auth: Boolean(data.auth),
 		});
 	}
 
-	setToken(token: string) {
+	setToken(token: string | null) {
 		this.#token = token;
 		return this;
 	}
 
-	async setGlobalDelay(timeout: number) {
-		this.globalDelay = sleep(timeout).then(() => {
+	async setGlobalDelay(retryAfter: number) {
+		this.globalDelay = sleep(retryAfter, this.shutdownSignal).then(() => {
 			this.globalDelay = null;
 		});
 
@@ -228,7 +227,7 @@ export class Manager {
 
 		return {
 			key: `Global(${key})`,
-			lastRead: -1,
+			lastRequest: -1,
 		};
 	}
 
