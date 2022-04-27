@@ -5,6 +5,7 @@
 	"description": "Interaction Kit is a Discord HTTP API Framework",
 	"license": "MIT",
 	"exports": "./dist/src/index.js",
+	"main": "./dist/src/index.js",
 	"typings": "dist/src/index.d.ts",
 	"type": "module",
 	"scripts": {
@@ -27,19 +28,21 @@
 		"node": ">=16.6.0"
 	},
 	"dependencies": {
-		"@discordjs/builders": "^0.11.0",
-		"@discordjs/rest": "^0.3.0",
 		"arg": "^5.0.1",
 		"boxen": "6.2.1",
 		"chalk": "^5.0.1",
 		"chokidar": "^3.5.2",
 		"cross-spawn": "^7.0.3",
 		"discord-api-types": "0.29.0",
+		"discord-request": "0.0.4",
+		"discord-snowflake": "0.0.1",
+		"discord-verify": "0.0.1",
 		"dotenv": "^10.0.0",
 		"fastify": "^3.25.0",
 		"fastify-raw-body": "^3.1.0",
 		"ngrok": "^4.2.2",
-		"node-fetch": "^2.6.1"
+		"node-fetch": "^2.6.1",
+		"miniflare": "2.3.0"
 	},
 	"repository": {
 		"type": "git",

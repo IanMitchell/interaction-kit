@@ -1,11 +1,11 @@
 import pkg from "../../package.json" assert { type: "json" };
-import { REST } from "@discordjs/rest";
+import Client from "discord-request";
 
-const instance = new REST({
-	handlerSweepInterval: 0,
-	hashSweepInterval: 0,
-	userAgentAppendix: `InteractionKit, ${pkg.version}`,
+const instance = new Client({
 	version: "9",
+	userAgent: `InteractionKit, ${pkg.version}`,
+	bucketSweepInterval: 0,
+	queueSweepInterval: 0,
 });
 
 export default instance;

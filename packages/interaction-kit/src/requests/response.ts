@@ -6,5 +6,8 @@ export enum ResponseStatus {
 }
 
 export function response(status: ResponseStatus, json: Record<string, any>) {
-	return new Response(JSON.stringify(json), { status });
+	return new Response(JSON.stringify(json), {
+		status,
+		headers: { "content-type": "application/json" },
+	});
 }

@@ -5,7 +5,7 @@ import spawn from "cross-spawn";
 import { ChildProcess } from "child_process";
 import chalk from "chalk";
 import boxen from "boxen";
-import { Snowflake } from "../structures/snowflake";
+import { Snowflake } from "discord-snowflake";
 import {
 	getApplicationEntrypoint,
 	getGuildApplicationCommandChanges,
