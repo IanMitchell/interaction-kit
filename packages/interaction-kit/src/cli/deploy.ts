@@ -1,4 +1,4 @@
-import * as API from "../api";
+import { putGlobalApplicationCommands } from "discord-api";
 import { getApplicationEntrypoint } from "../scripts";
 
 export default async function command(argv?: string[]) {
@@ -18,6 +18,6 @@ export default async function command(argv?: string[]) {
 		command.serialize()
 	);
 
-	await API.putGlobalApplicationCommands(serializedCommands, application.id);
+	await putGlobalApplicationCommands(serializedCommands, application.id);
 	process.exit(0);
 }

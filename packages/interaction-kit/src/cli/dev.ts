@@ -1,3 +1,4 @@
+import { putGuildApplicationCommands } from "discord-api";
 import ngrok from "ngrok";
 import chokidar from "chokidar";
 import arg from "arg";
@@ -10,7 +11,6 @@ import {
 	getApplicationEntrypoint,
 	getGuildApplicationCommandChanges,
 } from "../scripts";
-import * as API from "../api";
 
 const CONFIG_FILES = [".env"];
 const BOT_FILES = ["package.json", "src/**/*"];
@@ -35,7 +35,7 @@ async function updateCommands(guildId: Snowflake) {
 
 	try {
 		if (devCommandChangeSet.hasChanges) {
-			await API.putGuildApplicationCommands(
+			await putGuildApplicationCommands(
 				guildId,
 				serializedCommands,
 				application.id

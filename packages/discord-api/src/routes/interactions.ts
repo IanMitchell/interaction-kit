@@ -1,5 +1,5 @@
-import Config from "./config";
-import rest from "./instance";
+import type { Snowflake } from "discord-snowflake";
+import client from "../client";
 import {
 	RESTPostAPIInteractionFollowupJSONBody,
 	RESTPatchAPIInteractionFollowupJSONBody,
@@ -11,23 +11,23 @@ import {
 
 // TODO: Test, Type, Document
 export async function postInteractionFollowup(
+	applicationId: Snowflake,
 	interactionToken: string,
-	data: RESTPostAPIInteractionFollowupJSONBody,
-	applicationId = Config.getApplicationId()
+	data: RESTPostAPIInteractionFollowupJSONBody
 ) {
-	return rest.post(Routes.webhook(applicationId, interactionToken), {
+	return client.post(Routes.webhook(applicationId, interactionToken), {
 		body: data,
 	}) as Promise<RESTPostAPIInteractionFollowupResult>;
 }
 
 // TODO: Test, Type, Document
 export async function patchInteractionFollowup(
+	applicationId: Snowflake,
 	interactionToken: string,
 	id: string,
-	data: RESTPatchAPIInteractionFollowupJSONBody,
-	applicationId = Config.getApplicationId()
+	data: RESTPatchAPIInteractionFollowupJSONBody
 ) {
-	return rest.patch(
+	return client.patch(
 		Routes.webhookMessage(applicationId, interactionToken, id),
 		{
 			body: data,
@@ -37,11 +37,11 @@ export async function patchInteractionFollowup(
 
 // TODO: Test, Type, Document
 export async function deleteInteractionFollowup(
+	applicationId: Snowflake,
 	interactionToken: string,
-	id: string,
-	applicationId = Config.getApplicationId()
+	id: string
 ) {
-	return rest.delete(
+	return client.delete(
 		Routes.webhookMessage(applicationId, interactionToken, id)
 	) as Promise<RESTDeleteAPIInteractionFollowupResult>;
 }

@@ -20,8 +20,10 @@ export * from "./commands/options";
 // API and Structure exports
 export { default as Embed } from "./structures/embed";
 export { SnowflakeUtils };
-export * as API from "./api/index";
-export * as RESTClient from "./api/instance";
+
+import * as DiscordAPI from "discord-api";
+const { client: Client, ...API } = DiscordAPI;
+export { Client, API };
 
 export { default as SlashCommand } from "./commands/slash-command";
 export { default as ContextMenu } from "./commands/context-menu";

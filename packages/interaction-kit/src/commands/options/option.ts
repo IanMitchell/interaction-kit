@@ -10,9 +10,6 @@ import {
 } from "discord-api-types/payloads/v9";
 import { APIApplicationCommandOptionBase } from "discord-api-types/payloads/v9/_interactions/_applicationCommands/_chatInput/base";
 import { Comparable, Serializable } from "../../interfaces";
-import IntegerOption from "./integer";
-import NumberOption from "./number";
-import StringOption from "./string";
 
 type OptionArgs = {
 	type: ApplicationCommandOptionType;

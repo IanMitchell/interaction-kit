@@ -1,0 +1,32 @@
+{
+	"name": "discord-api",
+	"version": "0.0.2",
+	"author": "Ian Mitchell",
+	"description": "TODO",
+	"license": "MIT",
+	"exports": "./dist/src/index.js",
+	"main": "./dist/src/index.js",
+	"typings": "dist/src/index.d.ts",
+	"type": "module",
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -r dist/",
+		"typecheck": "tsc --noEmit",
+		"prettier": "prettier src/**/*.ts --check",
+		"lint": "eslint ./src/**/*.ts",
+		"test": "jest"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"engines": {
+		"node": ">=17"
+	},
+	"dependencies": {
+		"discord-api-types": "0.29.0",
+		"discord-request": "0.0.4",
+		"discord-snowflake": "0.0.1",
+		"debug": "^4.3.4"
+	}
+}

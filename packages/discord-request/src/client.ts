@@ -13,6 +13,11 @@ export default class Client {
 		return this;
 	}
 
+	setUserAgent(value: string) {
+		this.#manager.config.userAgent = value;
+		return this;
+	}
+
 	async get(path: string, options: RequestOptions = {}) {
 		return this.#request({
 			path,

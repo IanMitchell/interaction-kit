@@ -33,6 +33,7 @@
 		"chalk": "^5.0.1",
 		"chokidar": "^3.5.2",
 		"cross-spawn": "^7.0.3",
+		"discord-api": "0.0.2",
 		"discord-api-types": "0.29.0",
 		"discord-request": "0.0.4",
 		"discord-snowflake": "0.0.1",

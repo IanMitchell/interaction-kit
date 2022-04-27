@@ -2,7 +2,7 @@ import type { Snowflake } from "discord-snowflake";
 import isValidRequest from "discord-verify";
 import SlashCommand from "./commands/slash-command";
 import ContextMenu from "./commands/context-menu";
-import Config from "./api/config";
+import { client } from "discord-api";
 import * as Interaction from "./interactions";
 import {
 	InteractionKitCommand,
@@ -13,6 +13,7 @@ import ApplicationCommandInteraction from "./interactions/application-commands/a
 import { ExecutableComponent, isExecutableComponent } from "./components";
 import { response, ResponseStatus } from "./requests/response";
 import { APIInteraction, ApplicationCommandType } from "discord-api-types/v9";
+import Config from "./config";
 
 type ApplicationArgs = {
 	applicationId: string;
@@ -70,8 +71,8 @@ export default class Application {
 		};
 
 		// Configure API Defaults
-		Config.setToken(this.#token);
 		Config.setApplicationId(this.#applicationId);
+		client.setToken(this.#token);
 	}
 
 	get id() {

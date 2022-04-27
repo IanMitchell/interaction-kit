@@ -1,5 +1,9 @@
 import type { Snowflake } from "discord-snowflake";
-import * as API from "../../api";
+import {
+	postInteractionFollowup,
+	deleteInteractionFollowup,
+	patchInteractionFollowup,
+} from "discord-api";
 import Application from "../../application";
 import {
 	Interaction,
@@ -22,6 +26,7 @@ import {
 } from "discord-api-types/v9";
 import { ResponseStatus } from "../../requests/response";
 import Embed from "../../structures/embed";
+import Config from "../../config";
 
 export default class MessageComponentInteraction implements Interaction {
 	public readonly type = InteractionType.MessageComponent;
@@ -59,10 +64,16 @@ export default class MessageComponentInteraction implements Interaction {
 			edit: async (
 				data: RESTPatchAPIInteractionFollowupJSONBody,
 				id = "@original"
-			) => API.patchInteractionFollowup(this.token, id, data),
+			) =>
+				patchInteractionFollowup(
+					Config.getApplicationId(),
+					this.token,
+					id,
+					data
+				),
 
 			delete: async (id = "@original") =>
-				API.deleteInteractionFollowup(this.token, id),
+				deleteInteractionFollowup(Config.getApplicationId(), this.token, id),
 		};
 
 		this.#replied = false;
@@ -122,7 +133,8 @@ export default class MessageComponentInteraction implements Interaction {
 			return "@original";
 		}
 
-		const responseData = await API.postInteractionFollowup(
+		const responseData = await postInteractionFollowup(
+			Config.getApplicationId(),
 			this.token,
 			payload.data
 		);

@@ -1,6 +1,9 @@
 import type { Snowflake } from "discord-snowflake";
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
-import * as API from "./api";
+import {
+	patchInteractionFollowup,
+	deleteInteractionFollowup,
+} from "discord-api";
 import Application from "./application";
 import { ResponseStatus } from "./requests/response";
 import Embed from "./structures/embed";
@@ -74,8 +77,8 @@ export type InteractionMessageModifiers = {
 	edit: (
 		data: RESTPatchAPIInteractionFollowupJSONBody,
 		id?: string
-	) => ReturnType<typeof API.patchInteractionFollowup>;
-	delete: (id?: string) => ReturnType<typeof API.deleteInteractionFollowup>;
+	) => ReturnType<typeof patchInteractionFollowup>;
+	delete: (id?: string) => ReturnType<typeof deleteInteractionFollowup>;
 };
 
 export interface Interaction {
