@@ -1,7 +1,10 @@
 {
 	"name": "discord-snowflake",
 	"version": "0.0.1",
-	"author": "Ian Mitchell",
+	"contributors": [
+		"theking465",
+		"Ian Mitchell"
+	],
 	"description": "TODO",
 	"license": "MIT",
 	"exports": "./dist/src/snowflake.js",
