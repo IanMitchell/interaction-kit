@@ -21,9 +21,8 @@ export * from "./commands/options";
 export { default as Embed } from "./structures/embed";
 export { SnowflakeUtils };
 
-import * as DiscordAPI from "discord-api";
-const { client: Client, ...API } = DiscordAPI;
-export { Client, API };
+import * as API from "discord-api";
+export { API };
 
 export { default as SlashCommand } from "./commands/slash-command";
 export { default as ContextMenu } from "./commands/context-menu";

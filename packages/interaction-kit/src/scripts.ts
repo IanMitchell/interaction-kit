@@ -10,17 +10,14 @@ import Application from "./application";
 
 export async function getApplicationEntrypoint(): Promise<Application> {
 	try {
-		/* eslint-disable*/
 		const json = await import(path.join(process.cwd(), "package.json"), {
 			assert: { type: "json" },
 		});
 		const app = await import(path.join(process.cwd(), json?.default?.main));
 		return app?.default as Application;
-		/* eslint-enable */
 	} catch (error: unknown) {
 		console.error("There was an error reading your application file:");
-		// @ts-expect-error dumdum
-		console.log(error.message);
+		console.log((error as Error).message);
 		process.exit(1);
 	}
 }
@@ -43,7 +40,6 @@ function getChangeSet(
 		if (commandList.has(command.name)) {
 			const signature = commandList.get(command.name);
 
-			// eyeroll @ ts
 			if (signature == null) {
 				continue;
 			}

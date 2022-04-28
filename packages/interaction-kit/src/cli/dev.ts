@@ -1,6 +1,6 @@
 import { putGuildApplicationCommands } from "discord-api";
 import ngrok from "ngrok";
-import chokidar from "chokidar";
+import debug from "debug";
 import arg from "arg";
 import spawn from "cross-spawn";
 import { ChildProcess } from "child_process";
@@ -12,20 +12,19 @@ import {
 	getGuildApplicationCommandChanges,
 } from "../scripts";
 
-const CONFIG_FILES = [".env"];
-const BOT_FILES = ["package.json", "src/**/*"];
+const log = debug("cli:dev");
 
 async function updateCommands(guildId: Snowflake) {
 	// Start application
 	const application = await getApplicationEntrypoint();
 
-	console.log("Checking for command updates in Development Server");
+	log("Checking for command updates in Development Server");
 	const devCommandChangeSet = await getGuildApplicationCommandChanges(
 		application,
 		guildId
 	);
 
-	console.log(
+	log(
 		`${devCommandChangeSet.newCommands.size} new commands, ${devCommandChangeSet.updatedCommands.size} changed commands, ${devCommandChangeSet.deletedCommands.size} removed commands, and ${devCommandChangeSet.unchangedCommands.size} unchanged commands.`
 	);
 
@@ -36,13 +35,13 @@ async function updateCommands(guildId: Snowflake) {
 	try {
 		if (devCommandChangeSet.hasChanges) {
 			await putGuildApplicationCommands(
+				application.id,
 				guildId,
-				serializedCommands,
-				application.id
+				serializedCommands
 			);
 		}
 	} catch (error: unknown) {
-		console.log({ error });
+		log((error as Error).message);
 	}
 }
 
@@ -80,20 +79,6 @@ export default async function dev(argv?: string[]) {
 	const port = args["--port"] ?? 3000;
 	let child: ChildProcess | null = null;
 
-	// Listen for config file changes and let user know they need to reload
-	const configWatcher = chokidar.watch(CONFIG_FILES, {
-		ignoreInitial: true,
-	});
-	configWatcher.on("change", (path) => {
-		console.log(
-			`Change detected in ${path} - please restart your application!`
-		);
-	});
-
-	// Watch for changes requiring application reloads
-	const botWatcher = chokidar.watch(BOT_FILES, {
-		ignoreInitial: true,
-	});
 	const handler = async () => {
 		console.log("Reloading application");
 		await updateCommands(guildId);
@@ -105,33 +90,16 @@ export default async function dev(argv?: string[]) {
 		});
 	};
 
-	botWatcher.on("change", (path) => {
-		console.log(`${path} changed, reloading`);
-		void handler();
-	});
-	botWatcher.on("add", (path) => {
-		console.log(`${path} was added, reloading`);
-		console.log(path);
-		void handler();
-	});
-	botWatcher.on("unlink", (path) => {
-		console.log(`${path} was removed, reloading`);
-		void handler();
-	});
-
-	// Start up ngrok tunnel to connect with
-	console.log("Starting Tunnel...");
-
 	const url = await ngrok.connect({
 		addr: port,
-		onLogEvent: (msg) => {
-			console.log(`ngrok Log Event: ${msg}`);
-		},
-		onStatusChange: (status) => {
-			console.log(`Status ${status}`);
-		},
+		// onLogEvent: (msg) => {
+		// 	console.log(`ngrok Log Event: ${msg}`);
+		// },
+		// onStatusChange: (status) => {
+		// 	console.log(`Status ${status}`);
+		// },
 		onTerminated: async () => {
-			console.log("ngrok tunnel terminated");
+			log("Tunnel terminated. Please restart process");
 
 			// Cleanup
 			child?.kill();
@@ -140,15 +108,18 @@ export default async function dev(argv?: string[]) {
 	});
 	void handler();
 
-	console.log(`ngrok tunnel started for http://localhost:${port}\n${url}`);
-	console.log("Add this as your test bot thing. More info: <url>");
 	console.log(
-		boxen(`Set your Application Interactions URL to:\n${chalk.blue(url)}`, {
-			padding: 1,
-			margin: 1,
-			align: "center",
-			borderColor: "yellow",
-			borderStyle: "round",
-		})
+		boxen(
+			`Set your Application Interactions URL to:\n${chalk.blue(
+				url
+			)}\n\n${chalk.gray(`Listening on http://localhost:${port}`)}`,
+			{
+				padding: 1,
+				margin: 1,
+				align: "center",
+				borderColor: "yellow",
+				borderStyle: "round",
+			}
+		)
 	);
 }

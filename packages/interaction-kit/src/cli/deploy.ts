@@ -18,6 +18,6 @@ export default async function command(argv?: string[]) {
 		command.serialize()
 	);
 
-	await putGlobalApplicationCommands(serializedCommands, application.id);
+	await putGlobalApplicationCommands(application.id, serializedCommands);
 	process.exit(0);
 }
