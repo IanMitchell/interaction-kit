@@ -15,18 +15,21 @@ import { ApplicationCommandInteraction, PingInteraction } from "..";
 import SlashCommandAutocompleteInteraction from "./autocomplete/application-command-autocomplete";
 import {
 	APIApplicationCommandInteraction,
-	APIChatInputApplicationCommandInteraction,
-	APIContextMenuInteraction,
 	APIInteraction,
 	APIMessageComponentInteraction,
-	ApplicationCommandType,
-	ComponentType,
 	InteractionType,
-	APIMessageComponentButtonInteraction,
-	APIMessageComponentSelectMenuInteraction,
+	Utils,
 } from "discord-api-types/v9";
 import Option, { isAutocompleteOption } from "../commands/options/option";
 import { StringOption, NumberOption, IntegerOption } from "../commands/options";
+
+// TODO: Ask Vlad if we can get a version of discord-api-types that doesn't nest this under Utils so we can import it natively with modules
+const {
+	isChatInputApplicationCommandInteraction,
+	isContextMenuApplicationCommandInteraction,
+	isMessageComponentButtonInteraction,
+	isMessageComponentSelectMenuInteraction,
+} = Utils;
 
 export function isAutocompleteExecutableOption(
 	option: Option | undefined
@@ -42,37 +45,10 @@ export function isAutocompleteExecutableOption(
 	);
 }
 
-function isChatInputApplicationCommandInteraction(
-	interaction: APIApplicationCommandInteraction
-): interaction is APIChatInputApplicationCommandInteraction {
-	return interaction.data.type === ApplicationCommandType.ChatInput;
-}
-
-function isContextMenuApplicationCommandInteraction(
-	interaction: APIApplicationCommandInteraction
-): interaction is APIContextMenuInteraction {
-	return (
-		interaction.data.type === ApplicationCommandType.Message ||
-		interaction.data.type === ApplicationCommandType.User
-	);
-}
-
-function isMessageComponentButtonInteraction(
-	interaction: APIMessageComponentInteraction
-): interaction is APIMessageComponentButtonInteraction {
-	return interaction.data.component_type === ComponentType.Button;
-}
-
 function isButtonComponent(
 	component: ExecutableComponent
 ): component is Button {
 	return component instanceof Button;
-}
-
-function isMessageComponentSelectMenuInteraction(
-	interaction: APIMessageComponentInteraction
-): interaction is APIMessageComponentSelectMenuInteraction {
-	return interaction.data.component_type === ComponentType.SelectMenu;
 }
 
 function isSelectComponent(
