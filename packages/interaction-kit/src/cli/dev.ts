@@ -1,9 +1,9 @@
+import "dotenv/config";
 import { putGuildApplicationCommands } from "discord-api";
 import ngrok from "ngrok";
+import { Miniflare } from "miniflare";
 import debug from "debug";
 import arg from "arg";
-import spawn from "cross-spawn";
-import { ChildProcess } from "child_process";
 import chalk from "chalk";
 import boxen from "boxen";
 import { Snowflake } from "discord-snowflake";
@@ -77,36 +77,41 @@ export default async function dev(argv?: string[]) {
 	);
 
 	const port = args["--port"] ?? 3000;
-	let child: ChildProcess | null = null;
 
-	const handler = async () => {
-		console.log("Reloading application");
-		await updateCommands(guildId);
+	// eslint-disable @typescript-eslint/no-unused-expressions
+	// @ts-expect-error We're faking worker state
+	global.APPLICATION_ID = process.env.APPLICATION_ID;
+	// @ts-expect-error We're faking worker state
+	global.PUBLIC_KEY = process.env.PUBLIC_KEY;
+	// @ts-expect-error We're faking worker state
+	global.TOKEN = process.env.TOKEN;
+	// eslint-enable @typescript-eslint/no-unused-expressions
 
-		child?.kill();
-		console.log("Starting Wrangler");
-		child = spawn("wrangler", ["dev", "-p", port.toString()], {
-			stdio: "inherit",
-		});
-	};
+	const server = new Miniflare({
+		watch: true,
+		port,
+		packagePath: true,
+		modules: true,
+		globals: {
+			APPLICATION_ID: process.env.APPLICATION_ID,
+			PUBLIC_KEY: process.env.PUBLIC_KEY,
+			TOKEN: process.env.TOKEN,
+		},
+	});
+
+	server.addEventListener("reload", async () => updateCommands(guildId));
+	await updateCommands(guildId);
 
 	const url = await ngrok.connect({
 		addr: port,
-		// onLogEvent: (msg) => {
-		// 	console.log(`ngrok Log Event: ${msg}`);
-		// },
-		// onStatusChange: (status) => {
-		// 	console.log(`Status ${status}`);
-		// },
 		onTerminated: async () => {
 			log("Tunnel terminated. Please restart process");
 
 			// Cleanup
-			child?.kill();
+			await server.dispose();
 			process.exit(0);
 		},
 	});
-	void handler();
 
 	console.log(
 		boxen(
