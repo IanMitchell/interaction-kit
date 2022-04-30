@@ -26,7 +26,7 @@
 	"dependencies": {
 		"discord-api-types": "0.29.0",
 		"discord-request": "0.0.4",
-		"discord-snowflake": "0.0.1",
+		"discord-snowflake": "2.0.0",
 		"debug": "^4.3.4"
 	}
 }

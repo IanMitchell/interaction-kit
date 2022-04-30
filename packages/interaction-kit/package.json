@@ -36,7 +36,7 @@
 		"discord-api": "0.0.2",
 		"discord-api-types": "0.32.0",
 		"discord-request": "0.0.4",
-		"discord-snowflake": "0.0.1",
+		"discord-snowflake": "2.0.0",
 		"discord-verify": "0.0.1",
 		"dotenv": "^10.0.0",
 		"fastify": "^3.25.0",
