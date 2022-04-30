@@ -8,7 +8,7 @@ import {
 	APIApplicationCommandInteractionDataOption,
 	APIApplicationCommandOptionChoice,
 	APIInteractionGuildMember,
-} from "discord-api-types/v9";
+} from "discord-api-types/v10";
 import { ResponseStatus } from "../../requests/response";
 import { Choices } from "../../commands/options/choices";
 import {

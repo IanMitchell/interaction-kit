@@ -19,7 +19,7 @@ import {
 	APIMessageComponentInteraction,
 	InteractionType,
 	Utils,
-} from "discord-api-types/v9";
+} from "discord-api-types/v10";
 import Option, { isAutocompleteOption } from "../commands/options/option";
 import { StringOption, NumberOption, IntegerOption } from "../commands/options";
 

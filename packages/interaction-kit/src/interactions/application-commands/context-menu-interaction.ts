@@ -8,7 +8,7 @@ import {
 import {
 	APIContextMenuInteraction,
 	ApplicationCommandType,
-} from "discord-api-types/payloads/v9";
+} from "discord-api-types/v10";
 
 export type ContextMenuApplicationCommandType = Exclude<
 	ApplicationCommandType,

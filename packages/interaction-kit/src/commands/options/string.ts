@@ -1,7 +1,7 @@
 import {
 	APIApplicationCommandStringOption,
 	ApplicationCommandOptionType,
-} from "discord-api-types/payloads/v9";
+} from "discord-api-types/v10";
 import SlashCommandAutocompleteInteraction from "../../interactions/autocomplete/application-command-autocomplete";
 import { Autocomplete } from "../../interactions/autocomplete/types";
 import { SlashChoiceList } from "./choices";

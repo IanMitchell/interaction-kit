@@ -2,7 +2,7 @@ import {
 	InteractionType,
 	InteractionResponseType,
 	APIPingInteraction,
-} from "discord-api-types/v9";
+} from "discord-api-types/v10";
 import Application from "../application";
 import { RequestBody, ResponseHandler } from "../interfaces";
 import { ResponseStatus } from "../requests/response";

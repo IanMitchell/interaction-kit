@@ -5,7 +5,7 @@ import type {
 	APIEmbedFooter,
 	APIEmbedImage,
 	APIEmbedThumbnail,
-} from "discord-api-types/v9";
+} from "discord-api-types/v10";
 
 type FooterOptions = Omit<APIEmbedFooter, "icon_url" | "proxy_icon_url"> & {
 	iconURL: APIEmbedFooter["icon_url"];

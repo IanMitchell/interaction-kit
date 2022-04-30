@@ -1,5 +1,5 @@
 import type { Snowflake } from "discord-snowflake";
-import { RESTGetAPIGuildResult, Routes } from "discord-api-types/v9";
+import { RESTGetAPIGuildResult, Routes } from "discord-api-types/v10";
 import client from "../client";
 
 // TODO: Test, Type, Document

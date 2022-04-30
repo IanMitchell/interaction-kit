@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from "discord-api-types/v9";
+import { ApplicationCommandOptionType } from "discord-api-types/v10";
 import Option, { BaseOptionArgs } from "./option";
 
 export default class ChannelOption extends Option {

@@ -9,7 +9,7 @@ import {
 	APIMessageComponentEmoji,
 	ButtonStyle,
 	ComponentType,
-} from "discord-api-types/v9";
+} from "discord-api-types/v10";
 
 // Testing the API Base
 interface APIButtonComponentBase<Style extends ButtonStyle>

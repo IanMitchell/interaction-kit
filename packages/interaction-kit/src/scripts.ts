@@ -1,6 +1,8 @@
 import type { Snowflake } from "discord-snowflake";
-import { APIApplicationCommand } from "discord-api-types/payloads/v9";
-import { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/rest/v9";
+import {
+	RESTPostAPIApplicationCommandsJSONBody,
+	APIApplicationCommand,
+} from "discord-api-types/v10";
 import path from "node:path";
 import {
 	getGlobalApplicationCommands,

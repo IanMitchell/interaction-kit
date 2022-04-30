@@ -16,7 +16,7 @@ import {
 	RESTPutAPIApplicationGuildCommandsJSONBody,
 	RESTPutAPIApplicationGuildCommandsResult,
 	Routes,
-} from "discord-api-types/v9";
+} from "discord-api-types/v10";
 
 // TODO: Test, Type, Document
 export async function getGlobalApplicationCommands(applicationId: Snowflake) {

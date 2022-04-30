@@ -7,7 +7,7 @@ import {
 	RESTPatchAPIInteractionFollowupResult,
 	Routes,
 	RESTPostAPIInteractionFollowupResult,
-} from "discord-api-types/v9";
+} from "discord-api-types/v10";
 
 // TODO: Test, Type, Document
 export async function postInteractionFollowup(

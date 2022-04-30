@@ -31,7 +31,7 @@ export { default as ContextMenu } from "./commands/context-menu";
 export { default as ActionRow } from "./components/action-row";
 export { Button, ButtonLink } from "./components/button";
 export { default as Select } from "./components/select";
-export { ButtonStyle } from "discord-api-types/v9";
+export { ButtonStyle } from "discord-api-types/v10";
 
 // Export Markup
 export * as Markdown from "./structures/markdown";

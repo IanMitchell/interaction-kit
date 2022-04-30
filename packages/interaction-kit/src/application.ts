@@ -12,7 +12,7 @@ import {
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
 import { ExecutableComponent, isExecutableComponent } from "./components";
 import { response, ResponseStatus } from "./requests/response";
-import { APIInteraction, ApplicationCommandType } from "discord-api-types/v9";
+import { APIInteraction, ApplicationCommandType } from "discord-api-types/v10";
 import Config from "./config";
 
 type ApplicationArgs = {

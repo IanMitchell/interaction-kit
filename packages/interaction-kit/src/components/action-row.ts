@@ -2,7 +2,7 @@ import {
 	APIActionRowComponent,
 	APIMessageActionRowComponent,
 	ComponentType,
-} from "discord-api-types/v9";
+} from "discord-api-types/v10";
 import type { SerializableComponent } from "../interfaces";
 import { Button } from "./button";
 import Select from "./select";

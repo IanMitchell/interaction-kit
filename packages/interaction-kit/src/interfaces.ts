@@ -15,7 +15,7 @@ import {
 	InteractionType,
 	RESTPatchAPIInteractionFollowupJSONBody,
 	RESTPostAPIApplicationCommandsJSONBody,
-} from "discord-api-types/v9";
+} from "discord-api-types/v10";
 import ActionRow from "./components/action-row";
 import { Choices, ChoiceType } from "./commands/options/choices";
 
