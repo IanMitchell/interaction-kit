@@ -1,11 +1,11 @@
 {
 	"name": "discord-snowflake",
-	"version": "0.0.1",
+	"version": "2.0.0",
 	"contributors": [
 		"theking465",
 		"Ian Mitchell"
 	],
-	"description": "TODO",
+	"description": "A library for identifying and parsing Discord Snowflakes",
 	"license": "MIT",
 	"exports": "./dist/src/snowflake.js",
 	"main": "./dist/src/snowflake.js",
