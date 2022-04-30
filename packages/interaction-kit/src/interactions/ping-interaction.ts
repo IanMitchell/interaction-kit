@@ -20,7 +20,7 @@ export default class PingInteraction {
 	}
 
 	handler() {
-		void this.respond(ResponseStatus.OK, {
+		this.respond(ResponseStatus.OK, {
 			type: InteractionResponseType.Pong,
 		});
 	}
