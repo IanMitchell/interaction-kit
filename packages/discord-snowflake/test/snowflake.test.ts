@@ -1,26 +1,50 @@
 import {
-	getIncrement,
-	getProcessId,
+	isSnowflake,
 	getTimestamp,
+	getDate,
 	getWorkerId,
+	getProcessId,
+	getIncrement,
+	parse,
 } from "../src/snowflake";
 
 // TODO: Write Tests
 
-const snowflake = "176793948025520128";
+const snowflake = "90339695967350784";
 
-test("timestamp", () => {
-	expect(getTimestamp(snowflake)).toStrictEqual(new Date(1462221361882));
+test("isSnowflake", () => {
+	expect(isSnowflake(snowflake)).toBe(true);
+
+	expect(() => isSnowflake("string")).toThrow();
+	// @ts-expect-error intentional test
+	expect(isSnowflake(123)).toBe(false);
 });
 
-test("worker Id", () => {
+test("getTimestamp", () => {
+	expect(getTimestamp(snowflake)).toStrictEqual(1441609061949);
+});
+
+test("getDate", () => {
+	expect(getDate(snowflake)).toStrictEqual(new Date(1441609061949));
+});
+
+test("getWorkerId", () => {
 	expect(getWorkerId(snowflake)).toBe(0);
 });
 
-test("process Id", () => {
-	expect(getProcessId(snowflake)).toBe(0);
+test("getProcessId", () => {
+	expect(getProcessId(snowflake)).toBe(3);
 });
 
-test("increment", () => {
+test("getIncrement", () => {
 	expect(getIncrement(snowflake)).toBe(0);
+});
+
+test("parse", () => {
+	expect(parse(snowflake)).toEqual({
+		timestamp: 1441609061949,
+		workerId: 0,
+		processId: 3,
+		increment: 0,
+	});
 });

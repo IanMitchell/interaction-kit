@@ -5,4 +5,5 @@ module.exports = {
 	testEnvironment: "node",
 	clearMocks: true,
 	resetMocks: true,
+	testPathIgnorePatterns: ["/node_modules/", "/dist/"],
 };
