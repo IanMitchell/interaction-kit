@@ -8,6 +8,8 @@
 		"typecheck": {},
 		"prettier": {},
 		"lint": {},
-		"test": {}
+		"test": {
+			"dependsOn": ["build"]
+		}
 	}
 }
