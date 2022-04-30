@@ -9,7 +9,7 @@ function hexToBinary(hex: string | null) {
 
 	const buffer = new Uint8Array(Math.ceil(hex.length / 2));
 	for (let i = 0; i < buffer.length; i++) {
-		buffer[i] = parseInt(hex.substr(i * 2, 2), 16);
+		buffer[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
 	}
 
 	return buffer;
