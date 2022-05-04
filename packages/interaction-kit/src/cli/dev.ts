@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { putGuildApplicationCommands } from "discord-api";
 import ngrok from "ngrok";
 import { Miniflare } from "miniflare";

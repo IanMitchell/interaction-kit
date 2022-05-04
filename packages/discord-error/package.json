@@ -2,7 +2,7 @@
 	"name": "discord-error",
 	"version": "0.0.1",
 	"author": "Ian Mitchell",
-	"description": "TODO",
+	"description": "Creates a JavaScript Error from the body response of a Discord API JSON error message",
 	"license": "MIT",
 	"exports": "./dist/src/discord-error.js",
 	"main": "./dist/src/discord-error.js",

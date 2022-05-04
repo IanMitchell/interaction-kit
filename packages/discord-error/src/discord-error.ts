@@ -43,6 +43,71 @@ export function isErrorField(error: APIError): error is ErrorField {
 	return !isErrorGroup(error);
 }
 
+export function getMessage(error: ErrorBody) {
+	if (isDiscordError(error)) {
+		const stack = [];
+
+		if (error.message) {
+			stack.push(error.message);
+		}
+
+		if (error.errors) {
+			stack.push(parse(error.errors));
+		}
+
+		if (stack.length > 0) {
+			return stack.join("\n");
+		}
+
+		return "Unknown Error";
+	}
+
+	return error.error_description ?? "No Description";
+}
+
+function* parse(
+	value: APIError,
+	key: string | null = null
+): IterableIterator<string> {
+	// Handle leaf fields
+	if (isErrorField(value)) {
+		// eslint-disable-next-line no-negated-condition
+		const prefix = key != null ? `${key}[${value.code}]` : `${value.code}`;
+		return yield `${prefix}: ${value.message.trim()}`;
+	}
+
+	// Handle nested fields
+	for (const [label, item] of Object.entries(value)) {
+		const nextKey = getNextKey(key, label);
+
+		if (typeof item === "string") {
+			yield item;
+		} else if (isErrorGroup(item)) {
+			for (const error of item._errors) {
+				yield* parse(error, nextKey);
+			}
+		} else {
+			yield* parse(item, nextKey);
+		}
+	}
+}
+
+function getNextKey(key: string | null, label: string) {
+	if (label.startsWith("_")) {
+		return key;
+	}
+
+	if (key != null) {
+		if (Number.isNaN(Number(label))) {
+			return `${key}.${label}`;
+		}
+
+		return `${key}[${label}]`;
+	}
+
+	return label;
+}
+
 export default class DiscordError extends Error {
 	code: string | number;
 	request: Request;
@@ -55,76 +120,11 @@ export default class DiscordError extends Error {
 		code: string | number,
 		raw: ErrorBody
 	) {
-		super(DiscordError.#getMessage(raw));
+		super(getMessage(raw));
 		this.request = request;
 		this.response = response;
 		this.code = code;
 		this.raw = raw;
-	}
-
-	static #getMessage(error: ErrorBody) {
-		if (isDiscordError(error)) {
-			const stack = [];
-
-			if (error.message) {
-				stack.push(error.message);
-			}
-
-			if (error.errors) {
-				stack.push(...this.#parse(error.errors));
-			}
-
-			if (stack.length > 0) {
-				return stack.join("\n");
-			}
-
-			return "Unknown Error";
-		}
-
-		return error.error_description ?? "No Description";
-	}
-
-	static *#parse(
-		value: APIError,
-		key: string | null = null
-	): IterableIterator<string> {
-		// Handle leaf fields
-		if (isErrorField(value)) {
-			// eslint-disable-next-line no-negated-condition
-			const prefix = key != null ? `${key}[${value.code}]` : `${value.code}`;
-			return yield `${prefix}: ${value.message.trim()}`;
-		}
-
-		// Handle nested fields
-		for (const [label, item] of Object.entries(value)) {
-			const nextKey = DiscordError.#getNextKey(key, label);
-
-			if (typeof item === "string") {
-				yield item;
-			} else if (isErrorGroup(item)) {
-				for (const error of item._errors) {
-					yield* this.#parse(error, nextKey);
-				}
-			} else {
-				yield* this.#parse(item, nextKey);
-			}
-		}
-	}
-
-	static #getNextKey(key: string | null, label: string) {
-		if (label.startsWith("_")) {
-			return key;
-		}
-
-		if (key != null) {
-			if (Number.isNaN(Number(label))) {
-				return `${key}.${label}`;
-			}
-
-			return `${key}[${label}]`;
-		}
-
-		return label;
 	}
 
 	get name() {
