@@ -1,4 +1,5 @@
 import type { Snowflake } from "discord-snowflake";
+import debug from "debug";
 import isValidRequest from "discord-verify";
 import SlashCommand from "./commands/slash-command";
 import ContextMenu from "./commands/context-menu";
@@ -14,6 +15,8 @@ import { ExecutableComponent, isExecutableComponent } from "./components";
 import { response, ResponseStatus } from "./requests/response";
 import { APIInteraction, ApplicationCommandType } from "discord-api-types/v10";
 import Config from "./config";
+
+const log = debug("ikit:application");
 
 type ApplicationArgs = {
 	applicationId: string;
@@ -165,21 +168,18 @@ export default class Application {
 
 		try {
 			const json = await request.json<APIInteraction>();
-			console.log({ json });
+
 			return await new Promise((resolve) => {
 				void Interaction.handler(
 					this,
 					json,
 					(status: ResponseStatus, json: Record<string, any>) => {
-						console.log("responding");
-						console.log(status);
-						console.log(JSON.stringify(json));
 						resolve(response(status, json));
 					}
 				);
 			});
-		} catch (exception: unknown) {
-			console.log(exception);
+		} catch (error: unknown) {
+			log((error as Error).message);
 			return response(ResponseStatus.BadRequest, { error: "Unknown Type" });
 		}
 	}

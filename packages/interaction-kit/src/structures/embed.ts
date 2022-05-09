@@ -115,16 +115,13 @@ export default class Embed {
 		return this;
 	}
 
-	// TODO: setFields/addField?
-	addFields(...fields: APIEmbedField[]) {
-		// eslint-disable-next-line no-negated-condition
-		if (this.fields != null) {
-			this.fields.push(...fields);
-		} else {
-			this.fields = fields;
-		}
-
+	setFields(fields: APIEmbedField[]) {
+		this.fields = fields;
 		return this;
+	}
+
+	addField(field: APIEmbedField[]) {
+		return this.setFields((this.fields ?? []).concat(field));
 	}
 
 	serialize(): APIEmbed {

@@ -1,15 +1,15 @@
 import type { Snowflake } from "discord-snowflake";
 import client from "../client";
 import {
+	Routes,
 	RESTPostAPIInteractionFollowupJSONBody,
 	RESTPatchAPIInteractionFollowupJSONBody,
 	RESTDeleteAPIInteractionFollowupResult,
 	RESTPatchAPIInteractionFollowupResult,
-	Routes,
 	RESTPostAPIInteractionFollowupResult,
 } from "discord-api-types/v10";
 
-// TODO: Test, Type, Document
+// TODO: Test, Document
 export async function postInteractionFollowup(
 	applicationId: Snowflake,
 	interactionToken: string,
@@ -20,7 +20,7 @@ export async function postInteractionFollowup(
 	}) as Promise<RESTPostAPIInteractionFollowupResult>;
 }
 
-// TODO: Test, Type, Document
+// TODO: Test, Document
 export async function patchInteractionFollowup(
 	applicationId: Snowflake,
 	interactionToken: string,
@@ -35,7 +35,7 @@ export async function patchInteractionFollowup(
 	) as Promise<RESTPatchAPIInteractionFollowupResult>;
 }
 
-// TODO: Test, Type, Document
+// TODO: Test, Document
 export async function deleteInteractionFollowup(
 	applicationId: Snowflake,
 	interactionToken: string,

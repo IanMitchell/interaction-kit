@@ -52,7 +52,7 @@ export function getMessage(error: ErrorBody) {
 		}
 
 		if (error.errors) {
-			stack.push(parse(error.errors));
+			stack.push(...Array.from(parse(error.errors)));
 		}
 
 		if (stack.length > 0) {

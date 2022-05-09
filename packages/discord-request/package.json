@@ -2,7 +2,7 @@
 	"name": "discord-request",
 	"version": "0.0.4",
 	"author": "Ian Mitchell",
-	"description": "Discord Request makes HTTP API requests while handling rate limit restrictions automatically.",
+	"description": "A Discord HTTP client that handles global and resource rate limits automatically",
 	"license": "MIT",
 	"exports": "./dist/src/client.js",
 	"main": "./dist/src/client.js",
@@ -21,7 +21,7 @@
 		"src"
 	],
 	"engines": {
-		"node": ">=17"
+		"node": ">=18"
 	},
 	"dependencies": {
 		"discord-error": "0.0.1",

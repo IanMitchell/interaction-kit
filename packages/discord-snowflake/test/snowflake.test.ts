@@ -8,8 +8,6 @@ import {
 	parse,
 } from "../src/snowflake";
 
-// TODO: Write Tests
-
 const snowflake = "90339695967350784";
 
 test("isSnowflake", () => {

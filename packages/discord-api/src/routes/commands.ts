@@ -1,6 +1,7 @@
 import type { Snowflake } from "discord-snowflake";
 import client from "../client";
 import {
+	Routes,
 	RESTGetAPIApplicationCommandsResult,
 	RESTGetAPIApplicationGuildCommandsResult,
 	RESTPatchAPIApplicationCommandJSONBody,
@@ -15,17 +16,16 @@ import {
 	RESTPutAPIApplicationCommandsResult,
 	RESTPutAPIApplicationGuildCommandsJSONBody,
 	RESTPutAPIApplicationGuildCommandsResult,
-	Routes,
 } from "discord-api-types/v10";
 
-// TODO: Test, Type, Document
+// TODO: Test, Document
 export async function getGlobalApplicationCommands(applicationId: Snowflake) {
 	return client.get(
 		Routes.applicationCommands(applicationId)
 	) as Promise<RESTGetAPIApplicationCommandsResult>;
 }
 
-// TODO: Test, Type, Document
+// TODO: Test, Document
 export async function postGlobalApplicationCommand(
 	applicationId: Snowflake,
 	command: RESTPostAPIApplicationCommandsJSONBody
@@ -35,7 +35,7 @@ export async function postGlobalApplicationCommand(
 	}) as Promise<RESTPostAPIApplicationCommandsResult>;
 }
 
-// TODO: Test, Type, Document
+// TODO: Test, Document
 export async function putGlobalApplicationCommands(
 	applicationId: Snowflake,
 	commands: RESTPutAPIApplicationCommandsJSONBody
@@ -45,7 +45,7 @@ export async function putGlobalApplicationCommands(
 	}) as Promise<RESTPutAPIApplicationCommandsResult>;
 }
 
-// TODO: Test, Type, Document
+// TODO: Test, Document
 export async function patchGlobalApplicationCommand(
 	applicationId: Snowflake,
 	command: RESTPatchAPIApplicationCommandJSONBody & { id: Snowflake }
@@ -55,7 +55,7 @@ export async function patchGlobalApplicationCommand(
 	}) as Promise<RESTPatchAPIApplicationCommandResult>;
 }
 
-// TODO: Test, Type, Document
+// TODO: Test, Document
 export async function deleteGlobalApplicationCommand(
 	applicationId: Snowflake,
 	commandId: Snowflake
@@ -63,7 +63,7 @@ export async function deleteGlobalApplicationCommand(
 	return client.delete(Routes.applicationCommand(applicationId, commandId));
 }
 
-// TODO: Test, Type, Document
+// TODO: Test, Document
 export async function getGuildApplicationCommands(
 	applicationId: Snowflake,
 	guildId: Snowflake
@@ -73,7 +73,7 @@ export async function getGuildApplicationCommands(
 	) as Promise<RESTGetAPIApplicationGuildCommandsResult>;
 }
 
-// TODO: Test, Type, Document
+// TODO: Test, Document
 export async function postGuildApplicationCommand(
 	applicationId: Snowflake,
 	guildId: Snowflake,
@@ -84,7 +84,7 @@ export async function postGuildApplicationCommand(
 	}) as Promise<RESTPostAPIApplicationGuildCommandsResult>;
 }
 
-// TODO: Test, Type, Document
+// TODO: Test, Document
 export async function putGuildApplicationCommands(
 	applicationId: Snowflake,
 	guildId: Snowflake,
@@ -95,7 +95,7 @@ export async function putGuildApplicationCommands(
 	}) as Promise<RESTPutAPIApplicationGuildCommandsResult>;
 }
 
-// TODO: Test, Type, Document
+// TODO: Test, Document
 export async function patchGuildApplicationCommand(
 	applicationId: Snowflake,
 	guildId: Snowflake,
@@ -109,7 +109,7 @@ export async function patchGuildApplicationCommand(
 	) as Promise<RESTPatchAPIApplicationGuildCommandResult>;
 }
 
-// TODO: Test, Type, Document
+// TODO: Test, Document
 export async function deleteGuildApplicationCommand(
 	applicationId: Snowflake,
 	guildId: Snowflake,

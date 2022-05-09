@@ -1,4 +1,5 @@
 import * as SnowflakeUtils from "discord-snowflake";
+import * as API from "discord-api";
 
 // Application level exports
 export { default as Application } from "./application";
@@ -20,8 +21,6 @@ export * from "./commands/options";
 // API and Structure exports
 export { default as Embed } from "./structures/embed";
 export { SnowflakeUtils };
-
-import * as API from "discord-api";
 export { API };
 
 export { default as SlashCommand } from "./commands/slash-command";

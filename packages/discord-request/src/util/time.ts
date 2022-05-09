@@ -10,17 +10,22 @@ export async function sleep(
 	abort?: AbortSignal | null
 ): Promise<void> {
 	return new Promise((resolve) => {
+		// Create the sleep loop
 		const ref = setTimeout(() => {
 			cleanup();
 			resolve();
 		}, timeout);
 
+		// Handle shutdown signals
 		const cleanup = () => {
 			clearTimeout(ref);
+			abort?.removeEventListener("signal", shutdown);
 		};
 
-		abort?.addEventListener("signal", () => {
+		const shutdown = () => {
 			cleanup();
-		});
+		};
+
+		abort?.addEventListener("signal", shutdown);
 	});
 }
