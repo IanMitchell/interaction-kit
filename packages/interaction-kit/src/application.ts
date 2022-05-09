@@ -44,6 +44,7 @@ export default class Application {
 	#token: string;
 	#commands: CommandMap;
 	#components: Map<string, ExecutableComponent> = new Map();
+	#shutdown: AbortController;
 
 	constructor({ applicationId, publicKey, token }: ApplicationArgs) {
 		if (!applicationId) {
@@ -65,6 +66,7 @@ export default class Application {
 		this.#applicationId = applicationId as Snowflake;
 		this.#publicKey = publicKey;
 		this.#token = token as Snowflake;
+		this.#shutdown = new AbortController();
 
 		// Set up internal data structures
 		this.#commands = {
@@ -76,6 +78,7 @@ export default class Application {
 		// Configure API Defaults
 		Config.setApplicationId(this.#applicationId);
 		client.setToken(this.#token);
+		client.setAbortSignal(this.#shutdown.signal);
 	}
 
 	get id() {
@@ -185,6 +188,6 @@ export default class Application {
 	}
 
 	shutdown() {
-		// TODO: Send abort controller
+		this.#shutdown.abort();
 	}
 }

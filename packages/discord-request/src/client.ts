@@ -18,6 +18,10 @@ export default class Client {
 		return this;
 	}
 
+	setAbortSignal(signal: AbortSignal) {
+		this.#manager.shutdownSignal = signal;
+	}
+
 	async get(path: string, options: RequestOptions = {}) {
 		return this.#request({
 			path,
