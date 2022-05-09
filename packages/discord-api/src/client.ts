@@ -6,8 +6,8 @@ class DiscordApiClient extends Client {
 		return super.setUserAgent(`${value}, discord-api ${pkg.version}`);
 	}
 }
+
 const instance = new DiscordApiClient({
-	version: "9",
 	bucketSweepInterval: 0,
 	queueSweepInterval: 0,
 	userAgent: `discord-api ${pkg.version}`,
