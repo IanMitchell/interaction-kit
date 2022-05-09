@@ -1,6 +1,6 @@
 # discord-api
 
-A wrapper around the Discord REST API. This package is built on top of `discord-request` and `discord-api-types` - it is fully typed and handles rate limits appropriately.
+A wrapper around the Discord REST API. This package is built on top of [`discord-request`](https://www.npmjs.com/package/discord-request) and [`discord-api-types`](https://www.npmjs.com/package/discord-api-types) - it is fully typed and handles rate limits appropriately.
 
 **Requires Node v18+ or a ServiceWorker Environment**
 
