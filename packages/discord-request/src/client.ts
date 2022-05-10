@@ -1,10 +1,10 @@
 import { RequestData, RequestOptions, RequestMethod } from "./types";
-import { Manager } from "./manager";
+import { Manager, ManagerArgs } from "./manager";
 
 export default class Client {
 	#manager: Manager;
 
-	constructor(options = {}) {
+	constructor(options: ManagerArgs = {}) {
 		this.#manager = new Manager(options);
 	}
 

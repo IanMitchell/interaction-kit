@@ -25,10 +25,6 @@ try {
 }
 ```
 
-## Client Options
-
-TODO
-
 ## Endpoint Documentation
 
 For a full list of endpoints, please [visit the documentation]().

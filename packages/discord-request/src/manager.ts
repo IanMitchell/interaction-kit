@@ -22,7 +22,7 @@ type Config = {
 	globalRequestsPerSecond: number;
 };
 
-type ManagerArgs = {
+type SystemArgs = {
 	shutdownSignal?: AbortSignal;
 	onBucketSweep?: (swept: Map<string, Bucket>) => void;
 	onQueueSweep?: (swept: Map<string, Queue>) => void;
@@ -37,6 +37,8 @@ type ManagerArgs = {
 		retries: number
 	) => void;
 };
+
+export type ManagerArgs = Partial<Config> & SystemArgs;
 
 export class Manager {
 	#token: string | null = null;
@@ -85,7 +87,7 @@ export class Manager {
 		queueSweepInterval,
 		onRateLimit,
 		onRequest,
-	}: Partial<Config> & ManagerArgs) {
+	}: ManagerArgs) {
 		this.config = {
 			api: api ?? "https://discord.com/api",
 			version: version ?? 10,

@@ -2,7 +2,7 @@
 	"name": "discord-verify",
 	"version": "0.0.1",
 	"author": "Ian Mitchell",
-	"description": "TODO",
+	"description": "A library for verifying the authenticity of requests coming from the Discord Interactions API",
 	"license": "MIT",
 	"exports": "./dist/src/verify.js",
 	"main": "./dist/src/verify.js",
