@@ -19,7 +19,6 @@ export interface Attachment {
 	data: Blob;
 }
 
-// TODO: Update
 export interface RequestOptions {
 	auth?: boolean;
 	authPrefix?: "Bot" | "Bearer";
@@ -27,53 +26,24 @@ export interface RequestOptions {
 	body?: BodyInit | unknown;
 	files?: Attachment[] | undefined;
 	headers?: Record<string, string>;
-	passThroughBody?: boolean;
+	rawBody?: boolean;
 	query?: URLSearchParams;
 	reason?: string;
 	versioned?: boolean;
 }
 
-// TODO: Update
 export interface RequestData extends RequestOptions {
 	path: string;
 	method: RequestMethod;
 }
 
-// TODO: Update
 export interface RateLimitData {
-	/**
-	 * The time, in milliseconds, until the request-lock is reset
-	 */
-	timeToReset: number;
-	/**
-	 * The amount of requests we can perform before locking requests
-	 */
+	retryAfter: number;
 	limit: number;
-	/**
-	 * The HTTP method being performed
-	 */
-	method: RequestMethod;
-	/**
-	 * The bucket hash for this request
-	 */
-	hash: string;
-	/**
-	 * The full URL for this request
-	 */
+	bucket: string;
 	url: string;
-	/**
-	 * The route being hit in this request
-	 */
 	route: string;
-	/**
-	 * The major parameter of the route
-	 *
-	 * For example, in `/channels/x`, this will be `x`.
-	 * If there is no major parameter (e.g: `/bot/gateway`) this will be `global`.
-	 */
-	majorParameter: string;
-	/**
-	 * Whether the rate limit that was reached was the global limit
-	 */
+	identifier: string;
 	global: boolean;
+	method: RequestMethod;
 }

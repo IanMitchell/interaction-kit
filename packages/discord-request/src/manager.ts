@@ -278,7 +278,7 @@ export class Manager {
 
 			body = formData;
 		} else if (data.body != null) {
-			if (data.passThroughBody) {
+			if (data.rawBody) {
 				body = data.body as BodyInit;
 			} else {
 				headers.set("Content-Type", "application/json");
