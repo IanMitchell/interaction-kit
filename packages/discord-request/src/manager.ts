@@ -11,7 +11,7 @@ type Bucket = {
 	lastRequest: number;
 };
 
-type Config = {
+export type Config = {
 	api: string;
 	cdn: string;
 	headers: Record<string, string>;
@@ -22,12 +22,9 @@ type Config = {
 	globalRequestsPerSecond: number;
 };
 
-type SystemArgs = {
-	shutdownSignal?: AbortSignal;
+export type Callbacks = {
 	onBucketSweep?: (swept: Map<string, Bucket>) => void;
 	onQueueSweep?: (swept: Map<string, Queue>) => void;
-	queueSweepInterval?: number;
-	bucketSweepInterval?: number;
 	onRateLimit?: (data: RateLimitData) => void;
 	onRequest?: (
 		parameters: Route,
@@ -38,7 +35,13 @@ type SystemArgs = {
 	) => void;
 };
 
-export type ManagerArgs = Partial<Config> & SystemArgs;
+type Cache = {
+	shutdownSignal?: AbortSignal;
+	queueSweepInterval?: number;
+	bucketSweepInterval?: number;
+};
+
+export type ManagerArgs = Partial<Config> & Cache & Callbacks;
 
 export class Manager {
 	#token: string | null = null;
@@ -55,8 +58,8 @@ export class Manager {
 	#bucketSweeper = -1;
 	#queueSweeper = -1;
 
-	#bucketSweepInterval: number;
-	#queueSweepInterval: number;
+	bucketSweepInterval: number;
+	queueSweepInterval: number;
 
 	onBucketSweep?: (swept: Map<string, Bucket>) => void;
 	onQueueSweep?: (swept: Map<string, Queue>) => void;
@@ -104,8 +107,8 @@ export class Manager {
 
 		this.globalRequestCounter = this.config.globalRequestsPerSecond;
 
-		this.#bucketSweepInterval = bucketSweepInterval ?? 0;
-		this.#queueSweepInterval = queueSweepInterval ?? 0;
+		this.bucketSweepInterval = bucketSweepInterval ?? 0;
+		this.queueSweepInterval = queueSweepInterval ?? 0;
 		this.onBucketSweep = onBucketSweep;
 		this.onQueueSweep = onQueueSweep;
 		this.onRateLimit = onRateLimit;
@@ -179,7 +182,7 @@ export class Manager {
 	}
 
 	#startBucketSweep() {
-		if (this.#bucketSweepInterval === 0) {
+		if (this.bucketSweepInterval === 0) {
 			return;
 		}
 
@@ -199,11 +202,11 @@ export class Manager {
 			}
 
 			this.onBucketSweep?.(swept);
-		}, this.#bucketSweepInterval);
+		}, this.bucketSweepInterval);
 	}
 
 	#startQueueSweep() {
-		if (this.#queueSweepInterval === 0) {
+		if (this.queueSweepInterval === 0) {
 			return;
 		}
 
@@ -219,7 +222,7 @@ export class Manager {
 			}
 
 			this.onQueueSweep?.(swept);
-		}, this.#queueSweepInterval);
+		}, this.queueSweepInterval);
 	}
 
 	#getBucket(key: string) {
