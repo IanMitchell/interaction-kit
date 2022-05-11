@@ -2,8 +2,12 @@ import pkg from "../package.json" assert { type: "json" };
 import Client from "discord-request";
 
 class DiscordApiClient extends Client {
-	setUserAgent(value: string) {
-		return super.setUserAgent(`${value}, discord-api ${pkg.version}`);
+	get userAgent() {
+		return this.userAgent;
+	}
+
+	set userAgent(value: string) {
+		this.userAgent = `${value}, discord-api ${pkg.version}`;
 	}
 }
 

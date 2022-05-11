@@ -78,7 +78,7 @@ export default class Application {
 		// Configure API Defaults
 		Config.setApplicationId(this.#applicationId);
 		client.setToken(this.#token);
-		client.setAbortSignal(this.#shutdown.signal);
+		client.abortSignal = this.#shutdown.signal;
 	}
 
 	get id() {
