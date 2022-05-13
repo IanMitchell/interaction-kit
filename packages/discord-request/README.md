@@ -58,7 +58,7 @@ Every parameter listed below is optional.
 - `onRateLimit`: See callbacks below.
 - `onRequest`: See callbacks below.
 
-#### Calbacks
+#### Callbacks
 
 ###### `onBucketSweep?: (swept: Map<string, Bucket>) => void;`
 
