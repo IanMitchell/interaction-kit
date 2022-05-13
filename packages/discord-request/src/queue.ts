@@ -2,7 +2,7 @@ import debug from "debug";
 import DiscordError, { ErrorBody, isDiscordError } from "discord-error";
 import { RequestError } from "./errors/request-error";
 import { Manager } from "./manager";
-import { RequestMethod, RequestOptions, Route } from "./types";
+import { RequestMethod, Route } from "./types";
 import { getRouteKey } from "./util/routes";
 import { OFFSET, ONE_HOUR, sleep } from "./util/time";
 
@@ -43,15 +43,10 @@ export default class Queue {
 		return this.reset + OFFSET - Date.now();
 	}
 
-	async add(
-		route: Route,
-		resource: string,
-		init: RequestInit,
-		options: RequestOptions
-	) {
+	async add(route: Route, resource: string, init: RequestInit) {
 		return new Promise((resolve) => {
 			void this.#queue.then(async () => {
-				const value = await this.#process(route, resource, init, options);
+				const value = await this.#process(route, resource, init);
 				resolve(value);
 			});
 		});
@@ -61,10 +56,9 @@ export default class Queue {
 		route: Route,
 		resource: string,
 		init: RequestInit,
-		options: RequestOptions,
 		retries = 0
 	): Promise<unknown> {
-		await this.#rateLimitThrottle(route, init.method as RequestMethod);
+		await this.#rateLimitThrottle();
 
 		// As the request goes out, update the global request counter
 		if (this.manager.globalReset < Date.now()) {
@@ -87,10 +81,9 @@ export default class Queue {
 		this.#shutdownSignal?.addEventListener("signal", clearAbort);
 
 		// Callbacks
-		this.manager.onRequest?.(route, resource, init, options, retries);
+		this.manager.onRequest?.(route, resource, init, retries);
 
 		// Send the request
-		// TODO: merge init and options
 		const request = new Request(resource, init);
 		let response: Response;
 
@@ -103,7 +96,7 @@ export default class Queue {
 				error.name === "AbortError" &&
 				retries < this.manager.config.retries
 			) {
-				return await this.#process(route, resource, init, options, retries + 1);
+				return await this.#process(route, resource, init, retries + 1);
 			}
 
 			throw error;
@@ -163,45 +156,32 @@ export default class Queue {
 
 		// Rate Limited Requests
 		if (response.status === 429) {
-			// this.manager.onRateLimit({
-			// timeout,
-			// limit,
-			// method,
-			// hash: this.hash,
-			// url,
-			// route: routeId.bucketRoute,
-			// majorParameter: this.majorParameter,
-			// global: isGlobal,
-			// });
+			const rateLimitData = {
+				retryAfter,
+				bucket: this.id,
+				url: resource,
+				limit: this.limit,
+				route: route.path,
+				identifier: route.identifier,
+				global: global,
+				method: init.method as RequestMethod,
+			};
 
-			// this.debug(
-			// 	[
-			// 		"Encountered unexpected 429 rate limit",
-			// 		`  Global         : ${isGlobal.toString()}`,
-			// 		`  Method         : ${method}`,
-			// 		`  URL            : ${url}`,
-			// 		`  Bucket         : ${routeId.bucketRoute}`,
-			// 		`  Major parameter: ${routeId.majorParameter}`,
-			// 		`  Hash           : ${this.hash}`,
-			// 		`  Limit          : ${limit}`,
-			// 		`  Retry After    : ${retryAfter}ms`,
-			// 		`  Sublimit       : ${
-			// 			sublimitTimeout ? `${sublimitTimeout}ms` : "None"
-			// 		}`,
-			// 	].join("\n")
-			// );
+			this.manager.onRateLimit?.(rateLimitData);
+
+			log(`Encountered 429 rate limit. ${JSON.stringify(rateLimitData)}.`);
 
 			// If caused by a sublimit, wait it out here so other requests on the route can be handled
 			await sleep(retryAfter, this.#shutdownSignal);
 
 			// Don't bump retries for a non-server issue (the request is expected to succeed)
-			return this.#process(route, resource, init, options, retries);
+			return this.#process(route, resource, init, retries);
 		}
 
 		// If given a server error, retry the request
 		if (response.status >= 500 && response.status < 600) {
 			if (retries < this.manager.config.retries) {
-				return this.#process(route, resource, init, options, retries + 1);
+				return this.#process(route, resource, init, retries + 1);
 			}
 
 			throw new RequestError(
@@ -215,7 +195,8 @@ export default class Queue {
 		// Handle non-ratelimited bad requests
 		if (response.status >= 400 && response.status < 500) {
 			// If we receive this status code, it means the token we had is no longer valid.
-			if (response.status === 401 && options.auth) {
+			const isAuthRequest = new Headers(init.headers).has("Authorization");
+			if (response.status === 401 && isAuthRequest) {
 				this.manager.setToken(null);
 			}
 
@@ -229,13 +210,10 @@ export default class Queue {
 		return response;
 	}
 
-	async #rateLimitThrottle(route: Route, method: RequestMethod) {
+	async #rateLimitThrottle() {
 		while (this.manager.isGlobalLimited() || this.isLocalLimited()) {
 			const isGlobal = this.manager.isGlobalLimited();
 
-			const limit = isGlobal
-				? this.manager.config.globalRequestsPerSecond
-				: this.limit;
 			// TODO: Make this use retryAfter
 			const timeout = isGlobal
 				? this.manager.globalTimeout
@@ -243,18 +221,6 @@ export default class Queue {
 			const delay = isGlobal
 				? this.manager.globalDelay ?? this.manager.setGlobalDelay(timeout)
 				: sleep(timeout);
-
-			// TODO: Design Callback
-			// this.manager.onRateLimit?.({
-			// 	timeToReset: timeout,
-			// 	limit,
-			// 	method: method ?? RequestMethod.Get,
-			// 	id: this.id,
-			// 	url,
-			// 	path: route.path,
-			// 	majorParameter: route.primaryId,
-			// 	global: isGlobal,
-			// });
 
 			if (isGlobal) {
 				log(

@@ -30,7 +30,6 @@ export type Callbacks = {
 		parameters: Route,
 		resource: string,
 		init: RequestInit,
-		options: RequestOptions,
 		retries: number
 	) => void;
 };
@@ -61,16 +60,10 @@ export class Manager {
 	bucketSweepInterval: number;
 	queueSweepInterval: number;
 
-	onBucketSweep?: (swept: Map<string, Bucket>) => void;
-	onQueueSweep?: (swept: Map<string, Queue>) => void;
-	onRateLimit?: (data: RateLimitData) => void;
-	onRequest?: (
-		parameters: Route,
-		resource: string,
-		init: RequestInit,
-		options: RequestOptions,
-		retries: number
-	) => void;
+	onBucketSweep?: Callbacks["onBucketSweep"];
+	onQueueSweep?: Callbacks["onQueueSweep"];
+	onRateLimit?: Callbacks["onRateLimit"];
+	onRequest?: Callbacks["onRequest"];
 
 	constructor({
 		// Request Config
@@ -138,11 +131,7 @@ export class Manager {
 
 		const { resource, init } = this.#resolve(data);
 
-		return queue.add(route, resource, init, {
-			body: data.body,
-			files: data.files,
-			auth: Boolean(data.auth),
-		});
+		return queue.add(route, resource, init);
 	}
 
 	setToken(token: string | null) {

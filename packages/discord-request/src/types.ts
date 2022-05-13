@@ -25,7 +25,7 @@ export interface RequestOptions {
 	formData?: FormData;
 	body?: BodyInit | unknown;
 	files?: Attachment[] | undefined;
-	headers?: Record<string, string>;
+	headers?: HeadersInit;
 	rawBody?: boolean;
 	query?: URLSearchParams;
 	reason?: string;
@@ -39,7 +39,7 @@ export interface RequestData extends RequestOptions {
 
 export interface RateLimitData {
 	retryAfter: number;
-	limit: number;
+	limit: number | null;
 	bucket: string;
 	url: string;
 	route: string;
