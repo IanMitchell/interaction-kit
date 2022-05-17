@@ -2,7 +2,7 @@
 	"name": "discord-api",
 	"version": "0.0.2",
 	"author": "Ian Mitchell",
-	"description": "TODO",
+	"description": "A modern Discord HTTP REST API wrapper library",
 	"license": "MIT",
 	"exports": "./dist/src/index.js",
 	"main": "./dist/src/index.js",
