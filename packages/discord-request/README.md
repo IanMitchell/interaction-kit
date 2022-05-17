@@ -78,4 +78,4 @@ Runs when a request is sent to the Discord API. Returns information used to send
 
 ## Credits
 
-This code is heavily inspired and derived from code originally written by the discord.js maintainers in the [@discordjs/rest](https://www.npmjs.com/package/@discordjs/rest) package.
+This code is derived from code originally written by the discord.js maintainers in the [@discordjs/rest](https://www.npmjs.com/package/@discordjs/rest) package and distributed under the Apache 2 license.
