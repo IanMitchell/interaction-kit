@@ -8,10 +8,10 @@ export const enum RequestMethod {
 	Put = "put",
 }
 
-export type Route = {
+export interface Route {
 	identifier: string;
 	path: string;
-};
+}
 
 export interface Attachment {
 	id?: Snowflake;

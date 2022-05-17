@@ -13,7 +13,7 @@ npm install discord-snowflake
 Then in your code import the library:
 
 ```js
-import * as SnowflakeUtils from "discord-request";
+import * as SnowflakeUtils from "discord-snowflake";
 ```
 
 ## API

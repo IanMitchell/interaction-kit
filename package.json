@@ -8,7 +8,7 @@
 	"packageManager": "npm@8.5.1",
 	"scripts": {
 		"cli:create": "npm run dev --workspace=create-ikit-app",
-		"build": "NODE_OPTIONS=--openssl-legacy-provider turbo run build",
+		"build": "turbo run build",
 		"typecheck": "turbo run typecheck",
 		"prettier": "turbo run prettier",
 		"lint": "turbo run lint",
@@ -21,7 +21,6 @@
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^3.0.0",
-		"@types/cross-spawn": "^6.0.2",
 		"@types/debug": "^4.1.7",
 		"@types/jest": "^27.0.2",
 		"@types/node": "^16.9.6",

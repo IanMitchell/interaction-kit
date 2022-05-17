@@ -1,6 +1,5 @@
 import { putGuildApplicationCommands } from "discord-api";
 import ngrok from "ngrok";
-import { Miniflare } from "miniflare";
 import debug from "debug";
 import arg from "arg";
 import chalk from "chalk";
@@ -86,19 +85,19 @@ export default async function dev(argv?: string[]) {
 	global.TOKEN = process.env.TOKEN;
 	// eslint-enable @typescript-eslint/no-unused-expressions
 
-	const server = new Miniflare({
-		watch: true,
-		port,
-		packagePath: true,
-		modules: true,
-		globals: {
-			APPLICATION_ID: process.env.APPLICATION_ID,
-			PUBLIC_KEY: process.env.PUBLIC_KEY,
-			TOKEN: process.env.TOKEN,
-		},
-	});
+	// const server = new Miniflare({
+	// 	watch: true,
+	// 	port,
+	// 	packagePath: true,
+	// 	modules: true,
+	// 	globals: {
+	// 		APPLICATION_ID: process.env.APPLICATION_ID,
+	// 		PUBLIC_KEY: process.env.PUBLIC_KEY,
+	// 		TOKEN: process.env.TOKEN,
+	// 	},
+	// });
 
-	server.addEventListener("reload", async () => updateCommands(guildId));
+	// server.addEventListener("reload", async () => updateCommands(guildId));
 	await updateCommands(guildId);
 
 	const url = await ngrok.connect({
@@ -107,7 +106,7 @@ export default async function dev(argv?: string[]) {
 			log("Tunnel terminated. Please restart process");
 
 			// Cleanup
-			await server.dispose();
+			// await server.dispose();
 			process.exit(0);
 		},
 	});
