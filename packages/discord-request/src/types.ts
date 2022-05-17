@@ -1,6 +1,6 @@
 import type { Snowflake } from "discord-snowflake";
 
-export const enum RequestMethod {
+export enum RequestMethod {
 	Delete = "delete",
 	Get = "get",
 	Patch = "patch",
