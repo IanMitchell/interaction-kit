@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"scripts": {
 		"build": "tsup src/cli.ts --minify",
-		"dev": "tsup src/cli.ts --watch",
+		"cli": "tsup src/cli.ts --watch",
 		"prepublishOnly": "npm run build"
 	},
 	"bin": "dist/cli.js",

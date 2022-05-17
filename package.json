@@ -1,13 +1,15 @@
 {
 	"name": "interaction-kit-workspace",
 	"workspaces": [
+		"apps/*",
 		"packages/*"
 	],
 	"version": "0.0.1",
 	"private": true,
 	"packageManager": "npm@8.5.1",
 	"scripts": {
-		"cli:create": "npm run dev --workspace=create-ikit-app",
+		"cli": "turbo run cli --filter=create-ikit-app",
+		"dev": "turbo run dev --no-cache --parallel --continue",
 		"build": "turbo run build",
 		"typecheck": "turbo run typecheck",
 		"prettier": "turbo run prettier",
