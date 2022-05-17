@@ -1,0 +1,48 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.234.0/containers/typescript-node
+{
+	"name": "Node.js & TypeScript",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": {
+			"VARIANT": "18"
+		}
+	},
+	"settings": {
+		"files.insertFinalNewline": true,
+		"files.trimTrailingWhitespace": true,
+		"files.trimFinalNewlines": true,
+		"files.eol": "\n",
+		"[javascript]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode"
+		},
+		"[typescriptreact]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode"
+		},
+		"[typescript]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode"
+		},
+		"editor.formatOnSave": true
+	},
+	"extensions": [
+		"silvenon.mdx",
+		"esbenp.prettier-vscode",
+		"dbaeumer.vscode-eslint",
+		"dbaeumer.vscode-eslint",
+		"reduckted.vscode-gitweblinks",
+		"christian-kohler.path-intellisense",
+		"bradlc.vscode-tailwindcss"
+	],
+	"forwardPorts": [3000],
+	"portsAttributes": {
+		"3000": {
+			"label": "interactionkit.dev"
+		}
+	},
+	"postCreateCommand": "npm install",
+	"features": {
+		"git": "latest",
+		"github-cli": "latest",
+		"homebrew": "latest"
+	}
+}
