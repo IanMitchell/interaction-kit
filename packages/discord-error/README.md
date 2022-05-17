@@ -5,7 +5,7 @@ Creates a JavaScript Error from the body response of a Discord API JSON error me
 ## Usage
 
 ```js
-import DiscordError, { isDiscordError } from "discord-error";
+import { DiscordError, isDiscordError } from "discord-error";
 
 // This should be the incoming interaction request
 const request = new Request();

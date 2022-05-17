@@ -1,5 +1,5 @@
 import debug from "debug";
-import DiscordError, { ErrorBody, isDiscordError } from "discord-error";
+import { DiscordError, ErrorBody, isDiscordError } from "discord-error";
 import { RequestError } from "./errors/request-error";
 import { Manager } from "./manager";
 import { RequestMethod, Route } from "./types";

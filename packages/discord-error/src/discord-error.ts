@@ -108,7 +108,7 @@ function getNextKey(key: string | null, label: string) {
 	return label;
 }
 
-export default class DiscordError extends Error {
+export class DiscordError extends Error {
 	code: string | number;
 	request: Request;
 	response: Response;
