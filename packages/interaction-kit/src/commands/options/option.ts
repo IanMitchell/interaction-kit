@@ -16,7 +16,6 @@ type OptionArgs = {
 	name: string;
 	description: string;
 	required?: boolean;
-	options?: APIApplicationCommandOption[];
 };
 
 export type BaseOptionArgs = Omit<OptionArgs, "type" | "options">;
@@ -65,20 +64,12 @@ export default class Option
 	public readonly name;
 	public readonly description;
 	public readonly required;
-	public readonly options;
 
-	constructor({
-		type,
-		name,
-		description,
-		options,
-		required = false,
-	}: OptionArgs) {
+	constructor({ type, name, description, required = false }: OptionArgs) {
 		this.type = type;
 		this.name = name;
 		this.description = description;
 		this.required = required;
-		this.options = options;
 	}
 
 	isAutocomplete(
@@ -98,8 +89,6 @@ export default class Option
 			required: this.required,
 		} as APIApplicationCommandBasicOption;
 
-		// TODO: Handle Options (do we want to?)
-
 		return payload;
 	}
 
@@ -112,11 +101,6 @@ export default class Option
 		) {
 			return false;
 		}
-
-		// TODO: Nothing uses options yet, but eventually verify they're correct somehow
-		// if ((this.options?.length ?? 0) !== (schema.options?.length ?? 0)) {
-		// 	return false;
-		// }
 
 		return true;
 	}

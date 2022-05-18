@@ -1,3 +1,4 @@
+export { default as SubcommandGroup } from "./subcommand-group";
 export { default as StringOption } from "./string";
 export { default as IntegerOption } from "./integer";
 export { default as BooleanOption } from "./boolean";
