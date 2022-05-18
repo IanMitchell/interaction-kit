@@ -20,7 +20,7 @@ import {
 	InteractionType,
 	Utils,
 } from "discord-api-types/v10";
-import Option, { isAutocompleteOption } from "../commands/options/option";
+import { isAutocompleteOption, BasicOption } from "../commands/options/option";
 import { StringOption, NumberOption, IntegerOption } from "../commands/options";
 
 // TODO: Ask Vlad if we can get a version of discord-api-types that doesn't nest this under Utils so we can import it natively with modules
@@ -32,7 +32,7 @@ const {
 } = Utils;
 
 export function isAutocompleteExecutableOption(
-	option: Option | undefined
+	option: BasicOption | undefined
 ): option is StringOption | NumberOption | IntegerOption {
 	if (option == null) {
 		return false;

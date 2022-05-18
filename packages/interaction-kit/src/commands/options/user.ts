@@ -1,8 +1,13 @@
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
-import Option, { BaseOptionArgs } from "./option";
+import { Optional } from "../../interfaces";
+import { BaseBasicOptionArgs, BasicOption } from "./option";
 
-export default class UserOption extends Option {
-	constructor({ name, description, required }: BaseOptionArgs) {
+export default class UserOption extends BasicOption {
+	constructor({
+		name,
+		description,
+		required,
+	}: Optional<BaseBasicOptionArgs, "required">) {
 		super({
 			type: ApplicationCommandOptionType.User,
 			name,

@@ -8,21 +8,23 @@ import SlashCommandAutocompleteInteraction from "../../interactions/autocomplete
 import { Autocomplete } from "../../interactions/autocomplete/types";
 import { InteractionKitCommand } from "../../interfaces";
 import { AutocompleteCommandArgs, CommandArgs } from "../slash-command";
-import Option, { BaseOptionArgs } from "./option";
+import { BasicOption, Option } from "./option";
 
 export default class Subcommand
 	extends Option
 	implements
-		Omit<InteractionKitCommand<SlashCommandInteraction>, "type" | "serialize">,
+		Omit<
+			InteractionKitCommand<SlashCommandInteraction>,
+			"type" | "serialize" | "equals"
+		>,
 		Autocomplete<SlashCommandAutocompleteInteraction>
 {
 	public readonly type = ApplicationCommandOptionType.Subcommand;
 
-	options: Map<string, Option>;
+	options: Map<string, BasicOption>;
 	handler: InteractionKitCommand<SlashCommandInteraction>["handler"];
-	autocomplete:
-		| Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"]
-		| undefined;
+	autocomplete?:
+		| Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 
 	constructor({
 		name,
@@ -35,14 +37,13 @@ export default class Subcommand
 			type: ApplicationCommandOptionType.Subcommand,
 			name,
 			description,
-			required: undefined,
 		});
 
 		// TODO: This is somewhat shared with SlashCommand.
 		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$
 		this.options = new Map();
 		this.handler = handler;
-		this.autocomplete = autocomplete;
+		if (autocomplete != null) this.autocomplete = autocomplete;
 
 		options?.forEach((option) => {
 			const key = option.name.toLowerCase();
@@ -56,9 +57,8 @@ export default class Subcommand
 		});
 	}
 
-	// TODO: ?????
 	equals(schema: APIApplicationCommandSubcommandOption): boolean {
-		if (this.name !== schema.name || this.description !== schema.description) {
+		if (!super.equals(schema)) {
 			return false;
 		}
 
@@ -74,8 +74,7 @@ export default class Subcommand
 	}
 
 	serialize(): APIApplicationCommandSubcommandOption {
-		const payload =
-			super.serialize<true>() as APIApplicationCommandSubcommandOption;
+		const payload = super.serialize() as APIApplicationCommandSubcommandOption;
 
 		// TODO: Sort these so that required options come first
 		if (this.options.size > 0) {

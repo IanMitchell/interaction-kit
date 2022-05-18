@@ -1,13 +1,13 @@
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
 import { Optional } from "../../interfaces";
-import Option, { BaseOptionArgs } from "./option";
+import { BaseBasicOptionArgs, BasicOption } from "./option";
 
-export default class ChannelOption extends Option {
+export default class ChannelOption extends BasicOption {
 	constructor({
 		name,
 		description,
 		required,
-	}: Optional<BaseOptionArgs, "required">) {
+	}: Optional<BaseBasicOptionArgs, "required">) {
 		super({
 			type: ApplicationCommandOptionType.Channel,
 			name,
