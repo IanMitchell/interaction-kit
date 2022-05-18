@@ -20,7 +20,9 @@ export default class Subcommand
 
 	options: Map<string, Option>;
 	handler: InteractionKitCommand<SlashCommandInteraction>["handler"];
-	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
+	autocomplete:
+		| Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"]
+		| undefined;
 
 	constructor({
 		name,

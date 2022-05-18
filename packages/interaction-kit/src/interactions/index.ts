@@ -71,6 +71,7 @@ async function handleApplicationCommandInteraction(
 			respond
 		);
 
+		// TODO: Handle subcommand interaction
 		console.log(`Handling ${interaction.name}`);
 		command.handler(interaction, application);
 	} else if (isContextMenuApplicationCommandInteraction(json)) {
@@ -164,6 +165,7 @@ export async function handler(
 			);
 		}
 
+		// TODO: Handle subcommand option autocompletes
 		case InteractionType.ApplicationCommandAutocomplete: {
 			const command = application.getCommand(json.data.type, json.data.name);
 
