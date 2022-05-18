@@ -1,5 +1,4 @@
 import {
-	APIApplicationCommandBasicOption,
 	APIApplicationCommandInteractionDataBasicOption,
 	APIApplicationCommandInteractionDataIntegerOption,
 	APIApplicationCommandInteractionDataNumberOption,
@@ -15,7 +14,7 @@ type OptionArgs = {
 	type: ApplicationCommandOptionType;
 	name: string;
 	description: string;
-	required?: boolean;
+	required: boolean | undefined;
 };
 
 export type BaseOptionArgs = Omit<OptionArgs, "type" | "options">;
@@ -65,7 +64,7 @@ export default class Option
 	public readonly description;
 	public readonly required;
 
-	constructor({ type, name, description, required = false }: OptionArgs) {
+	constructor({ type, name, description, required }: OptionArgs) {
 		this.type = type;
 		this.name = name;
 		this.description = description;
@@ -79,15 +78,12 @@ export default class Option
 	}
 
 	serialize(): APIApplicationCommandOption {
-		// TypeScript and discord-api-types don't play well with our usage
-		// of generic fields for the `type` field. We need to cast instead
-		// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-		const payload = {
+		const payload: APIApplicationCommandOption = {
 			type: this.type,
 			name: this.name,
 			description: this.description,
 			required: this.required,
-		} as APIApplicationCommandBasicOption;
+		};
 
 		return payload;
 	}

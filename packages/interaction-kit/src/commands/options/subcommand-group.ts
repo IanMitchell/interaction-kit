@@ -11,23 +11,24 @@ type SubcommandGroupArgs = {
 
 export default class SubcommandGroup extends Option {
 	public readonly type = ApplicationCommandOptionType.SubcommandGroup;
-	public readonly subcommands: Subcommand[];
+	public readonly subcommands: Map<string, Subcommand>;
 
 	constructor({ name, description, subcommands }: SubcommandGroupArgs) {
 		super({
 			type: ApplicationCommandOptionType.SubcommandGroup,
 			name,
 			description,
+			required: undefined,
 		});
 
-		this.subcommands = subcommands ?? [];
+		this.subcommands = new Map(subcommands.map((cmd) => [cmd.name, cmd]));
 	}
 
 	serialize(): APIApplicationCommandSubcommandGroupOption {
 		const payload =
 			super.serialize() as APIApplicationCommandSubcommandGroupOption;
 
-		payload.options = this.subcommands.map((subcommand) =>
+		payload.options = Array.from(this.subcommands.values()).map((subcommand) =>
 			subcommand.serialize()
 		);
 
@@ -35,12 +36,12 @@ export default class SubcommandGroup extends Option {
 	}
 
 	equals(schema: APIApplicationCommandSubcommandGroupOption) {
-		if (this.subcommands.length !== schema.options?.length) {
+		if (this.subcommands.size !== schema.options?.length) {
 			return false;
 		}
 
-		const serializedSubcommands = this.subcommands.map((subcommand) =>
-			subcommand.serialize()
+		const serializedSubcommands = Array.from(this.subcommands.values()).map(
+			(subcommand) => subcommand.serialize()
 		);
 
 		if (serializedSubcommands !== schema.options) {

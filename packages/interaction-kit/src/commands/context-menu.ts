@@ -10,7 +10,6 @@ import ContextMenuInteraction, {
 type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 	name: string;
 	type: T;
-	defaultPermission?: boolean;
 	handler: InteractionKitCommand<ContextMenuInteraction<T>>["handler"];
 };
 
@@ -19,19 +18,12 @@ export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 {
 	name: string;
 	type: T;
-	#defaultPermission: boolean;
 	handler: InteractionKitCommand<ContextMenuInteraction<T>>["handler"];
 
-	constructor({
-		name,
-		type,
-		handler,
-		defaultPermission = true,
-	}: ContextMenuArgs<T>) {
+	constructor({ name, type, handler }: ContextMenuArgs<T>) {
 		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$
 		this.name = name;
 		this.type = type;
-		this.#defaultPermission = defaultPermission;
 		this.handler = handler;
 	}
 
@@ -39,7 +31,6 @@ export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 		if (
 			this.name !== schema.name ||
 			this.type !== schema.type ||
-			this.#defaultPermission !== schema.default_permission
 		) {
 			return false;
 		}
@@ -52,10 +43,6 @@ export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 			name: this.name,
 			type: this.type,
 		};
-
-		if (!this.#defaultPermission) {
-			payload.default_permission = this.#defaultPermission;
-		}
 
 		return payload;
 	}

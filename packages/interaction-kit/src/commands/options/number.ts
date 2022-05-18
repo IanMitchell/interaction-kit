@@ -4,18 +4,19 @@ import {
 } from "discord-api-types/v10";
 import SlashCommandAutocompleteInteraction from "../../interactions/autocomplete/application-command-autocomplete";
 import { Autocomplete } from "../../interactions/autocomplete/types";
+import { Optional } from "../../interfaces";
 import { SlashChoiceList } from "./choices";
 import Option, {
 	BaseOptionArgs,
 	AutocompleteCommandOptionType,
 } from "./option";
 
-interface NumberOptionChoiceArgs extends BaseOptionArgs {
+interface NumberOptionChoiceArgs extends Optional<BaseOptionArgs, "required"> {
 	choices?: SlashChoiceList<number>;
 	autocomplete: never;
 }
 
-interface NumberAutocompleteArgs extends BaseOptionArgs {
+interface NumberAutocompleteArgs extends Optional<BaseOptionArgs, "required"> {
 	choices: never;
 	autocomplete: NonNullable<
 		Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"]
@@ -26,7 +27,7 @@ export default class NumberOption
 	extends Option
 	implements Autocomplete<SlashCommandAutocompleteInteraction>
 {
-	public readonly choices?: SlashChoiceList<number>;
+	public readonly choices: SlashChoiceList<number> | undefined;
 
 	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 
@@ -105,8 +106,8 @@ export default class NumberOption
 
 		if (this.isAutocomplete(payload)) {
 			payload.autocomplete = true;
-		} else {
-			payload.choices = this.choices?.serialize();
+		} else if (this.choices != null) {
+			payload.choices = this.choices.serialize();
 		}
 
 		return payload;

@@ -1,5 +1,5 @@
 import Option from "./options/option";
-import { InteractionKitCommand } from "../interfaces";
+import { ArrayValue, InteractionKitCommand, Optional } from "../interfaces";
 import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
 import {
 	APIApplicationCommand,
@@ -8,36 +8,48 @@ import {
 } from "discord-api-types/v10";
 import SlashCommandAutocompleteInteraction from "../interactions/autocomplete/application-command-autocomplete";
 import { Autocomplete } from "../interactions/autocomplete/types";
+import Subcommand from "./options/subcommand";
+import { SubcommandGroup } from "./options";
 
-type CommandArgs = {
+export type CommandArgs = {
 	name: string;
 	description: string;
-	defaultPermission?: boolean;
 	options?: Option[];
 	handler: InteractionKitCommand<SlashCommandInteraction>["handler"];
 	autocomplete?: never;
+	commands?: never;
 };
 
-type AutocompleteCommandArgs = CommandArgs & {
+// TODO: Rename?
+export type ParentCommandArgs = {
+	name: string;
+	description: string;
+	options?: never;
+	handler?: never;
+	autocomplete?: never;
+	commands: Array<Subcommand | SubcommandGroup>;
+};
+
+export type AutocompleteCommandArgs = CommandArgs & {
 	options?: never;
 	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 };
 
 export default class SlashCommand
 	implements
-		InteractionKitCommand<SlashCommandInteraction>,
+		Optional<InteractionKitCommand<SlashCommandInteraction>, "handler">,
 		Autocomplete<SlashCommandAutocompleteInteraction>
 {
 	public readonly type = ApplicationCommandType.ChatInput;
 
 	name: string;
 	#description: string;
-	#defaultPermission: boolean;
 	options: Map<string, Option>;
 
-	handler: InteractionKitCommand<SlashCommandInteraction>["handler"];
+	handler?: InteractionKitCommand<SlashCommandInteraction>["handler"];
 
 	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
+	commands: Map<string, ArrayValue<ParentCommandArgs["commands"]>>;
 
 	constructor({
 		name,
@@ -45,15 +57,15 @@ export default class SlashCommand
 		options,
 		handler,
 		autocomplete,
-		defaultPermission = true,
-	}: CommandArgs | AutocompleteCommandArgs) {
+		commands,
+	}: CommandArgs | ParentCommandArgs | AutocompleteCommandArgs) {
 		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$
 		this.name = name;
 		this.#description = description;
-		this.#defaultPermission = defaultPermission;
 		this.options = new Map();
 		this.handler = handler;
 		this.autocomplete = autocomplete;
+		this.commands = new Map(commands?.map((cmd) => [cmd.name, cmd]));
 
 		options?.forEach((option) => {
 			const key = option.name.toLowerCase();
@@ -67,20 +79,8 @@ export default class SlashCommand
 		});
 	}
 
-	group() {
-		throw new Error("Unimplemented");
-	}
-
-	subcommand() {
-		throw new Error("Unimplemented");
-	}
-
 	equals(schema: APIApplicationCommand): boolean {
-		if (
-			this.name !== schema.name ||
-			this.#description !== schema.description ||
-			this.#defaultPermission !== schema.default_permission
-		) {
+		if (this.name !== schema.name || this.#description !== schema.description) {
 			return false;
 		}
 
@@ -101,10 +101,6 @@ export default class SlashCommand
 			description: this.#description,
 		};
 
-		if (!this.#defaultPermission) {
-			payload.default_permission = this.#defaultPermission;
-		}
-
 		// TODO: Sort these so that required options come first
 		if (this.options.size > 0) {
 			payload.options = [];
@@ -112,6 +108,12 @@ export default class SlashCommand
 			Array.from(this.options.entries()).forEach(([_, value]) => {
 				payload.options?.push(value.serialize());
 			});
+		}
+
+		if (this.commands.size > 0) {
+			payload.options = Array.from(this.commands.values()).map((cmd) =>
+				cmd.serialize()
+			);
 		}
 
 		return payload;
