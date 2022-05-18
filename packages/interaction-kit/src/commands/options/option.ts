@@ -1,4 +1,5 @@
 import {
+	APIApplicationCommandBasicOption,
 	APIApplicationCommandInteractionDataBasicOption,
 	APIApplicationCommandInteractionDataIntegerOption,
 	APIApplicationCommandInteractionDataNumberOption,
@@ -56,8 +57,14 @@ export type AutocompleteCommandOptionType<
 	autocomplete: true;
 };
 
-export default class Option
-	implements Serializable, Comparable<APIApplicationCommandOption>
+export default class Option<T extends APIApplicationCommandOption>
+	implements
+		Serializable<
+			T extends APIApplicationCommandBasicOption
+				? APIApplicationCommandBasicOption
+				: APIApplicationCommandOption
+		>,
+		Comparable<APIApplicationCommandOption>
 {
 	public readonly type;
 	public readonly name;
@@ -77,15 +84,25 @@ export default class Option
 		return false;
 	}
 
-	serialize(): APIApplicationCommandOption {
-		const payload: APIApplicationCommandOption = {
+	serialize() {
+		const payload: ReturnType<typeof Option<T>["serialize"]> = {
 			type: this.type,
 			name: this.name,
 			description: this.description,
-			required: this.required,
 		};
 
-		return payload;
+		if (
+			payload.type !== ApplicationCommandOptionType.Subcommand &&
+			payload.type !== ApplicationCommandOptionType.SubcommandGroup
+		) {
+			// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+			return {
+				...payload,
+				required: this.required,
+			} as APIApplicationCommandBasicOption;
+		}
+
+		return payload as APIApplicationCommandOption;
 	}
 
 	equals(schema: APIApplicationCommandOption): boolean {

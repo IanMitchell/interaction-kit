@@ -74,7 +74,8 @@ export default class Subcommand
 	}
 
 	serialize(): APIApplicationCommandSubcommandOption {
-		const payload: APIApplicationCommandSubcommandOption = super.serialize();
+		const payload =
+			super.serialize<true>() as APIApplicationCommandSubcommandOption;
 
 		// TODO: Sort these so that required options come first
 		if (this.options.size > 0) {
