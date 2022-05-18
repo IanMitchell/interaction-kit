@@ -6,25 +6,26 @@ import SlashCommandAutocompleteInteraction from "../../interactions/autocomplete
 import { Autocomplete } from "../../interactions/autocomplete/types";
 import { Optional } from "../../interfaces";
 import { SlashChoiceList } from "./choices";
-import Option, {
-	BaseOptionArgs,
+import {
 	AutocompleteCommandOptionType,
+	BaseBasicOptionArgs,
+	BasicOption,
 } from "./option";
 
-interface NumberOptionChoiceArgs extends Optional<BaseOptionArgs, "required"> {
+interface NumberOptionChoiceArgs
+	extends Optional<BaseBasicOptionArgs, "required"> {
 	choices?: SlashChoiceList<number>;
 	autocomplete: never;
 }
 
-interface NumberAutocompleteArgs extends Optional<BaseOptionArgs, "required"> {
+interface NumberAutocompleteArgs
+	extends Optional<BaseBasicOptionArgs, "required"> {
 	choices: never;
-	autocomplete: NonNullable<
-		Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"]
-	>;
+	autocomplete: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 }
 
 export default class NumberOption
-	extends Option
+	extends BasicOption
 	implements Autocomplete<SlashCommandAutocompleteInteraction>
 {
 	public readonly choices: SlashChoiceList<number> | undefined;

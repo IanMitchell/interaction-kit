@@ -28,10 +28,7 @@ export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 	}
 
 	equals(schema: APIApplicationCommand): boolean {
-		if (
-			this.name !== schema.name ||
-			this.type !== schema.type ||
-		) {
+		if (this.name !== schema.name || this.type !== schema.type) {
 			return false;
 		}
 

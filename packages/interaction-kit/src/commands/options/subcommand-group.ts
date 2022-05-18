@@ -3,7 +3,7 @@ import {
 	APIApplicationCommandSubcommandGroupOption,
 	ApplicationCommandOptionType,
 } from "discord-api-types/v10";
-import Option, { BaseOptionArgs } from "./option";
+import { BaseOptionArgs, Option } from "./option";
 
 type SubcommandGroupArgs = {
 	subcommands: Subcommand[];
@@ -18,7 +18,6 @@ export default class SubcommandGroup extends Option {
 			type: ApplicationCommandOptionType.SubcommandGroup,
 			name,
 			description,
-			required: undefined,
 		});
 
 		this.subcommands = new Map(subcommands.map((cmd) => [cmd.name, cmd]));

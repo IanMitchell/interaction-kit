@@ -1,8 +1,12 @@
-import Option from "./options/option";
+import { BasicOption } from "./options/option";
 import { ArrayValue, InteractionKitCommand, Optional } from "../interfaces";
 import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
 import {
 	APIApplicationCommand,
+	APIApplicationCommandBasicOption,
+	APIApplicationCommandSubcommandGroupOption,
+	APIApplicationCommandSubcommandOption,
+	ApplicationCommandOptionType,
 	ApplicationCommandType,
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from "discord-api-types/v10";
@@ -14,7 +18,7 @@ import { SubcommandGroup } from "./options";
 export type CommandArgs = {
 	name: string;
 	description: string;
-	options?: Option[];
+	options?: BasicOption[];
 	handler: InteractionKitCommand<SlashCommandInteraction>["handler"];
 	autocomplete?: never;
 	commands?: never;
@@ -44,7 +48,7 @@ export default class SlashCommand
 
 	name: string;
 	#description: string;
-	options: Map<string, Option>;
+	options: Map<string, BasicOption>;
 
 	handler?: InteractionKitCommand<SlashCommandInteraction>["handler"];
 
@@ -63,8 +67,8 @@ export default class SlashCommand
 		this.name = name;
 		this.#description = description;
 		this.options = new Map();
-		this.handler = handler;
-		this.autocomplete = autocomplete;
+		if (handler != null) this.handler = handler;
+		if (autocomplete != null) this.autocomplete = autocomplete;
 		this.commands = new Map(commands?.map((cmd) => [cmd.name, cmd]));
 
 		options?.forEach((option) => {
@@ -88,11 +92,38 @@ export default class SlashCommand
 			return false;
 		}
 
-		return (
-			schema.options?.every(
-				(option) => this.options.get(option.name)?.equals(option) ?? false
-			) ?? true
-		);
+		if (this.commands.size > 0) {
+			// This is a parent command
+			return (
+				schema.options?.every((option) => {
+					const subcommand = this.commands.get(option.name);
+
+					if (subcommand == null) {
+						return false;
+					}
+
+					if (subcommand.type === ApplicationCommandOptionType.Subcommand) {
+						return subcommand.equals(
+							option as APIApplicationCommandSubcommandOption
+						);
+					} else {
+						return subcommand.equals(
+							option as APIApplicationCommandSubcommandGroupOption
+						);
+					}
+				}) ?? true
+			);
+		} else {
+			// This is a normal slash command
+			return (
+				schema.options?.every(
+					(option) =>
+						this.options
+							.get(option.name)
+							?.equals(option as APIApplicationCommandBasicOption) ?? false
+				) ?? true
+			);
+		}
 	}
 
 	serialize(): RESTPostAPIChatInputApplicationCommandsJSONBody {

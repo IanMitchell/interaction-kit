@@ -15,10 +15,9 @@ type OptionArgs = {
 	type: ApplicationCommandOptionType;
 	name: string;
 	description: string;
-	required: boolean | undefined;
 };
 
-export type BaseOptionArgs = Omit<OptionArgs, "type" | "options">;
+export type BaseOptionArgs = Omit<OptionArgs, "type">;
 
 export type APIApplicationCommandInteractionDataAutocompleteOption =
 	| APIApplicationCommandInteractionDataStringOption
@@ -57,25 +56,19 @@ export type AutocompleteCommandOptionType<
 	autocomplete: true;
 };
 
-export default class Option<T extends APIApplicationCommandOption>
+export class Option
 	implements
-		Serializable<
-			T extends APIApplicationCommandBasicOption
-				? APIApplicationCommandBasicOption
-				: APIApplicationCommandOption
-		>,
+		Serializable<APIApplicationCommandOption>,
 		Comparable<APIApplicationCommandOption>
 {
 	public readonly type;
 	public readonly name;
 	public readonly description;
-	public readonly required;
 
-	constructor({ type, name, description, required }: OptionArgs) {
+	constructor({ type, name, description }: OptionArgs) {
 		this.type = type;
 		this.name = name;
 		this.description = description;
-		this.required = required;
 	}
 
 	isAutocomplete(
@@ -84,37 +77,56 @@ export default class Option<T extends APIApplicationCommandOption>
 		return false;
 	}
 
-	serialize() {
-		const payload: ReturnType<typeof Option<T>["serialize"]> = {
+	serialize(): APIApplicationCommandOption {
+		return {
 			type: this.type,
 			name: this.name,
 			description: this.description,
-		};
-
-		if (
-			payload.type !== ApplicationCommandOptionType.Subcommand &&
-			payload.type !== ApplicationCommandOptionType.SubcommandGroup
-		) {
-			// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-			return {
-				...payload,
-				required: this.required,
-			} as APIApplicationCommandBasicOption;
-		}
-
-		return payload as APIApplicationCommandOption;
+		} as APIApplicationCommandOption;
 	}
 
 	equals(schema: APIApplicationCommandOption): boolean {
 		if (
 			this.type !== schema.type ||
 			this.name !== schema.name ||
-			this.description !== schema.description ||
-			this.required !== (schema.required ?? false)
+			this.description !== schema.description
 		) {
 			return false;
 		}
 
 		return true;
+	}
+}
+
+interface BasicOptionArgs extends OptionArgs {
+	required: boolean | undefined;
+}
+
+export type BaseBasicOptionArgs = Omit<BasicOptionArgs, "type">;
+
+export class BasicOption extends Option {
+	public readonly required;
+
+	constructor({ name, description, type, required }: BasicOptionArgs) {
+		super({
+			type,
+			name,
+			description,
+		});
+		this.required = required;
+	}
+
+	serialize(): APIApplicationCommandBasicOption {
+		if (this.required === undefined) {
+			return super.serialize() as APIApplicationCommandBasicOption;
+		}
+		return {
+			...super.serialize(),
+			required: this.required,
+		} as APIApplicationCommandBasicOption;
+	}
+
+	equals(schema: APIApplicationCommandBasicOption): boolean {
+		return super.equals(schema) && this.required === schema.required;
 	}
 }

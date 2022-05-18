@@ -6,25 +6,26 @@ import SlashCommandAutocompleteInteraction from "../../interactions/autocomplete
 import { Autocomplete } from "../../interactions/autocomplete/types";
 import { Optional } from "../../interfaces";
 import { SlashChoiceList } from "./choices";
-import Option, {
-	BaseOptionArgs,
+import {
+	BaseBasicOptionArgs,
 	AutocompleteCommandOptionType,
+	BasicOption,
 } from "./option";
 
-interface StringOptionChoiceArgs extends Optional<BaseOptionArgs, "required"> {
+interface StringOptionChoiceArgs
+	extends Optional<BaseBasicOptionArgs, "required"> {
 	choices?: SlashChoiceList<string>;
 	autocomplete: never;
 }
 
-interface StringAutocompleteArgs extends Optional<BaseOptionArgs, "required"> {
+interface StringAutocompleteArgs
+	extends Optional<BaseBasicOptionArgs, "required"> {
 	choices: never;
-	autocomplete: NonNullable<
-		Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"]
-	>;
+	autocomplete: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 }
 
 export default class StringOption
-	extends Option
+	extends BasicOption
 	implements Autocomplete<SlashCommandAutocompleteInteraction>
 {
 	public readonly choices: SlashChoiceList<string> | undefined;
