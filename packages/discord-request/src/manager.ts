@@ -1,7 +1,7 @@
 import debug from "debug";
 import { OFFSET, ONE_DAY, ONE_SECOND, sleep } from "./util/time";
 import { getRouteInformation, getRouteKey } from "./util/routes";
-import Queue from "./queue";
+import { Queue } from "./queue";
 import { RateLimitData, RequestData, RequestOptions, Route } from "./types";
 
 const log = debug("discord-request:manager");
