@@ -1,5 +1,5 @@
 import type { Snowflake } from "discord-snowflake";
-import client from "../client";
+import { client } from "../client";
 import {
 	Routes,
 	RESTPostAPIInteractionFollowupJSONBody,
