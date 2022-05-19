@@ -8,7 +8,7 @@ import { OFFSET, ONE_HOUR, sleep } from "./util/time";
 
 const log = debug("discord-request:queue");
 
-export default class Queue {
+export class Queue {
 	lastRequest = -1;
 	reset = -1;
 	remaining = 1;
