@@ -17,4 +17,3 @@ export const client = new DiscordApiClient({
 	userAgent: `discord-api ${pkg.version}`,
 });
 
-export default instance;
