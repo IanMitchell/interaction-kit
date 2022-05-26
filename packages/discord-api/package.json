@@ -4,6 +4,7 @@
 	"author": "Ian Mitchell",
 	"description": "A modern Discord HTTP REST API wrapper library",
 	"license": "MIT",
+	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/discord-api",
 	"exports": "./dist/src/index.js",
 	"main": "./dist/src/index.js",
 	"typings": "dist/src/index.d.ts",
