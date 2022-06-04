@@ -7,6 +7,7 @@
 	],
 	"description": "A library for identifying and parsing Discord Snowflakes",
 	"license": "MIT",
+	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/discord-snowflake",
 	"exports": "./dist/src/snowflake.js",
 	"main": "./dist/src/snowflake.js",
 	"typings": "dist/src/snowflake.d.ts",

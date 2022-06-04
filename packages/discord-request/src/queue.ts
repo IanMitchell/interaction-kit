@@ -3,12 +3,13 @@ import { DiscordError, ErrorBody, isDiscordError } from "discord-error";
 import { RequestError } from "./errors/request-error";
 import { Manager } from "./manager";
 import { RequestMethod, Route } from "./types";
+import { parse } from "./util/response";
 import { getRouteKey } from "./util/routes";
 import { OFFSET, ONE_HOUR, sleep } from "./util/time";
 
 const log = debug("discord-request:queue");
 
-export default class Queue {
+export class Queue {
 	lastRequest = -1;
 	reset = -1;
 	remaining = 1;
@@ -151,7 +152,7 @@ export default class Queue {
 
 		// Successful Requests
 		if (response.ok) {
-			return response.json();
+			return parse(response);
 		}
 
 		// Rate Limited Requests
@@ -163,15 +164,13 @@ export default class Queue {
 				limit: this.limit,
 				route: route.path,
 				identifier: route.identifier,
-				global: global,
+				global,
 				method: init.method as RequestMethod,
 			};
 
 			this.manager.onRateLimit?.(rateLimitData);
 
 			log(`Encountered 429 rate limit. ${JSON.stringify(rateLimitData)}.`);
-
-			// If caused by a sublimit, wait it out here so other requests on the route can be handled
 			await sleep(retryAfter, this.#shutdownSignal);
 
 			// Don't bump retries for a non-server issue (the request is expected to succeed)
@@ -187,6 +186,7 @@ export default class Queue {
 			throw new RequestError(
 				resource,
 				init,
+				// `response` has not yet been consumed by this point, it is safe to pass an uncloned version
 				response,
 				`Discord Server Error encountered: ${response.statusText}`
 			);
@@ -194,7 +194,7 @@ export default class Queue {
 
 		// Handle non-ratelimited bad requests
 		if (response.status >= 400 && response.status < 500) {
-			// If we receive this status code, it means the token we had is no longer valid.
+			// If we receive a 401 status code, it means the token we had is no longer valid.
 			const isAuthRequest = new Headers(init.headers).has("Authorization");
 			if (response.status === 401 && isAuthRequest) {
 				this.manager.setToken(null);

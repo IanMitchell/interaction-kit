@@ -85,7 +85,7 @@ async function handleApplicationCommandInteraction(
 		command.handler(interaction, application);
 	} else {
 		throw new Error(
-			// @ts-expect-error TS doesn't think this will happen, but theoretically it can
+			// @ts-expect-error With the current given types, this cannot happen, but Discord may add types at any time
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
 			`Unknown Application Command type: ${json.data.type ?? "[unknown]"}`
 		);

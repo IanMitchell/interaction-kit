@@ -1,6 +1,6 @@
 import type { Snowflake } from "discord-snowflake";
 import { Routes, RESTGetAPIGuildResult } from "discord-api-types/v10";
-import client from "../client";
+import { client } from "../client";
 
 // TODO: Test, Document
 export async function getGuild(
