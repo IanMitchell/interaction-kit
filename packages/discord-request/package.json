@@ -15,7 +15,7 @@
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
 		"lint": "eslint ./src/**/*.ts",
-		"test": "jest"
+		"test": "vitest run"
 	},
 	"files": [
 		"dist",

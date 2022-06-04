@@ -28,7 +28,7 @@
 		"target": "es2021",
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
-		"types": ["@cloudflare/workers-types", "@types/jest"]
+		"types": ["@cloudflare/workers-types"]
 	},
 	// ignore node_modules and dist
 	"exclude": ["node_modules"]

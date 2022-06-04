@@ -16,4 +16,3 @@ export const client = new DiscordApiClient({
 	queueSweepInterval: 0,
 	userAgent: `discord-api ${pkg.version}`,
 });
-
