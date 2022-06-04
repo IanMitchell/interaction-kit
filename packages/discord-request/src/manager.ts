@@ -150,7 +150,7 @@ export class Manager {
 	setShutdownSignal(signal: AbortSignal) {
 		this.shutdownSignal?.removeEventListener("abort", this.shutdown.bind(this));
 		this.shutdownSignal = signal;
-		this.shutdownSignal.addEventListener("abort", this.shutdown);
+		this.shutdownSignal.addEventListener("abort", this.shutdown.bind(this));
 	}
 
 	shutdown() {
