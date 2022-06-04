@@ -10,6 +10,7 @@
 	"scripts": {
 		"cli": "turbo run cli --filter=create-ikit-app",
 		"dev": "turbo run dev --no-cache --parallel --continue",
+		"clean": "turbo run clean",
 		"build": "turbo run build",
 		"typecheck": "turbo run typecheck",
 		"prettier": "turbo run prettier",
@@ -34,10 +35,11 @@
 		"eslint-config-xo-typescript": "^0.44.0",
 		"lerna": "^4.0.0",
 		"prettier": "^2.4.1",
+		"rimraf": "^3.0.2",
 		"tsdx": "^0.14.1",
 		"tslib": "^2.3.1",
 		"tsup": "^5.11.10",
-		"turbo": "^1.0.24",
+		"turbo": "^1.2.16",
 		"typescript": "^4.6.2",
 		"vitest": "^0.12.6"
 	}

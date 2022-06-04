@@ -10,8 +10,8 @@
 	"typings": "dist/src/verify.d.ts",
 	"type": "module",
 	"scripts": {
+		"clean": "rimraf dist",
 		"build": "tsc",
-		"clean": "rm -r dist/",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
 		"lint": "eslint ./src/**/*.ts",
