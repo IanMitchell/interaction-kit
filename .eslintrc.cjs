@@ -12,5 +12,7 @@ module.exports = {
 		"eqeqeq": ["error", "smart"],
 		"capitalized-comments": 0,
 		"no-await-in-loop": 0,
+		"max-params": 0,
+		"complexity": 0,
 	},
 };

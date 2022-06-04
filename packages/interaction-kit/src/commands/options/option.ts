@@ -7,12 +7,9 @@ import {
 	APIApplicationCommandInteractionDataStringOption,
 	APIApplicationCommandOption,
 	ApplicationCommandOptionType,
-} from "discord-api-types/payloads/v9";
-import { APIApplicationCommandOptionBase } from "discord-api-types/payloads/v9/_interactions/_applicationCommands/_chatInput/base";
+} from "discord-api-types/v10";
+import { APIApplicationCommandOptionBase } from "discord-api-types/payloads/v10/_interactions/_applicationCommands/_chatInput/base";
 import { Comparable, Serializable } from "../../interfaces";
-import IntegerOption from "./integer";
-import NumberOption from "./number";
-import StringOption from "./string";
 
 type OptionArgs = {
 	type: ApplicationCommandOptionType;
@@ -33,20 +30,6 @@ export type AutocompleteOptionTypes =
 	| AutocompleteCommandOptionType<ApplicationCommandOptionType.String>
 	| AutocompleteCommandOptionType<ApplicationCommandOptionType.Number>
 	| AutocompleteCommandOptionType<ApplicationCommandOptionType.Integer>;
-
-export function isAutocompleteExecutableOption(
-	option: Option | undefined
-): option is StringOption | NumberOption | IntegerOption {
-	if (option == null) {
-		return false;
-	}
-
-	return (
-		option instanceof StringOption ||
-		option instanceof NumberOption ||
-		option instanceof IntegerOption
-	);
-}
 
 // TODO: Upstream?
 export function isBasicOption(

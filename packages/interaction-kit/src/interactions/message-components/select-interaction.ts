@@ -4,7 +4,7 @@ import Select from "../../components/select";
 import type {
 	APIMessageComponentSelectMenuInteraction,
 	APISelectMenuOption,
-} from "discord-api-types/v9";
+} from "discord-api-types/v10";
 import { RequestBody, ResponseHandler } from "../../interfaces";
 
 export default class SelectInteraction extends MessageComponentInteraction {

@@ -5,7 +5,7 @@ import {
 	APIApplicationCommandAutocompleteInteraction,
 	APIApplicationCommandOptionChoice,
 	InteractionResponseType,
-} from "discord-api-types/v9";
+} from "discord-api-types/v10";
 import SlashCommand from "../../commands/slash-command";
 
 export default class SlashCommandAutocompleteInteraction extends AutocompleteInteraction<APIApplicationCommandOptionChoice> {

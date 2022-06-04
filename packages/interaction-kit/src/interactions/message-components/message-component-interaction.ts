@@ -1,4 +1,9 @@
-import * as API from "../../api";
+import type { Snowflake } from "discord-snowflake";
+import {
+	postInteractionFollowup,
+	deleteInteractionFollowup,
+	patchInteractionFollowup,
+} from "discord-api";
 import Application from "../../application";
 import {
 	Interaction,
@@ -8,7 +13,6 @@ import {
 	ResponseHandler,
 	SerializableComponent,
 } from "../../interfaces";
-import type { Snowflake } from "../../structures/snowflake";
 import { isActionRow } from "../../components/action-row";
 import {
 	APIInteractionGuildMember,
@@ -19,9 +23,10 @@ import {
 	InteractionType,
 	MessageFlags,
 	RESTPatchAPIInteractionFollowupJSONBody,
-} from "discord-api-types/v9";
+} from "discord-api-types/v10";
 import { ResponseStatus } from "../../requests/response";
-import { Embed } from "@discordjs/builders";
+import Embed from "../../structures/embed";
+import Config from "../../config";
 
 export default class MessageComponentInteraction implements Interaction {
 	public readonly type = InteractionType.MessageComponent;
@@ -59,10 +64,16 @@ export default class MessageComponentInteraction implements Interaction {
 			edit: async (
 				data: RESTPatchAPIInteractionFollowupJSONBody,
 				id = "@original"
-			) => API.patchInteractionFollowup(this.token, id, data),
+			) =>
+				patchInteractionFollowup(
+					Config.getApplicationId(),
+					this.token,
+					id,
+					data
+				),
 
 			delete: async (id = "@original") =>
-				API.deleteInteractionFollowup(this.token, id),
+				deleteInteractionFollowup(Config.getApplicationId(), this.token, id),
 		};
 
 		this.#replied = false;
@@ -97,7 +108,7 @@ export default class MessageComponentInteraction implements Interaction {
 		if (embed != null) {
 			payload.data.embeds = ([] as Embed[])
 				.concat(embed)
-				.map((item) => item.toJSON());
+				.map((item) => item.serialize());
 		}
 
 		if (components != null) {
@@ -122,7 +133,8 @@ export default class MessageComponentInteraction implements Interaction {
 			return "@original";
 		}
 
-		const responseData = await API.postInteractionFollowup(
+		const responseData = await postInteractionFollowup(
+			Config.getApplicationId(),
 			this.token,
 			payload.data
 		);

@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/setup-build
       - name: Lint
         run: |
           npm run lint --cache-dir=".turbo"

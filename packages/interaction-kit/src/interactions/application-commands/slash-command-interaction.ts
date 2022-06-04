@@ -3,7 +3,7 @@ import {
 	APIChatInputApplicationCommandInteraction,
 	ApplicationCommandOptionType,
 	ApplicationCommandType,
-} from "discord-api-types/payloads/v9";
+} from "discord-api-types/v10";
 import Application from "../../application";
 import {
 	InteractionKitCommand,

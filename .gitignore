@@ -8,3 +8,14 @@ dist
 
 # We don't want to ignore .env template files
 !packages/create-ikit-app/templates/**/.env
+
+# Remix
+apps/interactionkit.dev/.cache
+apps/interactionkit.dev/.env
+apps/interactionkit.dev/.vercel
+apps/interactionkit.dev/.output
+
+apps/interactionkit.dev/build/
+apps/interactionkit.dev/public/build
+apps/interactionkit.dev/api/index.js
+apps/interactionkit.dev/api/index.js.map

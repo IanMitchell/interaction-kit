@@ -15,52 +15,40 @@ import { ApplicationCommandInteraction, PingInteraction } from "..";
 import SlashCommandAutocompleteInteraction from "./autocomplete/application-command-autocomplete";
 import {
 	APIApplicationCommandInteraction,
-	APIChatInputApplicationCommandInteraction,
-	APIContextMenuInteraction,
 	APIInteraction,
 	APIMessageComponentInteraction,
-	ApplicationCommandType,
-	ComponentType,
 	InteractionType,
-	APIMessageComponentButtonInteraction,
-	APIMessageComponentSelectMenuInteraction,
-} from "discord-api-types/v9";
-import {
-	isAutocompleteExecutableOption,
-	isAutocompleteOption,
-} from "../commands/options/option";
+	Utils,
+} from "discord-api-types/v10";
+import Option, { isAutocompleteOption } from "../commands/options/option";
+import { StringOption, NumberOption, IntegerOption } from "../commands/options";
 
-function isChatInputApplicationCommandInteraction(
-	interaction: APIApplicationCommandInteraction
-): interaction is APIChatInputApplicationCommandInteraction {
-	return interaction.data.type === ApplicationCommandType.ChatInput;
-}
+// TODO: Ask Vlad if we can get a version of discord-api-types that doesn't nest this under Utils so we can import it natively with modules
+const {
+	isChatInputApplicationCommandInteraction,
+	isContextMenuApplicationCommandInteraction,
+	isMessageComponentButtonInteraction,
+	isMessageComponentSelectMenuInteraction,
+} = Utils;
 
-function isContextMenuApplicationCommandInteraction(
-	interaction: APIApplicationCommandInteraction
-): interaction is APIContextMenuInteraction {
+export function isAutocompleteExecutableOption(
+	option: Option | undefined
+): option is StringOption | NumberOption | IntegerOption {
+	if (option == null) {
+		return false;
+	}
+
 	return (
-		interaction.data.type === ApplicationCommandType.Message ||
-		interaction.data.type === ApplicationCommandType.User
+		option instanceof StringOption ||
+		option instanceof NumberOption ||
+		option instanceof IntegerOption
 	);
-}
-
-function isMessageComponentButtonInteraction(
-	interaction: APIMessageComponentInteraction
-): interaction is APIMessageComponentButtonInteraction {
-	return interaction.data.component_type === ComponentType.Button;
 }
 
 function isButtonComponent(
 	component: ExecutableComponent
 ): component is Button {
 	return component instanceof Button;
-}
-
-function isMessageComponentSelectMenuInteraction(
-	interaction: APIMessageComponentInteraction
-): interaction is APIMessageComponentSelectMenuInteraction {
-	return interaction.data.component_type === ComponentType.SelectMenu;
 }
 
 function isSelectComponent(
@@ -84,10 +72,8 @@ async function handleApplicationCommandInteraction(
 		);
 
 		console.log(`Handling ${interaction.name}`);
-		return command.handler(interaction, application);
-	}
-
-	if (isContextMenuApplicationCommandInteraction(json)) {
+		command.handler(interaction, application);
+	} else if (isContextMenuApplicationCommandInteraction(json)) {
 		const interaction = new ContextMenuInteraction(
 			application,
 			command,
@@ -96,14 +82,14 @@ async function handleApplicationCommandInteraction(
 		);
 
 		console.log(`Handling ${interaction.name}`);
-		return command.handler(interaction, application);
+		command.handler(interaction, application);
+	} else {
+		throw new Error(
+			// @ts-expect-error With the current given types, this cannot happen, but Discord may add types at any time
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
+			`Unknown Application Command type: ${json.data.type ?? "[unknown]"}`
+		);
 	}
-
-	throw new Error(
-		// @ts-expect-error TS doesn't think this will happen, but theoretically it can
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
-		`Unknown Application Command type: ${json.data.type ?? "[unknown]"}`
-	);
 }
 
 async function handleMessageComponentInteraction(
@@ -124,10 +110,8 @@ async function handleMessageComponentInteraction(
 		);
 
 		console.log(`Handling ${interaction.customId}`);
-		return component.handler(interaction, application);
-	}
-
-	if (
+		component.handler(interaction, application);
+	} else if (
 		isMessageComponentSelectMenuInteraction(json) &&
 		isSelectComponent(component)
 	) {
@@ -139,15 +123,15 @@ async function handleMessageComponentInteraction(
 		);
 
 		console.log(`Handling ${interaction.customId}`);
-		return component.handler(interaction, application);
+		component.handler(interaction, application);
+	} else {
+		throw new Error(
+			`Unknown Interaction Component type (${
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
+				json.data.component_type ?? "[unknown]"
+			}) or component mismatch. `
+		);
 	}
-
-	throw new Error(
-		`Unknown Interaction Component type (${
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
-			json.data.component_type ?? "[unknown]"
-		}) or component mismatch. `
-	);
 }
 
 export async function handler(

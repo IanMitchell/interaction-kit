@@ -1,22 +1,22 @@
-import fs from "node:fs";
-import path from "node:path";
+import type { Snowflake } from "discord-snowflake";
+import debug from "debug";
+import isValidRequest from "discord-verify";
 import SlashCommand from "./commands/slash-command";
 import ContextMenu from "./commands/context-menu";
-import Config from "./api/config";
+import { client } from "discord-api";
 import * as Interaction from "./interactions";
 import {
-	FetchEvent,
 	InteractionKitCommand,
 	SerializableComponent,
-	Module,
 	MapValue,
 } from "./interfaces";
-import type { Snowflake } from "./structures/snowflake";
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
 import { ExecutableComponent, isExecutableComponent } from "./components";
 import { response, ResponseStatus } from "./requests/response";
-import { APIInteraction, ApplicationCommandType } from "discord-api-types/v9";
-import { isValidRequest } from "./requests/validate";
+import { APIInteraction, ApplicationCommandType } from "discord-api-types/v10";
+import Config from "./config";
+
+const log = debug("ikit:application");
 
 type ApplicationArgs = {
 	applicationId: string;
@@ -44,6 +44,7 @@ export default class Application {
 	#token: string;
 	#commands: CommandMap;
 	#components: Map<string, ExecutableComponent> = new Map();
+	#shutdown: AbortController;
 
 	constructor({ applicationId, publicKey, token }: ApplicationArgs) {
 		if (!applicationId) {
@@ -65,6 +66,7 @@ export default class Application {
 		this.#applicationId = applicationId as Snowflake;
 		this.#publicKey = publicKey;
 		this.#token = token as Snowflake;
+		this.#shutdown = new AbortController();
 
 		// Set up internal data structures
 		this.#commands = {
@@ -74,8 +76,9 @@ export default class Application {
 		};
 
 		// Configure API Defaults
-		Config.setToken(this.#token);
 		Config.setApplicationId(this.#applicationId);
+		client.setToken(this.#token);
+		client.abortSignal = this.#shutdown.signal;
 	}
 
 	get id() {
@@ -113,8 +116,8 @@ export default class Application {
 		commands.forEach((command) => this.addCommand(command));
 		return this;
 	}
-  
-  getCommand<T extends ApplicationCommandType>(
+
+	getCommand<T extends ApplicationCommandType>(
 		type: T,
 		name: string
 	): CommandMapValue<T> | undefined {
@@ -150,80 +153,45 @@ export default class Application {
 		return undefined;
 	}
 
-	loadApplicationCommandDirectory(directory: string) {
-		console.log(`Loading Application Commands from ${directory}`);
-
-		fs.readdir(directory, async (err, files) => {
-			if (err) {
-				throw err;
-			}
-
-			console.log(`\tLoading ${files.length} files`);
-			for (const file of files) {
-				if (file.endsWith(".js")) {
-					const command = (await import(path.join(directory, file))) as Module<
-						InteractionKitCommand<ApplicationCommandInteraction>
-					>;
-					this.addCommand(command.default);
-				}
-			}
-		});
-
-		return this;
-	}
-
-	loadMessageComponentDirectory(directory: string) {
-		console.log(`Loading Message Components from ${directory}`);
-
-		fs.readdir(directory, async (err, files) => {
-			if (err) {
-				throw err;
-			}
-
-			console.log(`\tLoading ${files.length} files`);
-			for (const file of files) {
-				if (file.endsWith(".js")) {
-					const component = (await import(
-						path.join(directory, file)
-					)) as Module<SerializableComponent>;
-					this.addComponent(component.default);
-				}
-			}
-		});
-
-		return this;
-	}
-
-	async handler(event: FetchEvent) {
+	// TODO: This is convoluted and doesn't really work. We need to return
+	// two states; one promise should resolve to the current response,
+	// and the second should resolve to "all the work is done, we can end the process".
+	// This will be important for serverless and worker environments
+	async handler(request: Request) {
 		console.log("REQUEST");
 
-		if (event.request.method !== "POST") {
-			await event.respondWith(
-				response(ResponseStatus.MethodNotAllowed, { error: "Invalid Method" })
-			);
-			return;
+		if (request.method !== "POST") {
+			return response(ResponseStatus.MethodNotAllowed, {
+				error: "Invalid Method",
+			});
 		}
 
-		const valid = await isValidRequest(event.request, this.#publicKey);
+		const valid = await isValidRequest(request, this.#publicKey);
 		if (!valid) {
-			await event.respondWith(
-				response(ResponseStatus.Unauthorized, { error: "Invalid Request" })
-			);
-			return;
+			return response(ResponseStatus.Unauthorized, {
+				error: "Invalid Request",
+			});
 		}
 
 		try {
-			const json = (await event.request.json()) as APIInteraction;
-			void Interaction.handler(
-				this,
-				json,
-				async (status: ResponseStatus, json: Record<string, any>) => {
-					void event.respondWith(response(status, json));
-				}
-			);
-		} catch (exception: unknown) {
-			console.log(exception);
+			const json = await request.json<APIInteraction>();
+
+			return await new Promise((resolve) => {
+				void Interaction.handler(
+					this,
+					json,
+					(status: ResponseStatus, json: Record<string, any>) => {
+						resolve(response(status, json));
+					}
+				);
+			});
+		} catch (error: unknown) {
+			log((error as Error).message);
 			return response(ResponseStatus.BadRequest, { error: "Unknown Type" });
 		}
+	}
+
+	shutdown() {
+		this.#shutdown.abort();
 	}
 }

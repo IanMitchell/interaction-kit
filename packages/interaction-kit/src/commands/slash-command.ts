@@ -5,7 +5,7 @@ import {
 	APIApplicationCommand,
 	ApplicationCommandType,
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
-} from "discord-api-types/v9";
+} from "discord-api-types/v10";
 import SlashCommandAutocompleteInteraction from "../interactions/autocomplete/application-command-autocomplete";
 import { Autocomplete } from "../interactions/autocomplete/types";
 

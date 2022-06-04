@@ -4,9 +4,10 @@
 	"description": "Creates a new Interaction Kit bot application",
 	"author": "Ian Mitchell <ian.mitchell@hey.com>",
 	"license": "MIT",
+	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/create-ikit-app",
 	"scripts": {
 		"build": "tsup src/cli.ts --minify",
-		"dev": "tsup src/cli.ts --watch",
+		"cli": "tsup src/cli.ts --watch",
 		"prepublishOnly": "npm run build"
 	},
 	"bin": "dist/cli.js",

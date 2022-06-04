@@ -1,4 +1,4 @@
-import { InteractionResponseType } from "discord-api-types/v9";
+import { InteractionResponseType } from "discord-api-types/v10";
 import Application from "../../application";
 import {
 	IntegerOption,

@@ -1,8 +1,12 @@
+import type { Snowflake } from "discord-snowflake";
 import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
-import * as API from "./api";
+import {
+	patchInteractionFollowup,
+	deleteInteractionFollowup,
+} from "discord-api";
 import Application from "./application";
 import { ResponseStatus } from "./requests/response";
-import { Embed } from "@discordjs/builders";
+import Embed from "./structures/embed";
 import {
 	APIApplicationCommand,
 	APIMessageComponent,
@@ -11,9 +15,8 @@ import {
 	InteractionType,
 	RESTPatchAPIInteractionFollowupJSONBody,
 	RESTPostAPIApplicationCommandsJSONBody,
-} from "discord-api-types/v9";
+} from "discord-api-types/v10";
 import ActionRow from "./components/action-row";
-import type { Snowflake } from "./structures/snowflake";
 import { Choices, ChoiceType } from "./commands/options/choices";
 
 /**
@@ -29,21 +32,12 @@ export type MapValue<T> = T extends Map<unknown, infer V> ? V : never;
  * Polyfills and HTTP Definitions
  */
 
-export type Module<T> = {
-	default: T;
-};
-
-export interface FetchEvent extends Event {
-	request: Request;
-	respondWith(response: Promise<Response> | Response): Promise<Response>;
-}
-
 export type RequestBody<T = Record<string, any>> = T;
 
 export type ResponseHandler<T = Record<string, any>> = (
 	status: ResponseStatus,
 	json: T
-) => Promise<void>;
+) => void;
 
 /**
  * Discord Structures
@@ -83,8 +77,8 @@ export type InteractionMessageModifiers = {
 	edit: (
 		data: RESTPatchAPIInteractionFollowupJSONBody,
 		id?: string
-	) => ReturnType<typeof API.patchInteractionFollowup>;
-	delete: (id?: string) => ReturnType<typeof API.deleteInteractionFollowup>;
+	) => ReturnType<typeof patchInteractionFollowup>;
+	delete: (id?: string) => ReturnType<typeof deleteInteractionFollowup>;
 };
 
 export interface Interaction {
@@ -108,7 +102,7 @@ export interface Executable<T extends Interaction = Interaction> {
 		application: Application
 		// TODO: Add request?
 		// request: Request
-	) => Promise<void>;
+	) => void;
 }
 
 export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
@@ -121,6 +115,6 @@ export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
 		application: Application
 		// TODO: Add request?
 		// request: Request
-	) => Promise<void>;
+	) => void;
 	get type(): ApplicationCommandType;
 }
