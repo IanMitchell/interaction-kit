@@ -19,7 +19,7 @@
 			"dependsOn": ["build"]
 		},
 		"test": {
-			"dependsOn": ["clean", "build"]
+			"dependsOn": ["build", "clean"]
 		}
 	}
 }
