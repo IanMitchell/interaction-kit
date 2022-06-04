@@ -36,7 +36,6 @@
 		"jest": "^27.2.2",
 		"lerna": "^4.0.0",
 		"prettier": "^2.4.1",
-		"service-worker-mock": "^2.0.5",
 		"ts-jest": "^27.0.5",
 		"tsdx": "^0.14.1",
 		"tslib": "^2.3.1",
