@@ -1,8 +1,8 @@
 import debug from "debug";
 import { OFFSET, ONE_DAY, ONE_SECOND, sleep } from "./util/time";
 import { getRouteInformation, getRouteKey } from "./util/routes";
-import Queue from "./queue";
-import { RateLimitData, RequestData, RequestOptions, Route } from "./types";
+import { Queue } from "./queue";
+import { RateLimitData, RequestData, Route } from "./types";
 
 const log = debug("discord-request:manager");
 
@@ -108,7 +108,7 @@ export class Manager {
 		this.onRequest = onRequest;
 
 		this.shutdownSignal = shutdownSignal;
-		this.shutdownSignal?.addEventListener("abort", this.shutdown);
+		this.shutdownSignal?.addEventListener("abort", this.shutdown.bind(this));
 
 		this.startSweepers();
 	}
@@ -148,9 +148,9 @@ export class Manager {
 	}
 
 	setShutdownSignal(signal: AbortSignal) {
-		this.shutdownSignal?.removeEventListener("abort", this.shutdown);
+		this.shutdownSignal?.removeEventListener("abort", this.shutdown.bind(this));
 		this.shutdownSignal = signal;
-		this.shutdownSignal.addEventListener("abort", this.shutdown);
+		this.shutdownSignal.addEventListener("abort", this.shutdown.bind(this));
 	}
 
 	shutdown() {

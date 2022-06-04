@@ -3,7 +3,8 @@
 	"version": "0.0.1",
 	"author": "Ian Mitchell",
 	"description": "Creates a JavaScript Error from the body response of a Discord API JSON error message",
-	"license": "MIT",
+	"license": "Apache-2.0",
+	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/discord-error",
 	"exports": "./dist/src/discord-error.js",
 	"main": "./dist/src/discord-error.js",
 	"typings": "dist/src/discord-error.d.ts",
@@ -14,7 +15,7 @@
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
 		"lint": "eslint ./src/**/*.ts",
-		"test": "jest"
+		"test": "vitest run"
 	},
 	"files": [
 		"dist",

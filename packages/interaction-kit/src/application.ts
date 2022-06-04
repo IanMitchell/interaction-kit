@@ -153,6 +153,10 @@ export default class Application {
 		return undefined;
 	}
 
+	// TODO: This is convoluted and doesn't really work. We need to return
+	// two states; one promise should resolve to the current response,
+	// and the second should resolve to "all the work is done, we can end the process".
+	// This will be important for serverless and worker environments
 	async handler(request: Request) {
 		console.log("REQUEST");
 

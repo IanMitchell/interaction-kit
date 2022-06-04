@@ -2,8 +2,9 @@
 	"name": "discord-api",
 	"version": "0.0.2",
 	"author": "Ian Mitchell",
-	"description": "TODO",
+	"description": "A modern Discord HTTP REST API wrapper library",
 	"license": "MIT",
+	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/discord-api",
 	"exports": "./dist/src/index.js",
 	"main": "./dist/src/index.js",
 	"typings": "dist/src/index.d.ts",
@@ -14,7 +15,7 @@
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
 		"lint": "eslint ./src/**/*.ts",
-		"test": "jest"
+		"test": "vitest run"
 	},
 	"files": [
 		"dist",
