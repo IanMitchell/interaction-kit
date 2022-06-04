@@ -3,6 +3,7 @@ import { DiscordError, ErrorBody, isDiscordError } from "discord-error";
 import { RequestError } from "./errors/request-error";
 import { Manager } from "./manager";
 import { RequestMethod, Route } from "./types";
+import { parse } from "./util/response";
 import { getRouteKey } from "./util/routes";
 import { OFFSET, ONE_HOUR, sleep } from "./util/time";
 
@@ -151,7 +152,7 @@ export class Queue {
 
 		// Successful Requests
 		if (response.ok) {
-			return response.json();
+			return parse(response);
 		}
 
 		// Rate Limited Requests
@@ -163,15 +164,13 @@ export class Queue {
 				limit: this.limit,
 				route: route.path,
 				identifier: route.identifier,
-				global: global,
+				global,
 				method: init.method as RequestMethod,
 			};
 
 			this.manager.onRateLimit?.(rateLimitData);
 
 			log(`Encountered 429 rate limit. ${JSON.stringify(rateLimitData)}.`);
-
-			// If caused by a sublimit, wait it out here so other requests on the route can be handled
 			await sleep(retryAfter, this.#shutdownSignal);
 
 			// Don't bump retries for a non-server issue (the request is expected to succeed)
@@ -187,7 +186,7 @@ export class Queue {
 			throw new RequestError(
 				resource,
 				init,
-				// response has not yet been consumed by this point, it is safe to pass an uncloned version
+				// `response` has not yet been consumed by this point, it is safe to pass an uncloned version
 				response,
 				`Discord Server Error encountered: ${response.statusText}`
 			);
