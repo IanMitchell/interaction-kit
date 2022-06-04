@@ -187,6 +187,7 @@ export class Queue {
 			throw new RequestError(
 				resource,
 				init,
+				// response has not yet been consumed by this point, it is safe to pass an uncloned version
 				response,
 				`Discord Server Error encountered: ${response.statusText}`
 			);
