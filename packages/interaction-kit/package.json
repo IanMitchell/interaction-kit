@@ -9,13 +9,12 @@
 	"typings": "dist/src/index.d.ts",
 	"type": "module",
 	"scripts": {
-		"start": "node .",
+		"clean": "rimraf dist",
 		"build": "tsc",
-		"clean": "rm -r dist/",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check && prettier bin/*.ts --check",
 		"lint": "eslint ./src/**/*.ts && eslint ./bin/*.ts",
-		"test": "jest"
+		"test": "vitest run"
 	},
 	"files": [
 		"dist",

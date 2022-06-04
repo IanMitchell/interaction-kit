@@ -4,7 +4,9 @@
 	"description": "Creates a new Interaction Kit bot application",
 	"author": "Ian Mitchell <ian.mitchell@hey.com>",
 	"license": "MIT",
+	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/create-ikit-app",
 	"scripts": {
+		"clean": "rimraf dist",
 		"build": "tsup src/cli.ts --minify",
 		"cli": "tsup src/cli.ts --watch",
 		"prepublishOnly": "npm run build"

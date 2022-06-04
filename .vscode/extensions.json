@@ -1,0 +1,9 @@
+{
+	"recommendations": [
+		"dbaeumer.vscode-eslint",
+		"esbenp.prettier-vscode",
+		"bradlc.vscode-tailwindcss",
+		"ZixuanChen.vitest-explorer",
+		"christian-kohler.path-intellisense"
+	]
+}

@@ -20,7 +20,6 @@ type EmbedArgs = Omit<APIEmbed, "footer" | "author"> & {
 	author?: AuthorOptions;
 };
 
-// TODO: fix types in here + iconURL isn't being converted for footer or author in the constructor
 export default class Embed {
 	title?: string;
 	description?: string;
