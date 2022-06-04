@@ -1,4 +1,4 @@
-export { default as client } from "./client";
+export { client } from "./client";
 
 export * from "./routes/commands";
 export * from "./routes/guild";
