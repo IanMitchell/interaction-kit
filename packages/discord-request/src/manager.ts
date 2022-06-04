@@ -108,7 +108,7 @@ export class Manager {
 		this.onRequest = onRequest;
 
 		this.shutdownSignal = shutdownSignal;
-		this.shutdownSignal?.addEventListener("abort", this.shutdown);
+		this.shutdownSignal?.addEventListener("abort", this.shutdown.bind(this));
 
 		this.startSweepers();
 	}
