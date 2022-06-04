@@ -67,9 +67,15 @@ export default class SlashCommand
 		this.name = name;
 		this.#description = description;
 		this.options = new Map();
-		if (handler != null) this.handler = handler;
-		if (autocomplete != null) this.autocomplete = autocomplete;
 		this.commands = new Map(commands?.map((cmd) => [cmd.name, cmd]));
+
+		if (handler != null) {
+			this.handler = handler;
+		}
+
+		if (autocomplete != null) {
+			this.autocomplete = autocomplete;
+		}
 
 		options?.forEach((option) => {
 			const key = option.name.toLowerCase();
