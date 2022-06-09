@@ -1,6 +1,6 @@
 import {
-	APISelectMenuOption,
 	APIApplicationCommandOptionChoice,
+	APISelectMenuOption,
 } from "discord-api-types/v10";
 import { Serializable } from "../../interfaces";
 

@@ -1,11 +1,11 @@
-import { test, expect } from "vitest";
+import { expect, test } from "vitest";
 import {
-	isSnowflake,
-	getTimestamp,
 	getDate,
-	getWorkerId,
-	getProcessId,
 	getIncrement,
+	getProcessId,
+	getTimestamp,
+	getWorkerId,
+	isSnowflake,
 	parse,
 } from "../src/snowflake";
 

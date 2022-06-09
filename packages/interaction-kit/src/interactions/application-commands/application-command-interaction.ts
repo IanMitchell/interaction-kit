@@ -1,18 +1,8 @@
-import type { Snowflake } from "discord-snowflake";
 import {
-	patchInteractionFollowup,
 	deleteInteractionFollowup,
+	patchInteractionFollowup,
 	postInteractionFollowup,
 } from "discord-api";
-import Application from "../../application";
-import {
-	Interaction,
-	InteractionMessageModifiers,
-	InteractionReply,
-	RequestBody,
-	ResponseHandler,
-} from "../../interfaces";
-import Embed from "../../structures/embed";
 import {
 	APIApplicationCommandInteraction,
 	APIInteractionGuildMember,
@@ -22,8 +12,18 @@ import {
 	MessageFlags,
 	RESTPatchAPIInteractionFollowupJSONBody,
 } from "discord-api-types/v10";
-import { ResponseStatus } from "../../requests/response";
+import type { Snowflake } from "discord-snowflake";
+import Application from "../../application";
 import Config from "../../config";
+import {
+	Interaction,
+	InteractionMessageModifiers,
+	InteractionReply,
+	RequestBody,
+	ResponseHandler,
+} from "../../interfaces";
+import { ResponseStatus } from "../../requests/response";
+import Embed from "../../structures/embed";
 
 export default class ApplicationCommandInteraction implements Interaction {
 	public readonly type = InteractionType.ApplicationCommand;

@@ -1,5 +1,4 @@
 import {
-	APIApplicationCommandOption,
 	APIApplicationCommandSubcommandOption,
 	ApplicationCommandOptionType,
 } from "discord-api-types/v10";

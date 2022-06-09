@@ -1,8 +1,14 @@
+import {
+	APIApplicationCommandInteraction,
+	APIInteraction,
+	APIMessageComponentInteraction,
+	InteractionType,
+	Utils,
+} from "discord-api-types/v10";
+import { ApplicationCommandInteraction, PingInteraction } from "..";
 import Application from "../application";
-import ButtonInteraction from "./message-components/button-interaction";
-import SelectInteraction from "./message-components/select-interaction";
-import SlashCommandInteraction from "./application-commands/slash-command-interaction";
-import ContextMenuInteraction from "./application-commands/context-menu-interaction";
+import { IntegerOption, NumberOption, StringOption } from "../commands/options";
+import { BasicOption, isAutocompleteOption } from "../commands/options/option";
 import { ExecutableComponent } from "../components";
 import { Button } from "../components/button";
 import Select from "../components/select";
@@ -11,17 +17,11 @@ import {
 	RequestBody,
 	ResponseHandler,
 } from "../interfaces";
-import { ApplicationCommandInteraction, PingInteraction } from "..";
+import ContextMenuInteraction from "./application-commands/context-menu-interaction";
+import SlashCommandInteraction from "./application-commands/slash-command-interaction";
 import SlashCommandAutocompleteInteraction from "./autocomplete/application-command-autocomplete";
-import {
-	APIApplicationCommandInteraction,
-	APIInteraction,
-	APIMessageComponentInteraction,
-	InteractionType,
-	Utils,
-} from "discord-api-types/v10";
-import { isAutocompleteOption, BasicOption } from "../commands/options/option";
-import { StringOption, NumberOption, IntegerOption } from "../commands/options";
+import ButtonInteraction from "./message-components/button-interaction";
+import SelectInteraction from "./message-components/select-interaction";
 
 // TODO: Ask Vlad if we can get a version of discord-api-types that doesn't nest this under Utils so we can import it natively with modules
 const {

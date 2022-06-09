@@ -1,6 +1,5 @@
 import type { Executable, SerializableComponent } from "../interfaces";
 
-import ButtonInteraction from "../interactions/message-components/button-interaction";
 import {
 	APIBaseComponent,
 	APIButtonComponent,
@@ -10,6 +9,7 @@ import {
 	ButtonStyle,
 	ComponentType,
 } from "discord-api-types/v10";
+import ButtonInteraction from "../interactions/message-components/button-interaction";
 
 // Testing the API Base
 interface APIButtonComponentBase<Style extends ButtonStyle>

@@ -1,13 +1,13 @@
-import type { Snowflake } from "discord-snowflake";
-import {
-	RESTPostAPIApplicationCommandsJSONBody,
-	APIApplicationCommand,
-} from "discord-api-types/v10";
-import path from "node:path";
 import {
 	getGlobalApplicationCommands,
 	getGuildApplicationCommands,
 } from "discord-api";
+import {
+	APIApplicationCommand,
+	RESTPostAPIApplicationCommandsJSONBody,
+} from "discord-api-types/v10";
+import type { Snowflake } from "discord-snowflake";
+import path from "node:path";
 import Application from "./application";
 
 export async function getApplicationEntrypoint(): Promise<Application> {

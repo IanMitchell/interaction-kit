@@ -1,5 +1,5 @@
-import pkg from "../package.json" assert { type: "json" };
 import Client from "discord-request";
+import pkg from "../package.json" assert { type: "json" };
 
 export class DiscordApiClient extends Client {
 	get userAgent() {

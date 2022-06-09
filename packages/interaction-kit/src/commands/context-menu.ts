@@ -1,4 +1,3 @@
-import { InteractionKitCommand } from "../interfaces";
 import {
 	APIApplicationCommand,
 	RESTPostAPIContextMenuApplicationCommandsJSONBody,
@@ -6,6 +5,7 @@ import {
 import ContextMenuInteraction, {
 	ContextMenuApplicationCommandType,
 } from "../interactions/application-commands/context-menu-interaction";
+import { InteractionKitCommand } from "../interfaces";
 
 type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 	name: string;

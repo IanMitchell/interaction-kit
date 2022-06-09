@@ -1,14 +1,14 @@
+import {
+	APIContextMenuInteraction,
+	ApplicationCommandType,
+} from "discord-api-types/v10";
 import Application from "../../application";
-import ApplicationCommandInteraction from "./application-command-interaction";
 import {
 	InteractionKitCommand,
 	RequestBody,
 	ResponseHandler,
 } from "../../interfaces";
-import {
-	APIContextMenuInteraction,
-	ApplicationCommandType,
-} from "discord-api-types/v10";
+import ApplicationCommandInteraction from "./application-command-interaction";
 
 export type ContextMenuApplicationCommandType = Exclude<
 	ApplicationCommandType,

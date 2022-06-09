@@ -7,8 +7,8 @@ import { Autocomplete } from "../../interactions/autocomplete/types";
 import { Optional } from "../../interfaces";
 import { SlashChoiceList } from "./choices";
 import {
-	BaseBasicOptionArgs,
 	AutocompleteCommandOptionType,
+	BaseBasicOptionArgs,
 	BasicOption,
 } from "./option";
 

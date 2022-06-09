@@ -1,7 +1,3 @@
-import type { Snowflake } from "discord-snowflake";
-import Application from "../../application";
-import { Autocomplete, RequestBody, ResponseHandler } from "../../interfaces";
-import { AutocompleteInteractionResponseTypes } from "./types";
 import {
 	APIApplicationCommandAutocompleteInteraction,
 	APIApplicationCommandAutocompleteResponse,
@@ -9,12 +5,16 @@ import {
 	APIApplicationCommandOptionChoice,
 	APIInteractionGuildMember,
 } from "discord-api-types/v10";
-import { ResponseStatus } from "../../requests/response";
+import type { Snowflake } from "discord-snowflake";
+import Application from "../../application";
 import { Choices } from "../../commands/options/choices";
 import {
 	APIApplicationCommandInteractionDataAutocompleteOption,
 	isAutocompleteOption,
 } from "../../commands/options/option";
+import { Autocomplete, RequestBody, ResponseHandler } from "../../interfaces";
+import { ResponseStatus } from "../../requests/response";
+import { AutocompleteInteractionResponseTypes } from "./types";
 
 // TODO: Specify string or number?
 export default class AutocompleteInteraction<

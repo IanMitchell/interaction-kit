@@ -1,6 +1,3 @@
-import { BasicOption } from "./options/option";
-import { ArrayValue, InteractionKitCommand, Optional } from "../interfaces";
-import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
 import {
 	APIApplicationCommand,
 	APIApplicationCommandBasicOption,
@@ -10,10 +7,13 @@ import {
 	ApplicationCommandType,
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from "discord-api-types/v10";
+import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
 import SlashCommandAutocompleteInteraction from "../interactions/autocomplete/application-command-autocomplete";
 import { Autocomplete } from "../interactions/autocomplete/types";
-import Subcommand from "./options/subcommand";
+import { ArrayValue, InteractionKitCommand, Optional } from "../interfaces";
 import { SubcommandGroup } from "./options";
+import { BasicOption } from "./options/option";
+import Subcommand from "./options/subcommand";
 
 export type CommandArgs = {
 	name: string;
