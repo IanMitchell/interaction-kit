@@ -9,6 +9,7 @@ import { ApplicationCommandInteraction, PingInteraction } from "..";
 import Application from "../application";
 import { IntegerOption, NumberOption, StringOption } from "../commands/options";
 import { BasicOption, isAutocompleteOption } from "../commands/options/option";
+import SlashCommand from "../commands/slash-command";
 import { ExecutableComponent } from "../components";
 import { Button } from "../components/button";
 import Select from "../components/select";
@@ -64,6 +65,10 @@ async function handleApplicationCommandInteraction(
 	respond: ResponseHandler
 ) {
 	if (isChatInputApplicationCommandInteraction(json)) {
+		if (!(command instanceof SlashCommand)) {
+			return;
+		}
+
 		const interaction = new SlashCommandInteraction(
 			application,
 			command,
@@ -71,9 +76,11 @@ async function handleApplicationCommandInteraction(
 			respond
 		);
 
-		// TODO: Handle subcommand interaction
+		// Route subcommands to appropriate handler
+		const handler = command.getCommandHandler(json);
+
 		console.log(`Handling ${interaction.name}`);
-		command.handler(interaction, application);
+		handler(interaction, application);
 	} else if (isContextMenuApplicationCommandInteraction(json)) {
 		const interaction = new ContextMenuInteraction(
 			application,

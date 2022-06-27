@@ -13,7 +13,6 @@ import {
 import ApplicationCommandInteraction from "./application-command-interaction";
 
 export default class SlashCommandInteraction extends ApplicationCommandInteraction {
-	// TODO: lol u know subcommands and subgroups are a thing right mr discord developer
 	readonly #options: Map<
 		string,
 		APIApplicationCommandInteractionDataBasicOption

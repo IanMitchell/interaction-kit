@@ -3,6 +3,7 @@ import {
 	APIApplicationCommandBasicOption,
 	APIApplicationCommandSubcommandGroupOption,
 	APIApplicationCommandSubcommandOption,
+	APIChatInputApplicationCommandInteraction,
 	ApplicationCommandOptionType,
 	ApplicationCommandType,
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
@@ -10,7 +11,12 @@ import {
 import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
 import SlashCommandAutocompleteInteraction from "../interactions/autocomplete/application-command-autocomplete";
 import { Autocomplete } from "../interactions/autocomplete/types";
-import { ArrayValue, InteractionKitCommand, Optional } from "../interfaces";
+import {
+	ArrayValue,
+	InteractionKitCommand,
+	Optional,
+	RequestBody,
+} from "../interfaces";
 import { SubcommandGroup } from "./options";
 import { BasicOption } from "./options/option";
 import Subcommand from "./options/subcommand";
@@ -112,24 +118,58 @@ export default class SlashCommand
 						return subcommand.equals(
 							option as APIApplicationCommandSubcommandOption
 						);
-					} else {
-						return subcommand.equals(
-							option as APIApplicationCommandSubcommandGroupOption
-						);
 					}
+
+					return subcommand.equals(
+						option as APIApplicationCommandSubcommandGroupOption
+					);
 				}) ?? true
 			);
-		} else {
-			// This is a normal slash command
-			return (
-				schema.options?.every(
-					(option) =>
-						this.options
-							.get(option.name)
-							?.equals(option as APIApplicationCommandBasicOption) ?? false
-				) ?? true
-			);
 		}
+
+		// This is a normal slash command
+		return (
+			schema.options?.every(
+				(option) =>
+					this.options
+						.get(option.name)
+						?.equals(option as APIApplicationCommandBasicOption) ?? false
+			) ?? true
+		);
+	}
+
+	getCommandHandler(
+		json: RequestBody<APIChatInputApplicationCommandInteraction>
+	) {
+		let options = this.commands;
+
+		if (
+			json.data.options?.[0]?.type ===
+			ApplicationCommandOptionType.SubcommandGroup
+		) {
+			const option = options.get(json.data.options[0].name);
+
+			if (option instanceof SubcommandGroup) {
+				options = option.subcommands;
+			}
+		}
+
+		if (
+			json.data.options?.[0]?.type === ApplicationCommandOptionType.Subcommand
+		) {
+			const option = options.get(json.data.options[0].name);
+
+			if (option instanceof Subcommand) {
+				return option.handler;
+			}
+		}
+
+		if (this.handler == null) {
+			// TODO: Throw actual error
+			throw new Error(`Unknown handler for interaction ${json.data.name}`);
+		}
+
+		return this.handler;
 	}
 
 	serialize(): RESTPostAPIChatInputApplicationCommandsJSONBody {
