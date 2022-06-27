@@ -102,7 +102,7 @@ export default async function dev(argv?: string[]) {
 
 	const url = await ngrok.connect({
 		addr: port,
-		onTerminated: async () => {
+		async onTerminated() {
 			log("Tunnel terminated. Please restart process");
 
 			// Cleanup

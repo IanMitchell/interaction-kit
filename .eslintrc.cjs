@@ -8,6 +8,9 @@ module.exports = {
 	rules: {
 		"@typescript-eslint/ban-types": 0,
 		"@typescript-eslint/prefer-literal-enum-member": 0,
+		"@typescript-eslint/naming-convention": 0,
+		"@typescript-eslint/parameter-properties": 0,
+		"no-bitwise": 0,
 		"no-eq-null": 0,
 		"eqeqeq": ["error", "smart"],
 		"capitalized-comments": 0,

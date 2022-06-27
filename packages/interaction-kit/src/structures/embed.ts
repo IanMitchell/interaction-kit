@@ -21,16 +21,16 @@ type EmbedArgs = Omit<APIEmbed, "footer" | "author"> & {
 };
 
 export default class Embed {
-	title?: string;
-	description?: string;
-	url?: string;
-	timestamp?: string;
-	color?: number;
-	footer?: APIEmbedFooter;
-	image?: APIEmbedImage;
-	thumbnail?: APIEmbedThumbnail;
-	author?: APIEmbedAuthor;
-	fields?: APIEmbedField[];
+	title: string | undefined;
+	description: string | undefined;
+	url: string | undefined;
+	timestamp: string | undefined;
+	color: number | undefined;
+	footer: APIEmbedFooter | undefined;
+	image: APIEmbedImage | undefined;
+	thumbnail: APIEmbedThumbnail | undefined;
+	author: APIEmbedAuthor | undefined;
+	fields: APIEmbedField[] | undefined;
 
 	constructor({
 		title,

@@ -78,6 +78,7 @@ export class Option
 	}
 
 	serialize(): APIApplicationCommandOption {
+		// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 		return {
 			type: this.type,
 			name: this.name,
@@ -120,6 +121,8 @@ export class BasicOption extends Option {
 		if (this.required === undefined) {
 			return super.serialize() as APIApplicationCommandBasicOption;
 		}
+
+		// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 		return {
 			...super.serialize(),
 			required: this.required,
