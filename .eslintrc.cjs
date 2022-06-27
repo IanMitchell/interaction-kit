@@ -12,6 +12,7 @@ module.exports = {
 		"@typescript-eslint/parameter-properties": 0,
 		"no-bitwise": 0,
 		"no-eq-null": 0,
+		"object-shorthand": ["error", "properties"],
 		"eqeqeq": ["error", "smart"],
 		"capitalized-comments": 0,
 		"no-await-in-loop": 0,
