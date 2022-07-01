@@ -96,7 +96,7 @@ export interface Autocomplete<T extends ChoiceType> {
 }
 
 export interface Executable<T extends Interaction = Interaction> {
-	matches?: (customId: string) => Promise<boolean>;
+	matches?: ((customId: string) => Promise<boolean>) | undefined;
 	handler: (
 		interaction: T,
 		application: Application

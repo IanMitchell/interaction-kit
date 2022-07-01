@@ -114,10 +114,10 @@ export default class Client {
 		onRateLimit,
 		onRequest,
 	}: {
-		onBucketSweep?: Callbacks["onBucketSweep"];
-		onQueueSweep?: Callbacks["onQueueSweep"];
-		onRateLimit?: Callbacks["onRateLimit"];
-		onRequest?: Callbacks["onRequest"];
+		onBucketSweep?: Callbacks["onBucketSweep"] | undefined;
+		onQueueSweep?: Callbacks["onQueueSweep"] | undefined;
+		onRateLimit?: Callbacks["onRateLimit"] | undefined;
+		onRequest?: Callbacks["onRequest"] | undefined;
 	}) {
 		this.#manager.onBucketSweep = onBucketSweep;
 		this.#manager.onQueueSweep = onQueueSweep;

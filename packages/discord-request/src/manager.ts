@@ -44,7 +44,7 @@ export type ManagerArgs = Partial<Config> & Cache & Callbacks;
 
 export class Manager {
 	#token: string | null = null;
-	shutdownSignal?: AbortSignal | null;
+	shutdownSignal: AbortSignal | null | undefined;
 	config: Config;
 
 	globalDelay: Promise<void> | null = null;
@@ -60,10 +60,10 @@ export class Manager {
 	bucketSweepInterval: number;
 	queueSweepInterval: number;
 
-	onBucketSweep?: Callbacks["onBucketSweep"];
-	onQueueSweep?: Callbacks["onQueueSweep"];
-	onRateLimit?: Callbacks["onRateLimit"];
-	onRequest?: Callbacks["onRequest"];
+	onBucketSweep: Callbacks["onBucketSweep"] | undefined;
+	onQueueSweep: Callbacks["onQueueSweep"] | undefined;
+	onRateLimit: Callbacks["onRateLimit"] | undefined;
+	onRequest: Callbacks["onRequest"] | undefined;
 
 	constructor({
 		// Request Config

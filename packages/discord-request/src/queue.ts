@@ -18,7 +18,7 @@ export class Queue {
 	id: string;
 
 	#queue: Promise<void>;
-	#shutdownSignal?: AbortSignal | null;
+	#shutdownSignal: AbortSignal | null | undefined;
 
 	constructor(
 		manager: Manager,
