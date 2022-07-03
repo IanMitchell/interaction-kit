@@ -31,7 +31,15 @@ type ButtonBaseArgs<T extends ButtonStyle> = Omit<
 	| "min_values"
 	| "max_values"
 	| "style"
-> & { style: T };
+	| "label"
+	| "emoji"
+	| "disabled"
+> & {
+	style: T;
+	label?: APIButtonComponent["label"] | undefined;
+	emoji?: APIButtonComponent["emoji"] | undefined;
+	disabled?: APIButtonComponent["disabled"] | undefined;
+};
 
 type ButtonArgs = {
 	customId: APIButtonComponentWithCustomId["custom_id"];
@@ -47,7 +55,7 @@ type ButtonLinkArgs = Omit<
 
 abstract class ButtonBase<T extends ButtonStyle> {
 	#style: T;
-	#label: APIButtonComponent["label"];
+	#label: APIButtonComponent["label"] | undefined;
 	#emoji: APIButtonComponent["emoji"];
 	#disabled: APIButtonComponent["disabled"];
 
