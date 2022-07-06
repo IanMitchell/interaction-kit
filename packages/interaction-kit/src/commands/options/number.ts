@@ -25,7 +25,7 @@ interface NumberAutocompleteArgs
 }
 
 export default class NumberOption
-	extends BasicOption
+	extends BasicOption<APIApplicationCommandNumberOption>
 	implements Autocomplete<SlashCommandAutocompleteInteraction>
 {
 	public readonly choices: SlashChoiceList<number> | undefined;
@@ -102,8 +102,8 @@ export default class NumberOption
 		return super.equals(schema);
 	}
 
-	serialize(): APIApplicationCommandNumberOption {
-		const payload = super.serialize() as APIApplicationCommandNumberOption;
+	serialize() {
+		const payload = super.serialize();
 
 		if (this.isAutocomplete(payload)) {
 			payload.autocomplete = true;

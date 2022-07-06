@@ -278,7 +278,7 @@ export class Manager {
 		const fetchOptions: RequestInit = {
 			method: data.method,
 			headers,
-			body,
+			body: body ?? null,
 		};
 
 		return {

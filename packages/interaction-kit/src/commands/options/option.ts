@@ -105,7 +105,9 @@ interface BasicOptionArgs extends OptionArgs {
 
 export type BaseBasicOptionArgs = Omit<BasicOptionArgs, "type">;
 
-export class BasicOption extends Option {
+export class BasicOption<
+	T extends APIApplicationCommandBasicOption = APIApplicationCommandBasicOption
+> extends Option {
 	public readonly required;
 
 	constructor({ name, description, type, required }: BasicOptionArgs) {
@@ -117,16 +119,16 @@ export class BasicOption extends Option {
 		this.required = required;
 	}
 
-	serialize(): APIApplicationCommandBasicOption {
+	serialize(): T {
 		if (this.required === undefined) {
-			return super.serialize() as APIApplicationCommandBasicOption;
+			return super.serialize() as T;
 		}
 
 		// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 		return {
 			...super.serialize(),
 			required: this.required,
-		} as APIApplicationCommandBasicOption;
+		} as T;
 	}
 
 	equals(schema: APIApplicationCommandBasicOption): boolean {

@@ -25,7 +25,7 @@ interface IntegerAutocompleteArgs
 }
 
 export default class IntegerOption
-	extends BasicOption
+	extends BasicOption<APIApplicationCommandIntegerOption>
 	implements Autocomplete<SlashCommandAutocompleteInteraction>
 {
 	public readonly choices: SlashChoiceList<number> | undefined;
@@ -102,8 +102,8 @@ export default class IntegerOption
 		return super.equals(schema);
 	}
 
-	serialize(): APIApplicationCommandIntegerOption {
-		const payload = super.serialize() as APIApplicationCommandIntegerOption;
+	serialize() {
+		const payload = super.serialize();
 
 		if (this.isAutocomplete(payload)) {
 			payload.autocomplete = true;

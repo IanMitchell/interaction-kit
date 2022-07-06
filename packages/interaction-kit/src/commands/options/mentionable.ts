@@ -1,8 +1,11 @@
-import { ApplicationCommandOptionType } from "discord-api-types/v10";
+import {
+	APIApplicationCommandMentionableOption,
+	ApplicationCommandOptionType,
+} from "discord-api-types/v10";
 import { Optional } from "../../interfaces";
 import { BaseBasicOptionArgs, BasicOption } from "./option";
 
-export default class MentionableOption extends BasicOption {
+export default class MentionableOption extends BasicOption<APIApplicationCommandMentionableOption> {
 	constructor({
 		name,
 		description,

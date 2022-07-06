@@ -25,7 +25,7 @@ interface StringAutocompleteArgs
 }
 
 export default class StringOption
-	extends BasicOption
+	extends BasicOption<APIApplicationCommandStringOption>
 	implements Autocomplete<SlashCommandAutocompleteInteraction>
 {
 	public readonly choices: SlashChoiceList<string> | undefined;
@@ -102,8 +102,8 @@ export default class StringOption
 		return super.equals(schema);
 	}
 
-	serialize(): APIApplicationCommandStringOption {
-		const payload = super.serialize() as APIApplicationCommandStringOption;
+	serialize() {
+		const payload = super.serialize();
 
 		if (this.isAutocomplete(payload)) {
 			payload.autocomplete = true;
