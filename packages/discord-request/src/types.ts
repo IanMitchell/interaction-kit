@@ -1,11 +1,11 @@
 import type { Snowflake } from "discord-snowflake";
 
 export enum RequestMethod {
-	Delete = "delete",
-	Get = "get",
-	Patch = "patch",
-	Post = "post",
-	Put = "put",
+	Delete = "DELETE",
+	Get = "GET",
+	Patch = "PATCH",
+	Post = "POST",
+	Put = "PUT",
 }
 
 export interface Route {
