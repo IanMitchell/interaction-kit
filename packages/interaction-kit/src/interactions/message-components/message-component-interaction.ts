@@ -1,19 +1,8 @@
-import type { Snowflake } from "discord-snowflake";
 import {
-	postInteractionFollowup,
 	deleteInteractionFollowup,
 	patchInteractionFollowup,
+	postInteractionFollowup,
 } from "discord-api";
-import Application from "../../application";
-import {
-	Interaction,
-	InteractionMessageModifiers,
-	InteractionReply,
-	RequestBody,
-	ResponseHandler,
-	SerializableComponent,
-} from "../../interfaces";
-import { isActionRow } from "../../components/action-row";
 import {
 	APIInteractionGuildMember,
 	APIInteractionResponse,
@@ -24,9 +13,20 @@ import {
 	MessageFlags,
 	RESTPatchAPIInteractionFollowupJSONBody,
 } from "discord-api-types/v10";
+import type { Snowflake } from "discord-snowflake";
+import Application from "../../application";
+import { isActionRow } from "../../components/action-row";
+import Config from "../../config";
+import {
+	Interaction,
+	InteractionMessageModifiers,
+	InteractionReply,
+	RequestBody,
+	ResponseHandler,
+	SerializableComponent,
+} from "../../interfaces";
 import { ResponseStatus } from "../../requests/response";
 import Embed from "../../structures/embed";
-import Config from "../../config";
 
 export default class MessageComponentInteraction implements Interaction {
 	public readonly type = InteractionType.MessageComponent;

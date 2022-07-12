@@ -1,5 +1,5 @@
-import { RequestData, RequestOptions, RequestMethod } from "./types";
-import { Manager, ManagerArgs, Callbacks } from "./manager";
+import { Callbacks, Manager, ManagerArgs } from "./manager";
+import { RequestData, RequestMethod, RequestOptions } from "./types";
 
 export default class Client {
 	#manager: Manager;
@@ -114,10 +114,10 @@ export default class Client {
 		onRateLimit,
 		onRequest,
 	}: {
-		onBucketSweep?: Callbacks["onBucketSweep"];
-		onQueueSweep?: Callbacks["onQueueSweep"];
-		onRateLimit?: Callbacks["onRateLimit"];
-		onRequest?: Callbacks["onRequest"];
+		onBucketSweep?: Callbacks["onBucketSweep"] | undefined;
+		onQueueSweep?: Callbacks["onQueueSweep"] | undefined;
+		onRateLimit?: Callbacks["onRateLimit"] | undefined;
+		onRequest?: Callbacks["onRequest"] | undefined;
 	}) {
 		this.#manager.onBucketSweep = onBucketSweep;
 		this.#manager.onQueueSweep = onQueueSweep;

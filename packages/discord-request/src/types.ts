@@ -19,6 +19,15 @@ export interface Attachment {
 	data: Blob;
 }
 
+type JSONValue =
+	| string
+	| number
+	| boolean
+	| { [x: string]: JSONValue }
+	| undefined
+	| null
+	| JSONValue[];
+
 export interface RequestOptions {
 	auth?: boolean;
 	authPrefix?: "Bot" | "Bearer";

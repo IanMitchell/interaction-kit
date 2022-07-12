@@ -1,6 +1,5 @@
 import type { Executable, SerializableComponent } from "../interfaces";
 
-import ButtonInteraction from "../interactions/message-components/button-interaction";
 import {
 	APIBaseComponent,
 	APIButtonComponent,
@@ -10,6 +9,7 @@ import {
 	ButtonStyle,
 	ComponentType,
 } from "discord-api-types/v10";
+import ButtonInteraction from "../interactions/message-components/button-interaction";
 
 // Testing the API Base
 interface APIButtonComponentBase<Style extends ButtonStyle>
@@ -31,7 +31,15 @@ type ButtonBaseArgs<T extends ButtonStyle> = Omit<
 	| "min_values"
 	| "max_values"
 	| "style"
-> & { style: T };
+	| "label"
+	| "emoji"
+	| "disabled"
+> & {
+	style: T;
+	label?: APIButtonComponent["label"] | undefined;
+	emoji?: APIButtonComponent["emoji"] | undefined;
+	disabled?: APIButtonComponent["disabled"] | undefined;
+};
 
 type ButtonArgs = {
 	customId: APIButtonComponentWithCustomId["custom_id"];
@@ -47,7 +55,7 @@ type ButtonLinkArgs = Omit<
 
 abstract class ButtonBase<T extends ButtonStyle> {
 	#style: T;
-	#label: APIButtonComponent["label"];
+	#label: APIButtonComponent["label"] | undefined;
 	#emoji: APIButtonComponent["emoji"];
 	#disabled: APIButtonComponent["disabled"];
 

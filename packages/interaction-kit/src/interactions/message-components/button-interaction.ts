@@ -1,8 +1,8 @@
-import MessageComponentInteraction from "./message-component-interaction";
+import { APIMessageComponentButtonInteraction } from "discord-api-types/v10";
 import Application from "../../application";
 import { Button } from "../../components/button";
 import { RequestBody, ResponseHandler } from "../../interfaces";
-import { APIMessageComponentButtonInteraction } from "discord-api-types/v10";
+import MessageComponentInteraction from "./message-component-interaction";
 
 export default class ButtonInteraction extends MessageComponentInteraction {
 	constructor(

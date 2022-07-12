@@ -4,29 +4,31 @@ import {
 } from "discord-api-types/v10";
 import SlashCommandAutocompleteInteraction from "../../interactions/autocomplete/application-command-autocomplete";
 import { Autocomplete } from "../../interactions/autocomplete/types";
+import { Optional } from "../../interfaces";
 import { SlashChoiceList } from "./choices";
-import Option, {
-	BaseOptionArgs,
+import {
 	AutocompleteCommandOptionType,
+	BaseBasicOptionArgs,
+	BasicOption,
 } from "./option";
 
-interface StringOptionChoiceArgs extends BaseOptionArgs {
+interface StringOptionChoiceArgs
+	extends Optional<BaseBasicOptionArgs, "required"> {
 	choices?: SlashChoiceList<string>;
 	autocomplete: never;
 }
 
-interface StringAutocompleteArgs extends BaseOptionArgs {
+interface StringAutocompleteArgs
+	extends Optional<BaseBasicOptionArgs, "required"> {
 	choices: never;
-	autocomplete: NonNullable<
-		Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"]
-	>;
+	autocomplete: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 }
 
 export default class StringOption
-	extends Option
+	extends BasicOption<APIApplicationCommandStringOption>
 	implements Autocomplete<SlashCommandAutocompleteInteraction>
 {
-	public readonly choices?: SlashChoiceList<string>;
+	public readonly choices: SlashChoiceList<string> | undefined;
 
 	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 
@@ -100,13 +102,13 @@ export default class StringOption
 		return super.equals(schema);
 	}
 
-	serialize(): APIApplicationCommandStringOption {
-		const payload = super.serialize() as APIApplicationCommandStringOption;
+	serialize() {
+		const payload = super.serialize();
 
 		if (this.isAutocomplete(payload)) {
 			payload.autocomplete = true;
-		} else {
-			payload.choices = this.choices?.serialize();
+		} else if (this.choices != null) {
+			payload.choices = this.choices.serialize();
 		}
 
 		return payload;

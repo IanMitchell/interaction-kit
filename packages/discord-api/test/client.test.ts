@@ -1,4 +1,4 @@
-import { test, expect } from "vitest";
+import { expect, test } from "vitest";
 
 test("discord-api", () => {
 	expect(true).toBe(true);
