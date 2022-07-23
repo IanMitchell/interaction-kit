@@ -1,5 +1,7 @@
-import { Callbacks, Manager, ManagerArgs } from "./manager";
-import { RequestData, RequestMethod, RequestOptions } from "./types";
+import type { Callbacks, ManagerArgs } from "./manager";
+import { Manager } from "./manager";
+import type { RequestData, RequestOptions } from "./types";
+import { RequestMethod } from "./types";
 
 export default class Client {
 	#manager: Manager;

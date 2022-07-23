@@ -1,19 +1,20 @@
-import {
+import type {
 	APIApplicationCommandInteraction,
 	APIInteraction,
 	APIMessageComponentInteraction,
-	InteractionType,
-	Utils,
 } from "discord-api-types/v10";
-import { ApplicationCommandInteraction, PingInteraction } from "..";
-import Application from "../application";
+import { InteractionType, Utils } from "discord-api-types/v10";
+import type { ApplicationCommandInteraction } from "..";
+import { PingInteraction } from "..";
+import type Application from "../application";
 import { IntegerOption, NumberOption, StringOption } from "../commands/options";
-import { BasicOption, isAutocompleteOption } from "../commands/options/option";
+import type { BasicOption } from "../commands/options/option";
+import { isAutocompleteOption } from "../commands/options/option";
 import SlashCommand from "../commands/slash-command";
-import { ExecutableComponent } from "../components";
+import type { ExecutableComponent } from "../components";
 import { Button } from "../components/button";
 import Select from "../components/select";
-import {
+import type {
 	InteractionKitCommand,
 	RequestBody,
 	ResponseHandler,

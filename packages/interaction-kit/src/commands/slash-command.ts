@@ -1,24 +1,26 @@
-import {
+import type {
 	APIApplicationCommand,
 	APIApplicationCommandBasicOption,
 	APIApplicationCommandSubcommandGroupOption,
 	APIApplicationCommandSubcommandOption,
 	APIChatInputApplicationCommandInteraction,
-	ApplicationCommandOptionType,
-	ApplicationCommandType,
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from "discord-api-types/v10";
-import SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
-import SlashCommandAutocompleteInteraction from "../interactions/autocomplete/application-command-autocomplete";
-import { Autocomplete } from "../interactions/autocomplete/types";
 import {
+	ApplicationCommandOptionType,
+	ApplicationCommandType,
+} from "discord-api-types/v10";
+import type SlashCommandInteraction from "../interactions/application-commands/slash-command-interaction";
+import type SlashCommandAutocompleteInteraction from "../interactions/autocomplete/application-command-autocomplete";
+import type { Autocomplete } from "../interactions/autocomplete/types";
+import type {
 	ArrayValue,
 	InteractionKitCommand,
 	Optional,
 	RequestBody,
 } from "../interfaces";
 import { SubcommandGroup } from "./options";
-import { BasicOption } from "./options/option";
+import type { BasicOption } from "./options/option";
 import Subcommand from "./options/subcommand";
 
 export type CommandArgs = {

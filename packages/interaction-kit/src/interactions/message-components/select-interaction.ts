@@ -2,9 +2,9 @@ import type {
 	APIMessageComponentSelectMenuInteraction,
 	APISelectMenuOption,
 } from "discord-api-types/v10";
-import Application from "../../application";
-import Select from "../../components/select";
-import { RequestBody, ResponseHandler } from "../../interfaces";
+import type Application from "../../application";
+import type Select from "../../components/select";
+import type { RequestBody, ResponseHandler } from "../../interfaces";
 import MessageComponentInteraction from "./message-component-interaction";
 
 export default class SelectInteraction extends MessageComponentInteraction {

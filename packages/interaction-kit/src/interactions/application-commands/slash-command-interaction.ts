@@ -1,11 +1,13 @@
-import {
+import type {
 	APIApplicationCommandInteractionDataBasicOption,
 	APIChatInputApplicationCommandInteraction,
+} from "discord-api-types/v10";
+import {
 	ApplicationCommandOptionType,
 	ApplicationCommandType,
 } from "discord-api-types/v10";
-import Application from "../../application";
-import {
+import type Application from "../../application";
+import type {
 	InteractionKitCommand,
 	RequestBody,
 	ResponseHandler,

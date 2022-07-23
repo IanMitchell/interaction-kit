@@ -1,5 +1,5 @@
 import { putGlobalApplicationCommands } from "discord-api";
-import { RESTPutAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
+import type { RESTPutAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 import { getApplicationEntrypoint } from "../scripts";
 
 export default async function command(argv?: string[]) {

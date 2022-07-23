@@ -1,15 +1,17 @@
 import debug from "debug";
 import { client } from "discord-api";
-import { APIInteraction, ApplicationCommandType } from "discord-api-types/v10";
+import type { APIInteraction } from "discord-api-types/v10";
+import { ApplicationCommandType } from "discord-api-types/v10";
 import type { Snowflake } from "discord-snowflake";
 import isValidRequest from "discord-verify";
-import ContextMenu from "./commands/context-menu";
-import SlashCommand from "./commands/slash-command";
-import { ExecutableComponent, isExecutableComponent } from "./components";
+import type ContextMenu from "./commands/context-menu";
+import type SlashCommand from "./commands/slash-command";
+import type { ExecutableComponent } from "./components";
+import { isExecutableComponent } from "./components";
 import Config from "./config";
 import * as Interaction from "./interactions";
-import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
-import {
+import type ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
+import type {
 	InteractionKitCommand,
 	MapValue,
 	SerializableComponent,

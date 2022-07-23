@@ -1,9 +1,7 @@
-import {
-	APIContextMenuInteraction,
-	ApplicationCommandType,
-} from "discord-api-types/v10";
-import Application from "../../application";
-import {
+import type { APIContextMenuInteraction } from "discord-api-types/v10";
+import { ApplicationCommandType } from "discord-api-types/v10";
+import type Application from "../../application";
+import type {
 	InteractionKitCommand,
 	RequestBody,
 	ResponseHandler,

@@ -1,9 +1,8 @@
-import {
-	APIApplicationCommandChannelOption,
-	ApplicationCommandOptionType,
-} from "discord-api-types/v10";
-import { Optional } from "../../interfaces";
-import { BaseBasicOptionArgs, BasicOption } from "./option";
+import type { APIApplicationCommandChannelOption } from "discord-api-types/v10";
+import { ApplicationCommandOptionType } from "discord-api-types/v10";
+import type { Optional } from "../../interfaces";
+import type { BaseBasicOptionArgs } from "./option";
+import { BasicOption } from "./option";
 
 type ChannelOptionArgs = {
 	channelTypes?:

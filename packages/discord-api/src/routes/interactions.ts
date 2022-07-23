@@ -1,13 +1,13 @@
-import type { Snowflake } from "discord-snowflake";
-import { client } from "../client";
-import {
-	Routes,
-	RESTPostAPIInteractionFollowupJSONBody,
-	RESTPatchAPIInteractionFollowupJSONBody,
+import type {
 	RESTDeleteAPIInteractionFollowupResult,
+	RESTPatchAPIInteractionFollowupJSONBody,
 	RESTPatchAPIInteractionFollowupResult,
+	RESTPostAPIInteractionFollowupJSONBody,
 	RESTPostAPIInteractionFollowupResult,
 } from "discord-api-types/v10";
+import { Routes } from "discord-api-types/v10";
+import type { Snowflake } from "discord-snowflake";
+import { client } from "../client";
 
 // TODO: Test, Document
 export async function postInteractionFollowup(

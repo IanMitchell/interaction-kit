@@ -1,8 +1,9 @@
 import debug from "debug";
-import { DiscordError, ErrorBody, isDiscordError } from "discord-error";
+import type { ErrorBody } from "discord-error";
+import { DiscordError, isDiscordError } from "discord-error";
 import { RequestError } from "./errors/request-error";
-import { Manager } from "./manager";
-import { RequestMethod, Route } from "./types";
+import type { Manager } from "./manager";
+import type { RequestMethod, Route } from "./types";
 import { parse } from "./util/response";
 import { getRouteKey } from "./util/routes";
 import { OFFSET, ONE_HOUR, sleep } from "./util/time";

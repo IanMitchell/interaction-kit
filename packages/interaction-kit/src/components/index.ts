@@ -1,4 +1,4 @@
-import { SerializableComponent } from "../interfaces";
+import type { SerializableComponent } from "../interfaces";
 import { Button } from "./button";
 import Select from "./select";
 

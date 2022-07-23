@@ -1,5 +1,5 @@
-import { APIApplicationCommandOptionBase } from "discord-api-types/payloads/v10/_interactions/_applicationCommands/_chatInput/base";
-import {
+import type { APIApplicationCommandOptionBase } from "discord-api-types/payloads/v10/_interactions/_applicationCommands/_chatInput/base";
+import type {
 	APIApplicationCommandBasicOption,
 	APIApplicationCommandInteractionDataBasicOption,
 	APIApplicationCommandInteractionDataIntegerOption,
@@ -7,9 +7,9 @@ import {
 	APIApplicationCommandInteractionDataOption,
 	APIApplicationCommandInteractionDataStringOption,
 	APIApplicationCommandOption,
-	ApplicationCommandOptionType,
 } from "discord-api-types/v10";
-import { Comparable, Serializable } from "../../interfaces";
+import { ApplicationCommandOptionType } from "discord-api-types/v10";
+import type { Comparable, Serializable } from "../../interfaces";
 
 type OptionArgs = {
 	type: ApplicationCommandOptionType;

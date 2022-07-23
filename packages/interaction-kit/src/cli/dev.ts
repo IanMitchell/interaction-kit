@@ -3,7 +3,7 @@ import boxen from "boxen";
 import chalk from "chalk";
 import debug from "debug";
 import { putGuildApplicationCommands } from "discord-api";
-import { Snowflake } from "discord-snowflake";
+import type { Snowflake } from "discord-snowflake";
 import ngrok from "ngrok";
 import {
 	getApplicationEntrypoint,

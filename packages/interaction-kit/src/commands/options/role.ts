@@ -1,9 +1,8 @@
-import {
-	APIApplicationCommandRoleOption,
-	ApplicationCommandOptionType,
-} from "discord-api-types/v10";
-import { Optional } from "../../interfaces";
-import { BaseBasicOptionArgs, BasicOption } from "./option";
+import type { APIApplicationCommandRoleOption } from "discord-api-types/v10";
+import { ApplicationCommandOptionType } from "discord-api-types/v10";
+import type { Optional } from "../../interfaces";
+import type { BaseBasicOptionArgs } from "./option";
+import { BasicOption } from "./option";
 
 export default class RoleOption extends BasicOption<APIApplicationCommandRoleOption> {
 	constructor({

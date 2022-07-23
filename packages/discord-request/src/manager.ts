@@ -1,6 +1,6 @@
 import debug from "debug";
 import { Queue } from "./queue";
-import { RateLimitData, RequestData, Route } from "./types";
+import type { RateLimitData, RequestData, Route } from "./types";
 import { getRouteInformation, getRouteKey } from "./util/routes";
 import { OFFSET, ONE_DAY, ONE_SECOND, sleep } from "./util/time";
 

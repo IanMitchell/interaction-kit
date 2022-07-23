@@ -1,10 +1,10 @@
+import type { APIPingInteraction } from "discord-api-types/v10";
 import {
-	APIPingInteraction,
 	InteractionResponseType,
 	InteractionType,
 } from "discord-api-types/v10";
-import Application from "../application";
-import { RequestBody, ResponseHandler } from "../interfaces";
+import type Application from "../application";
+import type { RequestBody, ResponseHandler } from "../interfaces";
 import { ResponseStatus } from "../requests/response";
 
 export default class PingInteraction {

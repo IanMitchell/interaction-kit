@@ -3,19 +3,21 @@ import {
 	patchInteractionFollowup,
 	postInteractionFollowup,
 } from "discord-api";
-import {
+import type {
 	APIApplicationCommandInteraction,
 	APIInteractionGuildMember,
 	APIInteractionResponse,
+	RESTPatchAPIInteractionFollowupJSONBody,
+} from "discord-api-types/v10";
+import {
 	InteractionResponseType,
 	InteractionType,
 	MessageFlags,
-	RESTPatchAPIInteractionFollowupJSONBody,
 } from "discord-api-types/v10";
 import type { Snowflake } from "discord-snowflake";
-import Application from "../../application";
+import type Application from "../../application";
 import Config from "../../config";
-import {
+import type {
 	Interaction,
 	InteractionMessageModifiers,
 	InteractionReply,
@@ -23,7 +25,7 @@ import {
 	ResponseHandler,
 } from "../../interfaces";
 import { ResponseStatus } from "../../requests/response";
-import Embed from "../../structures/embed";
+import type Embed from "../../structures/embed";
 
 export default class ApplicationCommandInteraction implements Interaction {
 	public readonly type = InteractionType.ApplicationCommand;

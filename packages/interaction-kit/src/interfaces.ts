@@ -1,8 +1,8 @@
-import {
+import type {
 	deleteInteractionFollowup,
 	patchInteractionFollowup,
 } from "discord-api";
-import {
+import type {
 	APIApplicationCommand,
 	APIMessageComponent,
 	ApplicationCommandType,
@@ -12,12 +12,12 @@ import {
 	RESTPostAPIApplicationCommandsJSONBody,
 } from "discord-api-types/v10";
 import type { Snowflake } from "discord-snowflake";
-import Application from "./application";
-import { Choices, ChoiceType } from "./commands/options/choices";
-import ActionRow from "./components/action-row";
-import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
-import { ResponseStatus } from "./requests/response";
-import Embed from "./structures/embed";
+import type Application from "./application";
+import type { Choices, ChoiceType } from "./commands/options/choices";
+import type ActionRow from "./components/action-row";
+import type ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
+import type { ResponseStatus } from "./requests/response";
+import type Embed from "./structures/embed";
 
 /**
  * TypeScript Helpers
