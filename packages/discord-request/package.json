@@ -26,6 +26,7 @@
 	},
 	"dependencies": {
 		"discord-error": "0.0.1",
+		"discord-snowflake": "2.0.0",
 		"debug": "^4.3.4"
 	}
 }

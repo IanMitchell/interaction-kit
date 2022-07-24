@@ -23,7 +23,6 @@ export interface ErrorField {
 export type APIError =
 	| ErrorGroup
 	| ErrorField
-	// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 	| { [k: string]: APIError }
 	| string;
 
