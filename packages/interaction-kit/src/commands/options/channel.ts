@@ -1,5 +1,6 @@
 import type { APIApplicationCommandChannelOption } from "discord-api-types/v10";
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
+import { isEqual } from "../../helpers/arrays";
 import type { Optional } from "../../interfaces";
 import type { BaseBasicOptionArgs } from "./option";
 import { BasicOption } from "./option";
@@ -42,6 +43,8 @@ export default class ChannelOption extends BasicOption<APIApplicationCommandChan
 	}
 
 	equals(schema: APIApplicationCommandChannelOption) {
-		return super.equals(schema) && this.channelTypes === schema.channel_types;
+		return (
+			super.equals(schema) && isEqual(this.channelTypes, schema.channel_types)
+		);
 	}
 }

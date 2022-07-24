@@ -3,11 +3,11 @@ import pkg from "../package.json" assert { type: "json" };
 
 export class DiscordApiClient extends Client {
 	get userAgent() {
-		return this.userAgent;
+		return super.userAgent;
 	}
 
 	set userAgent(value: string) {
-		this.userAgent = `${value}, discord-api ${pkg.version}`;
+		super.userAgent = `${value}, discord-api ${pkg.version}`;
 	}
 }
 
