@@ -26,7 +26,7 @@ export default class SubcommandGroup extends Option {
 		const payload =
 			super.serialize() as APIApplicationCommandSubcommandGroupOption;
 
-		payload.options = Array.from(this.subcommands.values()).map((subcommand) =>
+		payload.options = [...this.subcommands.values()].map((subcommand) =>
 			subcommand.serialize()
 		);
 
