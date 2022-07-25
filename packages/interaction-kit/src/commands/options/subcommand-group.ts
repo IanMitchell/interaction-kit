@@ -38,7 +38,7 @@ export default class SubcommandGroup extends Option {
 			return false;
 		}
 
-		const serializedSubcommands = Array.from(this.subcommands.values()).map(
+		const serializedSubcommands = [...this.subcommands.values()].map(
 			(subcommand) => subcommand.serialize()
 		);
 
