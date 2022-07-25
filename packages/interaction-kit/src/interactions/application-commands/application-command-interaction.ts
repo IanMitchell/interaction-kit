@@ -32,7 +32,6 @@ export default class ApplicationCommandInteraction implements Interaction {
 	public readonly name: string;
 	public readonly token: string;
 
-	public readonly respond: ResponseHandler;
 	public readonly messages: InteractionMessageModifiers;
 
 	// TODO: Convert these into Records
@@ -40,6 +39,7 @@ export default class ApplicationCommandInteraction implements Interaction {
 	public readonly guildId: Snowflake | undefined;
 	public readonly member: APIInteractionGuildMember | undefined;
 
+	readonly #respond: ResponseHandler;
 	readonly #application: Application;
 	#replied: boolean;
 
@@ -49,7 +49,7 @@ export default class ApplicationCommandInteraction implements Interaction {
 		respond: ResponseHandler
 	) {
 		this.#application = application;
-		this.respond = respond;
+		this.#respond = respond;
 		this.token = json.token;
 		this.name = json.data.name ?? "";
 
@@ -76,7 +76,7 @@ export default class ApplicationCommandInteraction implements Interaction {
 	}
 
 	async defer() {
-		return this.respond(ResponseStatus.OK, {
+		return this.#respond(ResponseStatus.OK, {
 			type: InteractionResponseType.DeferredChannelMessageWithSource,
 		});
 	}
@@ -121,7 +121,7 @@ export default class ApplicationCommandInteraction implements Interaction {
 
 		if (!this.#replied && !queue) {
 			this.#replied = true;
-			await this.respond(ResponseStatus.OK, payload);
+			await this.#respond(ResponseStatus.OK, payload);
 			return "@original";
 		}
 

@@ -7,5 +7,6 @@ export { default as MentionableOption } from "./mentionable";
 export { default as NumberOption } from "./number";
 export { default as RoleOption } from "./role";
 export { default as StringOption } from "./string";
+export { default as Subcommand } from "./subcommand";
 export { default as SubcommandGroup } from "./subcommand-group";
 export { default as UserOption } from "./user";

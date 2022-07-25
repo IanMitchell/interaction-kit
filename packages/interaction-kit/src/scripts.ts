@@ -18,8 +18,8 @@ export async function getApplicationEntrypoint(): Promise<Application> {
 		const app = await import(path.join(process.cwd(), json?.default?.main));
 		return app?.default as Application;
 	} catch (error: unknown) {
-		console.error("There was an error reading your application file:");
-		console.log((error as Error).message);
+		console.error("There was an error reading your application file:\n");
+		console.error(error);
 		process.exit(1);
 	}
 }
@@ -84,7 +84,7 @@ export async function getGuildApplicationCommandChanges(
 	application: Application,
 	guildId: Snowflake
 ) {
-	const response = await getGuildApplicationCommands(guildId, application.id);
+	const response = await getGuildApplicationCommands(application.id, guildId);
 	const commandList = new Map(response.map((cmd) => [cmd.name, cmd]));
 	return getChangeSet(application, commandList);
 }

@@ -28,7 +28,6 @@ export default class AutocompleteInteraction<
 	// TODO: Should this be called "focused"?
 	public readonly target: APIApplicationCommandInteractionDataAutocompleteOption;
 
-	public readonly respond: ResponseHandler<APIApplicationCommandAutocompleteResponse>;
 	public readonly options: Map<
 		string,
 		APIApplicationCommandInteractionDataOption
@@ -41,6 +40,7 @@ export default class AutocompleteInteraction<
 
 	readonly #application: Application;
 	readonly #type: AutocompleteInteractionResponseTypes;
+	readonly #respond: ResponseHandler<APIApplicationCommandAutocompleteResponse>;
 
 	constructor(
 		application: Application,
@@ -52,7 +52,7 @@ export default class AutocompleteInteraction<
 	) {
 		this.#type = type;
 		this.#application = application;
-		this.respond = respond;
+		this.#respond = respond;
 		this.token = json.token;
 		this.name = json.data.name;
 
@@ -75,7 +75,7 @@ export default class AutocompleteInteraction<
 	}
 
 	async reply(options: Choices<T>) {
-		return this.respond(ResponseStatus.OK, {
+		return this.#respond(ResponseStatus.OK, {
 			type: this.#type,
 			data: {
 				choices: options.serialize(),

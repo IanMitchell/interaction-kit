@@ -9,18 +9,18 @@ import { ResponseStatus } from "../requests/response";
 
 export default class PingInteraction {
 	public readonly type = InteractionType.Ping;
-	public readonly respond: ResponseHandler;
+	readonly #respond: ResponseHandler;
 
 	constructor(
 		application: Application,
 		json: RequestBody<APIPingInteraction>,
 		respond: ResponseHandler
 	) {
-		this.respond = respond;
+		this.#respond = respond;
 	}
 
 	handler() {
-		this.respond(ResponseStatus.OK, {
+		this.#respond(ResponseStatus.OK, {
 			type: InteractionResponseType.Pong,
 		});
 	}
