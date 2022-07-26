@@ -1,9 +1,11 @@
 import arg from "arg";
 import boxen from "boxen";
 import chalk from "chalk";
+import chokidar from "chokidar";
 import debug from "debug";
 import { putGuildApplicationCommands } from "discord-api";
 import type { Snowflake } from "discord-snowflake";
+import { EdgeRuntime, runServer } from "edge-runtime";
 import ngrok from "ngrok";
 import {
 	getApplicationEntrypoint,
@@ -85,30 +87,42 @@ export default async function dev(argv?: string[]) {
 	global.TOKEN = process.env.TOKEN;
 	// eslint-enable @typescript-eslint/no-unused-expressions
 
-	// const server = new Miniflare({
-	// 	watch: true,
-	// 	port,
-	// 	packagePath: true,
-	// 	modules: true,
-	// 	globals: {
-	// 		APPLICATION_ID: process.env.APPLICATION_ID,
-	// 		PUBLIC_KEY: process.env.PUBLIC_KEY,
-	// 		TOKEN: process.env.TOKEN,
-	// 	},
-	// });
+	const watcher = chokidar.watch([], {
+		ignoreInitial: true,
+	});
 
-	// server.addEventListener("reload", async () => updateCommands(guildId));
+	watcher.on("add", async () => {
+		console.log("New file detected");
+		await updateCommands(guildId);
+	});
+
+	watcher.on("change", async () => {
+		console.log("File change detected");
+		await updateCommands(guildId);
+	});
+
+	watcher.on("unlink", async () => {
+		console.log("File deleted");
+		await updateCommands(guildId);
+	});
+
+	// Initial Setup
 	await updateCommands(guildId);
 
 	const url = await ngrok.connect({
 		addr: port,
-		onTerminated: () => {
+		onTerminated: async () => {
 			log("Tunnel terminated. Please restart process");
 
-			// Cleanup
-			// await server.dispose();
+			await server.close();
 			process.exit(0);
 		},
+	});
+
+	const runtime = new EdgeRuntime({});
+	const server = await runServer({
+		runtime,
+		port,
 	});
 
 	console.log(

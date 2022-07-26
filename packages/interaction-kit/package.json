@@ -30,11 +30,13 @@
 		"arg": "^5.0.2",
 		"boxen": "7.0.0",
 		"chalk": "^5.0.1",
+		"chokidar": "^3.5.3",
 		"discord-api": "0.0.2",
 		"discord-api-types": "0.36.1",
 		"discord-request": "0.0.4",
 		"discord-snowflake": "2.0.0",
 		"discord-verify": "0.0.1",
+		"edge-runtime": "1.1.0-beta.20",
 		"dotenv": "^16.0.1",
 		"ngrok": "^4.3.1"
 	},
