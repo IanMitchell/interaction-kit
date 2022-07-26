@@ -1,10 +1,10 @@
-import { putGuildApplicationCommands } from "discord-api";
-import ngrok from "ngrok";
-import debug from "debug";
 import arg from "arg";
-import chalk from "chalk";
 import boxen from "boxen";
-import { Snowflake } from "discord-snowflake";
+import chalk from "chalk";
+import debug from "debug";
+import { putGuildApplicationCommands } from "discord-api";
+import type { Snowflake } from "discord-snowflake";
+import ngrok from "ngrok";
 import {
 	getApplicationEntrypoint,
 	getGuildApplicationCommandChanges,
@@ -102,7 +102,7 @@ export default async function dev(argv?: string[]) {
 
 	const url = await ngrok.connect({
 		addr: port,
-		onTerminated: async () => {
+		onTerminated: () => {
 			log("Tunnel terminated. Please restart process");
 
 			// Cleanup

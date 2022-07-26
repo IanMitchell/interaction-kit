@@ -1,11 +1,13 @@
-import {
+import type {
 	APIApplicationCommandInteractionDataBasicOption,
 	APIChatInputApplicationCommandInteraction,
+} from "discord-api-types/v10";
+import {
 	ApplicationCommandOptionType,
 	ApplicationCommandType,
 } from "discord-api-types/v10";
-import Application from "../../application";
-import {
+import type Application from "../../application";
+import type {
 	InteractionKitCommand,
 	RequestBody,
 	ResponseHandler,
@@ -13,7 +15,6 @@ import {
 import ApplicationCommandInteraction from "./application-command-interaction";
 
 export default class SlashCommandInteraction extends ApplicationCommandInteraction {
-	// TODO: lol u know subcommands and subgroups are a thing right mr discord developer
 	readonly #options: Map<
 		string,
 		APIApplicationCommandInteractionDataBasicOption

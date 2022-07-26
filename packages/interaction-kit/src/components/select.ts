@@ -1,7 +1,8 @@
-import SelectInteraction from "../interactions/message-components/select-interaction";
-import { Executable, SerializableComponent } from "../interfaces";
-import { SelectOptionList } from "../commands/options";
-import { APISelectMenuComponent, ComponentType } from "discord-api-types/v10";
+import type { APISelectMenuComponent } from "discord-api-types/v10";
+import { ComponentType } from "discord-api-types/v10";
+import type { SelectOptionList } from "../commands/options";
+import type SelectInteraction from "../interactions/message-components/select-interaction";
+import type { Executable, SerializableComponent } from "../interfaces";
 
 type SelectArgs = {
 	matches?: Executable<SelectInteraction>["matches"];

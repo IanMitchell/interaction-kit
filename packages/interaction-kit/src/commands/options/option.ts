@@ -1,4 +1,5 @@
-import {
+import type { APIApplicationCommandOptionBase } from "discord-api-types/payloads/v10/_interactions/_applicationCommands/_chatInput/base";
+import type {
 	APIApplicationCommandBasicOption,
 	APIApplicationCommandInteractionDataBasicOption,
 	APIApplicationCommandInteractionDataIntegerOption,
@@ -6,20 +7,17 @@ import {
 	APIApplicationCommandInteractionDataOption,
 	APIApplicationCommandInteractionDataStringOption,
 	APIApplicationCommandOption,
-	ApplicationCommandOptionType,
 } from "discord-api-types/v10";
-import { APIApplicationCommandOptionBase } from "discord-api-types/payloads/v10/_interactions/_applicationCommands/_chatInput/base";
-import { Comparable, Serializable } from "../../interfaces";
+import { ApplicationCommandOptionType } from "discord-api-types/v10";
+import type { Comparable, Serializable } from "../../interfaces";
 
 type OptionArgs = {
 	type: ApplicationCommandOptionType;
 	name: string;
 	description: string;
-	required?: boolean;
-	options?: APIApplicationCommandOption[];
 };
 
-export type BaseOptionArgs = Omit<OptionArgs, "type" | "options">;
+export type BaseOptionArgs = Omit<OptionArgs, "type">;
 
 export type APIApplicationCommandInteractionDataAutocompleteOption =
 	| APIApplicationCommandInteractionDataStringOption
@@ -58,27 +56,19 @@ export type AutocompleteCommandOptionType<
 	autocomplete: true;
 };
 
-export default class Option
-	implements Serializable, Comparable<APIApplicationCommandOption>
+export class Option
+	implements
+		Serializable<APIApplicationCommandOption>,
+		Comparable<APIApplicationCommandOption>
 {
 	public readonly type;
 	public readonly name;
 	public readonly description;
-	public readonly required;
-	public readonly options;
 
-	constructor({
-		type,
-		name,
-		description,
-		options,
-		required = false,
-	}: OptionArgs) {
+	constructor({ type, name, description }: OptionArgs) {
 		this.type = type;
 		this.name = name;
 		this.description = description;
-		this.required = required;
-		this.options = options;
 	}
 
 	isAutocomplete(
@@ -88,36 +78,60 @@ export default class Option
 	}
 
 	serialize(): APIApplicationCommandOption {
-		// TypeScript and discord-api-types don't play well with our usage
-		// of generic fields for the `type` field. We need to cast instead
 		// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-		const payload = {
+		return {
 			type: this.type,
 			name: this.name,
 			description: this.description,
-			required: this.required,
-		} as APIApplicationCommandBasicOption;
-
-		// TODO: Handle Options (do we want to?)
-
-		return payload;
+		} as APIApplicationCommandOption;
 	}
 
 	equals(schema: APIApplicationCommandOption): boolean {
 		if (
 			this.type !== schema.type ||
 			this.name !== schema.name ||
-			this.description !== schema.description ||
-			this.required !== (schema.required ?? false)
+			this.description !== schema.description
 		) {
 			return false;
 		}
 
-		// TODO: Nothing uses options yet, but eventually verify they're correct somehow
-		// if ((this.options?.length ?? 0) !== (schema.options?.length ?? 0)) {
-		// 	return false;
-		// }
-
 		return true;
+	}
+}
+
+interface BasicOptionArgs extends OptionArgs {
+	required: boolean | undefined;
+}
+
+export type BaseBasicOptionArgs = Omit<BasicOptionArgs, "type">;
+
+export class BasicOption<
+	T extends APIApplicationCommandBasicOption = APIApplicationCommandBasicOption
+> extends Option {
+	public readonly required;
+
+	constructor({ name, description, type, required }: BasicOptionArgs) {
+		super({
+			type,
+			name,
+			description,
+		});
+		this.required = required;
+	}
+
+	serialize(): T {
+		if (this.required === undefined) {
+			return super.serialize() as T;
+		}
+
+		// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+		return {
+			...super.serialize(),
+			required: this.required,
+		} as T;
+	}
+
+	equals(schema: APIApplicationCommandBasicOption): boolean {
+		return super.equals(schema) && this.required === schema.required;
 	}
 }

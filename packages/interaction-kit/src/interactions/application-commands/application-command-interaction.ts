@@ -1,36 +1,37 @@
-import type { Snowflake } from "discord-snowflake";
 import {
-	patchInteractionFollowup,
 	deleteInteractionFollowup,
+	patchInteractionFollowup,
 	postInteractionFollowup,
 } from "discord-api";
-import Application from "../../application";
+import type {
+	APIApplicationCommandInteraction,
+	APIInteractionGuildMember,
+	APIInteractionResponse,
+	RESTPatchAPIInteractionFollowupJSONBody,
+} from "discord-api-types/v10";
 import {
+	InteractionResponseType,
+	InteractionType,
+	MessageFlags,
+} from "discord-api-types/v10";
+import type { Snowflake } from "discord-snowflake";
+import type Application from "../../application";
+import Config from "../../config";
+import type {
 	Interaction,
 	InteractionMessageModifiers,
 	InteractionReply,
 	RequestBody,
 	ResponseHandler,
 } from "../../interfaces";
-import Embed from "../../structures/embed";
-import {
-	APIApplicationCommandInteraction,
-	APIInteractionGuildMember,
-	APIInteractionResponse,
-	InteractionResponseType,
-	InteractionType,
-	MessageFlags,
-	RESTPatchAPIInteractionFollowupJSONBody,
-} from "discord-api-types/v10";
 import { ResponseStatus } from "../../requests/response";
-import Config from "../../config";
+import type Embed from "../../structures/embed";
 
 export default class ApplicationCommandInteraction implements Interaction {
 	public readonly type = InteractionType.ApplicationCommand;
 	public readonly name: string;
 	public readonly token: string;
 
-	public readonly respond: ResponseHandler;
 	public readonly messages: InteractionMessageModifiers;
 
 	// TODO: Convert these into Records
@@ -38,6 +39,7 @@ export default class ApplicationCommandInteraction implements Interaction {
 	public readonly guildId: Snowflake | undefined;
 	public readonly member: APIInteractionGuildMember | undefined;
 
+	readonly #respond: ResponseHandler;
 	readonly #application: Application;
 	#replied: boolean;
 
@@ -47,7 +49,7 @@ export default class ApplicationCommandInteraction implements Interaction {
 		respond: ResponseHandler
 	) {
 		this.#application = application;
-		this.respond = respond;
+		this.#respond = respond;
 		this.token = json.token;
 		this.name = json.data.name ?? "";
 
@@ -74,7 +76,7 @@ export default class ApplicationCommandInteraction implements Interaction {
 	}
 
 	async defer() {
-		return this.respond(ResponseStatus.OK, {
+		return this.#respond(ResponseStatus.OK, {
 			type: InteractionResponseType.DeferredChannelMessageWithSource,
 		});
 	}
@@ -119,7 +121,7 @@ export default class ApplicationCommandInteraction implements Interaction {
 
 		if (!this.#replied && !queue) {
 			this.#replied = true;
-			await this.respond(ResponseStatus.OK, payload);
+			await this.#respond(ResponseStatus.OK, payload);
 			return "@original";
 		}
 

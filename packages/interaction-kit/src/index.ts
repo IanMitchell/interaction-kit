@@ -23,14 +23,17 @@ export { default as Embed } from "./structures/embed";
 export { SnowflakeUtils };
 export { API };
 
+// Application Commands
 export { default as SlashCommand } from "./commands/slash-command";
 export { default as ContextMenu } from "./commands/context-menu";
 
-// Export Components
+// Message Components
 export { default as ActionRow } from "./components/action-row";
 export { Button, ButtonLink } from "./components/button";
 export { default as Select } from "./components/select";
-export { ButtonStyle } from "discord-api-types/v10";
 
-// Export Markup
+// Export discord-api-types enums
+export { ButtonStyle, ChannelType } from "discord-api-types/v10";
+
+// Message Helpers
 export * as Markdown from "./structures/markdown";

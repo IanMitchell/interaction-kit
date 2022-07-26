@@ -1,16 +1,14 @@
-import { InteractionKitCommand } from "../interfaces";
-import {
+import type {
 	APIApplicationCommand,
 	RESTPostAPIContextMenuApplicationCommandsJSONBody,
 } from "discord-api-types/v10";
-import ContextMenuInteraction, {
-	ContextMenuApplicationCommandType,
-} from "../interactions/application-commands/context-menu-interaction";
+import type ContextMenuInteraction from "../interactions/application-commands/context-menu-interaction";
+import type { ContextMenuApplicationCommandType } from "../interactions/application-commands/context-menu-interaction";
+import type { InteractionKitCommand } from "../interfaces";
 
 type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 	name: string;
 	type: T;
-	defaultPermission?: boolean;
 	handler: InteractionKitCommand<ContextMenuInteraction<T>>["handler"];
 };
 
@@ -19,28 +17,17 @@ export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 {
 	name: string;
 	type: T;
-	#defaultPermission: boolean;
 	handler: InteractionKitCommand<ContextMenuInteraction<T>>["handler"];
 
-	constructor({
-		name,
-		type,
-		handler,
-		defaultPermission = true,
-	}: ContextMenuArgs<T>) {
+	constructor({ name, type, handler }: ContextMenuArgs<T>) {
 		// TODO: Validate: 1-32 lowercase character name matching ^[\w-]{1,32}$
 		this.name = name;
 		this.type = type;
-		this.#defaultPermission = defaultPermission;
 		this.handler = handler;
 	}
 
 	equals(schema: APIApplicationCommand): boolean {
-		if (
-			this.name !== schema.name ||
-			this.type !== schema.type ||
-			this.#defaultPermission !== schema.default_permission
-		) {
+		if (this.name !== schema.name || this.type !== schema.type) {
 			return false;
 		}
 
@@ -52,10 +39,6 @@ export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 			name: this.name,
 			type: this.type,
 		};
-
-		if (!this.#defaultPermission) {
-			payload.default_permission = this.#defaultPermission;
-		}
 
 		return payload;
 	}

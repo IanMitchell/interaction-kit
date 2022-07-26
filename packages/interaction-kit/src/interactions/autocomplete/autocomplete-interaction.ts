@@ -1,20 +1,22 @@
-import type { Snowflake } from "discord-snowflake";
-import Application from "../../application";
-import { Autocomplete, RequestBody, ResponseHandler } from "../../interfaces";
-import { AutocompleteInteractionResponseTypes } from "./types";
-import {
+import type {
 	APIApplicationCommandAutocompleteInteraction,
 	APIApplicationCommandAutocompleteResponse,
 	APIApplicationCommandInteractionDataOption,
 	APIApplicationCommandOptionChoice,
 	APIInteractionGuildMember,
 } from "discord-api-types/v10";
+import type { Snowflake } from "discord-snowflake";
+import type Application from "../../application";
+import type { Choices } from "../../commands/options/choices";
+import type { APIApplicationCommandInteractionDataAutocompleteOption } from "../../commands/options/option";
+import { isAutocompleteOption } from "../../commands/options/option";
+import type {
+	Autocomplete,
+	RequestBody,
+	ResponseHandler,
+} from "../../interfaces";
 import { ResponseStatus } from "../../requests/response";
-import { Choices } from "../../commands/options/choices";
-import {
-	APIApplicationCommandInteractionDataAutocompleteOption,
-	isAutocompleteOption,
-} from "../../commands/options/option";
+import type { AutocompleteInteractionResponseTypes } from "./types";
 
 // TODO: Specify string or number?
 export default class AutocompleteInteraction<
@@ -26,7 +28,6 @@ export default class AutocompleteInteraction<
 	// TODO: Should this be called "focused"?
 	public readonly target: APIApplicationCommandInteractionDataAutocompleteOption;
 
-	public readonly respond: ResponseHandler<APIApplicationCommandAutocompleteResponse>;
 	public readonly options: Map<
 		string,
 		APIApplicationCommandInteractionDataOption
@@ -39,6 +40,7 @@ export default class AutocompleteInteraction<
 
 	readonly #application: Application;
 	readonly #type: AutocompleteInteractionResponseTypes;
+	readonly #respond: ResponseHandler<APIApplicationCommandAutocompleteResponse>;
 
 	constructor(
 		application: Application,
@@ -50,7 +52,7 @@ export default class AutocompleteInteraction<
 	) {
 		this.#type = type;
 		this.#application = application;
-		this.respond = respond;
+		this.#respond = respond;
 		this.token = json.token;
 		this.name = json.data.name;
 
@@ -73,7 +75,7 @@ export default class AutocompleteInteraction<
 	}
 
 	async reply(options: Choices<T>) {
-		return this.respond(ResponseStatus.OK, {
+		return this.#respond(ResponseStatus.OK, {
 			type: this.#type,
 			data: {
 				choices: options.serialize(),

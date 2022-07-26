@@ -1,27 +1,29 @@
-import Application from "../application";
-import ButtonInteraction from "./message-components/button-interaction";
-import SelectInteraction from "./message-components/select-interaction";
-import SlashCommandInteraction from "./application-commands/slash-command-interaction";
-import ContextMenuInteraction from "./application-commands/context-menu-interaction";
-import { ExecutableComponent } from "../components";
+import type {
+	APIApplicationCommandInteraction,
+	APIInteraction,
+	APIMessageComponentInteraction,
+} from "discord-api-types/v10";
+import { InteractionType, Utils } from "discord-api-types/v10";
+import type { ApplicationCommandInteraction } from "..";
+import { PingInteraction } from "..";
+import type Application from "../application";
+import { IntegerOption, NumberOption, StringOption } from "../commands/options";
+import type { BasicOption } from "../commands/options/option";
+import { isAutocompleteOption } from "../commands/options/option";
+import SlashCommand from "../commands/slash-command";
+import type { ExecutableComponent } from "../components";
 import { Button } from "../components/button";
 import Select from "../components/select";
-import {
+import type {
 	InteractionKitCommand,
 	RequestBody,
 	ResponseHandler,
 } from "../interfaces";
-import { ApplicationCommandInteraction, PingInteraction } from "..";
+import ContextMenuInteraction from "./application-commands/context-menu-interaction";
+import SlashCommandInteraction from "./application-commands/slash-command-interaction";
 import SlashCommandAutocompleteInteraction from "./autocomplete/application-command-autocomplete";
-import {
-	APIApplicationCommandInteraction,
-	APIInteraction,
-	APIMessageComponentInteraction,
-	InteractionType,
-	Utils,
-} from "discord-api-types/v10";
-import Option, { isAutocompleteOption } from "../commands/options/option";
-import { StringOption, NumberOption, IntegerOption } from "../commands/options";
+import ButtonInteraction from "./message-components/button-interaction";
+import SelectInteraction from "./message-components/select-interaction";
 
 // TODO: Ask Vlad if we can get a version of discord-api-types that doesn't nest this under Utils so we can import it natively with modules
 const {
@@ -32,7 +34,7 @@ const {
 } = Utils;
 
 export function isAutocompleteExecutableOption(
-	option: Option | undefined
+	option: BasicOption | undefined
 ): option is StringOption | NumberOption | IntegerOption {
 	if (option == null) {
 		return false;
@@ -64,6 +66,10 @@ async function handleApplicationCommandInteraction(
 	respond: ResponseHandler
 ) {
 	if (isChatInputApplicationCommandInteraction(json)) {
+		if (!(command instanceof SlashCommand)) {
+			return;
+		}
+
 		const interaction = new SlashCommandInteraction(
 			application,
 			command,
@@ -71,8 +77,11 @@ async function handleApplicationCommandInteraction(
 			respond
 		);
 
+		// Route subcommands to appropriate handler
+		const handler = command.getCommandHandler(json);
+
 		console.log(`Handling ${interaction.name}`);
-		command.handler(interaction, application);
+		handler(interaction, application);
 	} else if (isContextMenuApplicationCommandInteraction(json)) {
 		const interaction = new ContextMenuInteraction(
 			application,
@@ -164,6 +173,7 @@ export async function handler(
 			);
 		}
 
+		// TODO: Handle subcommand option autocompletes
 		case InteractionType.ApplicationCommandAutocomplete: {
 			const command = application.getCommand(json.data.type, json.data.name);
 

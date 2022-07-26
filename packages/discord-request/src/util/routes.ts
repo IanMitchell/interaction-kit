@@ -1,4 +1,4 @@
-import { RequestMethod, Route } from "../types";
+import type { RequestMethod, Route } from "../types";
 
 export function getRouteKey(method: RequestMethod | undefined, route: Route) {
 	return `${method ?? "get"}:${route.path}`;

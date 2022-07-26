@@ -1,32 +1,32 @@
-import {
-	APIApplicationCommandNumberOption,
-	ApplicationCommandOptionType,
-} from "discord-api-types/v10";
-import SlashCommandAutocompleteInteraction from "../../interactions/autocomplete/application-command-autocomplete";
-import { Autocomplete } from "../../interactions/autocomplete/types";
-import { SlashChoiceList } from "./choices";
-import Option, {
-	BaseOptionArgs,
+import type { APIApplicationCommandNumberOption } from "discord-api-types/v10";
+import { ApplicationCommandOptionType } from "discord-api-types/v10";
+import type SlashCommandAutocompleteInteraction from "../../interactions/autocomplete/application-command-autocomplete";
+import type { Autocomplete } from "../../interactions/autocomplete/types";
+import type { Optional } from "../../interfaces";
+import type { SlashChoiceList } from "./choices";
+import type {
 	AutocompleteCommandOptionType,
+	BaseBasicOptionArgs,
 } from "./option";
+import { BasicOption } from "./option";
 
-interface NumberOptionChoiceArgs extends BaseOptionArgs {
+interface NumberOptionChoiceArgs
+	extends Optional<BaseBasicOptionArgs, "required"> {
 	choices?: SlashChoiceList<number>;
 	autocomplete: never;
 }
 
-interface NumberAutocompleteArgs extends BaseOptionArgs {
+interface NumberAutocompleteArgs
+	extends Optional<BaseBasicOptionArgs, "required"> {
 	choices: never;
-	autocomplete: NonNullable<
-		Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"]
-	>;
+	autocomplete: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 }
 
 export default class NumberOption
-	extends Option
+	extends BasicOption<APIApplicationCommandNumberOption>
 	implements Autocomplete<SlashCommandAutocompleteInteraction>
 {
-	public readonly choices?: SlashChoiceList<number>;
+	public readonly choices: SlashChoiceList<number> | undefined;
 
 	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 
@@ -100,13 +100,13 @@ export default class NumberOption
 		return super.equals(schema);
 	}
 
-	serialize(): APIApplicationCommandNumberOption {
-		const payload = super.serialize() as APIApplicationCommandNumberOption;
+	serialize() {
+		const payload = super.serialize();
 
 		if (this.isAutocomplete(payload)) {
 			payload.autocomplete = true;
-		} else {
-			payload.choices = this.choices?.serialize();
+		} else if (this.choices != null) {
+			payload.choices = this.choices.serialize();
 		}
 
 		return payload;

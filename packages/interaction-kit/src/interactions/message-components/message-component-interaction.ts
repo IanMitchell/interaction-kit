@@ -1,11 +1,25 @@
-import type { Snowflake } from "discord-snowflake";
 import {
-	postInteractionFollowup,
 	deleteInteractionFollowup,
 	patchInteractionFollowup,
+	postInteractionFollowup,
 } from "discord-api";
-import Application from "../../application";
+import type {
+	APIInteractionGuildMember,
+	APIInteractionResponse,
+	APIMessage,
+	APIMessageComponentInteraction,
+	RESTPatchAPIInteractionFollowupJSONBody,
+} from "discord-api-types/v10";
 import {
+	InteractionResponseType,
+	InteractionType,
+	MessageFlags,
+} from "discord-api-types/v10";
+import type { Snowflake } from "discord-snowflake";
+import type Application from "../../application";
+import { isActionRow } from "../../components/action-row";
+import Config from "../../config";
+import type {
 	Interaction,
 	InteractionMessageModifiers,
 	InteractionReply,
@@ -13,28 +27,16 @@ import {
 	ResponseHandler,
 	SerializableComponent,
 } from "../../interfaces";
-import { isActionRow } from "../../components/action-row";
-import {
-	APIInteractionGuildMember,
-	APIInteractionResponse,
-	APIMessage,
-	APIMessageComponentInteraction,
-	InteractionResponseType,
-	InteractionType,
-	MessageFlags,
-	RESTPatchAPIInteractionFollowupJSONBody,
-} from "discord-api-types/v10";
 import { ResponseStatus } from "../../requests/response";
-import Embed from "../../structures/embed";
-import Config from "../../config";
+import type Embed from "../../structures/embed";
 
 export default class MessageComponentInteraction implements Interaction {
 	public readonly type = InteractionType.MessageComponent;
 	public readonly token: string;
-	public readonly respond: ResponseHandler;
 	public readonly customId: string;
 	public readonly messages: InteractionMessageModifiers;
 	readonly #application: Application;
+	readonly #respond: ResponseHandler;
 	#replied: boolean;
 
 	// TODO: Convert these into Records
@@ -49,7 +51,7 @@ export default class MessageComponentInteraction implements Interaction {
 		respond: ResponseHandler
 	) {
 		this.#application = application;
-		this.respond = respond;
+		this.#respond = respond;
 		this.token = json.token;
 		this.customId = json.data?.custom_id ?? "";
 
@@ -80,7 +82,7 @@ export default class MessageComponentInteraction implements Interaction {
 	}
 
 	async defer() {
-		return this.respond(ResponseStatus.OK, {
+		return this.#respond(ResponseStatus.OK, {
 			type: InteractionResponseType.DeferredChannelMessageWithSource,
 		});
 	}
@@ -129,7 +131,7 @@ export default class MessageComponentInteraction implements Interaction {
 
 		if (!this.#replied && !queue) {
 			this.#replied = true;
-			await this.respond(ResponseStatus.OK, payload);
+			await this.#respond(ResponseStatus.OK, payload);
 			return "@original";
 		}
 

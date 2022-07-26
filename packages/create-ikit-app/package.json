@@ -17,6 +17,6 @@
 		"templates"
 	],
 	"dependencies": {
-		"create-create-app": "^7.0.0"
+		"create-create-app": "^7.3.0"
 	}
 }

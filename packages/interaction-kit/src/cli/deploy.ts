@@ -1,4 +1,5 @@
 import { putGlobalApplicationCommands } from "discord-api";
+import type { RESTPutAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 import { getApplicationEntrypoint } from "../scripts";
 
 export default async function command(argv?: string[]) {
@@ -14,9 +15,8 @@ export default async function command(argv?: string[]) {
 	}
 
 	const application = await getApplicationEntrypoint();
-	const serializedCommands = application.commands.map((command) =>
-		command.serialize()
-	);
+	const serializedCommands: RESTPutAPIApplicationCommandsJSONBody =
+		application.commands.map((command) => command.serialize());
 
 	await putGlobalApplicationCommands(application.id, serializedCommands);
 	process.exit(0);

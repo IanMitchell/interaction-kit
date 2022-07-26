@@ -1,13 +1,8 @@
-import type { Snowflake } from "discord-snowflake";
-import ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
-import {
-	patchInteractionFollowup,
+import type {
 	deleteInteractionFollowup,
+	patchInteractionFollowup,
 } from "discord-api";
-import Application from "./application";
-import { ResponseStatus } from "./requests/response";
-import Embed from "./structures/embed";
-import {
+import type {
 	APIApplicationCommand,
 	APIMessageComponent,
 	ApplicationCommandType,
@@ -16,8 +11,13 @@ import {
 	RESTPatchAPIInteractionFollowupJSONBody,
 	RESTPostAPIApplicationCommandsJSONBody,
 } from "discord-api-types/v10";
-import ActionRow from "./components/action-row";
-import { Choices, ChoiceType } from "./commands/options/choices";
+import type { Snowflake } from "discord-snowflake";
+import type Application from "./application";
+import type { Choices, ChoiceType } from "./commands/options/choices";
+import type ActionRow from "./components/action-row";
+import type ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
+import type { ResponseStatus } from "./requests/response";
+import type Embed from "./structures/embed";
 
 /**
  * TypeScript Helpers
@@ -96,7 +96,7 @@ export interface Autocomplete<T extends ChoiceType> {
 }
 
 export interface Executable<T extends Interaction = Interaction> {
-	matches?: (customId: string) => Promise<boolean>;
+	matches?: ((customId: string) => Promise<boolean>) | undefined;
 	handler: (
 		interaction: T,
 		application: Application

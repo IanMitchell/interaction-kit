@@ -1,32 +1,32 @@
-import {
-	APIApplicationCommandIntegerOption,
-	ApplicationCommandOptionType,
-} from "discord-api-types/v10";
-import SlashCommandAutocompleteInteraction from "../../interactions/autocomplete/application-command-autocomplete";
-import { Autocomplete } from "../../interactions/autocomplete/types";
-import { SlashChoiceList } from "./choices";
-import Option, {
-	BaseOptionArgs,
+import type { APIApplicationCommandIntegerOption } from "discord-api-types/v10";
+import { ApplicationCommandOptionType } from "discord-api-types/v10";
+import type SlashCommandAutocompleteInteraction from "../../interactions/autocomplete/application-command-autocomplete";
+import type { Autocomplete } from "../../interactions/autocomplete/types";
+import type { Optional } from "../../interfaces";
+import type { SlashChoiceList } from "./choices";
+import type {
 	AutocompleteCommandOptionType,
+	BaseBasicOptionArgs,
 } from "./option";
+import { BasicOption } from "./option";
 
-interface IntegerOptionChoiceArgs extends BaseOptionArgs {
+interface IntegerOptionChoiceArgs
+	extends Optional<BaseBasicOptionArgs, "required"> {
 	choices?: SlashChoiceList<number>;
 	autocomplete: never;
 }
 
-interface IntegerAutocompleteArgs extends BaseOptionArgs {
+interface IntegerAutocompleteArgs
+	extends Optional<BaseBasicOptionArgs, "required"> {
 	choices: never;
-	autocomplete: NonNullable<
-		Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"]
-	>;
+	autocomplete: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 }
 
 export default class IntegerOption
-	extends Option
+	extends BasicOption<APIApplicationCommandIntegerOption>
 	implements Autocomplete<SlashCommandAutocompleteInteraction>
 {
-	public readonly choices?: SlashChoiceList<number>;
+	public readonly choices: SlashChoiceList<number> | undefined;
 
 	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
 
@@ -100,13 +100,13 @@ export default class IntegerOption
 		return super.equals(schema);
 	}
 
-	serialize(): APIApplicationCommandIntegerOption {
-		const payload = super.serialize() as APIApplicationCommandIntegerOption;
+	serialize() {
+		const payload = super.serialize();
 
 		if (this.isAutocomplete(payload)) {
 			payload.autocomplete = true;
-		} else {
-			payload.choices = this.choices?.serialize();
+		} else if (this.choices != null) {
+			payload.choices = this.choices.serialize();
 		}
 
 		return payload;

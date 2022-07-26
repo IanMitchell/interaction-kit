@@ -1,5 +1,5 @@
-import { URL } from "url";
-import { Mentionable } from "../interfaces";
+import type { URL } from "url";
+import type { Mentionable } from "../interfaces";
 
 export function user(user: Mentionable) {
 	return `<@${user.id}>`;
