@@ -78,15 +78,6 @@ export default async function dev(argv?: string[]) {
 
 	const port = args["--port"] ?? 3000;
 
-	// eslint-disable @typescript-eslint/no-unused-expressions
-	// @ts-expect-error We're faking worker state
-	global.APPLICATION_ID = process.env.APPLICATION_ID;
-	// @ts-expect-error We're faking worker state
-	global.PUBLIC_KEY = process.env.PUBLIC_KEY;
-	// @ts-expect-error We're faking worker state
-	global.TOKEN = process.env.TOKEN;
-	// eslint-enable @typescript-eslint/no-unused-expressions
-
 	const watcher = chokidar.watch([], {
 		ignoreInitial: true,
 	});

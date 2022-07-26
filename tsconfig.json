@@ -4,8 +4,6 @@
 		"baseUrl": ".",
 		// emits type declaration files
 		"declaration": true,
-		// allow properly importing commonjs files
-		"esModuleInterop": true,
 		// imports are case sensitive
 		"forceConsistentCasingInFileNames": true,
 		// do not emit any generated code on error
@@ -26,11 +24,11 @@
 
 		"lib": ["ES2021"],
 		"module": "esnext",
-		"target": "es2021",
-		"moduleResolution": "node",
+		"target": "ES2021",
+		"moduleResolution": "Node",
 		"resolveJsonModule": true,
 		"types": ["@edge-runtime/types"]
 	},
 	// ignore node_modules and dist
-	"exclude": ["node_modules"]
+	"exclude": ["node_modules", "dist"]
 }
