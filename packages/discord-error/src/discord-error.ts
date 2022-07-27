@@ -73,6 +73,8 @@ function* parse(
 	value: APIError,
 	key: string | null = null
 ): IterableIterator<string> {
+	if (typeof value === 'string') return yield `${key != null ? `${key}: ` : ''}${value}`
+	
 	// Handle leaf fields
 	if (isErrorField(value)) {
 		// eslint-disable-next-line no-negated-condition
