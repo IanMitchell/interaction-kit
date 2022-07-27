@@ -1,7 +1,6 @@
 import arg from "arg";
 import boxen from "boxen";
 import chalk from "chalk";
-import chokidar from "chokidar";
 import debug from "debug";
 import { putGuildApplicationCommands } from "discord-api";
 import type { Snowflake } from "discord-snowflake";
@@ -10,6 +9,7 @@ import esbuild from "esbuild";
 import ngrok from "ngrok";
 import {
 	getApplicationEntrypoint,
+	getEdgeEntrypoint,
 	getGuildApplicationCommandChanges,
 } from "../scripts";
 
@@ -78,14 +78,62 @@ export default async function dev(argv?: string[]) {
 	);
 
 	const port = args["--port"] ?? 3000;
+	const entrypoint = await getEdgeEntrypoint();
 
-	let code: Uint8Array | undefined;
-
-	const runtime = new EdgeRuntime();
+	const runtime = new EdgeRuntime({
+		extend: (context) =>
+			Object.assign(context, {
+				process: {
+					env: {
+						NODE_ENV: "development",
+						APPLICATION_ID: process.env.APPLICATION_ID,
+						PUBLIC_KEY: process.env.PUBLIC_KEY,
+						TOKEN: process.env.TOKEN,
+					},
+				},
+			}),
+	});
 	const server = await runServer({
 		runtime,
 		port,
 	});
+
+	const handler = async (code: string) => {
+		try {
+			console.log("Updating Commands");
+			await updateCommands(guildId);
+		} catch (error: unknown) {
+			console.error(error);
+		}
+
+		try {
+			console.log("Updating Edge Runtime");
+			runtime.evaluate(code);
+		} catch (error: unknown) {
+			console.log(error);
+		}
+
+		console.log("Done!");
+	};
+
+	const compiler = await esbuild.build({
+		entryPoints: [entrypoint],
+		bundle: true,
+		write: false,
+		// format: "cjs",
+		watch: {
+			async onRebuild(error, result) {
+				if (error) {
+					console.error(error);
+					return;
+				}
+
+				void handler(result?.outputFiles?.[0].text ?? "");
+			},
+		},
+	});
+
+	void handler(compiler.outputFiles[0].text ?? "");
 
 	const url = await ngrok.connect({
 		addr: port,
@@ -93,50 +141,10 @@ export default async function dev(argv?: string[]) {
 			log("Tunnel terminated. Please restart process");
 
 			await server.close();
+			compiler.stop?.();
 			process.exit(0);
 		},
 	});
-
-	const handler = async () => {
-		try {
-			await updateCommands(guildId);
-		} catch (error: unknown) {}
-
-		try {
-			const results = await esbuild.build({});
-			code = results.outputFiles?.[0]?.contents;
-
-			if (code) {
-				runtime.evaluate(code.toString());
-			} else {
-				console.log("There was an error?");
-			}
-		} catch (error: unknown) {
-			console.log(error);
-		}
-	};
-
-	const watcher = chokidar.watch([], {
-		ignoreInitial: true,
-	});
-
-	watcher.on("add", async () => {
-		console.log("New file detected");
-		void handler();
-	});
-
-	watcher.on("change", async () => {
-		console.log("File change detected");
-		void handler();
-	});
-
-	watcher.on("unlink", async () => {
-		console.log("File deleted");
-		void handler();
-	});
-
-	// Initial Setup
-	void handler();
 
 	console.log(
 		boxen(

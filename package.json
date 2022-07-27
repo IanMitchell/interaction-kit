@@ -25,11 +25,11 @@
 	},
 	"devDependencies": {
 		"@edge-runtime/types": "^1.1.0-beta.20",
+		"@cloudflare/workers-types": "^3.14.1",
 		"@types/debug": "^4.1.7",
 		"@types/node": "^18.0.0",
 		"@typescript-eslint/eslint-plugin": "^5.29.0",
 		"@typescript-eslint/parser": "^5.29.0",
-		"esbuild": "^0.14.50",
 		"eslint": "^8.18.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-config-xo": "^0.41.0",
