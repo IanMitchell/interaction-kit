@@ -24,8 +24,8 @@ async function getCryptoKey(publicKey: string) {
 		"raw",
 		hexToBinary(publicKey),
 		{
-			name: "NODE-ED25519",
-			namedCurve: "NODE-ED25519",
+			name: "eddsa",
+			namedCurve: "ed25519",
 		},
 		true,
 		["verify"]
@@ -46,7 +46,7 @@ export default async function isValidRequest(
 	const body = await clone.text();
 
 	const isVerified = await crypto.subtle.verify(
-		"NODE-ED25519",
+		"eddsa",
 		key,
 		signature,
 		encoder.encode(`${timestamp ?? ""}${body}`)

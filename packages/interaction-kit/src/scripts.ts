@@ -12,7 +12,7 @@ import type Application from "./application";
 
 // TODO: Figure out how to programmatically determine this, idk
 export async function getEdgeEntrypoint() {
-	return path.join(process.cwd(), "/api/edge.mjs");
+	return path.join(process.cwd(), "/src/server.mjs");
 }
 
 export async function getApplicationEntrypoint(): Promise<Application> {

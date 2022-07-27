@@ -110,6 +110,8 @@ export default async function dev(argv?: string[]) {
 
 		try {
 			console.log("Updating Edge Runtime");
+			// Temporary workaround: https://github.com/vercel/edge-runtime/issues/20
+			runtime.evaluate(`delete self.__listeners['fetch'];`);
 			runtime.evaluate(code);
 		} catch (error: unknown) {
 			console.log(error);

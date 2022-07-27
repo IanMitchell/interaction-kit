@@ -144,12 +144,14 @@ export default class SlashCommand
 		json: RequestBody<APIChatInputApplicationCommandInteraction>
 	) {
 		let options = this.commands;
+		let interactionOptions = json.data.options;
 
 		if (
-			json.data.options?.[0]?.type ===
+			interactionOptions?.[0]?.type ===
 			ApplicationCommandOptionType.SubcommandGroup
 		) {
-			const option = options.get(json.data.options[0].name);
+			const option = options.get(interactionOptions[0].name);
+			interactionOptions = interactionOptions[0].options;
 
 			if (option instanceof SubcommandGroup) {
 				options = option.subcommands;
@@ -157,9 +159,9 @@ export default class SlashCommand
 		}
 
 		if (
-			json.data.options?.[0]?.type === ApplicationCommandOptionType.Subcommand
+			interactionOptions?.[0]?.type === ApplicationCommandOptionType.Subcommand
 		) {
-			const option = options.get(json.data.options[0].name);
+			const option = options.get(interactionOptions[0].name);
 
 			if (option instanceof Subcommand) {
 				return option.handler;
