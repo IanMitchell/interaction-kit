@@ -6,6 +6,7 @@ import debug from "debug";
 import { putGuildApplicationCommands } from "discord-api";
 import type { Snowflake } from "discord-snowflake";
 import { EdgeRuntime, runServer } from "edge-runtime";
+import esbuild from "esbuild";
 import ngrok from "ngrok";
 import {
 	getApplicationEntrypoint,
@@ -78,36 +79,13 @@ export default async function dev(argv?: string[]) {
 
 	const port = args["--port"] ?? 3000;
 
-	// eslint-disable @typescript-eslint/no-unused-expressions
-	// @ts-expect-error We're faking worker state
-	global.APPLICATION_ID = process.env.APPLICATION_ID;
-	// @ts-expect-error We're faking worker state
-	global.PUBLIC_KEY = process.env.PUBLIC_KEY;
-	// @ts-expect-error We're faking worker state
-	global.TOKEN = process.env.TOKEN;
-	// eslint-enable @typescript-eslint/no-unused-expressions
+	let code: Uint8Array | undefined;
 
-	const watcher = chokidar.watch([], {
-		ignoreInitial: true,
+	const runtime = new EdgeRuntime();
+	const server = await runServer({
+		runtime,
+		port,
 	});
-
-	watcher.on("add", async () => {
-		console.log("New file detected");
-		await updateCommands(guildId);
-	});
-
-	watcher.on("change", async () => {
-		console.log("File change detected");
-		await updateCommands(guildId);
-	});
-
-	watcher.on("unlink", async () => {
-		console.log("File deleted");
-		await updateCommands(guildId);
-	});
-
-	// Initial Setup
-	await updateCommands(guildId);
 
 	const url = await ngrok.connect({
 		addr: port,
@@ -119,11 +97,46 @@ export default async function dev(argv?: string[]) {
 		},
 	});
 
-	const runtime = new EdgeRuntime({});
-	const server = await runServer({
-		runtime,
-		port,
+	const handler = async () => {
+		try {
+			await updateCommands(guildId);
+		} catch (error: unknown) {}
+
+		try {
+			const results = await esbuild.build({});
+			code = results.outputFiles?.[0]?.contents;
+
+			if (code) {
+				runtime.evaluate(code.toString());
+			} else {
+				console.log("There was an error?");
+			}
+		} catch (error: unknown) {
+			console.log(error);
+		}
+	};
+
+	const watcher = chokidar.watch([], {
+		ignoreInitial: true,
 	});
+
+	watcher.on("add", async () => {
+		console.log("New file detected");
+		void handler();
+	});
+
+	watcher.on("change", async () => {
+		console.log("File change detected");
+		void handler();
+	});
+
+	watcher.on("unlink", async () => {
+		console.log("File deleted");
+		void handler();
+	});
+
+	// Initial Setup
+	void handler();
 
 	console.log(
 		boxen(
