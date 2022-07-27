@@ -85,6 +85,7 @@ export default async function dev(argv?: string[]) {
 			Object.assign(context, {
 				process: {
 					env: {
+						// TODO: Figure out how to dynamically assign these and how to add custom env variables
 						NODE_ENV: "development",
 						APPLICATION_ID: process.env.APPLICATION_ID,
 						PUBLIC_KEY: process.env.PUBLIC_KEY,
@@ -93,6 +94,7 @@ export default async function dev(argv?: string[]) {
 				},
 			}),
 	});
+
 	const server = await runServer({
 		runtime,
 		port,
