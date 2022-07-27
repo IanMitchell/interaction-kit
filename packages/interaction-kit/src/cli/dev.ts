@@ -3,9 +3,8 @@ import boxen from "boxen";
 import chalk from "chalk";
 import debug from "debug";
 import { putGuildApplicationCommands } from "discord-api";
+import server from "discord-edge-runner";
 import type { Snowflake } from "discord-snowflake";
-import { EdgeRuntime, runServer } from "edge-runtime";
-import esbuild from "esbuild";
 import ngrok from "ngrok";
 import {
 	getApplicationEntrypoint,
@@ -60,7 +59,22 @@ export default async function dev(argv?: string[]) {
 	}
 
 	if (!process.env.DEVELOPMENT_SERVER_ID) {
-		console.error("Missing `DEVELOPMENT_SERVER_ID` env variable. <link>");
+		log(chalk.red("Missing `DEVELOPMENT_SERVER_ID` env variable. <link>"));
+		process.exit(0);
+	}
+
+	if (!process.env.APPLICATION_ID) {
+		log(chalk.red("Missing `APPLICATION_ID` env variable. <link>"));
+		process.exit(0);
+	}
+
+	if (!process.env.PUBLIC_KEY) {
+		log(chalk.red("Missing `PUBLIC_KEY` env variable. <link>"));
+		process.exit(0);
+	}
+
+	if (!process.env.TOKEN) {
+		log(chalk.red("Missing `TOKEN` env variable. <link>"));
 		process.exit(0);
 	}
 
@@ -80,72 +94,30 @@ export default async function dev(argv?: string[]) {
 	const port = args["--port"] ?? 3000;
 	const entrypoint = await getEdgeEntrypoint();
 
-	const runtime = new EdgeRuntime({
-		extend: (context) =>
-			Object.assign(context, {
-				process: {
-					env: {
-						// TODO: Figure out how to dynamically assign these and how to add custom env variables
-						NODE_ENV: "development",
-						APPLICATION_ID: process.env.APPLICATION_ID,
-						PUBLIC_KEY: process.env.PUBLIC_KEY,
-						TOKEN: process.env.TOKEN,
-					},
-				},
-			}),
-	});
-
-	const server = await runServer({
-		runtime,
+	const runner = await server({
+		entrypoint,
 		port,
-	});
-
-	const handler = async (code: string) => {
-		try {
-			console.log("Updating Commands");
+		env: {
+			// TODO: Figure out how to dynamically assign these and how to add custom env variables
+			APPLICATION_ID: process.env.APPLICATION_ID,
+			PUBLIC_KEY: process.env.PUBLIC_KEY,
+			TOKEN: process.env.TOKEN,
+			DEBUG: process.env.DEBUG ?? "",
+		},
+		onReload: async () => {
 			await updateCommands(guildId);
-		} catch (error: unknown) {
-			console.error(error);
-		}
-
-		try {
-			console.log("Updating Edge Runtime");
-			// Temporary workaround: https://github.com/vercel/edge-runtime/issues/20
-			runtime.evaluate(`delete self.__listeners['fetch'];`);
-			runtime.evaluate(code);
-		} catch (error: unknown) {
-			console.log(error);
-		}
-
-		console.log("Done!");
-	};
-
-	const compiler = await esbuild.build({
-		entryPoints: [entrypoint],
-		bundle: true,
-		write: false,
-		// format: "cjs",
-		watch: {
-			async onRebuild(error, result) {
-				if (error) {
-					console.error(error);
-					return;
-				}
-
-				void handler(result?.outputFiles?.[0].text ?? "");
-			},
+		},
+		onError: (error: unknown) => {
+			log(chalk.red({ error }));
 		},
 	});
-
-	void handler(compiler.outputFiles[0].text ?? "");
 
 	const url = await ngrok.connect({
 		addr: port,
 		onTerminated: async () => {
 			log("Tunnel terminated. Please restart process");
 
-			await server.close();
-			compiler.stop?.();
+			await runner.close();
 			process.exit(0);
 		},
 	});

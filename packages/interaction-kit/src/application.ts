@@ -100,7 +100,7 @@ export default class Application {
 			);
 		}
 
-		console.log(`Registering the ${command.name.toLowerCase()} command`);
+		log(`Registering the ${command.name.toLowerCase()} command`);
 
 		this.#commands[command.type].set(
 			command.name.toLowerCase(),
@@ -133,7 +133,7 @@ export default class Application {
 			component.id != null &&
 			!this.#components.has(component.id)
 		) {
-			console.log(`Registering the ${component.id} component`);
+			log(`Registering the ${component.id} component`);
 			this.#components.set(component.id, component);
 		}
 
@@ -160,7 +160,7 @@ export default class Application {
 	// and the second should resolve to "all the work is done, we can end the process".
 	// This will be important for serverless and worker environments
 	async handler(request: Request) {
-		console.log("REQUEST");
+		log("Handling Incoming Request");
 
 		if (request.method !== "POST") {
 			return response(ResponseStatus.MethodNotAllowed, {
