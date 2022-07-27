@@ -80,7 +80,7 @@ export default async function server({
 	});
 
 	// Initial Compile
-	void handler(compiler.outputFiles[0].text ?? "");
+	await handler(compiler.outputFiles[0].text ?? "");
 
 	return {
 		async close() {

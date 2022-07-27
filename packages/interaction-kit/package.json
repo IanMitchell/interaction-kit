@@ -37,7 +37,8 @@
 		"discord-snowflake": "2.0.0",
 		"discord-verify": "0.0.1",
 		"dotenv": "^16.0.1",
-		"ngrok": "^4.3.1"
+		"ngrok": "^4.3.1",
+		"supports-color": "9.2.2"
 	},
 	"repository": {
 		"type": "git",

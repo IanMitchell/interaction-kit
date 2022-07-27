@@ -103,6 +103,9 @@ export default async function dev(argv?: string[]) {
 			PUBLIC_KEY: process.env.PUBLIC_KEY,
 			TOKEN: process.env.TOKEN,
 			DEBUG: process.env.DEBUG ?? "",
+			DEBUG_COLORS: "ON",
+			// Chalk
+			FORCE_COLOR: "1",
 		},
 		onReload: async () => {
 			await updateCommands(guildId);
