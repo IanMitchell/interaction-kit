@@ -3,6 +3,7 @@ export enum ResponseStatus {
 	BadRequest = 400,
 	Unauthorized = 401,
 	MethodNotAllowed = 405,
+	InternalServerError = 500,
 }
 
 export function response(status: ResponseStatus, json: Record<string, any>) {

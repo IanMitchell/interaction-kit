@@ -3,10 +3,12 @@ import boxen from "boxen";
 import chalk from "chalk";
 import debug from "debug";
 import { putGuildApplicationCommands } from "discord-api";
+import server from "discord-edge-runner";
 import type { Snowflake } from "discord-snowflake";
 import ngrok from "ngrok";
 import {
 	getApplicationEntrypoint,
+	getEdgeEntrypoint,
 	getGuildApplicationCommandChanges,
 } from "../scripts";
 
@@ -57,7 +59,22 @@ export default async function dev(argv?: string[]) {
 	}
 
 	if (!process.env.DEVELOPMENT_SERVER_ID) {
-		console.error("Missing `DEVELOPMENT_SERVER_ID` env variable. <link>");
+		log(chalk.red("Missing `DEVELOPMENT_SERVER_ID` env variable. <link>"));
+		process.exit(0);
+	}
+
+	if (!process.env.APPLICATION_ID) {
+		log(chalk.red("Missing `APPLICATION_ID` env variable. <link>"));
+		process.exit(0);
+	}
+
+	if (!process.env.PUBLIC_KEY) {
+		log(chalk.red("Missing `PUBLIC_KEY` env variable. <link>"));
+		process.exit(0);
+	}
+
+	if (!process.env.TOKEN) {
+		log(chalk.red("Missing `TOKEN` env variable. <link>"));
 		process.exit(0);
 	}
 
@@ -75,38 +92,35 @@ export default async function dev(argv?: string[]) {
 	);
 
 	const port = args["--port"] ?? 3000;
+	const entrypoint = await getEdgeEntrypoint();
 
-	// eslint-disable @typescript-eslint/no-unused-expressions
-	// @ts-expect-error We're faking worker state
-	global.APPLICATION_ID = process.env.APPLICATION_ID;
-	// @ts-expect-error We're faking worker state
-	global.PUBLIC_KEY = process.env.PUBLIC_KEY;
-	// @ts-expect-error We're faking worker state
-	global.TOKEN = process.env.TOKEN;
-	// eslint-enable @typescript-eslint/no-unused-expressions
-
-	// const server = new Miniflare({
-	// 	watch: true,
-	// 	port,
-	// 	packagePath: true,
-	// 	modules: true,
-	// 	globals: {
-	// 		APPLICATION_ID: process.env.APPLICATION_ID,
-	// 		PUBLIC_KEY: process.env.PUBLIC_KEY,
-	// 		TOKEN: process.env.TOKEN,
-	// 	},
-	// });
-
-	// server.addEventListener("reload", async () => updateCommands(guildId));
-	await updateCommands(guildId);
+	const runner = await server({
+		entrypoint,
+		port,
+		env: {
+			// TODO: Figure out how to dynamically assign these and how to add custom env variables
+			APPLICATION_ID: process.env.APPLICATION_ID,
+			PUBLIC_KEY: process.env.PUBLIC_KEY,
+			TOKEN: process.env.TOKEN,
+			DEBUG: process.env.DEBUG ?? "",
+			DEBUG_COLORS: "ON",
+			// Chalk
+			FORCE_COLOR: "1",
+		},
+		onReload: async () => {
+			await updateCommands(guildId);
+		},
+		onError: (error: unknown) => {
+			log(chalk.red({ error }));
+		},
+	});
 
 	const url = await ngrok.connect({
 		addr: port,
-		onTerminated: () => {
+		onTerminated: async () => {
 			log("Tunnel terminated. Please restart process");
 
-			// Cleanup
-			// await server.dispose();
+			await runner.close();
 			process.exit(0);
 		},
 	});

@@ -10,6 +10,11 @@ import type { Snowflake } from "discord-snowflake";
 import path from "node:path";
 import type Application from "./application";
 
+// TODO: Figure out how to programmatically determine this, idk
+export async function getEdgeEntrypoint() {
+	return path.join(process.cwd(), "/src/server.mjs");
+}
+
 export async function getApplicationEntrypoint(): Promise<Application> {
 	try {
 		const json = await import(path.join(process.cwd(), "package.json"), {

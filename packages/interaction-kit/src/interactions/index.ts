@@ -1,3 +1,4 @@
+import debug from "debug";
 import type {
 	APIApplicationCommandInteraction,
 	APIInteraction,
@@ -24,6 +25,8 @@ import SlashCommandInteraction from "./application-commands/slash-command-intera
 import SlashCommandAutocompleteInteraction from "./autocomplete/application-command-autocomplete";
 import ButtonInteraction from "./message-components/button-interaction";
 import SelectInteraction from "./message-components/select-interaction";
+
+const log = debug("ikit:interactions");
 
 // TODO: Ask Vlad if we can get a version of discord-api-types that doesn't nest this under Utils so we can import it natively with modules
 const {
@@ -80,7 +83,7 @@ async function handleApplicationCommandInteraction(
 		// Route subcommands to appropriate handler
 		const handler = command.getCommandHandler(json);
 
-		console.log(`Handling ${interaction.name}`);
+		log(`Handling ${interaction.name}`);
 		handler(interaction, application);
 	} else if (isContextMenuApplicationCommandInteraction(json)) {
 		const interaction = new ContextMenuInteraction(
@@ -90,7 +93,7 @@ async function handleApplicationCommandInteraction(
 			respond
 		);
 
-		console.log(`Handling ${interaction.name}`);
+		log(`Handling ${interaction.name}`);
 		command.handler(interaction, application);
 	} else {
 		throw new Error(
@@ -118,7 +121,7 @@ async function handleMessageComponentInteraction(
 			respond
 		);
 
-		console.log(`Handling ${interaction.customId}`);
+		log(`Handling ${interaction.customId}`);
 		component.handler(interaction, application);
 	} else if (
 		isMessageComponentSelectMenuInteraction(json) &&
@@ -131,7 +134,7 @@ async function handleMessageComponentInteraction(
 			respond
 		);
 
-		console.log(`Handling ${interaction.customId}`);
+		log(`Handling ${interaction.customId}`);
 		component.handler(interaction, application);
 	} else {
 		throw new Error(
@@ -150,7 +153,7 @@ export async function handler(
 ) {
 	switch (json.type) {
 		case InteractionType.Ping: {
-			console.log("Handling Discord Ping");
+			log("Handling Discord Ping");
 			new PingInteraction(application, json, respond).handler();
 			break;
 		}
@@ -188,7 +191,7 @@ export async function handler(
 				respond
 			);
 
-			console.log(`Handling ${interaction.name} Autocomplete`);
+			log(`Handling ${interaction.name} Autocomplete`);
 			const focused = json.data.options.find((option) => {
 				if (isAutocompleteOption(option)) {
 					return option.focused;

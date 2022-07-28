@@ -1,0 +1,32 @@
+{
+	"name": "discord-edge-runner",
+	"version": "0.0.2",
+	"author": "Ian Mitchell",
+	"description": "TODO",
+	"license": "MIT",
+	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/discord-edge-runner",
+	"exports": "./dist/src/server.js",
+	"main": "./dist/src/server.js",
+	"typings": "dist/src/server.d.ts",
+	"type": "module",
+	"scripts": {
+		"clean": "rimraf dist",
+		"build": "tsc",
+		"typecheck": "tsc --noEmit",
+		"prettier": "prettier src/**/*.ts --check",
+		"lint": "eslint ./src/**/*.ts",
+		"test": "vitest run"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"engines": {
+		"node": ">=18"
+	},
+	"dependencies": {
+		"esbuild": "0.14.50",
+		"edge-runtime": "1.1.0-beta.23",
+		"debug": "^4.3.4"
+	}
+}

@@ -24,11 +24,13 @@
 		"strict": true,
 		"exactOptionalPropertyTypes": true,
 
-		"lib": ["es2021"],
-		"module": "esnext",
-		"target": "es2021",
-		"moduleResolution": "node",
+		"lib": ["ES2021"],
+		"module": "ESNext",
+		"target": "ES2021",
+		"moduleResolution": "Node",
 		"resolveJsonModule": true,
+		// TODO: Switch to Edge Runtime types when they work
+		// "types": ["@edge-runtime/types"]
 		"types": ["@cloudflare/workers-types"]
 	},
 	// ignore node_modules and dist

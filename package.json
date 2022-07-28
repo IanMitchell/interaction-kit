@@ -24,10 +24,10 @@
 		"node": ">=16.6.0"
 	},
 	"devDependencies": {
-		"@cloudflare/workers-types": "^3.13.0",
+		"@edge-runtime/types": "^1.1.0-beta.20",
+		"@cloudflare/workers-types": "^3.14.1",
 		"@types/debug": "^4.1.7",
 		"@types/node": "^18.0.0",
-		"@types/service-worker-mock": "^2.0.1",
 		"@typescript-eslint/eslint-plugin": "^5.29.0",
 		"@typescript-eslint/parser": "^5.29.0",
 		"eslint": "^8.18.0",
@@ -42,6 +42,6 @@
 		"tsup": "^6.1.2",
 		"turbo": "^1.3.1",
 		"typescript": "^4.7.4",
-		"vitest": "^0.16.0"
+		"vitest": "^0.19.0"
 	}
 }
