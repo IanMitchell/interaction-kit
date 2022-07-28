@@ -17,15 +17,18 @@
 		"prettier": "turbo run prettier",
 		"lint": "turbo run lint",
 		"test": "turbo run test",
-		"version": "npx lerna version --no-push && git commit -am \"Version Bump\" npm i"
+		"version": "npx changeset version",
+		"changeset": "npx changeset add",
+		"publish": "npx changeset publish"
 	},
 	"engines": {
 		"npm": ">=8.0.0",
 		"node": ">=16.6.0"
 	},
 	"devDependencies": {
-		"@edge-runtime/types": "^1.1.0-beta.20",
+		"@changesets/cli": "^2.24.1",
 		"@cloudflare/workers-types": "^3.14.1",
+		"@edge-runtime/types": "^1.1.0-beta.20",
 		"@types/debug": "^4.1.7",
 		"@types/node": "^18.0.0",
 		"@typescript-eslint/eslint-plugin": "^5.29.0",
@@ -34,7 +37,6 @@
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-config-xo": "^0.41.0",
 		"eslint-config-xo-typescript": "^0.51.1",
-		"lerna": "^4.0.0",
 		"prettier": "^2.7.1",
 		"rimraf": "^3.0.2",
 		"tsdx": "^0.14.1",
