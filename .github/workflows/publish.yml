@@ -1,23 +1,24 @@
-name: Publish
+# TODO: Reimplement with Changesets
+# name: Publish
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-jobs:
-  Publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup-build
+# jobs:
+#   Publish:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v2
+#       - uses: ./.github/actions/setup-build
 
-      - name: Test
-        run: |
-          npm test
+#       - name: Test
+#         run: |
+#           npm test
 
-      - name: Publish
-        run: |
-          npx lerna publish from-package --yes
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+#       - name: Publish
+#         run: |
+#           npx lerna publish from-package --yes
+#         env:
+#           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
