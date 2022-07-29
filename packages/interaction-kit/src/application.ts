@@ -3,7 +3,7 @@ import { client } from "discord-api";
 import type { APIInteraction } from "discord-api-types/v10";
 import { ApplicationCommandType } from "discord-api-types/v10";
 import type { Snowflake } from "discord-snowflake";
-import isValidRequest from "discord-verify";
+import { isValidRequest } from "discord-verify";
 import type ContextMenu from "./commands/context-menu";
 import type SlashCommand from "./commands/slash-command";
 import type { ExecutableComponent } from "./components";

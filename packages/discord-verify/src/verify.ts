@@ -2,7 +2,7 @@ const encoder = new TextEncoder();
 
 const KEYS: Record<string, CryptoKey> = {};
 
-function hexToBinary(hex: string | null) {
+export function hexToBinary(hex: string | null) {
 	if (hex == null) {
 		return new Uint8Array(0);
 	}
@@ -46,7 +46,7 @@ export const PlatformAlgorithm = {
 	},
 };
 
-export default async function isValidRequest(
+export async function isValidRequest(
 	request: Request,
 	publicKey: string,
 	algorithm: SubtleCryptoImportKeyAlgorithm | string = PlatformAlgorithm.Vercel
