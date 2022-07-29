@@ -39,7 +39,11 @@ export function isErrorGroup(error: APIError): error is ErrorGroup {
 }
 
 export function isErrorField(error: APIError): error is ErrorField {
-	return !isErrorGroup(error);
+	if (error === null || typeof error !== "object") {
+		return false;
+	}
+
+	return "message" in error;
 }
 
 export function getMessage(error: ErrorBody) {
@@ -68,6 +72,11 @@ function* parse(
 	value: APIError,
 	key: string | null = null
 ): IterableIterator<string> {
+	if (typeof value === "string") {
+		// eslint-disable-next-line no-negated-condition
+		return yield `${key != null ? `${key}: ` : ""}${value}`;
+	}
+	
 	// Handle leaf fields
 	if (isErrorField(value)) {
 		// eslint-disable-next-line no-negated-condition
