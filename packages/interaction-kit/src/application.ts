@@ -168,6 +168,7 @@ export default class Application {
 			});
 		}
 
+		// TODO: Handle different platforms
 		const valid = await isValidRequest(request, this.#publicKey);
 		if (!valid) {
 			return response(ResponseStatus.Unauthorized, {

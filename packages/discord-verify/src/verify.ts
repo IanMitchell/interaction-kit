@@ -15,7 +15,10 @@ function hexToBinary(hex: string | null) {
 	return buffer;
 }
 
-async function getCryptoKey(publicKey: string) {
+async function getCryptoKey(
+	publicKey: string,
+	algorithm: SubtleCryptoImportKeyAlgorithm | string
+) {
 	if (KEYS[publicKey] != null) {
 		return KEYS[publicKey];
 	}
@@ -23,10 +26,7 @@ async function getCryptoKey(publicKey: string) {
 	const key = await crypto.subtle.importKey(
 		"raw",
 		hexToBinary(publicKey),
-		{
-			name: "eddsa",
-			namedCurve: "ed25519",
-		},
+		algorithm,
 		true,
 		["verify"]
 	);
@@ -35,18 +35,31 @@ async function getCryptoKey(publicKey: string) {
 	return key;
 }
 
+export const PlatformAlgorithm = {
+	Cloudflare: {
+		name: "NODE-ED25519",
+		namedCurve: "NODE-ED25519",
+	},
+	Vercel: {
+		name: "eddsa",
+		namedCurve: "ed25519",
+	},
+};
+
 export default async function isValidRequest(
 	request: Request,
-	publicKey: string
+	publicKey: string,
+	algorithm: SubtleCryptoImportKeyAlgorithm | string = PlatformAlgorithm.Vercel
 ) {
 	const clone = request.clone();
-	const key = await getCryptoKey(publicKey);
+	const key = await getCryptoKey(publicKey, algorithm);
 	const signature = hexToBinary(clone.headers.get("X-Signature-Ed25519"));
 	const timestamp = clone.headers.get("X-Signature-Timestamp");
 	const body = await clone.text();
+	const name = typeof algorithm === "string" ? algorithm : algorithm.name;
 
 	const isVerified = await crypto.subtle.verify(
-		"eddsa",
+		name,
 		key,
 		signature,
 		encoder.encode(`${timestamp ?? ""}${body}`)
