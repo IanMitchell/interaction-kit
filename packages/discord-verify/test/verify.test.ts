@@ -21,19 +21,18 @@ const publicKey = keyGenerator();
 // 	return new ReadableStream(array);
 // }
 
-// test("clones request", async () => {
-// 	const request = new Request({
-// 		body: jsonBody({ hello: "world " }),
-// 		headers: new Headers({
-// 			"Content-Type": "application/json",
-// 		}),
-// 	});
+test("Clones the request", async () => {
+	const request = new Request("https://localhost:3000");
+	const verified = await isValidRequest(
+		request,
+		publicKey.next().value as string,
+		PlatformAlgorithm.Vercel
+	);
 
-// 	const verified = await isValidRequest(request, "123");
-// 	expect(async () => {
-// 		const body = await request.json();
-// 	}).not.toThrow();
-// });
+	expect(async () => {
+		const body = await request.text();
+	}).not.toThrow();
+});
 
 test.todo("Handles valid requests");
 
@@ -60,31 +59,6 @@ describe("Invalid Requests", () => {
 });
 
 describe("Supports different environments", () => {
-	test("Supports Ed25519", async () => {
-		const importSpy = vi.spyOn(crypto.subtle, "importKey");
-		importSpy.mockImplementationOnce(async () =>
-			Promise.resolve({} as CryptoKey)
-		);
-		const verifySpy = vi.spyOn(crypto.subtle, "verify");
-		verifySpy.mockImplementationOnce(async () => Promise.resolve(true));
-		const key = publicKey.next().value as string;
-
-		await isValidRequest(new Request("https://localhost:3000"), key);
-		expect(importSpy).toHaveBeenCalledWith(
-			"raw",
-			hexToBinary(key),
-			"Ed25519",
-			true,
-			["verify"]
-		);
-		expect(verifySpy).toHaveBeenCalledWith(
-			"Ed25519",
-			{},
-			new Uint8Array([]),
-			new Uint8Array([])
-		);
-	});
-
 	test("Supports Vercel", async () => {
 		const importSpy = vi.spyOn(crypto.subtle, "importKey");
 		importSpy.mockImplementationOnce(async () =>
