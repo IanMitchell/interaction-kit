@@ -60,7 +60,7 @@ describe("Invalid Requests", () => {
 });
 
 describe("Supports different environments", () => {
-	test("Supports Vercel", async () => {
+	test("Supports Ed25519", async () => {
 		const importSpy = vi.spyOn(crypto.subtle, "importKey");
 		importSpy.mockImplementationOnce(async () =>
 			Promise.resolve({} as CryptoKey)
@@ -70,6 +70,35 @@ describe("Supports different environments", () => {
 		const key = publicKey.next().value as string;
 
 		await isValidRequest(new Request("https://localhost:3000"), key);
+		expect(importSpy).toHaveBeenCalledWith(
+			"raw",
+			hexToBinary(key),
+			"Ed25519",
+			true,
+			["verify"]
+		);
+		expect(verifySpy).toHaveBeenCalledWith(
+			"Ed25519",
+			{},
+			new Uint8Array([]),
+			new Uint8Array([])
+		);
+	});
+
+	test("Supports Vercel", async () => {
+		const importSpy = vi.spyOn(crypto.subtle, "importKey");
+		importSpy.mockImplementationOnce(async () =>
+			Promise.resolve({} as CryptoKey)
+		);
+		const verifySpy = vi.spyOn(crypto.subtle, "verify");
+		verifySpy.mockImplementationOnce(async () => Promise.resolve(true));
+		const key = publicKey.next().value as string;
+
+		await isValidRequest(
+			new Request("https://localhost:3000"),
+			key,
+			PlatformAlgorithm.Vercel
+		);
 		expect(importSpy).toHaveBeenCalledWith(
 			"raw",
 			hexToBinary(key),

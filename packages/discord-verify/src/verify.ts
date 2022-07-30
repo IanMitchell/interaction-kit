@@ -49,7 +49,7 @@ export const PlatformAlgorithm = {
 export async function isValidRequest(
 	request: Request,
 	publicKey: string,
-	algorithm: SubtleCryptoImportKeyAlgorithm | string = PlatformAlgorithm.Vercel
+	algorithm: SubtleCryptoImportKeyAlgorithm | string = "Ed25519"
 ) {
 	const clone = request.clone();
 	const key = await getCryptoKey(publicKey, algorithm);
