@@ -43,19 +43,6 @@ describe("Invalid Requests", () => {
 		expect(valid).toBe(false);
 	});
 
-	test("Rejects requests with a missing body", async () => {
-		const { privateKey, publicKey } = await getKeyPair();
-		// @ts-expect-error Intentionally passing a null value to test an edge case
-		const request = await getMockRequest(privateKey, null);
-
-		const valid = await isValidRequest(
-			request,
-			publicKey,
-			PlatformAlgorithm.Vercel
-		);
-		expect(valid).toBe(false);
-	});
-
 	test("Reject unverified requests", async () => {
 		const { privateKey, publicKey } = await getKeyPair();
 		const request = await getMockRequest(privateKey, { hello: "world" });
