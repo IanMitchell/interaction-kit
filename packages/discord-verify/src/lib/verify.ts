@@ -56,6 +56,24 @@ export async function isValidRequest(
 	const signature = hexToBinary(clone.headers.get("X-Signature-Ed25519"));
 	const body = await clone.text();
 
+	return validate(
+		body,
+		signature,
+		timestamp,
+		publicKey,
+		subtleCrypto,
+		algorithm
+	);
+}
+
+export async function validate(
+	rawBody: string,
+	signature: Uint8Array,
+	timestamp: string,
+	publicKey: string,
+	subtleCrypto: SubtleCrypto,
+	algorithm: SubtleCryptoImportKeyAlgorithm | string = "Ed25519"
+) {
 	const key = await getCryptoKey(publicKey, subtleCrypto, algorithm);
 	const name = typeof algorithm === "string" ? algorithm : algorithm.name;
 
@@ -63,7 +81,7 @@ export async function isValidRequest(
 		name,
 		key,
 		signature,
-		encoder.encode(`${timestamp ?? ""}${body}`)
+		encoder.encode(`${timestamp ?? ""}${rawBody}`)
 	);
 
 	return isVerified;

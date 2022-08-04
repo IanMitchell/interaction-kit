@@ -1,5 +1,10 @@
 import { describe, expect, test, vi } from "vitest";
-import { hexToBinary, isValidRequest, PlatformAlgorithm } from "../src/web";
+import {
+	hexToBinary,
+	isValidRequest,
+	PlatformAlgorithm,
+	validate,
+} from "../src/web";
 import { encode, getKeyPair, getMockRequest, getSignature } from "./helpers";
 
 test("Clones the request", async () => {
@@ -27,6 +32,25 @@ test("Handles valid requests", async () => {
 		PlatformAlgorithm.Vercel
 	);
 	expect(valid).toBe(true);
+});
+
+test("Custom validator verifies requests", async () => {
+	const { privateKey, publicKey } = await getKeyPair();
+	const request = await getMockRequest(privateKey, { hello: "world" });
+	const body = await request.text();
+
+	const signature = hexToBinary(request.headers.get("X-Signature-Ed25519"));
+	const timestamp = request.headers.get("X-Signature-Timestamp")!;
+
+	const isValid = await validate(
+		body,
+		signature,
+		timestamp,
+		publicKey,
+		crypto.subtle,
+		PlatformAlgorithm.Vercel
+	);
+	expect(isValid).toBe(true);
 });
 
 describe("Invalid Requests", () => {
