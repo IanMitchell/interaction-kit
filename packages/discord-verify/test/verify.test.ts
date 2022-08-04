@@ -29,18 +29,6 @@ test("Handles valid requests", async () => {
 	expect(valid).toBe(true);
 });
 
-test.todo("Caches keys", async () => {
-	const importSpy = vi.spyOn(crypto.subtle, "importKey");
-	importSpy.mockImplementationOnce(async () =>
-		Promise.resolve({} as CryptoKey)
-	);
-
-	await isValidRequest(new Request("https://localhost:3000"), "duplicate");
-	await isValidRequest(new Request("https://localhost:3000"), "duplicate");
-
-	expect(importSpy).toHaveBeenCalledOnce();
-});
-
 describe("Invalid Requests", () => {
 	test("Rejects requests with a missing signature", async () => {
 		const { privateKey, publicKey } = await getKeyPair();
@@ -68,7 +56,7 @@ describe("Invalid Requests", () => {
 		expect(valid).toBe(false);
 	});
 
-	test.todo("Rejects requests with a missing body", async () => {
+	test("Rejects requests with a missing body", async () => {
 		const { privateKey, publicKey } = await getKeyPair();
 		// @ts-expect-error Intentionally passing a null value to test an edge case
 		const request = await getMockRequest(privateKey, null);

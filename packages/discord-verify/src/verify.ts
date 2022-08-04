@@ -1,7 +1,5 @@
 const encoder = new TextEncoder();
 
-const KEYS: Record<string, CryptoKey> = {};
-
 export function hexToBinary(hex: string | null) {
 	if (hex == null) {
 		return new Uint8Array(0);
@@ -20,10 +18,6 @@ async function getCryptoKey(
 	subtleCrypto: SubtleCrypto,
 	algorithm: SubtleCryptoImportKeyAlgorithm | string
 ) {
-	if (KEYS[publicKey] != null) {
-		return KEYS[publicKey];
-	}
-
 	const key = await subtleCrypto.importKey(
 		"raw",
 		hexToBinary(publicKey),
@@ -32,7 +26,6 @@ async function getCryptoKey(
 		["verify"]
 	);
 
-	KEYS[publicKey] = key;
 	return key;
 }
 
