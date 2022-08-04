@@ -1,31 +1,14 @@
 import { describe, expect, test, vi } from "vitest";
 import { hexToBinary, isValidRequest, PlatformAlgorithm } from "../src/web";
-
-function* keyGenerator() {
-	let index = 1;
-	while (true) {
-		yield index.toString();
-		index += 1;
-	}
-}
-
-const publicKey = keyGenerator();
-
-// function jsonBody(json: Record<string, unknown>) {
-// 	const str = JSON.stringify(json, null, 0);
-// 	const array = Array.from(str).reduce((array, character, index) => {
-// 		array[index] = character.charCodeAt(0);
-// 		return array;
-// 	}, new Uint8Array(str.length));
-
-// 	return new ReadableStream(array);
-// }
+import { encode, getKeyPair, getMockRequest, getSignature } from "./helpers";
 
 test("Clones the request", async () => {
-	const request = new Request("https://localhost:3000");
+	const { privateKey, publicKey } = await getKeyPair();
+
+	const request = await getMockRequest(privateKey, { hello: "world" });
 	const verified = await isValidRequest(
 		request,
-		publicKey.next().value as string,
+		publicKey,
 		PlatformAlgorithm.Vercel
 	);
 
@@ -34,7 +17,17 @@ test("Clones the request", async () => {
 	}).not.toThrow();
 });
 
-test.todo("Handles valid requests");
+test("Handles valid requests", async () => {
+	const { privateKey, publicKey } = await getKeyPair();
+	const request = await getMockRequest(privateKey, { hello: "world" });
+
+	const valid = await isValidRequest(
+		request,
+		publicKey,
+		PlatformAlgorithm.Vercel
+	);
+	expect(valid).toBe(true);
+});
 
 test.todo("Caches keys", async () => {
 	const importSpy = vi.spyOn(crypto.subtle, "importKey");
@@ -49,13 +42,79 @@ test.todo("Caches keys", async () => {
 });
 
 describe("Invalid Requests", () => {
-	test.todo("Rejects requests with a missing signature");
+	test("Rejects requests with a missing signature", async () => {
+		const { privateKey, publicKey } = await getKeyPair();
+		const request = await getMockRequest(privateKey, { hello: "world" });
+		request.headers.delete("X-Signature-Ed25519");
 
-	test.todo("Rejects requests with a missing timestamp");
+		const valid = await isValidRequest(
+			request,
+			publicKey,
+			PlatformAlgorithm.Vercel
+		);
+		expect(valid).toBe(false);
+	});
 
-	test.todo("Rejects requests with a missing body");
+	test("Rejects requests with a missing timestamp", async () => {
+		const { privateKey, publicKey } = await getKeyPair();
+		const request = await getMockRequest(privateKey, { hello: "world" });
+		request.headers.delete("X-Signature-Timestamp");
 
-	test.todo("Reject unverified requests");
+		const valid = await isValidRequest(
+			request,
+			publicKey,
+			PlatformAlgorithm.Vercel
+		);
+		expect(valid).toBe(false);
+	});
+
+	test.todo("Rejects requests with a missing body", async () => {
+		const { privateKey, publicKey } = await getKeyPair();
+		// @ts-expect-error Intentionally passing a null value to test an edge case
+		const request = await getMockRequest(privateKey, null);
+
+		const valid = await isValidRequest(
+			request,
+			publicKey,
+			PlatformAlgorithm.Vercel
+		);
+		expect(valid).toBe(false);
+	});
+
+	test("Reject unverified requests", async () => {
+		const { privateKey, publicKey } = await getKeyPair();
+		const request = await getMockRequest(privateKey, { hello: "world" });
+		request.headers.set(
+			"X-Signature-Timestamp",
+			(Date.now() + 1337).toString()
+		);
+
+		const valid = await isValidRequest(
+			request,
+			publicKey,
+			PlatformAlgorithm.Vercel
+		);
+		expect(valid).toBe(false);
+	});
+
+	test("Rejects invalid keys", async () => {
+		const { privateKey, publicKey } = await getKeyPair();
+		const { privateKey: newPrivateKey } = await getKeyPair();
+		const { signature } = await getSignature(
+			newPrivateKey,
+			JSON.stringify({ hello: "world" }, null, 0)
+		);
+
+		const request = await getMockRequest(privateKey, { hello: "world" });
+		request.headers.set("X-Signature-Ed25519", signature);
+
+		const valid = await isValidRequest(
+			request,
+			publicKey,
+			PlatformAlgorithm.Vercel
+		);
+		expect(valid).toBe(false);
+	});
 });
 
 describe("Supports different environments", () => {
@@ -66,25 +125,25 @@ describe("Supports different environments", () => {
 		);
 		const verifySpy = vi.spyOn(crypto.subtle, "verify");
 		verifySpy.mockImplementationOnce(async () => Promise.resolve(true));
-		const key = publicKey.next().value as string;
 
-		await isValidRequest(
-			new Request("https://localhost:3000"),
-			key,
-			PlatformAlgorithm.Vercel
-		);
+		const { privateKey, publicKey } = await getKeyPair();
+		const request = await getMockRequest(privateKey, { hello: "world" });
+
+		await isValidRequest(request, publicKey, PlatformAlgorithm.Vercel);
 		expect(importSpy).toHaveBeenCalledWith(
 			"raw",
-			hexToBinary(key),
+			hexToBinary(publicKey),
 			PlatformAlgorithm.Vercel,
 			true,
 			["verify"]
 		);
+
+		const encodedValue = await encode(request);
 		expect(verifySpy).toHaveBeenCalledWith(
 			PlatformAlgorithm.Vercel.name,
 			{},
-			new Uint8Array([]),
-			new Uint8Array([])
+			hexToBinary(request.headers.get("X-Signature-Ed25519")),
+			encodedValue
 		);
 	});
 
@@ -95,25 +154,25 @@ describe("Supports different environments", () => {
 		);
 		const verifySpy = vi.spyOn(crypto.subtle, "verify");
 		verifySpy.mockImplementationOnce(async () => Promise.resolve(true));
-		const key = publicKey.next().value as string;
 
-		await isValidRequest(
-			new Request("https://localhost:3000"),
-			key,
-			PlatformAlgorithm.Cloudflare
-		);
+		const { privateKey, publicKey } = await getKeyPair();
+		const request = await getMockRequest(privateKey, { hello: "world" });
+
+		await isValidRequest(request, publicKey, PlatformAlgorithm.Cloudflare);
 		expect(importSpy).toHaveBeenCalledWith(
 			"raw",
-			hexToBinary(key),
+			hexToBinary(publicKey),
 			PlatformAlgorithm.Cloudflare,
 			true,
 			["verify"]
 		);
+
+		const encodedValue = await encode(request);
 		expect(verifySpy).toHaveBeenCalledWith(
 			PlatformAlgorithm.Cloudflare.name,
 			{},
-			new Uint8Array([]),
-			new Uint8Array([])
+			hexToBinary(request.headers.get("X-Signature-Ed25519")),
+			encodedValue
 		);
 	});
 });

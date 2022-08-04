@@ -4,6 +4,7 @@
 import crypto from "node:crypto";
 import { expect, test, vi } from "vitest";
 import { hexToBinary, isValidRequest } from "../src/node";
+import { encode, getKeyPair, getMockRequest } from "./helpers";
 
 test("Uses Ed25519 by default", async () => {
 	// @ts-expect-error Crypto types are not defined yet
@@ -15,20 +16,24 @@ test("Uses Ed25519 by default", async () => {
 	// @ts-expect-error Crypto types are not defined yet
 	const verifySpy = vi.spyOn(crypto.subtle, "verify");
 	verifySpy.mockImplementationOnce(async () => Promise.resolve(true));
-	const key = "default";
 
-	await isValidRequest(new Request("https://localhost:3000"), key);
+	const { privateKey, publicKey } = await getKeyPair();
+	const request = await getMockRequest(privateKey, { hello: "world" });
+
+	await isValidRequest(request, publicKey);
 	expect(importSpy).toHaveBeenCalledWith(
 		"raw",
-		hexToBinary(key),
+		hexToBinary(publicKey),
 		"Ed25519",
 		true,
 		["verify"]
 	);
+
+	const encodedValue = await encode(request);
 	expect(verifySpy).toHaveBeenCalledWith(
 		"Ed25519",
 		{},
-		new Uint8Array([]),
-		new Uint8Array([])
+		hexToBinary(request.headers.get("X-Signature-Ed25519")),
+		encodedValue
 	);
 });

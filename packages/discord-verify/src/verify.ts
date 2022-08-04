@@ -54,10 +54,15 @@ export async function isValidRequest(
 	algorithm: SubtleCryptoImportKeyAlgorithm | string = "Ed25519"
 ) {
 	const clone = request.clone();
-	const key = await getCryptoKey(publicKey, subtleCrypto, algorithm);
 	const signature = hexToBinary(clone.headers.get("X-Signature-Ed25519"));
 	const timestamp = clone.headers.get("X-Signature-Timestamp");
 	const body = await clone.text();
+
+	if (signature == null || timestamp == null || body == null) {
+		return false;
+	}
+
+	const key = await getCryptoKey(publicKey, subtleCrypto, algorithm);
 	const name = typeof algorithm === "string" ? algorithm : algorithm.name;
 
 	const isVerified = await subtleCrypto.verify(
@@ -67,9 +72,5 @@ export async function isValidRequest(
 		encoder.encode(`${timestamp ?? ""}${body}`)
 	);
 
-	if (signature == null || timestamp == null || body == null || !isVerified) {
-		return false;
-	}
-
-	return true;
+	return isVerified;
 }
