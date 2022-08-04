@@ -6,7 +6,7 @@ async function* keyGenerator() {
 		const publicKey = await ed.getPublicKey(privateKey);
 		yield {
 			privateKey,
-			publicKey: publicKey.toString(),
+			publicKey: Buffer.from(publicKey).toString("hex"),
 		};
 	}
 }

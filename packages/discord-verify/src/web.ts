@@ -1,5 +1,5 @@
-import { isValidRequest as validate } from "./verify";
-export { hexToBinary, PlatformAlgorithm } from "./verify";
+import { isValidRequest as validate } from "./lib/verify";
+export { hexToBinary, PlatformAlgorithm } from "./lib/verify";
 
 export async function isValidRequest(
 	request: Request,

@@ -1,1 +1,1 @@
-export * from "./dist/node.js";
+export * from "./dist/node";
