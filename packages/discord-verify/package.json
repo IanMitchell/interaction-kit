@@ -5,9 +5,9 @@
 	"description": "A library for verifying the authenticity of requests coming from the Discord Interactions API",
 	"license": "MIT",
 	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/discord-verify",
-	"exports": "./dist/src/verify.js",
-	"main": "./dist/src/verify.js",
-	"typings": "dist/src/verify.d.ts",
+	"exports": "./dist/src/web.js",
+	"main": "./dist/src/web.js",
+	"typings": "dist/src/web.d.ts",
 	"type": "module",
 	"scripts": {
 		"clean": "rimraf dist",

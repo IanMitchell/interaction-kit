@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import { hexToBinary, isValidRequest, PlatformAlgorithm } from "../src/verify";
+import { hexToBinary, isValidRequest, PlatformAlgorithm } from "../src/web";
 
 function* keyGenerator() {
 	let index = 1;

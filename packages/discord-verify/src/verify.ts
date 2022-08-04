@@ -17,13 +17,14 @@ export function hexToBinary(hex: string | null) {
 
 async function getCryptoKey(
 	publicKey: string,
+	subtleCrypto: SubtleCrypto,
 	algorithm: SubtleCryptoImportKeyAlgorithm | string
 ) {
 	if (KEYS[publicKey] != null) {
 		return KEYS[publicKey];
 	}
 
-	const key = await crypto.subtle.importKey(
+	const key = await subtleCrypto.importKey(
 		"raw",
 		hexToBinary(publicKey),
 		algorithm,
@@ -49,16 +50,17 @@ export const PlatformAlgorithm = {
 export async function isValidRequest(
 	request: Request,
 	publicKey: string,
+	subtleCrypto: SubtleCrypto,
 	algorithm: SubtleCryptoImportKeyAlgorithm | string = "Ed25519"
 ) {
 	const clone = request.clone();
-	const key = await getCryptoKey(publicKey, algorithm);
+	const key = await getCryptoKey(publicKey, subtleCrypto, algorithm);
 	const signature = hexToBinary(clone.headers.get("X-Signature-Ed25519"));
 	const timestamp = clone.headers.get("X-Signature-Timestamp");
 	const body = await clone.text();
 	const name = typeof algorithm === "string" ? algorithm : algorithm.name;
 
-	const isVerified = await crypto.subtle.verify(
+	const isVerified = await subtleCrypto.verify(
 		name,
 		key,
 		signature,
