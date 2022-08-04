@@ -51,7 +51,7 @@ export async function isValidRequest(
 	const timestamp = clone.headers.get("X-Signature-Timestamp");
 	const body = await clone.text();
 
-	if (signature == null || timestamp == null || body == null) {
+	if (timestamp == null || body == null) {
 		return false;
 	}
 

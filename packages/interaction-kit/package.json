@@ -13,8 +13,7 @@
 		"build": "tsc",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check && prettier bin/*.ts --check",
-		"lint": "eslint ./src/**/*.ts && eslint ./bin/*.ts",
-		"test": "vitest run"
+		"lint": "eslint ./src/**/*.ts && eslint ./bin/*.ts"
 	},
 	"files": [
 		"dist",

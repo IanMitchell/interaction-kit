@@ -14,8 +14,7 @@
 		"build": "tsc",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
-		"lint": "eslint ./src/**/*.ts",
-		"test": "vitest run"
+		"lint": "eslint ./src/**/*.ts"
 	},
 	"files": [
 		"dist",
