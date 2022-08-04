@@ -30,19 +30,6 @@ test("Handles valid requests", async () => {
 });
 
 describe("Invalid Requests", () => {
-	test("Rejects requests with a missing signature", async () => {
-		const { privateKey, publicKey } = await getKeyPair();
-		const request = await getMockRequest(privateKey, { hello: "world" });
-		request.headers.delete("X-Signature-Ed25519");
-
-		const valid = await isValidRequest(
-			request,
-			publicKey,
-			PlatformAlgorithm.Vercel
-		);
-		expect(valid).toBe(false);
-	});
-
 	test("Rejects requests with a missing timestamp", async () => {
 		const { privateKey, publicKey } = await getKeyPair();
 		const request = await getMockRequest(privateKey, { hello: "world" });
@@ -72,10 +59,7 @@ describe("Invalid Requests", () => {
 	test("Reject unverified requests", async () => {
 		const { privateKey, publicKey } = await getKeyPair();
 		const request = await getMockRequest(privateKey, { hello: "world" });
-		request.headers.set(
-			"X-Signature-Timestamp",
-			(Date.now() + 1337).toString()
-		);
+		request.headers.set("X-Signature-Timestamp", Date.now().toString());
 
 		const valid = await isValidRequest(
 			request,
