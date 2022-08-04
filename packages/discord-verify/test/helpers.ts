@@ -24,14 +24,13 @@ export async function getKeyPair() {
 }
 
 export async function getSignature(privateKey: Uint8Array, body: string) {
-	const date = Date.now();
-	const signature = await ed.sign(
-		Uint8Array.from(
-			`${date}${body}`.split("").map((char) => char.charCodeAt(0))
-		),
-		privateKey
+	const timestamp = Math.round(Date.now() / 1000).toString();
+	const value = Uint8Array.from(
+		Buffer.concat([Buffer.from(timestamp), Buffer.from(body)])
 	);
-	return { date, signature: signature.toString() };
+
+	const signature = await ed.sign(value, privateKey);
+	return { timestamp, signature: Buffer.from(signature).toString("hex") };
 }
 
 export async function getMockRequest(
@@ -39,8 +38,8 @@ export async function getMockRequest(
 	json: Record<string, unknown>,
 	headers: Record<string, string> = {}
 ) {
-	const body = JSON.stringify(json, null, 0);
-	const { date, signature } = await getSignature(privateKey, body);
+	const body = JSON.stringify(json);
+	const { timestamp, signature } = await getSignature(privateKey, body);
 
 	return new Request("http://localhost:3000", {
 		method: "POST",
@@ -48,7 +47,7 @@ export async function getMockRequest(
 		headers: {
 			"Content-Type": "application/json",
 			"X-Signature-Ed25519": signature,
-			"X-Signature-Timestamp": date.toString(),
+			"X-Signature-Timestamp": timestamp,
 			...headers,
 		},
 	});
