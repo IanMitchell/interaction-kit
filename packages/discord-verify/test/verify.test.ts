@@ -38,9 +38,8 @@ test("Custom validator verifies requests", async () => {
 	const { privateKey, publicKey } = await getKeyPair();
 	const request = await getMockRequest(privateKey, { hello: "world" });
 	const body = await request.text();
-
-	const signature = hexToBinary(request.headers.get("X-Signature-Ed25519"));
-	const timestamp = request.headers.get("X-Signature-Timestamp")!;
+	const signature = request.headers.get("X-Signature-Ed25519");
+	const timestamp = request.headers.get("X-Signature-Timestamp");
 
 	const isValid = await validate(
 		body,

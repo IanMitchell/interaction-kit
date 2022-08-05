@@ -31,9 +31,9 @@ const isValid = await isValidRequest(request, publicKey);
 If you want to validate requests from frameworks such as Express or Fastify that have their own request classes, you can import the validate function and pass raw values to it.
 
 ```ts
-import { validate, hexToBinary } from "discord-verify";
+import { validate } from "discord-verify";
 
-function handleRequest(
+async function handleRequest(
 	req: FastifyRequest<{
 		Body: APIInteraction;
 		Headers: {
@@ -49,7 +49,7 @@ function handleRequest(
 
 	const isValid = await validate(
 		rawBody,
-		hexToBinary(signature),
+		signature,
 		timestmap,
 		this.client.publicKey,
 		crypto.subtle
