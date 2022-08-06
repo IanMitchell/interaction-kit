@@ -1,4 +1,9 @@
 import { isValidRequest as verifyRequest } from "./lib/verify";
+import type {
+	Request,
+	SubtleCrypto,
+	SubtleCryptoImportKeyAlgorithm,
+} from "./types";
 export { hexToBinary, PlatformAlgorithm, validate } from "./lib/verify";
 
 /**
@@ -13,5 +18,7 @@ export async function isValidRequest(
 	publicKey: string,
 	algorithm: SubtleCryptoImportKeyAlgorithm | string = "Ed25519"
 ) {
-	return verifyRequest(request, publicKey, crypto.subtle, algorithm);
+	// @ts-expect-error We don't have this defined globally due to conflicts
+	const subtleCrypto: SubtleCrypto = crypto.subtle;
+	return verifyRequest(request, publicKey, subtleCrypto, algorithm);
 }

@@ -1,6 +1,7 @@
 // @ts-expect-error Crypto types are not defined yet
 import crypto from "node:crypto";
 import { isValidRequest as verifyRequest } from "./lib/verify";
+import type { Request, SubtleCryptoImportKeyAlgorithm } from "./types";
 export { hexToBinary, validate } from "./lib/verify";
 
 /**

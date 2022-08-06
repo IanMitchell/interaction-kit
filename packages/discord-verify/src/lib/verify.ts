@@ -1,4 +1,12 @@
-const encoder = new TextEncoder();
+import type {
+	Request,
+	SubtleCrypto,
+	SubtleCryptoImportKeyAlgorithm,
+	TextEncoderInstance,
+} from "../types";
+
+// @ts-expect-error We don't have this defined globally due to conflicts
+const encoder: TextEncoderInstance = new TextEncoder();
 
 /**
  * Helper method that takes in a hex string and converts it to its binary representation.
@@ -41,6 +49,7 @@ export const PlatformAlgorithm = {
 	Cloudflare: {
 		name: "NODE-ED25519",
 		namedCurve: "NODE-ED25519",
+		public: true,
 	},
 	Vercel: {
 		name: "eddsa",
