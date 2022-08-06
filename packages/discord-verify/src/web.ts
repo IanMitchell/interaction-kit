@@ -6,6 +6,10 @@ import type {
 } from "./types";
 export { hexToBinary, PlatformAlgorithm, validate } from "./lib/verify";
 
+declare const crypto: {
+	subtle: SubtleCrypto;
+};
+
 /**
  * Validates a request from Discord
  * @param request Request to verify
@@ -18,7 +22,5 @@ export async function isValidRequest(
 	publicKey: string,
 	algorithm: SubtleCryptoImportKeyAlgorithm | string = "Ed25519"
 ) {
-	// @ts-expect-error We don't have this defined globally due to conflicts
-	const subtleCrypto: SubtleCrypto = crypto.subtle;
-	return verifyRequest(request, publicKey, subtleCrypto, algorithm);
+	return verifyRequest(request, publicKey, crypto.subtle, algorithm);
 }

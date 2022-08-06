@@ -1,13 +1,21 @@
 {
 	"name": "discord-verify",
-	"version": "0.0.1",
+	"version": "0.0.2-beta.10",
 	"author": "Ian Mitchell",
 	"description": "A library for verifying the authenticity of requests coming from the Discord Interactions API",
 	"license": "MIT",
 	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/discord-verify",
-	"exports": "./dist/web.js",
-	"main": "./dist/web.js",
-	"typings": "dist/web.d.ts",
+	"exports": {
+		"./web": {
+			"import": "./web.js",
+			"types": "./web.d.ts"
+		},
+		"./node": {
+			"import": "./node.js",
+			"types": "./node.d.ts"
+		}
+	},
+	"main": "./web.js",
 	"type": "module",
 	"scripts": {
 		"clean": "rimraf dist",
@@ -24,9 +32,6 @@
 		"web.js"
 	],
 	"engines": {
-		"node": ">=18"
-	},
-	"dependencies": {
-		"debug": "^4.3.4"
+		"node": ">=16"
 	}
 }

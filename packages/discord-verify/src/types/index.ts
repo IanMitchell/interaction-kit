@@ -13,7 +13,3 @@
 
 export type { SubtleCrypto, SubtleCryptoImportKeyAlgorithm } from "./crypto";
 export type { Request } from "./request";
-
-export interface TextEncoderInstance {
-	encode(input?: string): Uint8Array;
-}

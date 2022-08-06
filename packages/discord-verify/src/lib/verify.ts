@@ -2,11 +2,14 @@ import type {
 	Request,
 	SubtleCrypto,
 	SubtleCryptoImportKeyAlgorithm,
-	TextEncoderInstance,
 } from "../types";
 
-// @ts-expect-error We don't have this defined globally due to conflicts
-const encoder: TextEncoderInstance = new TextEncoder();
+export declare class TextEncoder {
+	constructor();
+	encode(input?: string): Uint8Array;
+}
+
+const encoder = new TextEncoder();
 
 /**
  * Helper method that takes in a hex string and converts it to its binary representation.
