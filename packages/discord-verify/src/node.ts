@@ -1,7 +1,12 @@
-// @ts-expect-error Crypto types are not defined yet
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+// @ts-ignore-error Node Crypto types are not well defined yet
 import crypto from "node:crypto";
 import { isValidRequest as verifyRequest } from "./lib/verify";
-import type { Request, SubtleCryptoImportKeyAlgorithm } from "./types";
+import type {
+	Request,
+	SubtleCrypto,
+	SubtleCryptoImportKeyAlgorithm,
+} from "./types";
 export { hexToBinary, validate } from "./lib/verify";
 
 /**
@@ -16,5 +21,12 @@ export async function isValidRequest(
 	publicKey: string,
 	algorithm: SubtleCryptoImportKeyAlgorithm | string = "Ed25519"
 ) {
-	return verifyRequest(request, publicKey, crypto.subtle, algorithm);
+	return verifyRequest(
+		request,
+		publicKey,
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+		// @ts-ignore-error Node Crypto types are not well defined yet
+		crypto.subtle as SubtleCrypto,
+		algorithm
+	);
 }
