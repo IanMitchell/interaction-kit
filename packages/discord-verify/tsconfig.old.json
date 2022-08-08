@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"declaration": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"noEmitOnError": true,
+		"pretty": true,
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"strict": true,
+		"exactOptionalPropertyTypes": true,
+		"rootDir": ".",
+		"outDir": "dist",
+		"types": [],
+		"lib": ["ES2021"],
+		"module": "UMD",
+		"target": "ES2021",
+		"moduleResolution": "Node"
+	},
+	"include": ["src/**/*.ts", "node.ts", "node.cts", "web.ts"],
+	"exclude": ["node_modules", "dist", "*.js"]
+}

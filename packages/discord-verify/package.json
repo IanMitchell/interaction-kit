@@ -6,22 +6,24 @@
 	"license": "MIT",
 	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/discord-verify",
 	"exports": {
+		".": {
+			"import": "./dist/esm/web.mjs",
+			"types": "./dist/esm/web.d.ts"
+		},
 		"./web": {
-			"import": "./dist/web.mjs",
-			"require": "./dist/web.js",
-			"types": "./dist/web.d.ts"
+			"import": "./dist/esm/web.mjs",
+			"types": "./dist/esm/web.d.ts"
 		},
 		"./node": {
-			"import": "./dist/node.mjs",
-			"require": "./dist/node.js",
-			"types": "./dist/node.d.ts"
+			"import": "./dist/esm/node.mjs",
+			"require": "./dist/cjs/node.cjs",
+			"types": "./dist/esm/node.d.ts"
 		}
 	},
-	"main": "./dist/web.js",
 	"type": "module",
 	"scripts": {
 		"clean": "rimraf dist",
-		"build": "tsc",
+		"build": "tsc --project tsconfig.esm.json && tsc --project tsconfig.cjs.json",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
 		"lint": "eslint ./src/**/*.ts",
