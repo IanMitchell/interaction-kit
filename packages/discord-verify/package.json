@@ -1,29 +1,29 @@
 {
 	"name": "discord-verify",
-	"version": "0.0.2-beta.12",
+	"version": "0.0.2-beta.13",
 	"author": "Ian Mitchell",
 	"description": "A library for verifying the authenticity of requests coming from the Discord Interactions API",
 	"license": "MIT",
 	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/discord-verify",
 	"exports": {
 		".": {
-			"import": "./dist/esm/web.mjs",
-			"types": "./dist/esm/web.d.ts"
+			"import": "./dist/web.js",
+			"types": "./dist/web.d.ts"
 		},
 		"./web": {
-			"import": "./dist/esm/web.mjs",
-			"types": "./dist/esm/web.d.ts"
+			"import": "./dist/web.js",
+			"types": "./dist/web.d.ts"
 		},
 		"./node": {
-			"import": "./dist/esm/node.mjs",
-			"require": "./dist/cjs/node.cjs",
-			"types": "./dist/esm/node.d.ts"
+			"import": "./dist/node.js",
+			"require": "./dist/node.cjs",
+			"types": "./dist/node.d.ts"
 		}
 	},
 	"type": "module",
 	"scripts": {
 		"clean": "rimraf dist",
-		"build": "tsc --project tsconfig.esm.json && tsc --project tsconfig.cjs.json",
+		"build": "tsup web.ts node.ts --format cjs,esm --dts --clean",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
 		"lint": "eslint ./src/**/*.ts",
