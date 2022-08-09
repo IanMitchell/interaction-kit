@@ -20,7 +20,7 @@
 		"test": "vitest run",
 		"version": "npx changeset version",
 		"changeset": "npx changeset add",
-		"publish": "npx changeset publish"
+		"publish": "npm run build && npx changeset publish"
 	},
 	"engines": {
 		"npm": ">=8.0.0",
