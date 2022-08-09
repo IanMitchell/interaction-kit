@@ -17,7 +17,8 @@
 		"build": "tsc",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
-		"lint": "eslint ./src/**/*.ts"
+		"lint": "eslint ./src/**/*.ts",
+		"prepublish": "npm run clean && npm run build"
 	},
 	"files": [
 		"dist",

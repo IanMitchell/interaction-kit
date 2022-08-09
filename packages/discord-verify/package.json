@@ -1,33 +1,37 @@
 {
 	"name": "discord-verify",
-	"version": "0.0.2-beta.13",
+	"version": "0.0.2-beta.16",
 	"author": "Ian Mitchell",
 	"description": "A library for verifying the authenticity of requests coming from the Discord Interactions API",
 	"license": "MIT",
 	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/discord-verify",
+	"type": "module",
 	"exports": {
 		".": {
-			"import": "./dist/web.js",
+			"import": "./dist/web.mjs",
+			"require": "./dist/web.cjs",
 			"types": "./dist/web.d.ts"
 		},
 		"./web": {
-			"import": "./dist/web.js",
+			"import": "./dist/web.mjs",
+			"require": "./dist/web.cjs",
 			"types": "./dist/web.d.ts"
 		},
 		"./node": {
-			"import": "./dist/node.js",
+			"import": "./dist/node.mjs",
 			"require": "./dist/node.cjs",
 			"types": "./dist/node.d.ts"
 		}
 	},
-	"type": "module",
+	"main": "./dist/web.mjs",
 	"scripts": {
 		"clean": "rimraf dist",
-		"build": "tsup web.ts node.ts --format cjs,esm --dts --clean",
+		"build": "unbuild",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
 		"lint": "eslint ./src/**/*.ts",
-		"test": "vitest run"
+		"test": "vitest run",
+		"prepublish": "npm run clean && npm run build"
 	},
 	"files": [
 		"dist",
