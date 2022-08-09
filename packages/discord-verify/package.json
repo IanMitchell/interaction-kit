@@ -24,6 +24,7 @@
 		}
 	},
 	"main": "./dist/web.mjs",
+	"types": "./dist/web.d.ts",
 	"scripts": {
 		"clean": "rimraf dist",
 		"build": "unbuild",
