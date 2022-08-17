@@ -11,22 +11,43 @@ export declare class TextEncoder {
 
 const encoder = new TextEncoder();
 
+const KEYS = {
+	ZERO: 48,
+	A: 65,
+	a: 97,
+};
+
+function hexCharToBinary(char: string) {
+	const code = char.charCodeAt(0);
+
+	if (code >= KEYS.a) {
+		return code - KEYS.a + 10;
+	}
+
+	if (code >= KEYS.A) {
+		return code - KEYS.A + 10;
+	}
+
+	return code - KEYS.ZERO;
+}
+
 /**
  * Helper method that takes in a hex string and converts it to its binary representation.
- * @param hex Hex string to convert to binary
+ * @param key Hex string to convert to binary
  * @returns The binary form of a hex string
  */
-export function hexToBinary(hex: string | null) {
-	if (hex == null) {
-		return new Uint8Array(0);
+export function hexStringToBinary(key: string | null) {
+	if (key == null) {
+		return new Uint8Array(0).buffer;
 	}
 
-	const buffer = new Uint8Array(Math.ceil(hex.length / 2));
-	for (let i = 0; i < buffer.length; i++) {
-		buffer[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+	const view = new Uint8Array(key.length / 2);
+
+	for (let i = 0, o = 0; i < key.length; i += 2, ++o) {
+		view[o] = (hexCharToBinary(key[i]) << 4) | hexCharToBinary(key[i + 1]);
 	}
 
-	return buffer;
+	return view.buffer;
 }
 
 async function getCryptoKey(
@@ -36,7 +57,7 @@ async function getCryptoKey(
 ) {
 	const key = await subtleCrypto.importKey(
 		"raw",
-		hexToBinary(publicKey),
+		hexStringToBinary(publicKey),
 		algorithm,
 		true,
 		["verify"]
@@ -49,12 +70,20 @@ async function getCryptoKey(
  * Helper values for popular platforms
  */
 export const PlatformAlgorithm = {
+	Web: "Ed25519",
+	Node18: "Ed25519",
+	Node16: {
+		name: "NODE-ED25519",
+		namedCurve: "NODE-ED25519",
+		public: true,
+	},
 	Cloudflare: {
 		name: "NODE-ED25519",
 		namedCurve: "NODE-ED25519",
 		public: true,
 	},
 	Vercel: {
+		// TODO: ecdsa?
 		name: "eddsa",
 		namedCurve: "ed25519",
 	},
@@ -72,7 +101,7 @@ export async function isValidRequest(
 	request: Request,
 	publicKey: string,
 	subtleCrypto: SubtleCrypto,
-	algorithm: SubtleCryptoImportKeyAlgorithm | string = "Ed25519"
+	algorithm: SubtleCryptoImportKeyAlgorithm | string = PlatformAlgorithm.Node18
 ) {
 	const clone = request.clone();
 	const timestamp = clone.headers.get("X-Signature-Timestamp");
@@ -105,7 +134,7 @@ export async function validate(
 	timestamp: string | null | undefined,
 	publicKey: string,
 	subtleCrypto: SubtleCrypto,
-	algorithm: SubtleCryptoImportKeyAlgorithm | string = "Ed25519"
+	algorithm: SubtleCryptoImportKeyAlgorithm | string = PlatformAlgorithm.Node18
 ) {
 	if (timestamp == null || signature == null || rawBody == null) {
 		return false;
@@ -117,7 +146,7 @@ export async function validate(
 	const isVerified = await subtleCrypto.verify(
 		name,
 		key,
-		hexToBinary(signature),
+		hexStringToBinary(signature),
 		encoder.encode(`${timestamp ?? ""}${rawBody}`)
 	);
 

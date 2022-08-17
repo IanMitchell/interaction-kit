@@ -31,7 +31,7 @@ const isValid = await isValidRequest(request, publicKey);
 If you want to validate requests from frameworks such as Express or Fastify that have their own request classes, you can import the validate function and pass raw values to it.
 
 ```ts
-import { validate } from "discord-verify";
+import { validate } from "discord-verify/node";
 
 async function handleRequest(
 	req: FastifyRequest<{
@@ -50,9 +50,47 @@ async function handleRequest(
 	const isValid = await validate(
 		rawBody,
 		signature,
-		timestmap,
+		timestamp,
 		this.client.publicKey,
 		crypto.subtle
+	);
+
+	if (!isValid) {
+		return res.code(401).send("Invalid signature");
+	}
+}
+```
+
+#### Node 17 and Older
+
+If you are using Node 17 or lower, you need to make some changes:
+
+```diff
++ import { webcrypto } from "node:crypto";
++ import { validate, PlatformAlgorithms } from "discord-verify/node";
+
+async function handleRequest(
+	req: FastifyRequest<{
+		Body: APIInteraction;
+		Headers: {
+			"x-signature-ed25519": string;
+			"x-signature-timestamp": string;
+		};
+	}>,
+	res: FastifyReply
+) {
+	const signature = req.headers["x-signature-ed25519"];
+	const timestamp = req.headers["x-signature-timestamp"];
+	const rawBody = JSON.stringify(req.body);
+
+	const isValid = await validate(
+		rawBody,
+		signature,
+		timestamp,
+		this.client.publicKey,
+-		crypto.subtle
++		webcrypto.subtle,
++		PlatformAlgorithms.Node16
 	);
 
 	if (!isValid) {

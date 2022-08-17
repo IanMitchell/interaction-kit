@@ -1,10 +1,13 @@
-import { isValidRequest as verifyRequest } from "./lib/verify";
+import {
+	isValidRequest as verifyRequest,
+	PlatformAlgorithm,
+} from "./lib/verify";
 import type {
 	Request,
 	SubtleCrypto,
 	SubtleCryptoImportKeyAlgorithm,
 } from "./types";
-export { hexToBinary, PlatformAlgorithm, validate } from "./lib/verify";
+export { hexStringToBinary, PlatformAlgorithm, validate } from "./lib/verify";
 
 declare const crypto: {
 	subtle: SubtleCrypto;
@@ -20,7 +23,7 @@ declare const crypto: {
 export async function isValidRequest(
 	request: Request,
 	publicKey: string,
-	algorithm: SubtleCryptoImportKeyAlgorithm | string = "Ed25519"
+	algorithm: SubtleCryptoImportKeyAlgorithm | string = PlatformAlgorithm.Web
 ) {
 	return verifyRequest(request, publicKey, crypto.subtle, algorithm);
 }

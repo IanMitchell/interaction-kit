@@ -1,13 +1,19 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
 // @ts-ignore-error Node Crypto types are not well defined yet
 import crypto from "node:crypto";
-import { isValidRequest as verifyRequest } from "./lib/verify";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+// @ts-ignore-error Node Process
+import process from "node:process";
+import {
+	isValidRequest as verifyRequest,
+	PlatformAlgorithm,
+} from "./lib/verify";
 import type {
 	Request,
 	SubtleCrypto,
 	SubtleCryptoImportKeyAlgorithm,
 } from "./types";
-export { hexToBinary, validate } from "./lib/verify";
+export { hexStringToBinary, PlatformAlgorithm, validate } from "./lib/verify";
 
 /**
  * Validates a request from Discord
@@ -19,14 +25,15 @@ export { hexToBinary, validate } from "./lib/verify";
 export async function isValidRequest(
 	request: Request,
 	publicKey: string,
-	algorithm: SubtleCryptoImportKeyAlgorithm | string = "Ed25519"
+	algorithm?: SubtleCryptoImportKeyAlgorithm | string
 ) {
-	return verifyRequest(
-		request,
-		publicKey,
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
-		// @ts-ignore-error Node Crypto types are not well defined yet
-		crypto.subtle as SubtleCrypto,
-		algorithm
-	);
+	const [majorVersion] = process.versions.node.split(".");
+	const algo =
+		majorVersion >= 18 ? PlatformAlgorithm.Node18 : PlatformAlgorithm.Node16;
+	const subtleCrypto =
+		majorVersion >= 18
+			? (crypto.subtle as SubtleCrypto)
+			: (crypto.webcrypto.subtle as SubtleCrypto);
+
+	return verifyRequest(request, publicKey, subtleCrypto, algorithm ?? algo);
 }

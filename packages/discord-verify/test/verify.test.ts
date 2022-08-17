@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import {
-	hexToBinary,
+	hexStringToBinary,
 	isValidRequest,
 	PlatformAlgorithm,
 	validate,
@@ -114,7 +114,7 @@ describe("Supports different environments", () => {
 		await isValidRequest(request, publicKey, PlatformAlgorithm.Vercel);
 		expect(importSpy).toHaveBeenCalledWith(
 			"raw",
-			hexToBinary(publicKey),
+			hexStringToBinary(publicKey),
 			PlatformAlgorithm.Vercel,
 			true,
 			["verify"]
@@ -124,7 +124,7 @@ describe("Supports different environments", () => {
 		expect(verifySpy).toHaveBeenCalledWith(
 			PlatformAlgorithm.Vercel.name,
 			{},
-			hexToBinary(request.headers.get("X-Signature-Ed25519")),
+			hexStringToBinary(request.headers.get("X-Signature-Ed25519")),
 			encodedValue
 		);
 	});
@@ -143,7 +143,7 @@ describe("Supports different environments", () => {
 		await isValidRequest(request, publicKey, PlatformAlgorithm.Cloudflare);
 		expect(importSpy).toHaveBeenCalledWith(
 			"raw",
-			hexToBinary(publicKey),
+			hexStringToBinary(publicKey),
 			PlatformAlgorithm.Cloudflare,
 			true,
 			["verify"]
@@ -153,7 +153,7 @@ describe("Supports different environments", () => {
 		expect(verifySpy).toHaveBeenCalledWith(
 			PlatformAlgorithm.Cloudflare.name,
 			{},
-			hexToBinary(request.headers.get("X-Signature-Ed25519")),
+			hexStringToBinary(request.headers.get("X-Signature-Ed25519")),
 			encodedValue
 		);
 	});

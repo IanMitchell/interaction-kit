@@ -3,7 +3,7 @@
  */
 import crypto from "node:crypto";
 import { expect, test, vi } from "vitest";
-import { hexToBinary, isValidRequest } from "../src/node";
+import { hexStringToBinary, isValidRequest } from "../src/node";
 import { encode, getKeyPair, getMockRequest } from "./helpers";
 
 test("Uses Ed25519 by default", async () => {
@@ -23,7 +23,7 @@ test("Uses Ed25519 by default", async () => {
 	await isValidRequest(request, publicKey);
 	expect(importSpy).toHaveBeenCalledWith(
 		"raw",
-		hexToBinary(publicKey),
+		hexStringToBinary(publicKey),
 		"Ed25519",
 		true,
 		["verify"]
@@ -33,7 +33,7 @@ test("Uses Ed25519 by default", async () => {
 	expect(verifySpy).toHaveBeenCalledWith(
 		"Ed25519",
 		{},
-		hexToBinary(request.headers.get("X-Signature-Ed25519")),
+		hexStringToBinary(request.headers.get("X-Signature-Ed25519")),
 		encodedValue
 	);
 });
