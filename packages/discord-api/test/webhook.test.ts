@@ -4,9 +4,7 @@ import { createWebhook } from "../src/routes/webhook";
 
 describe("createWebhook", () => {
 	test("Accepts an optional audit log entry", async () => {
-		const spy = vi
-			.spyOn(client, "post")
-			.mockImplementation(async () => Promise.resolve(""));
+		const spy = vi.spyOn(client, "post").mockImplementation(async () => "");
 
 		await createWebhook(
 			"123",
@@ -21,9 +19,7 @@ describe("createWebhook", () => {
 	});
 
 	test("Includes webhook information", async () => {
-		const spy = vi
-			.spyOn(client, "post")
-			.mockImplementation(async () => Promise.resolve(""));
+		const spy = vi.spyOn(client, "post").mockImplementation(async () => "");
 
 		await createWebhook("123", { name: "Test Webhook", avatar: "avatar.png" });
 		expect(spy).toHaveBeenCalledWith("/channels/123/webhooks", {
