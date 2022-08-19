@@ -24,7 +24,7 @@
 		"node": ">=18"
 	},
 	"dependencies": {
-		"discord-api-types": "0.36.1",
+		"discord-api-types": "0.37.4-next.248484e.1660936399",
 		"discord-request": "0.0.4",
 		"discord-snowflake": "2.0.0",
 		"debug": "^4.3.4"
