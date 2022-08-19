@@ -30,32 +30,3 @@ export async function createWebhook(
 		headers,
 	}) as Promise<RESTPostAPIChannelWebhookResult>;
 }
-
-/**
- * createWebhook
- * getChannelWebhooks
- * getGuildWebhooks
- * getWebhook
- * getWebhookWithToken
- * modifyWebhook
- * modifyWebhookWithToken
- * deleteWebhook
- * deleteWebhookWithToken
- * executeWebook
- * executeSlackWebhook
- * executeGitHubWebook
- * getWebhookMessage
- * editWebhookMessage
- * deleteWebhookMessage
- *
- * or
- * postWebhook
- * getChannelWebhooks
- * getGuildWebhooks
- * getWebhook
- * getWebhookWithToken
- * patchWebhook
- * patchWebhookWithToken
- * deleteWebhook
- * deleteWebhookWithToken
- */
