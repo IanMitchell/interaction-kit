@@ -16,7 +16,8 @@
 		"typecheck": "turbo run typecheck",
 		"prettier": "turbo run prettier",
 		"lint": "turbo run lint",
-		"test": "turbo run test",
+		"pretest": "npm run clean && npm run build",
+		"test": "vitest run",
 		"version": "npx changeset version",
 		"changeset": "npx changeset add",
 		"publish": "npx changeset publish"
