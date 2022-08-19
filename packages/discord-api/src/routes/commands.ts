@@ -5,8 +5,6 @@ import type {
 	RESTGetAPIApplicationGuildCommandsResult,
 	RESTPatchAPIApplicationCommandJSONBody,
 	RESTPatchAPIApplicationCommandResult,
-	RESTPatchAPIApplicationGuildCommandJSONBody,
-	RESTPatchAPIApplicationGuildCommandResult,
 	RESTPostAPIApplicationCommandsJSONBody,
 	RESTPostAPIApplicationCommandsResult,
 	RESTPostAPIApplicationGuildCommandsJSONBody,
@@ -138,15 +136,12 @@ export async function deleteGuildApplicationCommand(
 }
 
 // TODO: Test, Document
-export async function bulkOverwriteGuildApplicationCommand(
+export async function bulkOverwriteGuildApplicationCommands(
 	applicationId: Snowflake,
 	guildId: Snowflake,
-	command: RESTPatchAPIApplicationGuildCommandJSONBody & { id: Snowflake }
+	commands: RESTPutAPIApplicationGuildCommandsJSONBody
 ) {
-	return client.patch(
-		Routes.applicationGuildCommand(applicationId, guildId, command.id),
-		{
-			body: command,
-		}
-	) as Promise<RESTPatchAPIApplicationGuildCommandResult>;
+	return client.put(Routes.applicationGuildCommands(applicationId, guildId), {
+		body: commands,
+	}) as Promise<RESTPutAPIApplicationCommandsResult>;
 }

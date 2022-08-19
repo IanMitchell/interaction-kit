@@ -13,15 +13,26 @@ describe("createWebhook", () => {
 			{ name: "Test Webhook", avatar: "avatar.png" },
 			"Vitest Log"
 		);
-		expect(spy).toHaveBeenCalledWith(
-			expect.anything,
-			{
-				body: expect.anything,
-				headers: { "X-Audit-Log-Reason": "Vitest Log" },
-			},
-			expect.anything
-		);
+		expect(spy).toHaveBeenCalledWith(expect.anything(), {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			body: expect.anything(),
+			headers: new Headers({ "X-Audit-Log-Reason": "Vitest Log" }),
+		});
 	});
 
-	test.todo("Includes webhook information");
+	test("Includes webhook information", async () => {
+		const spy = vi
+			.spyOn(client, "post")
+			.mockImplementation(async () => Promise.resolve(""));
+
+		await createWebhook("123", { name: "Test Webhook", avatar: "avatar.png" });
+		expect(spy).toHaveBeenCalledWith("/channels/123/webhooks", {
+			body: {
+				name: "Test Webhook",
+				avatar: "avatar.png",
+			},
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			headers: expect.any(Headers),
+		});
+	});
 });

@@ -2,7 +2,7 @@ import arg from "arg";
 import boxen from "boxen";
 import chalk from "chalk";
 import debug from "debug";
-import { putGuildApplicationCommands } from "discord-api";
+import { bulkOverwriteGuildApplicationCommands } from "discord-api";
 import server from "discord-edge-runner";
 import type { Snowflake } from "discord-snowflake";
 import ngrok from "ngrok";
@@ -34,7 +34,7 @@ async function updateCommands(guildId: Snowflake) {
 
 	try {
 		if (devCommandChangeSet.hasChanges) {
-			await putGuildApplicationCommands(
+			await bulkOverwriteGuildApplicationCommands(
 				application.id,
 				guildId,
 				serializedCommands

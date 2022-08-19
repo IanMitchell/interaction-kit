@@ -1,7 +1,7 @@
 import {
+	createInteractionFollowup,
 	deleteInteractionFollowup,
-	patchInteractionFollowup,
-	postInteractionFollowup,
+	editInteractionFollowup,
 } from "discord-api";
 import type {
 	APIInteractionGuildMember,
@@ -67,7 +67,7 @@ export default class MessageComponentInteraction implements Interaction {
 				data: RESTPatchAPIInteractionFollowupJSONBody,
 				id = "@original"
 			) =>
-				patchInteractionFollowup(
+				editInteractionFollowup(
 					Config.getApplicationId(),
 					this.token,
 					id,
@@ -135,7 +135,7 @@ export default class MessageComponentInteraction implements Interaction {
 			return "@original";
 		}
 
-		const responseData = await postInteractionFollowup(
+		const responseData = await createInteractionFollowup(
 			Config.getApplicationId(),
 			this.token,
 			payload.data
