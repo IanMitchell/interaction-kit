@@ -15,17 +15,17 @@ import {
 	MessageFlags,
 } from "discord-api-types/v10";
 import type { Snowflake } from "discord-snowflake";
-import type Application from "../../application";
-import Config from "../../config";
+import type Application from "../../application.js";
+import Config from "../../config.js";
 import type {
 	Interaction,
 	InteractionMessageModifiers,
 	InteractionReply,
 	RequestBody,
 	ResponseHandler,
-} from "../../interfaces";
-import { ResponseStatus } from "../../requests/response";
-import type Embed from "../../structures/embed";
+} from "../../interfaces.js";
+import { ResponseStatus } from "../../requests/response.js";
+import type Embed from "../../structures/embed.js";
 
 export default class ApplicationCommandInteraction implements Interaction {
 	public readonly type = InteractionType.ApplicationCommand;

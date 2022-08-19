@@ -7,7 +7,7 @@ import {
 	getWorkerId,
 	isSnowflake,
 	parse,
-} from "../src/snowflake";
+} from "../src/snowflake.js";
 
 const snowflake = "90339695967350784";
 

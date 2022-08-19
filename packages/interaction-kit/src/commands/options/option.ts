@@ -9,7 +9,7 @@ import type {
 	APIApplicationCommandOption,
 } from "discord-api-types/v10";
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
-import type { Comparable, Serializable } from "../../interfaces";
+import type { Comparable, Serializable } from "../../interfaces.js";
 
 type OptionArgs = {
 	type: ApplicationCommandOptionType;

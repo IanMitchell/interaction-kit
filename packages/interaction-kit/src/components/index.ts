@@ -1,6 +1,6 @@
-import type { SerializableComponent } from "../interfaces";
-import { Button } from "./button";
-import Select from "./select";
+import type { SerializableComponent } from "../interfaces.js";
+import { Button } from "./button.js";
+import Select from "./select.js";
 
 export type ExecutableComponent = Button | Select;
 

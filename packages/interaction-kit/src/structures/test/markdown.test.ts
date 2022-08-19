@@ -17,7 +17,7 @@ import {
 	TimestampStyle,
 	underline,
 	user,
-} from "../markdown";
+} from "../markdown.js";
 
 describe("Markdown Mentions", () => {
 	test("user", () => {

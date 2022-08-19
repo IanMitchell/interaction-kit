@@ -8,7 +8,7 @@ import type {
 } from "discord-api-types/v10";
 import type { Snowflake } from "discord-snowflake";
 import path from "node:path";
-import type Application from "./application";
+import type Application from "./application.js";
 
 // TODO: Figure out how to programmatically determine this, idk
 export async function getEdgeEntrypoint() {

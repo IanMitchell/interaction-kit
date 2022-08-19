@@ -3,9 +3,9 @@ import type {
 	APIMessageActionRowComponent,
 } from "discord-api-types/v10";
 import { ComponentType } from "discord-api-types/v10";
-import type { SerializableComponent } from "../interfaces";
-import type { Button } from "./button";
-import type Select from "./select";
+import type { SerializableComponent } from "../interfaces.js";
+import type { Button } from "./button.js";
+import type Select from "./select.js";
 
 export function isActionRow(
 	component: SerializableComponent

@@ -2,9 +2,9 @@ import type {
 	APIApplicationCommand,
 	RESTPostAPIContextMenuApplicationCommandsJSONBody,
 } from "discord-api-types/v10";
-import type ContextMenuInteraction from "../interactions/application-commands/context-menu-interaction";
-import type { ContextMenuApplicationCommandType } from "../interactions/application-commands/context-menu-interaction";
-import type { InteractionKitCommand } from "../interfaces";
+import type ContextMenuInteraction from "../interactions/application-commands/context-menu-interaction.js";
+import type { ContextMenuApplicationCommandType } from "../interactions/application-commands/context-menu-interaction.js";
+import type { InteractionKitCommand } from "../interfaces.js";
 
 type ContextMenuArgs<T extends ContextMenuApplicationCommandType> = {
 	name: string;

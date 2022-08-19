@@ -1,9 +1,9 @@
 import type { APIApplicationCommandChannelOption } from "discord-api-types/v10";
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
-import { isEqual } from "../../helpers/arrays";
-import type { Optional } from "../../interfaces";
-import type { BaseBasicOptionArgs } from "./option";
-import { BasicOption } from "./option";
+import { isEqual } from "../../helpers/arrays.js";
+import type { Optional } from "../../interfaces.js";
+import type { BaseBasicOptionArgs } from "./option.js";
+import { BasicOption } from "./option.js";
 
 type ChannelOptionArgs = {
 	channelTypes?:

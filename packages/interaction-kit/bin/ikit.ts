@@ -2,8 +2,8 @@
 import arg from "arg";
 import dotenv from "dotenv";
 import pkg from "../package.json" assert { type: "json" };
-import deployCommand from "../src/cli/deploy";
-import devCommand from "../src/cli/dev";
+import deployCommand from "../src/cli/deploy.js";
+import devCommand from "../src/cli/dev.js";
 
 // Credit to Next.js, which I largely ripped off for this
 

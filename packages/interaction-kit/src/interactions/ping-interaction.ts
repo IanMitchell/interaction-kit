@@ -3,9 +3,9 @@ import {
 	InteractionResponseType,
 	InteractionType,
 } from "discord-api-types/v10";
-import type Application from "../application";
-import type { RequestBody, ResponseHandler } from "../interfaces";
-import { ResponseStatus } from "../requests/response";
+import type Application from "../application.js";
+import type { RequestBody, ResponseHandler } from "../interfaces.js";
+import { ResponseStatus } from "../requests/response.js";
 
 export default class PingInteraction {
 	public readonly type = InteractionType.Ping;
