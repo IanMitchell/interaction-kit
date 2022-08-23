@@ -27,6 +27,8 @@ server.post(
 		}>,
 		reply: FastifyReply
 	) => {
+		console.log("Received interaction");
+
 		// Verify Request is from Discord
 		const signature = request.headers["x-signature-ed25519"];
 		const timestamp = request.headers["x-signature-timestamp"];
@@ -38,24 +40,32 @@ server.post(
 			timestamp,
 			PUBLIC_KEY,
 			// @ts-expect-error crypto types suck
-			crypto.subtle
+			crypto.webcrypto.subtle
+			// PlatformAlgorithm.Node16
 		);
 
 		if (!isValidRequest) {
+			console.log("Invalid signature");
 			return reply.code(401).send("Invalid signature");
 		}
 
 		const interaction = request.body;
 
 		if (interaction.type === InteractionType.Ping) {
+			console.log("Ping request");
 			return reply.send({ type: InteractionResponseType.Pong });
 		}
 
+		console.log("Hello world");
 		await reply.send({ content: "Hello World!", flags: 1 << 6 });
 	}
 );
 
-server.listen({ port: 3000 }, (err, address) => {
+server.get("/", async (request, reply) => {
+	await reply.send({ success: 1 });
+});
+
+server.listen({ host: "0.0.0.0", port: 3000 }, (err, address) => {
 	if (err) {
 		server.log.error(err);
 		process.exit(1);

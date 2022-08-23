@@ -71,8 +71,18 @@ async function getCryptoKey(
  */
 export const PlatformAlgorithm = {
 	Web: "Ed25519",
-	Node18: "Ed25519",
-	Node16: {
+	/**
+	 * Node v18.4.0+
+	 * Node v16.17.0+
+	 * For Node v17, use OldNode
+	 */
+	NewNode: "Ed25519",
+	/**
+	 * Node v18.3.0 and below
+	 * Node v17.0.0+
+	 * Node v16.16.0 and below
+	 */
+	OldNode: {
 		name: "NODE-ED25519",
 		namedCurve: "NODE-ED25519",
 		public: true,
@@ -101,7 +111,7 @@ export async function isValidRequest(
 	request: Request,
 	publicKey: string,
 	subtleCrypto: SubtleCrypto,
-	algorithm: SubtleCryptoImportKeyAlgorithm | string = PlatformAlgorithm.Node18
+	algorithm: SubtleCryptoImportKeyAlgorithm | string = PlatformAlgorithm.NewNode
 ) {
 	const clone = request.clone();
 	const timestamp = clone.headers.get("X-Signature-Timestamp");
@@ -127,7 +137,7 @@ export async function verify(
 	timestamp: string | null | undefined,
 	publicKey: string,
 	subtleCrypto: SubtleCrypto,
-	algorithm: SubtleCryptoImportKeyAlgorithm | string = PlatformAlgorithm.Node18
+	algorithm: SubtleCryptoImportKeyAlgorithm | string = PlatformAlgorithm.NewNode
 ) {
 	if (timestamp == null || signature == null || rawBody == null) {
 		return false;

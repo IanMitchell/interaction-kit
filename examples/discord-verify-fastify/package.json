@@ -18,6 +18,9 @@
 	"dependencies": {
 		"fastify": "4.5.2",
 		"discord-api-types": "0.37.4",
-		"discord-verify": "0.0.2-beta.18"
+		"discord-verify": "0.0.2-beta.26"
+	},
+	"volta": {
+		"node": "18.3.0"
 	}
 }

@@ -61,7 +61,7 @@ async function handleRequest(
 }
 ```
 
-#### Node 17 and Older
+#### Node 18.3 and Older (Excluding Node 16.17.0 or newer v16 versions)
 
 If you are using Node 17 or lower, you need to make some changes:
 
@@ -90,7 +90,7 @@ async function handleRequest(
 		this.client.publicKey,
 -		crypto.subtle
 +		webcrypto.subtle,
-+		PlatformAlgorithms.Node16
++		PlatformAlgorithms.OldNode
 	);
 
 	if (!isValid) {
@@ -98,6 +98,8 @@ async function handleRequest(
 	}
 }
 ```
+
+If you see a runtime DOMException about the the name, applying these changes should fix it.
 
 ### Options
 

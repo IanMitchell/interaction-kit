@@ -3,7 +3,7 @@ import {
 	hexStringToBinary,
 	isValidRequest,
 	PlatformAlgorithm,
-	validate,
+	verify,
 } from "../src/web";
 import { encode, getKeyPair, getMockRequest, getSignature } from "./helpers";
 
@@ -41,7 +41,7 @@ test("Custom validator verifies requests", async () => {
 	const signature = request.headers.get("X-Signature-Ed25519");
 	const timestamp = request.headers.get("X-Signature-Timestamp");
 
-	const isValid = await validate(
+	const isValid = await verify(
 		body,
 		signature,
 		timestamp,

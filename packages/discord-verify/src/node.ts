@@ -3,16 +3,11 @@
 import crypto from "node:crypto";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
 // @ts-ignore-error Node Process
-import process from "node:process";
 import {
 	isValidRequest as verifyRequest,
 	PlatformAlgorithm,
 } from "./lib/verify";
-import type {
-	Request,
-	SubtleCrypto,
-	SubtleCryptoImportKeyAlgorithm,
-} from "./types";
+import type { Request, SubtleCryptoImportKeyAlgorithm } from "./types";
 export { hexStringToBinary, PlatformAlgorithm, verify } from "./lib/verify";
 
 /**
@@ -27,13 +22,23 @@ export async function isValidRequest(
 	publicKey: string,
 	algorithm?: SubtleCryptoImportKeyAlgorithm | string
 ) {
-	const [majorVersion] = process.versions.node.split(".");
-	const algo =
-		majorVersion >= 18 ? PlatformAlgorithm.Node18 : PlatformAlgorithm.Node16;
-	const subtleCrypto =
-		majorVersion >= 18
-			? (crypto.subtle as SubtleCrypto)
-			: (crypto.webcrypto.subtle as SubtleCrypto);
+	try {
+		return await verifyRequest(
+			request,
+			publicKey,
+			crypto.webcrypto.subtle,
+			algorithm ?? PlatformAlgorithm.NewNode
+		);
+	} catch (error: unknown) {
+		if (error instanceof Error && error.constructor.name === "DOMException") {
+			return verifyRequest(
+				request,
+				publicKey,
+				crypto.webcrypto.subtle,
+				algorithm ?? PlatformAlgorithm.OldNode
+			);
+		}
 
-	return verifyRequest(request, publicKey, subtleCrypto, algorithm ?? algo);
+		throw error;
+	}
 }
