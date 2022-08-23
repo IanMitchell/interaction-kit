@@ -13,7 +13,7 @@ import type {
 	SubtleCrypto,
 	SubtleCryptoImportKeyAlgorithm,
 } from "./types";
-export { hexStringToBinary, PlatformAlgorithm, validate } from "./lib/verify";
+export { hexStringToBinary, PlatformAlgorithm, verify } from "./lib/verify";
 
 /**
  * Validates a request from Discord

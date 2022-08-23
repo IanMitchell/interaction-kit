@@ -26,12 +26,12 @@ import { isValidRequest } from "discord-verify/node";
 const isValid = await isValidRequest(request, publicKey);
 ```
 
-### Custom Validation
+### Custom Verification
 
-If you want to validate requests from frameworks such as Express or Fastify that have their own request classes, you can import the validate function and pass raw values to it.
+If you want to verify requests from frameworks such as Express or Fastify that have their own request classes, you can import the verify function and pass raw values to it.
 
 ```ts
-import { validate } from "discord-verify/node";
+import { verify } from "discord-verify/node";
 
 async function handleRequest(
 	req: FastifyRequest<{
@@ -47,7 +47,7 @@ async function handleRequest(
 	const timestamp = req.headers["x-signature-timestamp"];
 	const rawBody = JSON.stringify(req.body);
 
-	const isValid = await validate(
+	const isValid = await verify(
 		rawBody,
 		signature,
 		timestamp,
@@ -67,7 +67,7 @@ If you are using Node 17 or lower, you need to make some changes:
 
 ```diff
 + import { webcrypto } from "node:crypto";
-+ import { validate, PlatformAlgorithms } from "discord-verify/node";
++ import { verify, PlatformAlgorithms } from "discord-verify/node";
 
 async function handleRequest(
 	req: FastifyRequest<{
@@ -83,7 +83,7 @@ async function handleRequest(
 	const timestamp = req.headers["x-signature-timestamp"];
 	const rawBody = JSON.stringify(req.body);
 
-	const isValid = await validate(
+	const isValid = await verify(
 		rawBody,
 		signature,
 		timestamp,

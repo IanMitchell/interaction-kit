@@ -108,14 +108,7 @@ export async function isValidRequest(
 	const signature = clone.headers.get("X-Signature-Ed25519");
 	const body = await clone.text();
 
-	return validate(
-		body,
-		signature,
-		timestamp,
-		publicKey,
-		subtleCrypto,
-		algorithm
-	);
+	return verify(body, signature, timestamp, publicKey, subtleCrypto, algorithm);
 }
 
 /**
@@ -128,7 +121,7 @@ export async function isValidRequest(
  * @param algorithm The name of the crypto algorithm to use
  * @returns Whether the request is valid or not
  */
-export async function validate(
+export async function verify(
 	rawBody: string | null | undefined,
 	signature: string | null | undefined,
 	timestamp: string | null | undefined,
