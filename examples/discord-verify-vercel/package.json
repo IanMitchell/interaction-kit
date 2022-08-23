@@ -1,0 +1,19 @@
+{
+	"name": "discord-verify-vercel",
+	"version": "0.0.1",
+	"private": true,
+	"author": "Ian Mitchell",
+	"description": "A sample Vercel edge runtime function using discord-verify",
+	"license": "MIT",
+	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/examples/discord-verify-vercel",
+	"scripts": {
+		"start": "vercel dev",
+		"typecheck": "tsc --noEmit",
+		"prettier": "prettier src/**/*.ts --check",
+		"lint": "eslint ./src/**/*.ts"
+	},
+	"dependencies": {
+		"discord-api-types": "0.37.4",
+		"discord-verify": "0.0.2-beta.18"
+	}
+}
