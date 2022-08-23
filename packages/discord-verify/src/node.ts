@@ -11,7 +11,7 @@ import type { Request, SubtleCryptoImportKeyAlgorithm } from "./types";
 export { hexStringToBinary, PlatformAlgorithm, verify } from "./lib/verify";
 
 /**
- * Validates a request from Discord
+ * Validates a request from Discord. If you are not on the latest version 16 or 18 of Node, you should pass a specific value in for the algorithm.
  * @param request Request to verify
  * @param publicKey The application's public key
  * @param algorithm The name of the crypto algorithm to use
