@@ -30,7 +30,7 @@
 		"boxen": "7.0.0",
 		"chalk": "^5.0.1",
 		"discord-api": "0.0.2",
-		"discord-api-types": "0.37.4-next.248484e.1660936399",
+		"discord-api-types": "^0.37.4",
 		"discord-edge-runner": "0.0.2",
 		"discord-request": "0.0.4",
 		"discord-snowflake": "2.0.0",
