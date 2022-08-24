@@ -2,6 +2,14 @@
 
 This package is used to [efficiently verify](https://twitter.com/advaithj1/status/1420696472933175297?s=20&t=c5SiC7uVVVDkApYrrbrY0Q) Discord HTTP interactions.
 
+## Performance
+
+The following graphs show the real world metrics of [Truth or Dare](https://truthordarebot.xyz/) running [discord-interactions] version 3.2.0 on the left and `discord-verify` version 1.0.0 on the right. At the time, Truth or Dare was in 640,000 servers and running on a <>. It averaged 55% CPU usage and 450ms event loop lag. After switching to `discord-verify`, the CPU usage dropped to 5% and the event loop lag dropped to 10ms.
+
+![discord-interactions](https://github.com/IanMitchell/interaction-kit/blob/main/assets/discord-verify-tod.png?raw=true)
+
+By using native WebCrypto instead of `tweetnacl` discord-verify achieves significantly better performance compared to discord-interactions.
+
 ## Installation
 
 ```bash
@@ -52,7 +60,7 @@ async function handleRequest(
 		signature,
 		timestamp,
 		this.client.publicKey,
-		crypto.subtle
+		crypto.webcrypto.subtle
 	);
 
 	if (!isValid) {
@@ -66,7 +74,6 @@ async function handleRequest(
 If you are using Node 17 or lower, you need to make some changes:
 
 ```diff
-+ import { webcrypto } from "node:crypto";
 + import { verify, PlatformAlgorithms } from "discord-verify/node";
 
 async function handleRequest(
@@ -88,8 +95,7 @@ async function handleRequest(
 		signature,
 		timestamp,
 		this.client.publicKey,
--		crypto.subtle
-+		webcrypto.subtle,
+		crypto.webcrypto.subtle,
 +		PlatformAlgorithms.OldNode
 	);
 
@@ -119,3 +125,8 @@ The following platforms are currently supported:
 
 - Vercel
 - CloudFlare
+
+## Credits
+
+- [devsnek](https://github.com/devsnek) for the [initial gist](https://gist.github.com/devsnek/77275f6e3f810a9545440931ed314dc1) this package is based on:
+- [kyranet](https://github.com/kyranet) for an improved hex string parser.
