@@ -125,6 +125,8 @@ The following platforms are currently supported:
 
 - Vercel
 - CloudFlare
+- Modern Node.js versions (recent experimental WebCrypto support)
+- Old Node.js versions (early experimental WebCrypto support)
 
 ## Credits
 

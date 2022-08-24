@@ -110,8 +110,9 @@ export const PlatformAlgorithm = {
 };
 
 /**
- * Validates a request from Discord
- * @param request Request to verify
+ * Validates a request from Discord. The request should not be consumed prior
+ * to calling this function.
+ * @param request Request to verify. This should have been consumed yet.
  * @param publicKey The application's public key
  * @param subtleCrypto The crypto engine to use
  * @param algorithm The name of the crypto algorithm to use

@@ -14,8 +14,9 @@ declare const crypto: {
 };
 
 /**
- * Validates a request from Discord
- * @param request Request to verify
+ * Validates a request from Discord. The request should not be consumed prior
+ * to calling this function.
+ * @param request Request to verify. This should have been consumed yet.
  * @param publicKey The application's public key
  * @param algorithm The name of the crypto algorithm to use
  * @returns Whether the request is valid or not
