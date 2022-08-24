@@ -1,8 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
-// @ts-ignore-error Node Crypto types are not well defined yet
+// @ts-ignore-error We can't use Node types since we aren't fully in a Node environment
 import crypto from "node:crypto";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
-// @ts-ignore-error Node Process
 import {
 	isValidRequest as verifyRequest,
 	PlatformAlgorithm,
