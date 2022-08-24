@@ -14,7 +14,7 @@ test("Clones the request", async () => {
 	const verified = await isValidRequest(
 		request,
 		publicKey,
-		PlatformAlgorithm.Vercel
+		PlatformAlgorithm.VercelDev
 	);
 
 	expect(async () => {
@@ -29,7 +29,7 @@ test("Handles valid requests", async () => {
 	const valid = await isValidRequest(
 		request,
 		publicKey,
-		PlatformAlgorithm.Vercel
+		PlatformAlgorithm.VercelDev
 	);
 	expect(valid).toBe(true);
 });
@@ -47,7 +47,7 @@ test("Custom validator verifies requests", async () => {
 		timestamp,
 		publicKey,
 		crypto.subtle,
-		PlatformAlgorithm.Vercel
+		PlatformAlgorithm.VercelDev
 	);
 	expect(isValid).toBe(true);
 });
@@ -61,7 +61,7 @@ describe("Invalid Requests", () => {
 		const valid = await isValidRequest(
 			request,
 			publicKey,
-			PlatformAlgorithm.Vercel
+			PlatformAlgorithm.VercelDev
 		);
 		expect(valid).toBe(false);
 	});
@@ -74,7 +74,7 @@ describe("Invalid Requests", () => {
 		const valid = await isValidRequest(
 			request,
 			publicKey,
-			PlatformAlgorithm.Vercel
+			PlatformAlgorithm.VercelDev
 		);
 		expect(valid).toBe(false);
 	});
@@ -93,7 +93,7 @@ describe("Invalid Requests", () => {
 		const valid = await isValidRequest(
 			request,
 			publicKey,
-			PlatformAlgorithm.Vercel
+			PlatformAlgorithm.VercelDev
 		);
 		expect(valid).toBe(false);
 	});
@@ -111,18 +111,18 @@ describe("Supports different environments", () => {
 		const { privateKey, publicKey } = await getKeyPair();
 		const request = await getMockRequest(privateKey, { hello: "world" });
 
-		await isValidRequest(request, publicKey, PlatformAlgorithm.Vercel);
+		await isValidRequest(request, publicKey, PlatformAlgorithm.VercelDev);
 		expect(importSpy).toHaveBeenCalledWith(
 			"raw",
 			hexStringToBinary(publicKey),
-			PlatformAlgorithm.Vercel,
+			PlatformAlgorithm.VercelDev,
 			true,
 			["verify"]
 		);
 
 		const encodedValue = await encode(request);
 		expect(verifySpy).toHaveBeenCalledWith(
-			PlatformAlgorithm.Vercel.name,
+			PlatformAlgorithm.VercelDev.name,
 			{},
 			hexStringToBinary(request.headers.get("X-Signature-Ed25519")),
 			encodedValue

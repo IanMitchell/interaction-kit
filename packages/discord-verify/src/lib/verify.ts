@@ -95,13 +95,18 @@ export const PlatformAlgorithm = {
 	/**
 	 * Despite being documented as 	{ name: "eddsa", namedCurve: "ed25519"} or
 	 * { name: "ecdsa", namedCurve: "ed25519" }, Vercel uses the same format as
-	 * Cloudflare
+	 * Cloudflare in Production (despite Dev using documented formats)
 	 */
-	Vercel: {
+	VercelProd: {
 		name: "NODE-ED25519",
 		namedCurve: "NODE-ED25519",
 		public: true,
 	},
+	/**
+	 * Despite being documented as using this format, Vercel uses the same format
+	 * as Cloudflare in Production and only uses this format in Development.
+	 */
+	VercelDev: { name: "eddsa", namedCurve: "ed25519" },
 };
 
 /**
