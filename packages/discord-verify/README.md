@@ -4,7 +4,7 @@ This package is used to [efficiently verify](https://twitter.com/advaithj1/statu
 
 ## Performance
 
-The following graphs show the real world metrics of [Truth or Dare](https://truthordarebot.xyz/) running [discord-interactions] version 3.2.0 on the left and `discord-verify` version 1.0.0 on the right. At the time, Truth or Dare was in 640,000 servers and running on a <>. It averaged 55% CPU usage and 450ms event loop lag. After switching to `discord-verify`, the CPU usage dropped to 5% and the event loop lag dropped to 10ms.
+The following graphs show the real world metrics of [Truth or Dare](https://truthordarebot.xyz/) running [discord-interactions] version 3.2.0 on the left and `discord-verify` version 1.0.0 on the right. At the time, Truth or Dare was in 640,000 servers and running on a machine with an Intel Xeon E5-2630 CPU and 16GB of RAM. It averaged 55% CPU usage and 450ms event loop lag. After switching to `discord-verify`, the CPU usage dropped to 5% and the event loop lag dropped to 10ms.
 
 ![discord-interactions](https://github.com/IanMitchell/interaction-kit/blob/main/assets/discord-verify-tod.png?raw=true)
 
@@ -128,5 +128,5 @@ The following platforms are currently supported:
 
 ## Credits
 
-- [devsnek](https://github.com/devsnek) for the [initial gist](https://gist.github.com/devsnek/77275f6e3f810a9545440931ed314dc1) this package is based on:
+- [devsnek](https://github.com/devsnek) for the [initial gist](https://gist.github.com/devsnek/77275f6e3f810a9545440931ed314dc1) this package is based on.
 - [kyranet](https://github.com/kyranet) for an improved hex string parser.
