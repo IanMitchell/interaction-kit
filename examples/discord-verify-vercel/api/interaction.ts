@@ -1,8 +1,4 @@
-import type { APIInteraction } from "discord-api-types/v10";
-import {
-	InteractionResponseType,
-	InteractionType,
-} from "discord-api-types/v10";
+import { InteractionResponseType } from "discord-api-types/v10";
 import { isValidRequest, PlatformAlgorithm } from "discord-verify";
 
 export const config = {
@@ -11,7 +7,16 @@ export const config = {
 
 const PUBLIC_KEY = "123abc";
 
-export default async (request: Request, response: Response) => {
+export default async (request: Request) => {
+	if (request.method !== "POST" || request.body == null) {
+		return new Response(JSON.stringify({ message: "Method Not Allowed" }), {
+			status: 405,
+			headers: {
+				"content-type": "application/json",
+			},
+		});
+	}
+
 	const isValid = await isValidRequest(
 		request,
 		PUBLIC_KEY,
@@ -24,13 +29,9 @@ export default async (request: Request, response: Response) => {
 		});
 	}
 
-	const interaction = request.body as APIInteraction;
-
-	if (interaction.type === InteractionType.Ping) {
-		return new Response(JSON.stringify({ type: InteractionResponseType.Pong }));
-	}
-
-	return new Response(
-		JSON.stringify({ content: "Hello World!", flags: 1 << 6 })
-	);
+	return new Response(JSON.stringify({ type: InteractionResponseType.Pong }), {
+		headers: {
+			"content-type": "application/json",
+		},
+	});
 };

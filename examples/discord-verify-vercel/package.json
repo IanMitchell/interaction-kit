@@ -7,13 +7,12 @@
 	"license": "MIT",
 	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/examples/discord-verify-vercel",
 	"scripts": {
-		"start": "vercel dev",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
 		"lint": "eslint ./src/**/*.ts"
 	},
 	"dependencies": {
 		"discord-api-types": "0.37.4",
-		"discord-verify": "0.0.2-beta.18"
+		"discord-verify": "0.0.2-beta.31"
 	}
 }
