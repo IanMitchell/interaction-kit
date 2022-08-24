@@ -1,9 +1,9 @@
 import type { APIInteraction } from "discord-api-types/v10";
 import {
 	InteractionResponseType,
-	InteractionType,
+	InteractionType
 } from "discord-api-types/v10";
-import { verify } from "discord-verify/node";
+import { PlatformAlgorithm, verify } from "discord-verify/node";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import fastify from "fastify";
 import crypto from "node:crypto";
@@ -41,7 +41,7 @@ server.post(
 			PUBLIC_KEY,
 			// @ts-expect-error crypto types suck
 			crypto.webcrypto.subtle
-			// PlatformAlgorithm.Node16
+			PlatformAlgorithm.Node16
 		);
 
 		if (!isValidRequest) {
