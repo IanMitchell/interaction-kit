@@ -1,0 +1,9 @@
+{
+	"compilerOptions": {
+		"outDir": "./build",
+		"target": "ES2021",
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true
+	}
+}

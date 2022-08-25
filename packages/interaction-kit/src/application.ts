@@ -3,7 +3,7 @@ import { client } from "discord-api";
 import type { APIInteraction } from "discord-api-types/v10";
 import { ApplicationCommandType } from "discord-api-types/v10";
 import type { Snowflake } from "discord-snowflake";
-import isValidRequest from "discord-verify";
+import { isValidRequest } from "discord-verify";
 import type ContextMenu from "./commands/context-menu.js";
 import type SlashCommand from "./commands/slash-command.js";
 import type { ExecutableComponent } from "./components/index.js";
@@ -14,7 +14,7 @@ import * as Interaction from "./interactions/index.js";
 import type {
 	InteractionKitCommand,
 	MapValue,
-	SerializableComponent,
+	SerializableComponent
 } from "./interfaces.js";
 import { response, ResponseStatus } from "./requests/response.js";
 
@@ -168,6 +168,7 @@ export default class Application {
 			});
 		}
 
+		// TODO: Handle different platforms
 		const valid = await isValidRequest(request, this.#publicKey);
 		if (!valid) {
 			return response(ResponseStatus.Unauthorized, {

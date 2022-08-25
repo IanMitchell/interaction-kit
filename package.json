@@ -20,7 +20,7 @@
 		"test": "vitest run",
 		"version": "npx changeset version",
 		"changeset": "npx changeset add",
-		"publish": "npx changeset publish"
+		"publish": "npm run build && npx changeset publish"
 	},
 	"engines": {
 		"npm": ">=8.0.0",
@@ -29,7 +29,8 @@
 	"devDependencies": {
 		"@changesets/cli": "^2.24.3",
 		"@cloudflare/workers-types": "^3.14.1",
-		"@edge-runtime/types": "^1.1.0-beta.27",
+		"@edge-runtime/types": "^1.1.0-beta.31",
+		"@noble/ed25519": "^1.6.1",
 		"@types/debug": "^4.1.7",
 		"@types/node": "^18.7.7",
 		"@typescript-eslint/eslint-plugin": "^5.33.1",
@@ -44,6 +45,7 @@
 		"tslib": "^2.4.0",
 		"tsup": "^6.2.2",
 		"turbo": "^1.4.3",
+		"unbuild": "^0.8.9",
 		"typescript": "^4.7.4",
 		"vitest": "^0.22.1"
 	}

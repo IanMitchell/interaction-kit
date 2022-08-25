@@ -1,29 +1,58 @@
 {
 	"name": "discord-verify",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"author": "Ian Mitchell",
 	"description": "A library for verifying the authenticity of requests coming from the Discord Interactions API",
 	"license": "MIT",
 	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/discord-verify",
-	"exports": "./dist/src/verify.js",
-	"main": "./dist/src/verify.js",
-	"typings": "dist/src/verify.d.ts",
-	"type": "module",
+	"exports": {
+		".": {
+			"import": "./dist/web.mjs",
+			"require": "./dist/web.cjs",
+			"types": "./dist/web.d.ts"
+		},
+		"./web": {
+			"import": "./dist/web.mjs",
+			"require": "./dist/web.cjs",
+			"types": "./dist/web.d.ts"
+		},
+		"./node": {
+			"import": "./dist/node.mjs",
+			"require": "./dist/node.cjs",
+			"types": "./dist/node.d.ts"
+		}
+	},
+	"main": "./dist/web.mjs",
+	"types": "./dist/web.d.ts",
+	"typesVersions": {
+		"*": {
+			".": [
+				"./dist/web.d.ts"
+			],
+			"web": [
+				"./dist/web.d.ts"
+			],
+			"node": [
+				"./dist/node.d.ts"
+			]
+		}
+	},
 	"scripts": {
 		"clean": "rimraf dist",
-		"build": "tsc",
+		"build": "unbuild",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
-		"lint": "eslint ./src/**/*.ts"
+		"lint": "eslint ./src/**/*.ts",
+		"test": "vitest run",
+		"prepublish": "npm run clean && npm run build"
 	},
 	"files": [
 		"dist",
-		"src"
+		"src",
+		"node.js",
+		"web.js"
 	],
 	"engines": {
-		"node": ">=18"
-	},
-	"dependencies": {
-		"debug": "^4.3.4"
+		"node": ">=16"
 	}
 }
