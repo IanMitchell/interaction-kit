@@ -16,7 +16,7 @@ import type {
 } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
 import type { Snowflake } from "discord-snowflake";
-import { client } from "../client";
+import { client } from "../client.js";
 
 /**
  * Global Commands

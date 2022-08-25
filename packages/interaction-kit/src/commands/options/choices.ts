@@ -2,7 +2,7 @@ import type {
 	APIApplicationCommandOptionChoice,
 	APISelectMenuOption,
 } from "discord-api-types/v10";
-import type { Serializable } from "../../interfaces";
+import type { Serializable } from "../../interfaces.js";
 
 export type ChoiceType =
 	| APIApplicationCommandOptionChoice

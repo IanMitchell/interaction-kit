@@ -2,10 +2,10 @@ import type {
 	APIMessageComponentSelectMenuInteraction,
 	APISelectMenuOption,
 } from "discord-api-types/v10";
-import type Application from "../../application";
-import type Select from "../../components/select";
-import type { RequestBody, ResponseHandler } from "../../interfaces";
-import MessageComponentInteraction from "./message-component-interaction";
+import type Application from "../../application.js";
+import type Select from "../../components/select.js";
+import type { RequestBody, ResponseHandler } from "../../interfaces.js";
+import MessageComponentInteraction from "./message-component-interaction.js";
 
 export default class SelectInteraction extends MessageComponentInteraction {
 	public readonly values: Set<APISelectMenuOption>;

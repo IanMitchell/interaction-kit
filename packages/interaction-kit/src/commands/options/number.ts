@@ -1,14 +1,14 @@
 import type { APIApplicationCommandNumberOption } from "discord-api-types/v10";
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
-import type SlashCommandAutocompleteInteraction from "../../interactions/autocomplete/application-command-autocomplete";
-import type { Autocomplete } from "../../interactions/autocomplete/types";
-import type { Optional } from "../../interfaces";
-import type { SlashChoiceList } from "./choices";
+import type SlashCommandAutocompleteInteraction from "../../interactions/autocomplete/application-command-autocomplete.js";
+import type { Autocomplete } from "../../interactions/autocomplete/types.js";
+import type { Optional } from "../../interfaces.js";
+import type { SlashChoiceList } from "./choices.js";
 import type {
 	AutocompleteCommandOptionType,
 	BaseBasicOptionArgs,
-} from "./option";
-import { BasicOption } from "./option";
+} from "./option.js";
+import { BasicOption } from "./option.js";
 
 interface NumberOptionChoiceArgs
 	extends Optional<BaseBasicOptionArgs, "required"> {

@@ -5,26 +5,34 @@ import type {
 	APIMessageComponentInteraction,
 } from "discord-api-types/v10";
 import { InteractionType, Utils } from "discord-api-types/v10";
-import type { ApplicationCommandInteraction } from "..";
-import { PingInteraction } from "..";
-import type Application from "../application";
-import { IntegerOption, NumberOption, StringOption } from "../commands/options";
-import type { BasicOption } from "../commands/options/option";
-import { isAutocompleteOption } from "../commands/options/option";
-import SlashCommand from "../commands/slash-command";
-import type { ExecutableComponent } from "../components";
-import { Button } from "../components/button";
-import Select from "../components/select";
+import type Application from "../application.js";
+import {
+	IntegerOption,
+	NumberOption,
+	StringOption,
+} from "../commands/options/index.js";
+import {
+	isAutocompleteOption,
+	type BasicOption,
+} from "../commands/options/option.js";
+import SlashCommand from "../commands/slash-command.js";
+import { Button } from "../components/button.js";
+import type { ExecutableComponent } from "../components/index.js";
+import Select from "../components/select.js";
+import {
+	PingInteraction,
+	type ApplicationCommandInteraction,
+} from "../index.js";
 import type {
 	InteractionKitCommand,
 	RequestBody,
 	ResponseHandler,
-} from "../interfaces";
-import ContextMenuInteraction from "./application-commands/context-menu-interaction";
-import SlashCommandInteraction from "./application-commands/slash-command-interaction";
-import SlashCommandAutocompleteInteraction from "./autocomplete/application-command-autocomplete";
-import ButtonInteraction from "./message-components/button-interaction";
-import SelectInteraction from "./message-components/select-interaction";
+} from "../interfaces.js";
+import ContextMenuInteraction from "./application-commands/context-menu-interaction.js";
+import SlashCommandInteraction from "./application-commands/slash-command-interaction.js";
+import SlashCommandAutocompleteInteraction from "./autocomplete/application-command-autocomplete.js";
+import ButtonInteraction from "./message-components/button-interaction.js";
+import SelectInteraction from "./message-components/select-interaction.js";
 
 const log = debug("ikit:interactions");
 

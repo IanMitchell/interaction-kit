@@ -1,4 +1,4 @@
-import type { Executable, SerializableComponent } from "../interfaces";
+import type { Executable, SerializableComponent } from "../interfaces.js";
 
 import type {
 	APIBaseComponent,
@@ -8,7 +8,7 @@ import type {
 	APIMessageComponentEmoji,
 } from "discord-api-types/v10";
 import { ButtonStyle, ComponentType } from "discord-api-types/v10";
-import type ButtonInteraction from "../interactions/message-components/button-interaction";
+import type ButtonInteraction from "../interactions/message-components/button-interaction.js";
 
 // Testing the API Base
 interface APIButtonComponentBase<Style extends ButtonStyle>

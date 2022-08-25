@@ -1,8 +1,8 @@
 import debug from "debug";
-import { Queue } from "./queue";
-import type { RateLimitData, RequestData, Route } from "./types";
-import { getRouteInformation, getRouteKey } from "./util/routes";
-import { OFFSET, ONE_DAY, ONE_SECOND, sleep } from "./util/time";
+import { Queue } from "./queue.js";
+import type { RateLimitData, RequestData, Route } from "./types.js";
+import { getRouteInformation, getRouteKey } from "./util/routes.js";
+import { OFFSET, ONE_DAY, ONE_SECOND, sleep } from "./util/time.js";
 
 const log = debug("discord-request:manager");
 

@@ -3,10 +3,10 @@ import type {
 	APIApplicationCommandOptionChoice,
 } from "discord-api-types/v10";
 import { InteractionResponseType } from "discord-api-types/v10";
-import type Application from "../../application";
-import type SlashCommand from "../../commands/slash-command";
-import type { RequestBody, ResponseHandler } from "../../interfaces";
-import AutocompleteInteraction from "./autocomplete-interaction";
+import type Application from "../../application.js";
+import type SlashCommand from "../../commands/slash-command.js";
+import type { RequestBody, ResponseHandler } from "../../interfaces.js";
+import AutocompleteInteraction from "./autocomplete-interaction.js";
 
 export default class SlashCommandAutocompleteInteraction extends AutocompleteInteraction<APIApplicationCommandOptionChoice> {
 	public readonly command: SlashCommand | undefined;

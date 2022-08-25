@@ -1,6 +1,6 @@
 import { bulkOverwriteGlobalApplicationCommands } from "discord-api";
 import type { RESTPutAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
-import { getApplicationEntrypoint } from "../scripts";
+import { getApplicationEntrypoint } from "../scripts.js";
 
 export default async function command(argv?: string[]) {
 	if (argv?.includes("--help")) {

@@ -1,11 +1,11 @@
 import type { InteractionResponseType } from "discord-api-types/v10";
-import type Application from "../../application";
+import type Application from "../../application.js";
 import type {
 	IntegerOption,
 	NumberOption,
 	StringOption,
-} from "../../commands/options";
-import type SlashCommandAutocompleteInteraction from "./application-command-autocomplete";
+} from "../../commands/options/index.js";
+import type SlashCommandAutocompleteInteraction from "./application-command-autocomplete.js";
 
 // 🥺 selects when, discord?
 export type AutocompleteInteractionResponseTypes =

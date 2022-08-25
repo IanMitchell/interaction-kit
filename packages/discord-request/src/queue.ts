@@ -1,12 +1,12 @@
 import debug from "debug";
 import type { ErrorBody } from "discord-error";
 import { DiscordError, isDiscordError } from "discord-error";
-import { RequestError } from "./errors/request-error";
-import type { Manager } from "./manager";
-import type { RequestMethod, Route } from "./types";
-import { parse } from "./util/response";
-import { getRouteKey } from "./util/routes";
-import { OFFSET, ONE_HOUR, sleep } from "./util/time";
+import { RequestError } from "./errors/request-error.js";
+import type { Manager } from "./manager.js";
+import type { RequestMethod, Route } from "./types.js";
+import { parse } from "./util/response.js";
+import { getRouteKey } from "./util/routes.js";
+import { OFFSET, ONE_HOUR, sleep } from "./util/time.js";
 
 const log = debug("discord-request:queue");
 
