@@ -10,7 +10,7 @@ import {
 	getApplicationEntrypoint,
 	getEdgeEntrypoint,
 	getGuildApplicationCommandChanges,
-} from "../scripts";
+} from "../scripts.js";
 
 const log = debug("cli:dev");
 

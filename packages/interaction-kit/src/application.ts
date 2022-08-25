@@ -4,19 +4,19 @@ import type { APIInteraction } from "discord-api-types/v10";
 import { ApplicationCommandType } from "discord-api-types/v10";
 import type { Snowflake } from "discord-snowflake";
 import { isValidRequest } from "discord-verify";
-import type ContextMenu from "./commands/context-menu";
-import type SlashCommand from "./commands/slash-command";
-import type { ExecutableComponent } from "./components";
-import { isExecutableComponent } from "./components";
-import Config from "./config";
-import * as Interaction from "./interactions";
-import type ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction";
+import type ContextMenu from "./commands/context-menu.js";
+import type SlashCommand from "./commands/slash-command.js";
+import type { ExecutableComponent } from "./components/index.js";
+import { isExecutableComponent } from "./components/index.js";
+import Config from "./config.js";
+import type ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction.js";
+import * as Interaction from "./interactions/index.js";
 import type {
 	InteractionKitCommand,
 	MapValue,
-	SerializableComponent,
-} from "./interfaces";
-import { response, ResponseStatus } from "./requests/response";
+	SerializableComponent
+} from "./interfaces.js";
+import { response, ResponseStatus } from "./requests/response.js";
 
 const log = debug("ikit:application");
 

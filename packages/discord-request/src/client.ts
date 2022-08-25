@@ -1,7 +1,7 @@
-import type { Callbacks, ManagerArgs } from "./manager";
-import { Manager } from "./manager";
-import type { RequestData, RequestOptions } from "./types";
-import { RequestMethod } from "./types";
+import type { Callbacks, ManagerArgs } from "./manager.js";
+import { Manager } from "./manager.js";
+import type { RequestData, RequestOptions } from "./types.js";
+import { RequestMethod } from "./types.js";
 
 export default class Client {
 	#manager: Manager;

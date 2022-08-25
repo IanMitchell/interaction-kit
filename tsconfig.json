@@ -27,7 +27,7 @@
 		"lib": ["ES2021"],
 		"module": "ESNext",
 		"target": "ES2021",
-		"moduleResolution": "Node",
+		"moduleResolution": "NodeNext",
 		"resolveJsonModule": true,
 		// TODO: Switch to Edge Runtime types when they work
 		// "types": ["@edge-runtime/types"]

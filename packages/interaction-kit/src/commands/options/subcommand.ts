@@ -1,12 +1,12 @@
 import type { APIApplicationCommandSubcommandOption } from "discord-api-types/v10";
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
-import type SlashCommandInteraction from "../../interactions/application-commands/slash-command-interaction";
-import type SlashCommandAutocompleteInteraction from "../../interactions/autocomplete/application-command-autocomplete";
-import type { Autocomplete } from "../../interactions/autocomplete/types";
-import type { InteractionKitCommand } from "../../interfaces";
-import type { AutocompleteCommandArgs, CommandArgs } from "../slash-command";
-import type { BasicOption } from "./option";
-import { Option } from "./option";
+import type SlashCommandInteraction from "../../interactions/application-commands/slash-command-interaction.js";
+import type SlashCommandAutocompleteInteraction from "../../interactions/autocomplete/application-command-autocomplete.js";
+import type { Autocomplete } from "../../interactions/autocomplete/types.js";
+import type { InteractionKitCommand } from "../../interfaces.js";
+import type { AutocompleteCommandArgs, CommandArgs } from "../slash-command.js";
+import type { BasicOption } from "./option.js";
+import { Option } from "./option.js";
 
 export default class Subcommand
 	extends Option
