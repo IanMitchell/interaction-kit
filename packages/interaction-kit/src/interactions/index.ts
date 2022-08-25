@@ -11,14 +11,18 @@ import {
 	NumberOption,
 	StringOption,
 } from "../commands/options/index.js";
-import type { BasicOption } from "../commands/options/option.js";
-import { isAutocompleteOption } from "../commands/options/option.js";
+import {
+	isAutocompleteOption,
+	type BasicOption,
+} from "../commands/options/option.js";
 import SlashCommand from "../commands/slash-command.js";
 import { Button } from "../components/button.js";
 import type { ExecutableComponent } from "../components/index.js";
 import Select from "../components/select.js";
-import type { ApplicationCommandInteraction } from "../index.js";
-import { PingInteraction } from "../index.js";
+import {
+	PingInteraction,
+	type ApplicationCommandInteraction,
+} from "../index.js";
 import type {
 	InteractionKitCommand,
 	RequestBody,
