@@ -62,6 +62,7 @@ export default async function server({
 		}
 	};
 
+	// TODO: Switch to swc
 	const compiler = await esbuild.build({
 		entryPoints: [entrypoint],
 		bundle: true,
