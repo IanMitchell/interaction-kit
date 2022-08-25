@@ -1,6 +1,6 @@
 import type {
 	deleteInteractionFollowup,
-	patchInteractionFollowup,
+	editInteractionFollowup,
 } from "discord-api";
 import type {
 	APIApplicationCommand,
@@ -77,7 +77,7 @@ export type InteractionMessageModifiers = {
 	edit: (
 		data: RESTPatchAPIInteractionFollowupJSONBody,
 		id?: string
-	) => ReturnType<typeof patchInteractionFollowup>;
+	) => ReturnType<typeof editInteractionFollowup>;
 	delete: (id?: string) => ReturnType<typeof deleteInteractionFollowup>;
 };
 

@@ -47,6 +47,7 @@ export class Queue {
 
 	async add(route: Route, resource: string, init: RequestInit) {
 		return new Promise((resolve) => {
+			// TODO: Handle thrown errors from #process
 			void this.#queue.then(async () => {
 				const value = await this.#process(route, resource, init);
 				resolve(value);

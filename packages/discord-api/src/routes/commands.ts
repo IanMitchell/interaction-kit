@@ -1,10 +1,10 @@
 import type {
+	RESTGetAPIApplicationCommandResult,
 	RESTGetAPIApplicationCommandsResult,
+	RESTGetAPIApplicationGuildCommandResult,
 	RESTGetAPIApplicationGuildCommandsResult,
 	RESTPatchAPIApplicationCommandJSONBody,
 	RESTPatchAPIApplicationCommandResult,
-	RESTPatchAPIApplicationGuildCommandJSONBody,
-	RESTPatchAPIApplicationGuildCommandResult,
 	RESTPostAPIApplicationCommandsJSONBody,
 	RESTPostAPIApplicationCommandsResult,
 	RESTPostAPIApplicationGuildCommandsJSONBody,
@@ -18,6 +18,10 @@ import { Routes } from "discord-api-types/v10";
 import type { Snowflake } from "discord-snowflake";
 import { client } from "../client.js";
 
+/**
+ * Global Commands
+ */
+
 // TODO: Test, Document
 export async function getGlobalApplicationCommands(applicationId: Snowflake) {
 	return client.get(
@@ -26,7 +30,7 @@ export async function getGlobalApplicationCommands(applicationId: Snowflake) {
 }
 
 // TODO: Test, Document
-export async function postGlobalApplicationCommand(
+export async function createGlobalApplicationCommand(
 	applicationId: Snowflake,
 	command: RESTPostAPIApplicationCommandsJSONBody
 ) {
@@ -36,17 +40,17 @@ export async function postGlobalApplicationCommand(
 }
 
 // TODO: Test, Document
-export async function putGlobalApplicationCommands(
+export async function getGlobalApplicationCommand(
 	applicationId: Snowflake,
-	commands: RESTPutAPIApplicationCommandsJSONBody
+	commandId: Snowflake
 ) {
-	return client.put(Routes.applicationCommands(applicationId), {
-		body: commands,
-	}) as Promise<RESTPutAPIApplicationCommandsResult>;
+	return client.get(
+		Routes.applicationCommand(applicationId, commandId)
+	) as Promise<RESTGetAPIApplicationCommandResult>;
 }
 
 // TODO: Test, Document
-export async function patchGlobalApplicationCommand(
+export async function editGlobalApplicationCommand(
 	applicationId: Snowflake,
 	command: RESTPatchAPIApplicationCommandJSONBody & { id: Snowflake }
 ) {
@@ -64,6 +68,20 @@ export async function deleteGlobalApplicationCommand(
 }
 
 // TODO: Test, Document
+export async function bulkOverwriteGlobalApplicationCommands(
+	applicationId: Snowflake,
+	commands: RESTPutAPIApplicationCommandsJSONBody
+) {
+	return client.put(Routes.applicationCommands(applicationId), {
+		body: commands,
+	}) as Promise<RESTPutAPIApplicationCommandsResult>;
+}
+
+/**
+ * Guild Commands
+ */
+
+// TODO: Test, Document
 export async function getGuildApplicationCommands(
 	applicationId: Snowflake,
 	guildId: Snowflake
@@ -74,7 +92,7 @@ export async function getGuildApplicationCommands(
 }
 
 // TODO: Test, Document
-export async function postGuildApplicationCommand(
+export async function createGuildApplicationCommand(
 	applicationId: Snowflake,
 	guildId: Snowflake,
 	command: RESTPostAPIApplicationGuildCommandsJSONBody
@@ -85,7 +103,18 @@ export async function postGuildApplicationCommand(
 }
 
 // TODO: Test, Document
-export async function putGuildApplicationCommands(
+export async function getGuildApplicationCommand(
+	applicationId: Snowflake,
+	guildId: Snowflake,
+	commandId: Snowflake
+) {
+	return client.get(
+		Routes.applicationGuildCommand(applicationId, guildId, commandId)
+	) as Promise<RESTGetAPIApplicationGuildCommandResult>;
+}
+
+// TODO: Test, Document
+export async function editGuildApplicationCommands(
 	applicationId: Snowflake,
 	guildId: Snowflake,
 	commands: RESTPutAPIApplicationGuildCommandsJSONBody
@@ -93,20 +122,6 @@ export async function putGuildApplicationCommands(
 	return client.put(Routes.applicationGuildCommands(applicationId, guildId), {
 		body: commands,
 	}) as Promise<RESTPutAPIApplicationGuildCommandsResult>;
-}
-
-// TODO: Test, Document
-export async function patchGuildApplicationCommand(
-	applicationId: Snowflake,
-	guildId: Snowflake,
-	command: RESTPatchAPIApplicationGuildCommandJSONBody & { id: Snowflake }
-) {
-	return client.patch(
-		Routes.applicationGuildCommand(applicationId, guildId, command.id),
-		{
-			body: command,
-		}
-	) as Promise<RESTPatchAPIApplicationGuildCommandResult>;
 }
 
 // TODO: Test, Document
@@ -118,4 +133,15 @@ export async function deleteGuildApplicationCommand(
 	return client.delete(
 		Routes.applicationGuildCommand(applicationId, guildId, commandId)
 	);
+}
+
+// TODO: Test, Document
+export async function bulkOverwriteGuildApplicationCommands(
+	applicationId: Snowflake,
+	guildId: Snowflake,
+	commands: RESTPutAPIApplicationGuildCommandsJSONBody
+) {
+	return client.put(Routes.applicationGuildCommands(applicationId, guildId), {
+		body: commands,
+	}) as Promise<RESTPutAPIApplicationCommandsResult>;
 }

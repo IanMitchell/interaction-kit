@@ -10,7 +10,7 @@ import type { Snowflake } from "discord-snowflake";
 import { client } from "../client.js";
 
 // TODO: Test, Document
-export async function postInteractionFollowup(
+export async function createInteractionFollowup(
 	applicationId: Snowflake,
 	interactionToken: string,
 	data: RESTPostAPIInteractionFollowupJSONBody
@@ -20,8 +20,18 @@ export async function postInteractionFollowup(
 	}) as Promise<RESTPostAPIInteractionFollowupResult>;
 }
 
+// export async function getInteractionFollowup(
+// 	applicationId: Snowflake,
+// 	interactionToken: string,
+// 	messageId: Snowflake
+// ) {
+// 	return client.get(
+// 		Routes.webhook(applicationId, interactionToken, messageId)
+// 	) as Promise<RESTGetAPIInteractionFollowupResult>;
+// }
+
 // TODO: Test, Document
-export async function patchInteractionFollowup(
+export async function editInteractionFollowup(
 	applicationId: Snowflake,
 	interactionToken: string,
 	id: string,

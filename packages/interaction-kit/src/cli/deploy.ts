@@ -1,4 +1,4 @@
-import { putGlobalApplicationCommands } from "discord-api";
+import { bulkOverwriteGlobalApplicationCommands } from "discord-api";
 import type { RESTPutAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 import { getApplicationEntrypoint } from "../scripts.js";
 
@@ -18,6 +18,9 @@ export default async function command(argv?: string[]) {
 	const serializedCommands: RESTPutAPIApplicationCommandsJSONBody =
 		application.commands.map((command) => command.serialize());
 
-	await putGlobalApplicationCommands(application.id, serializedCommands);
+	await bulkOverwriteGlobalApplicationCommands(
+		application.id,
+		serializedCommands
+	);
 	process.exit(0);
 }
