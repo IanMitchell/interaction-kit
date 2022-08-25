@@ -17,7 +17,7 @@
 		"prettier": "turbo run prettier",
 		"lint": "turbo run lint",
 		"pretest": "npm run clean && npm run build",
-		"test": "NODE_OPTIONS='--es-module-specifier-resolution=node' vitest run",
+		"test": "vitest run",
 		"version": "npx changeset version",
 		"changeset": "npx changeset add",
 		"publish": "npm run build && npx changeset publish"

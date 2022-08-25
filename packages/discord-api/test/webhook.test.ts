@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
-import { client } from "../src/client";
-import { createWebhook } from "../src/routes/webhook";
+import { client } from "../src/client.js";
+import { createWebhook } from "../src/routes/webhook.js";
 
 describe("createWebhook", () => {
 	test("Accepts an optional audit log entry", async () => {
