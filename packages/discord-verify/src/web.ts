@@ -1,13 +1,13 @@
 import {
 	isValidRequest as verifyRequest,
 	PlatformAlgorithm,
-} from "./lib/verify";
+} from "./lib/verify.js";
 import type {
 	Request,
 	SubtleCrypto,
 	SubtleCryptoImportKeyAlgorithm,
-} from "./types";
-export { hexStringToBinary, PlatformAlgorithm, verify } from "./lib/verify";
+} from "./types/index.js";
+export { hexStringToBinary, PlatformAlgorithm, verify } from "./lib/verify.js";
 
 declare const crypto: {
 	subtle: SubtleCrypto;

@@ -11,5 +11,5 @@
  * https://github.com/cloudflare/workers-types/issues/195
  */
 
-export type { SubtleCrypto, SubtleCryptoImportKeyAlgorithm } from "./crypto";
-export type { Request } from "./request";
+export type { SubtleCrypto, SubtleCryptoImportKeyAlgorithm } from "./crypto.js";
+export type { Request } from "./request.js";

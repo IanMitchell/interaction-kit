@@ -4,9 +4,9 @@ import crypto from "node:crypto";
 import {
 	isValidRequest as verifyRequest,
 	PlatformAlgorithm,
-} from "./lib/verify";
-import type { Request, SubtleCryptoImportKeyAlgorithm } from "./types";
-export { hexStringToBinary, PlatformAlgorithm, verify } from "./lib/verify";
+} from "./lib/verify.js";
+import type { Request, SubtleCryptoImportKeyAlgorithm } from "./types/index.js";
+export { hexStringToBinary, PlatformAlgorithm, verify } from "./lib/verify.js";
 
 /**
  * Validates a request from Discord. If you are not on the latest

@@ -3,8 +3,8 @@
  */
 import crypto from "node:crypto";
 import { expect, test, vi } from "vitest";
-import { hexStringToBinary, isValidRequest } from "../src/node";
-import { encode, getKeyPair, getMockRequest } from "./helpers";
+import { hexStringToBinary, isValidRequest } from "../src/node.js";
+import { encode, getKeyPair, getMockRequest } from "./helpers.js";
 
 test("Uses Ed25519 by default", async () => {
 	// @ts-expect-error Crypto types are not defined yet

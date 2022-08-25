@@ -16,7 +16,7 @@
 		"lib": ["ES2021"],
 		"module": "UMD",
 		"target": "ES2021",
-		"moduleResolution": "Node"
+		"moduleResolution": "NodeNext"
 	},
 	"include": ["src/**/*.ts", "node.ts", "node.cts", "web.ts"],
 	"exclude": ["node_modules", "dist", "*.js"]

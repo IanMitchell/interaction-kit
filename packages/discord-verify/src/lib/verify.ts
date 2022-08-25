@@ -2,7 +2,7 @@ import type {
 	Request,
 	SubtleCrypto,
 	SubtleCryptoImportKeyAlgorithm,
-} from "../types";
+} from "../types/index.js";
 
 export declare class TextEncoder {
 	constructor();

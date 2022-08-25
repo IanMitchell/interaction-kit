@@ -4,8 +4,8 @@ import {
 	isValidRequest,
 	PlatformAlgorithm,
 	verify,
-} from "../src/web";
-import { encode, getKeyPair, getMockRequest, getSignature } from "./helpers";
+} from "../src/web.js";
+import { encode, getKeyPair, getMockRequest, getSignature } from "./helpers.js";
 
 test("Clones the request", async () => {
 	const { privateKey, publicKey } = await getKeyPair();
