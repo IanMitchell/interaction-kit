@@ -14,6 +14,7 @@ module.exports = {
 			"error",
 			{ prefer: "type-imports" },
 		],
+		"@typescript-eslint/consistent-type-definitions": 0,
 		"no-bitwise": 0,
 		"no-eq-null": 0,
 		"object-shorthand": ["error", "properties"],

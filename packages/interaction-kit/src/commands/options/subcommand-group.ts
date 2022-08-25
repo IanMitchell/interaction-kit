@@ -1,8 +1,8 @@
 import type { APIApplicationCommandSubcommandGroupOption } from "discord-api-types/v10";
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
-import type { BaseOptionArgs } from "./option";
-import { Option } from "./option";
-import type Subcommand from "./subcommand";
+import type { BaseOptionArgs } from "./option.js";
+import { Option } from "./option.js";
+import type Subcommand from "./subcommand.js";
 
 type SubcommandGroupArgs = {
 	subcommands: Subcommand[];

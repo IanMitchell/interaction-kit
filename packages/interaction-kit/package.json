@@ -30,13 +30,13 @@
 		"boxen": "7.0.0",
 		"chalk": "^5.0.1",
 		"discord-api": "0.0.2",
-		"discord-api-types": "0.36.1",
+		"discord-api-types": "^0.37.4",
 		"discord-edge-runner": "0.0.2",
 		"discord-request": "0.0.4",
 		"discord-snowflake": "2.0.0",
 		"discord-verify": "0.0.1",
 		"dotenv": "^16.0.1",
-		"ngrok": "^4.3.1",
+		"ngrok": "^4.3.3",
 		"supports-color": "9.2.2"
 	},
 	"repository": {

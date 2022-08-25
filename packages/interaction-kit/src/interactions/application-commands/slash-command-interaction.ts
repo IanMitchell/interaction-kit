@@ -6,13 +6,13 @@ import {
 	ApplicationCommandOptionType,
 	ApplicationCommandType,
 } from "discord-api-types/v10";
-import type Application from "../../application";
+import type Application from "../../application.js";
 import type {
 	InteractionKitCommand,
 	RequestBody,
 	ResponseHandler,
-} from "../../interfaces";
-import ApplicationCommandInteraction from "./application-command-interaction";
+} from "../../interfaces.js";
+import ApplicationCommandInteraction from "./application-command-interaction.js";
 
 export default class SlashCommandInteraction extends ApplicationCommandInteraction {
 	readonly #options: Map<

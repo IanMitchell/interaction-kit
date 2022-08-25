@@ -16,9 +16,9 @@ import {
 	MessageFlags,
 } from "discord-api-types/v10";
 import type { Snowflake } from "discord-snowflake";
-import type Application from "../../application";
-import { isActionRow } from "../../components/action-row";
-import Config from "../../config";
+import type Application from "../../application.js";
+import { isActionRow } from "../../components/action-row.js";
+import Config from "../../config.js";
 import type {
 	Interaction,
 	InteractionMessageModifiers,
@@ -26,9 +26,9 @@ import type {
 	RequestBody,
 	ResponseHandler,
 	SerializableComponent,
-} from "../../interfaces";
-import { ResponseStatus } from "../../requests/response";
-import type Embed from "../../structures/embed";
+} from "../../interfaces.js";
+import { ResponseStatus } from "../../requests/response.js";
+import type Embed from "../../structures/embed.js";
 
 export default class MessageComponentInteraction implements Interaction {
 	public readonly type = InteractionType.MessageComponent;
