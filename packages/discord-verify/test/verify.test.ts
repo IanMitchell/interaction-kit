@@ -34,6 +34,18 @@ test("Handles valid requests", async () => {
 	expect(valid).toBe(true);
 });
 
+test("Rejects non-hex signatures", async () => {
+	const { privateKey, publicKey } = await getKeyPair();
+	const request = await getMockRequest(privateKey, { hello: "world" });
+
+	const valid = await isValidRequest(
+		request,
+		publicKey + "1",
+		PlatformAlgorithm.VercelDev
+	);
+	expect(valid).toBe(false);
+});
+
 test("Custom validator verifies requests", async () => {
 	const { privateKey, publicKey } = await getKeyPair();
 	const request = await getMockRequest(privateKey, { hello: "world" });
