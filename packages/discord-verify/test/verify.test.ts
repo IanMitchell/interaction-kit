@@ -37,10 +37,12 @@ test("Handles valid requests", async () => {
 test("Rejects non-hex signatures", async () => {
 	const { privateKey, publicKey } = await getKeyPair();
 	const request = await getMockRequest(privateKey, { hello: "world" });
+	const key = request.headers.get("X-Signature-Ed25519") ?? "";
+	request.headers.set("X-Signature-Ed25519", key.slice(0, key.length - 1));
 
 	const valid = await isValidRequest(
 		request,
-		publicKey + "1",
+		publicKey,
 		PlatformAlgorithm.VercelDev
 	);
 	expect(valid).toBe(false);
