@@ -20,11 +20,9 @@ describe("Configuration", () => {
 });
 
 describe("HTTP Methods", () => {
-	let spy;
+	const spy = vi.fn();
 
 	beforeEach(() => {
-		spy = vi.fn();
-
 		vi.mock("../src/manager", () => {
 			const klass = class Manager {
 				queue: unknown;
