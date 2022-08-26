@@ -3,6 +3,9 @@ import { Manager } from "./manager.js";
 import type { RequestData, RequestOptions } from "./types.js";
 import { RequestMethod } from "./types.js";
 
+/**
+ *
+ */
 export default class Client {
 	#manager: Manager;
 
@@ -10,35 +13,61 @@ export default class Client {
 		this.#manager = new Manager(options);
 	}
 
+	/**
+	 *
+	 * @param token
+	 * @returns
+	 */
 	setToken(token: string) {
 		this.#manager.setToken(token);
 		return this;
 	}
 
+	/**
+	 *
+	 */
 	get userAgent() {
 		return this.#manager.config.userAgent;
 	}
 
+	/**
+	 *
+	 */
 	set userAgent(value: string) {
 		this.#manager.config.userAgent = value;
 	}
 
+	/**
+	 *
+	 */
 	get abortSignal() {
 		return this.#manager.shutdownSignal;
 	}
 
+	/**
+	 *
+	 */
 	set abortSignal(signal: AbortSignal | null | undefined) {
 		this.#manager.shutdownSignal = signal;
 	}
 
+	/**
+	 *
+	 */
 	get globalRequestsPerSecond() {
 		return this.#manager.config.globalRequestsPerSecond;
 	}
 
+	/**
+	 *
+	 */
 	set globalRequestsPerSecond(value: number) {
 		this.#manager.config.globalRequestsPerSecond = value;
 	}
 
+	/**
+	 *
+	 */
 	get api() {
 		return {
 			api: this.#manager.config.api,
@@ -47,6 +76,9 @@ export default class Client {
 		};
 	}
 
+	/**
+	 *
+	 */
 	set api({
 		api,
 		version,
@@ -61,6 +93,9 @@ export default class Client {
 		this.#manager.config.cdn = cdn;
 	}
 
+	/**
+	 *
+	 */
 	get requestConfig() {
 		return {
 			headers: this.#manager.config.headers,
@@ -69,6 +104,9 @@ export default class Client {
 		};
 	}
 
+	/**
+	 *
+	 */
 	set requestConfig({
 		headers,
 		retries,
@@ -83,6 +121,9 @@ export default class Client {
 		this.#manager.config.timeout = timeout;
 	}
 
+	/**
+	 *
+	 */
 	get sweepIntervals() {
 		return {
 			bucketSweepInterval: this.#manager.bucketSweepInterval,
@@ -90,6 +131,9 @@ export default class Client {
 		};
 	}
 
+	/**
+	 *
+	 */
 	set sweepIntervals({
 		bucketSweepInterval,
 		queueSweepInterval,
@@ -101,6 +145,9 @@ export default class Client {
 		this.#manager.queueSweepInterval = queueSweepInterval;
 	}
 
+	/**
+	 *
+	 */
 	get callbacks() {
 		return {
 			onBucketSweep: this.#manager.onBucketSweep,
@@ -110,6 +157,9 @@ export default class Client {
 		};
 	}
 
+	/**
+	 *
+	 */
 	set callbacks({
 		onBucketSweep,
 		onQueueSweep,
@@ -127,6 +177,12 @@ export default class Client {
 		this.#manager.onRequest = onRequest;
 	}
 
+	/**
+	 *
+	 * @param path
+	 * @param options
+	 * @returns
+	 */
 	async get(path: string, options: RequestOptions = {}) {
 		return this.#request({
 			path,
@@ -135,6 +191,12 @@ export default class Client {
 		});
 	}
 
+	/**
+	 *
+	 * @param path
+	 * @param options
+	 * @returns
+	 */
 	async post(path: string, options: RequestOptions = {}) {
 		return this.#request({
 			path,
@@ -143,6 +205,12 @@ export default class Client {
 		});
 	}
 
+	/**
+	 *
+	 * @param path
+	 * @param options
+	 * @returns
+	 */
 	async put(path: string, options: RequestOptions = {}) {
 		return this.#request({
 			path,
@@ -151,6 +219,12 @@ export default class Client {
 		});
 	}
 
+	/**
+	 *
+	 * @param path
+	 * @param options
+	 * @returns
+	 */
 	async patch(path: string, options: RequestOptions = {}) {
 		return this.#request({
 			path,
@@ -159,6 +233,12 @@ export default class Client {
 		});
 	}
 
+	/**
+	 *
+	 * @param path
+	 * @param options
+	 * @returns
+	 */
 	async delete(path: string, options: RequestOptions = {}) {
 		return this.#request({
 			path,
@@ -167,6 +247,11 @@ export default class Client {
 		});
 	}
 
+	/**
+	 *
+	 * @param data
+	 * @returns
+	 */
 	async #request(data: RequestData) {
 		return this.#manager.queue(data);
 	}
