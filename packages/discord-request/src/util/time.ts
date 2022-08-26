@@ -11,7 +11,6 @@ export async function sleep(
 ): Promise<void> {
 	console.log("zzz");
 	return new Promise((resolve, reject) => {
-		console.log("timeout setup");
 		// Create the sleep loop
 		const ref = setTimeout(() => {
 			cleanup();

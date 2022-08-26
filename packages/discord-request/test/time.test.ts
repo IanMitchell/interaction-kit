@@ -8,11 +8,20 @@ test("sleep can be aborted", async () => {
 	const start = performance.now();
 
 	const promise = sleep(5000, controller.signal);
-	console.log("Aborting");
 	controller.abort();
 	await expect(promise).rejects.toThrowError("aborted");
 
 	const end = performance.now();
 
 	expect(start - end).toBeLessThan(100);
+});
+
+test("sleep resolves successfully", async () => {
+	const start = performance.now();
+	const promise = sleep(200);
+	await expect(promise).resolves.toBe(undefined);
+	const end = performance.now();
+
+	expect(end - start).toBeLessThan(250);
+	expect(end - start).toBeGreaterThan(150);
 });
