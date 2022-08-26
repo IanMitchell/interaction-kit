@@ -7,9 +7,11 @@ export const ONE_DAY = 24 * ONE_HOUR;
 
 export async function sleep(
 	timeout: number,
-	abort?: AbortSignal | null
+	signal?: AbortSignal | null
 ): Promise<void> {
-	return new Promise((resolve) => {
+	console.log("zzz");
+	return new Promise((resolve, reject) => {
+		console.log("timeout setup");
 		// Create the sleep loop
 		const ref = setTimeout(() => {
 			cleanup();
@@ -19,13 +21,14 @@ export async function sleep(
 		// Handle shutdown signals
 		const cleanup = () => {
 			clearTimeout(ref);
-			abort?.removeEventListener("signal", shutdown);
+			signal?.removeEventListener("abort", shutdown);
 		};
 
 		const shutdown = () => {
 			cleanup();
+			reject(new Error("aborted"));
 		};
 
-		abort?.addEventListener("signal", shutdown);
+		signal?.addEventListener("abort", shutdown);
 	});
 }
