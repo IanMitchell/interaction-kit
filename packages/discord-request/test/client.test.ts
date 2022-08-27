@@ -28,7 +28,7 @@ describe("HTTP Methods", () => {
 				queue: unknown;
 
 				constructor() {
-					this.queue = spy;
+					this.queue = vi.fn();
 				}
 			};
 
