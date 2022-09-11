@@ -9,7 +9,6 @@ export async function sleep(
 	timeout: number,
 	signal?: AbortSignal | null
 ): Promise<void> {
-	console.log("zzz");
 	return new Promise((resolve, reject) => {
 		// Create the sleep loop
 		const ref = setTimeout(() => {

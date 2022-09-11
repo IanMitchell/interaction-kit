@@ -1,10 +1,71 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 import Client from "../src/client.js";
 
-describe("Configuration", () => {
-	test.todo("setToken");
+beforeAll(() => {
+	vi.mock("../src/manager", () => {
+		// TODO: There has to be a better way of doing this
+		globalThis.CONSTRUCTOR_ARGS = null;
+		globalThis.QUEUE_SPY = vi.fn();
+		globalThis.TOKEN_SPY = vi.fn();
 
-	test.todo("userAgent");
+		const klass = class Manager {
+			queue: unknown;
+			setToken: unknown;
+			config: Record<string, unknown>;
+
+			constructor(args: unknown) {
+				globalThis.CONSTRUCTOR_ARGS = args;
+				this.config = {};
+
+				this.queue = globalThis.QUEUE_SPY;
+				this.setToken = globalThis.TOKEN_SPY;
+			}
+		};
+
+		return { Manager: klass };
+	});
+});
+
+afterEach(() => {
+	vi.clearAllMocks();
+});
+
+describe("Configuration", () => {
+	test("Constructor parameters are passed to Manager", () => {
+		const client = new Client({
+			api: "api",
+			version: 2,
+			cdn: "cdn",
+			headers: { key: "value" },
+			userAgent: "userAgent",
+			retries: 3,
+			timeout: 1,
+			globalRequestsPerSecond: 0,
+		});
+
+		expect(globalThis.CONSTRUCTOR_ARGS).toEqual({
+			api: "api",
+			version: 2,
+			cdn: "cdn",
+			headers: { key: "value" },
+			userAgent: "userAgent",
+			retries: 3,
+			timeout: 1,
+			globalRequestsPerSecond: 0,
+		});
+	});
+
+	test("setToken", () => {
+		const client = new Client();
+		client.setToken("token");
+		expect(globalThis.TOKEN_SPY).toHaveBeenCalledWith("token");
+	});
+
+	test("userAgent", () => {
+		const client = new Client();
+		client.userAgent = "test UA";
+		expect(client.userAgent).toEqual("test UA");
+	});
 
 	test.todo("abortSignal");
 
@@ -20,34 +81,13 @@ describe("Configuration", () => {
 });
 
 describe("HTTP Methods", () => {
-	beforeEach(() => {
-		vi.mock("../src/manager", () => {
-			// TODO: There has to be a better way of doing this
-			globalThis.SPY = vi.fn();
-
-			const klass = class Manager {
-				queue: unknown;
-
-				constructor() {
-					this.queue = globalThis.SPY;
-				}
-			};
-
-			return { Manager: klass };
-		});
-	});
-
-	afterEach(() => {
-		vi.clearAllMocks();
-	});
-
 	test("Handles GET requests", async () => {
 		const client = new Client();
 		await client.get("/get", {
 			query: new URLSearchParams([["key", "value"]]),
 		});
 
-		expect(globalThis.SPY).toHaveBeenCalledWith({
+		expect(globalThis.QUEUE_SPY).toHaveBeenCalledWith({
 			method: "GET",
 			path: "/get",
 			query: new URLSearchParams([["key", "value"]]),
@@ -60,7 +100,7 @@ describe("HTTP Methods", () => {
 			body: { key: "value" },
 		});
 
-		expect(globalThis.SPY).toHaveBeenCalledWith({
+		expect(globalThis.QUEUE_SPY).toHaveBeenCalledWith({
 			method: "POST",
 			path: "/post",
 			body: { key: "value" },
@@ -73,7 +113,7 @@ describe("HTTP Methods", () => {
 			body: { key: "value" },
 		});
 
-		expect(globalThis.SPY).toHaveBeenCalledWith({
+		expect(globalThis.QUEUE_SPY).toHaveBeenCalledWith({
 			method: "PUT",
 			path: "/put",
 			body: { key: "value" },
@@ -86,7 +126,7 @@ describe("HTTP Methods", () => {
 			body: { key: "value" },
 		});
 
-		expect(globalThis.SPY).toHaveBeenCalledWith({
+		expect(globalThis.QUEUE_SPY).toHaveBeenCalledWith({
 			method: "PATCH",
 			path: "/patch",
 			body: { key: "value" },
@@ -99,7 +139,7 @@ describe("HTTP Methods", () => {
 			body: { key: "value" },
 		});
 
-		expect(globalThis.SPY).toHaveBeenCalledWith({
+		expect(globalThis.QUEUE_SPY).toHaveBeenCalledWith({
 			method: "DELETE",
 			path: "/delete",
 			body: { key: "value" },
