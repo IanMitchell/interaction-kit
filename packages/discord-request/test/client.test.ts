@@ -20,15 +20,16 @@ describe("Configuration", () => {
 });
 
 describe("HTTP Methods", () => {
-	const spy = vi.fn();
-
 	beforeEach(() => {
 		vi.mock("../src/manager", () => {
+			// TODO: There has to be a better way of doing this
+			globalThis.SPY = vi.fn();
+
 			const klass = class Manager {
 				queue: unknown;
 
 				constructor() {
-					this.queue = vi.fn();
+					this.queue = globalThis.SPY;
 				}
 			};
 
@@ -46,18 +47,62 @@ describe("HTTP Methods", () => {
 			query: new URLSearchParams([["key", "value"]]),
 		});
 
-		expect(spy).toHaveBeenCalledWith(
-			"/get",
-			{ query: new URLSearchParams([["key", "value"]]) },
-			"GET"
-		);
+		expect(globalThis.SPY).toHaveBeenCalledWith({
+			method: "GET",
+			path: "/get",
+			query: new URLSearchParams([["key", "value"]]),
+		});
 	});
 
-	test.todo("Handles POST requests");
+	test("Handles POST requests", async () => {
+		const client = new Client();
+		await client.post("/post", {
+			body: { key: "value" },
+		});
 
-	test.todo("Handles PUT requests");
+		expect(globalThis.SPY).toHaveBeenCalledWith({
+			method: "POST",
+			path: "/post",
+			body: { key: "value" },
+		});
+	});
 
-	test.todo("Handles PATCH requests");
+	test("Handles PUT requests", async () => {
+		const client = new Client();
+		await client.put("/put", {
+			body: { key: "value" },
+		});
 
-	test.todo("Handles DELETE requests");
+		expect(globalThis.SPY).toHaveBeenCalledWith({
+			method: "PUT",
+			path: "/put",
+			body: { key: "value" },
+		});
+	});
+
+	test("Handles PATCH requests", async () => {
+		const client = new Client();
+		await client.patch("/patch", {
+			body: { key: "value" },
+		});
+
+		expect(globalThis.SPY).toHaveBeenCalledWith({
+			method: "PATCH",
+			path: "/patch",
+			body: { key: "value" },
+		});
+	});
+
+	test("Handles DELETE requests", async () => {
+		const client = new Client();
+		await client.delete("/delete", {
+			body: { key: "value" },
+		});
+
+		expect(globalThis.SPY).toHaveBeenCalledWith({
+			method: "DELETE",
+			path: "/delete",
+			body: { key: "value" },
+		});
+	});
 });
