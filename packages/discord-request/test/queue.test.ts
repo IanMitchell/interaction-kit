@@ -36,6 +36,29 @@ describe("Requests", () => {
 	test.todo("Returns JSON Response");
 });
 
+const mockFetchFailResponse = (status: number, statusText: string) => {
+	return new Response(
+		JSON.stringify({ message: `${status}: ${statusText}`, code: 0 }),
+		{
+			status,
+			statusText,
+			headers: {
+				"Content-Type": "application/json",
+			},
+		}
+	);
+};
+
+const mockFetchSuccessResponse = (body: any) => {
+	return new Response(JSON.stringify(body), {
+		status: 200,
+		statusText: "OK",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
+};
+
 describe("Error Handling", () => {
 	test.todo("Retries Timeouts");
 
@@ -46,28 +69,10 @@ describe("Error Handling", () => {
 			"fetch",
 			vi.fn(() => {
 				// throw the first request
-				if (requestCounts++ === 0) {
-					return new Response(
-						JSON.stringify({ message: "401: Unauthorized", code: 0 }),
-						{
-							status: 401,
-							statusText: "Unauthorized",
-							headers: {
-								"Content-Type": "application/json",
-							},
-						}
-					);
-				}
-				return new Response(
-					JSON.stringify({ url: "wss://gateway.discord.gg" }),
-					{
-						status: 200,
-						statusText: "OK",
-						headers: {
-							"Content-Type": "application/json",
-						},
-					}
-				);
+				if (requestCounts++ === 0)
+					return mockFetchFailResponse(401, "Unauthorized");
+
+				return mockFetchSuccessResponse({ url: "wss://gateway.discord.gg" });
 			})
 		);
 
@@ -96,7 +101,65 @@ describe("Error Handling", () => {
 
 	test.todo("Handles Validation Errors");
 
-	test.todo("Handles Auth Errors");
+	test("Handles Auth Errors", async () => {
+		const manager = new Manager({});
+
+		// mock fetch to always return an unauthorized error
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => mockFetchFailResponse(401, "Unauthorized"))
+		);
+
+		// expect an error to be thrown when no token is set and auth is true
+		await expect(
+			manager.queue({
+				method: RequestMethod.Get,
+				path: Routes.channel("839006448057974826"),
+			})
+		).rejects.toThrow();
+
+		manager.setToken("token");
+
+		// expect an error to be thrown when the server returns a 401
+		await expect(
+			manager.queue({
+				method: RequestMethod.Get,
+				path: Routes.channel("839006448057974826"),
+			})
+		).rejects.toThrow();
+
+		// mock fetch to always return a 200
+		vi.stubGlobal(
+			"fetch",
+			vi.fn(() => mockFetchSuccessResponse({ success: true }))
+		);
+
+		// expect token to have been reset after a request failed with a 401
+		await expect(
+			manager.queue({
+				method: RequestMethod.Get,
+				path: Routes.channel("839006448057974826"),
+			})
+		).rejects.toThrow();
+
+		// expect no error to be thrown when auth is false
+		await expect(
+			manager.queue({
+				method: RequestMethod.Get,
+				path: Routes.gateway(),
+				auth: false,
+			})
+		).resolves.not.toThrow();
+
+		// expect no error to be thrown when auth is true and token is valid
+		manager.setToken("token");
+		await expect(
+			manager.queue({
+				method: RequestMethod.Get,
+				path: Routes.channel("839006448057974826"),
+			})
+		).resolves.not.toThrow();
+	});
 });
 
 describe("Callbacks", () => {
