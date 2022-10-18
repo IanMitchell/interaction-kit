@@ -1,8 +1,20 @@
 import { describe, expect, test, vi } from "vitest";
 import { client } from "../src/client.js";
 import { createWebhook } from "../src/routes/webhook.js";
+import { runAuditLogTest } from "./helpers/headers.js";
 
 describe("createWebhook", () => {
+	test("Accepts an optional audit log entry", async () => {
+		await runAuditLogTest("post", async () => {
+			await createWebhook(
+				"123",
+				{ name: "Test Webhook", avatar: "avatar.png" },
+				"Vitest Log"
+			);
+			return "Vitest Log";
+		});
+	});
+
 	test("Accepts an optional audit log entry", async () => {
 		const spy = vi.spyOn(client, "post").mockImplementation(async () => "");
 
