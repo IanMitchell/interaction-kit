@@ -26,6 +26,11 @@ export type APIError =
 	| { [k: string]: APIError }
 	| string;
 
+/**
+ * Differentiates a Discord error from an OAuth error
+ * @param error - the body text of the error to check
+ * @returns whether the error is a Discord error
+ */
 export function isDiscordError(error: ErrorBody): error is DiscordErrorBody {
 	return "code" in error;
 }
