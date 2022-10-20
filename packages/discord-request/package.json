@@ -25,7 +25,7 @@
 		"node": ">=18"
 	},
 	"dependencies": {
-		"discord-error": "1.0.0",
+		"discord-error": "2.0.0",
 		"discord-snowflake": "2.0.0",
 		"debug": "^4.3.4"
 	}
