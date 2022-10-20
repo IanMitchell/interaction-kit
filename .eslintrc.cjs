@@ -3,7 +3,7 @@ module.exports = {
 	env: {
 		node: true,
 	},
-	plugins: ["@typescript-eslint"],
+	plugins: ["@typescript-eslint", "eslint-plugin-tsdoc"],
 	extends: ["xo", "xo-typescript", "prettier"],
 	rules: {
 		"@typescript-eslint/ban-types": 0,
@@ -23,5 +23,6 @@ module.exports = {
 		"no-await-in-loop": 0,
 		"max-params": 0,
 		"complexity": 0,
+		"tsdoc/syntax": "error",
 	},
 };

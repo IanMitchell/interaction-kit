@@ -1,5 +1,5 @@
 /**
- * These are all derived from @cloudflare/worker-types:
+ * These are all derived from `@cloudflare/worker-types`:
  * https://github.com/cloudflare/workers-types
  *
  * Since this package can exist in both Node and Web environments, our types

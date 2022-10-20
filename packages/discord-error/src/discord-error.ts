@@ -37,7 +37,7 @@ export function isDiscordError(error: ErrorBody): error is DiscordErrorBody {
 
 /**
  * Determines whether the value is a group of errors
- * @param error The record or piece of the record returned by the Discord API to check
+ * @param error - The record or piece of the record returned by the Discord API to check
  * @returns whether the value contains a group of errors
  */
 export function isErrorGroup(error: APIError): error is ErrorGroup {
@@ -50,7 +50,7 @@ export function isErrorGroup(error: APIError): error is ErrorGroup {
 
 /**
  * Determines whether the value is an error value
- * @param error The record or piece of the record returned by the Discord API to check
+ * @param error - The record or piece of the record returned by the Discord API to check
  * @returns whether the value is an error value
  */
 export function isErrorField(error: APIError): error is ErrorField {
@@ -63,7 +63,7 @@ export function isErrorField(error: APIError): error is ErrorField {
 
 /**
  * Parses the errors returned by the Discord API into an error message string
- * @param error The record returned by the Discord API
+ * @param error - The record returned by the Discord API
  * @returns The parsed error message
  */
 export function getMessage(error: ErrorBody) {
@@ -160,10 +160,10 @@ export class DiscordError extends Error {
 
 	/**
 	 * Creates a new DiscordError
-	 * @param request The request that caused the error
-	 * @param response The error response
-	 * @param code The error code
-	 * @param raw The raw JSON body of the error response
+	 * @param request - The request that caused the error
+	 * @param response - The error response
+	 * @param code - The error code
+	 * @param raw - The raw JSON body of the error response
 	 */
 	constructor(
 		request: Request,
