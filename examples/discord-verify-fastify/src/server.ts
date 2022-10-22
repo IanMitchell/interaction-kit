@@ -57,7 +57,10 @@ server.post(
 		}
 
 		console.log("Hello world");
-		await reply.send({ content: "Hello World!", flags: 1 << 6 });
+		await reply.send({
+			type: InteractionResponseType.ChannelMessageWithSource,
+			data: { content: "Hello World!", flags: 1 << 6 }
+		});
 	}
 );
 
