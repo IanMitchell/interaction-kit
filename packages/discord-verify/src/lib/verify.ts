@@ -33,7 +33,7 @@ function hexCharToBinary(char: string) {
 
 /**
  * Helper method that takes in a hex string and converts it to its binary representation.
- * @param key Hex string to convert to binary
+ * @param key - Hex string to convert to binary
  * @returns The binary form of a hex string
  */
 export function hexStringToBinary(key: string | null) {
@@ -93,8 +93,8 @@ export const PlatformAlgorithm = {
 		public: true,
 	},
 	/**
-	 * Despite being documented as 	{ name: "eddsa", namedCurve: "ed25519"} or
-	 * { name: "ecdsa", namedCurve: "ed25519" }, Vercel uses the same format as
+	 * Despite being documented as 	`{ name: "eddsa", namedCurve: "ed25519"}` or
+	 * `{ name: "ecdsa", namedCurve: "ed25519" }`, Vercel uses the same format as
 	 * Cloudflare in Production (despite Dev using documented formats)
 	 */
 	VercelProd: {
@@ -112,10 +112,10 @@ export const PlatformAlgorithm = {
 /**
  * Validates a request from Discord. The request should not be consumed prior
  * to calling this function.
- * @param request Request to verify. This should not have been consumed yet.
- * @param publicKey The application's public key
- * @param subtleCrypto The crypto engine to use
- * @param algorithm The name of the crypto algorithm to use
+ * @param request - Request to verify. This should not have been consumed yet.
+ * @param publicKey - The application's public key
+ * @param subtleCrypto - The crypto engine to use
+ * @param algorithm - The name of the crypto algorithm to use
  * @returns Whether the request is valid or not
  */
 export async function isValidRequest(
@@ -134,12 +134,12 @@ export async function isValidRequest(
 
 /**
  * Determines if a request is valid or not based on provided values
- * @param rawBody The raw body of the request
- * @param signature The signature header of the request
- * @param timestamp The timestamp header of the request
- * @param publicKey The application's public key
- * @param subtleCrypto The crypto engine to use
- * @param algorithm The name of the crypto algorithm to use
+ * @param rawBody - The raw body of the request
+ * @param signature - The signature header of the request
+ * @param timestamp - The timestamp header of the request
+ * @param publicKey - The application's public key
+ * @param subtleCrypto - The crypto engine to use
+ * @param algorithm - The name of the crypto algorithm to use
  * @returns Whether the request is valid or not
  */
 export async function verify(
