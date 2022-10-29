@@ -1,6 +1,6 @@
 import express from "express";
 
-import getMiddleware from "../src/middleware/express.js"
+import verifyInteraction from "../src/middleware/express.js"
 
 import { afterEach, beforeAll, expect, test, vi } from "vitest";
 import { getKeyPair, getSignature } from "./helpers.js";
@@ -13,7 +13,7 @@ const spyEndpoint = vi.fn((req, res) => {
 });
 
 beforeAll(async () => {
-	app.post("/", getMiddleware(publicKey), spyEndpoint);
+	app.post("/", verifyInteraction(publicKey), spyEndpoint);
 	app.listen(8080);
 });
 
@@ -21,12 +21,12 @@ afterEach(async () => {
 	vi.clearAllMocks();
 });
 
-test("getMiddleware returns a function", async () => {
-	const middleware = getMiddleware(publicKey);
+test("verifyInteraction returns a function", async () => {
+	const middleware = verifyInteraction(publicKey);
 	expect(middleware).toBeTypeOf('function');
 });
 
-test("Middleware calls next on success", async () => {
+test("verifyInteraction calls next on success", async () => {
 	const body = JSON.stringify({"type":1});
 	const { timestamp, signature } = await getSignature(privateKey, body);
 
@@ -42,7 +42,7 @@ test("Middleware calls next on success", async () => {
 	expect(spyEndpoint).toHaveBeenCalled();
 });
 
-test("Middleware returns 401 on error", async () => {
+test("verifyInteraction returns 401 on error", async () => {
 	const body = JSON.stringify({"type":1});
 	const { timestamp, signature } = await getSignature(privateKey, body);
 

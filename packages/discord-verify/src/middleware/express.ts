@@ -17,7 +17,7 @@ import type { SubtleCryptoImportKeyAlgorithm } from "../types/index.js";
  * @param algorithm - The name of the crypto algorithm to use
  * @returns An express.js middleware function that verifies a request from Discord.
  */
-export default function getMiddleware(
+export default function verifyInteraction(
 	publicKey: string,
 	algorithm: SubtleCryptoImportKeyAlgorithm | string = PlatformAlgorithm.NewNode
 ) {
