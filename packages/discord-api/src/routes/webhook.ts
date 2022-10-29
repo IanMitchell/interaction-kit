@@ -7,11 +7,11 @@ import type { Snowflake } from "discord-snowflake";
 import { client } from "../client.js";
 
 /**
- * Creates a Channel Webhook
- * @link https://discord.com/developers/docs/resources/webhook#create-webhook
- * @param channelId The Channel to create the webhook in
- * @param data The Webhook name and avatar
- * @param auditLogReason An optional entry to add to the audit log
+ * Creates a Channel Webhook.
+ * {@link https://discord.com/developers/docs/resources/webhook#create-webhook | Discord Documentation}
+ * @param channelId - The Channel to create the webhook in
+ * @param data - The Webhook name and avatar
+ * @param auditLogReason - An optional entry to add to the audit log
  * @returns The created Webhook
  */
 export async function createWebhook(
