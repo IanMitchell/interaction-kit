@@ -1,6 +1,8 @@
 import debug from "debug";
 import { Queue } from "./queue.js";
+import RedisStorageDriver from "./storage-drivers/redis.js";
 import type { RateLimitData, RequestData, Route } from "./types.js";
+import { StorageDriver } from "./types.js";
 import { getRouteInformation, getRouteKey } from "./util/routes.js";
 import { OFFSET, ONE_DAY, ONE_SECOND, sleep } from "./util/time.js";
 
@@ -40,7 +42,9 @@ type Cache = {
 	bucketSweepInterval?: number;
 };
 
-export type ManagerArgs = Partial<Config> & Cache & Callbacks;
+export type ManagerArgs = Partial<Config> &
+	Cache &
+	Callbacks & { storageDriver?: StorageDriver };
 
 export class Manager {
 	#token: string | null = null;
@@ -48,8 +52,6 @@ export class Manager {
 	config: Config;
 
 	globalDelay: Promise<void> | null = null;
-	globalReset = -1;
-	globalRequestCounter: number;
 
 	buckets: Map<string, Bucket>;
 	queues: Map<string, Queue>;
@@ -64,6 +66,8 @@ export class Manager {
 	onQueueSweep: Callbacks["onQueueSweep"] | undefined;
 	onRateLimit: Callbacks["onRateLimit"] | undefined;
 	onRequest: Callbacks["onRequest"] | undefined;
+
+	storage: StorageDriver;
 
 	constructor({
 		// Request Config
@@ -83,6 +87,7 @@ export class Manager {
 		queueSweepInterval,
 		onRateLimit,
 		onRequest,
+		storageDriver,
 	}: ManagerArgs) {
 		this.config = {
 			api: api ?? "https://discord.com/api",
@@ -98,7 +103,11 @@ export class Manager {
 		this.buckets = new Map();
 		this.queues = new Map();
 
-		this.globalRequestCounter = this.config.globalRequestsPerSecond;
+		this.storage =
+			storageDriver ??
+			new RedisStorageDriver({ url: "redis://localhost:6379" });
+
+		// this.globalRequestCounter = this.config.globalRequestsPerSecond;
 
 		this.bucketSweepInterval = bucketSweepInterval ?? 0;
 		this.queueSweepInterval = queueSweepInterval ?? 0;
@@ -113,8 +122,28 @@ export class Manager {
 		this.startSweepers();
 	}
 
-	get globalTimeout() {
-		return this.globalReset + OFFSET - Date.now();
+	async getGlobalReset() {
+		return await this.storage.get("globalReset", -1);
+	}
+
+	async getGlobalTimeout() {
+		return (await this.getGlobalReset()) + OFFSET - Date.now();
+	}
+
+	async setGlobalReset(reset: number) {
+		await this.storage.set("globalReset", reset);
+	}
+
+	async getGlobalRequestCounter() {
+		return await this.storage.get("globalRequestCounter", 0);
+	}
+
+	async setGlobalRequestCounter(counter: number) {
+		await this.storage.set("globalRequestCounter", counter);
+	}
+
+	async decrementGlobalRequestCounter() {
+		await this.storage.increment("globalRequestCounter", -1);
 	}
 
 	startSweepers() {
@@ -166,8 +195,11 @@ export class Manager {
 		clearInterval(this.#queueSweeper);
 	}
 
-	isGlobalLimited() {
-		return this.globalRequestCounter <= 0 && Date.now() < this.globalReset;
+	async isGlobalLimited() {
+		return (
+			(await this.getGlobalRequestCounter()) <= 0 &&
+			Date.now() < (await this.getGlobalReset())
+		);
 	}
 
 	#startBucketSweep() {
@@ -199,11 +231,12 @@ export class Manager {
 			return;
 		}
 
-		this.#queueSweeper = setInterval(() => {
+		this.#queueSweeper = setInterval(async () => {
 			const swept = new Map<string, Queue>();
 
+			// TODO: parallelize this
 			for (const [key, queue] of this.queues.entries()) {
-				if (queue.inactive) {
+				if (await queue.isInactive()) {
 					log(`Swept the ${key} queue`);
 					swept.set(key, queue);
 					this.queues.delete(key);

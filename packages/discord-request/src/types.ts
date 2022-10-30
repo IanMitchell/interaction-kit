@@ -56,3 +56,15 @@ export interface RateLimitData {
 	global: boolean;
 	method: RequestMethod;
 }
+
+// TODO: implement getMany and setMany.
+// I feel like the T typing here is a bit messy as well,
+// since redis only seems to return strings :/
+// workaroung for now is T instanceof Number ? Number(value) : value
+// in the RedisStorageDriver but this is not ideal
+// - leah 30 oct 2022
+export interface StorageDriver {
+	get<T>(key: string, fallback?: T): Promise<T>;
+	set(key: string, value: any, ttl?: number): Promise<void>;
+	increment(key: string, value?: number): Promise<void>;
+}

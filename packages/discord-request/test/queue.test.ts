@@ -1,8 +1,7 @@
 import { DiscordError } from "discord-error";
-import { Routes } from "discord.js";
 import { describe, expect, test, vi } from "vitest";
-import { Manager } from "../src/manager";
-import { RequestMethod } from "../src/types";
+import { Manager } from "../src/manager.js";
+import { RequestMethod } from "../src/types.js";
 
 describe("Rate Limits", () => {
 	test.todo("Throttles Global Rate Limited requests");
@@ -82,7 +81,7 @@ describe("Error Handling", () => {
 		try {
 			await manager.queue({
 				method: RequestMethod.Get,
-				path: Routes.channel("839006448057974826"),
+				path: "/channels/839006448057974826",
 			});
 		} catch (error) {
 			expect(error).toBeInstanceOf(DiscordError);
@@ -91,7 +90,7 @@ describe("Error Handling", () => {
 		expect(
 			await manager.queue({
 				method: RequestMethod.Get,
-				path: Routes.gateway(),
+				path: "/gateway",
 				auth: false,
 			})
 		).toHaveProperty("url");
@@ -114,7 +113,7 @@ describe("Error Handling", () => {
 		await expect(
 			manager.queue({
 				method: RequestMethod.Get,
-				path: Routes.channel("839006448057974826"),
+				path: "/channels/839006448057974826",
 			})
 		).rejects.toThrow();
 
@@ -124,7 +123,7 @@ describe("Error Handling", () => {
 		await expect(
 			manager.queue({
 				method: RequestMethod.Get,
-				path: Routes.channel("839006448057974826"),
+				path: "/channels/839006448057974826",
 			})
 		).rejects.toThrow();
 
@@ -138,7 +137,7 @@ describe("Error Handling", () => {
 		await expect(
 			manager.queue({
 				method: RequestMethod.Get,
-				path: Routes.channel("839006448057974826"),
+				path: "/channels/839006448057974826",
 			})
 		).rejects.toThrow();
 
@@ -146,7 +145,7 @@ describe("Error Handling", () => {
 		await expect(
 			manager.queue({
 				method: RequestMethod.Get,
-				path: Routes.gateway(),
+				path: "/gateway",
 				auth: false,
 			})
 		).resolves.not.toThrow();
@@ -156,7 +155,7 @@ describe("Error Handling", () => {
 		await expect(
 			manager.queue({
 				method: RequestMethod.Get,
-				path: Routes.channel("839006448057974826"),
+				path: "/channels/839006448057974826",
 			})
 		).resolves.not.toThrow();
 	});

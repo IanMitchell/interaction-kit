@@ -11,10 +11,6 @@ import { OFFSET, ONE_HOUR, sleep } from "./util/time.js";
 const log = debug("discord-request:queue");
 
 export class Queue {
-	lastRequest = -1;
-	reset = -1;
-	remaining = 1;
-	limit = Infinity;
 	manager: Manager;
 	id: string;
 
@@ -33,16 +29,28 @@ export class Queue {
 		this.#shutdownSignal = shutdownSignal;
 	}
 
-	get inactive() {
-		return Date.now() > this.lastRequest + 2 * ONE_HOUR;
+	async isInactive() {
+		const lastRequest = await this.manager.storage.get(
+			`${this.id}:lastRequest`,
+			-1
+		);
+		return Date.now() > lastRequest + 2 * ONE_HOUR;
 	}
 
-	isLocalLimited() {
-		return this.remaining <= 0 && this.reset > Date.now();
+	async isLocalLimited() {
+		// fetch remaining and reset from storage in parallel
+		const [remaining, reset] = await Promise.all([
+			this.manager.storage.get(`${this.id}:remaining`, 1),
+			this.manager.storage.get(`${this.id}:reset`, -1),
+		]);
+
+		return remaining <= 0 && reset > Date.now();
 	}
 
-	getResetDelay() {
-		return this.reset + OFFSET - Date.now();
+	async getResetDelay() {
+		const reset = await this.manager.storage.get(`${this.id}:reset`, -1);
+
+		return reset + OFFSET - Date.now();
 	}
 
 	async add(route: Route, resource: string, init: RequestInit) {
@@ -67,13 +75,16 @@ export class Queue {
 		await this.#rateLimitThrottle();
 
 		// As the request goes out, update the global request counter
-		if (this.manager.globalReset < Date.now()) {
-			this.manager.globalReset = Date.now() + 1000;
-			this.manager.globalRequestCounter =
-				this.manager.config.globalRequestsPerSecond;
+		if ((await this.manager.getGlobalReset()) < Date.now()) {
+			await Promise.all([
+				this.manager.setGlobalReset(Date.now() + 1000),
+				this.manager.setGlobalRequestCounter(
+					this.manager.config.globalRequestsPerSecond
+				),
+			]);
 		}
 
-		this.manager.globalRequestCounter -= 1;
+		await this.manager.decrementGlobalRequestCounter();
 
 		// Setup the timeout signal
 		const signal = new AbortController();
@@ -122,11 +133,21 @@ export class Queue {
 		const limit = response.headers.get("X-RateLimit-Limit");
 		const remaining = response.headers.get("X-RateLimit-Remaining");
 
-		this.reset = reset
-			? 1000 * Number(reset) + Date.now() + OFFSET
-			: Date.now();
-		this.limit = limit ? Number(limit) : Infinity;
-		this.remaining = remaining ? Number(remaining) : 1;
+		// store reset, limit, and reamining for this bucket in parallel
+		await Promise.all([
+			this.manager.storage.set(
+				`${this.id}:reset`,
+				reset ? 1000 * Number(reset) + Date.now() + OFFSET : Date.now()
+			),
+			this.manager.storage.set(
+				`${this.id}:limit`,
+				limit ? Number(limit) : Infinity
+			),
+			this.manager.storage.set(
+				`${this.id}:remaining`,
+				remaining ? Number(remaining) : 1
+			),
+		]);
 
 		if (retry != null) {
 			retryAfter = Number(retry) * 1000 + OFFSET;
@@ -134,8 +155,10 @@ export class Queue {
 
 		// Handle global rate limits
 		if (global && retryAfter > 0) {
-			this.manager.globalRequestCounter = 0;
-			this.manager.globalReset = Date.now() + retryAfter;
+			await Promise.all([
+				this.manager.setGlobalRequestCounter(0),
+				this.manager.setGlobalReset(Date.now() + retryAfter),
+			]);
 		}
 
 		// Update bucket hashes as needed
@@ -166,7 +189,7 @@ export class Queue {
 				retryAfter,
 				bucket: this.id,
 				url: resource,
-				limit: this.limit,
+				limit: await this.manager.storage.get(`${this.id}:limit`, 1),
 				route: route.path,
 				identifier: route.identifier,
 				global,
@@ -216,13 +239,16 @@ export class Queue {
 	}
 
 	async #rateLimitThrottle() {
-		while (this.manager.isGlobalLimited() || this.isLocalLimited()) {
-			const isGlobal = this.manager.isGlobalLimited();
+		while (
+			(await this.manager.isGlobalLimited()) ||
+			(await this.isLocalLimited())
+		) {
+			const isGlobal = await this.manager.isGlobalLimited();
 
 			// TODO: Make this use retryAfter
 			const timeout = isGlobal
-				? this.manager.globalTimeout
-				: this.getResetDelay();
+				? await this.manager.getGlobalTimeout()
+				: await this.getResetDelay();
 			const delay = isGlobal
 				? this.manager.globalDelay ?? this.manager.setGlobalDelay(timeout)
 				: sleep(timeout);
