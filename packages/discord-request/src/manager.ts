@@ -1,8 +1,12 @@
 import debug from "debug";
 import { Queue } from "./queue.js";
 import MemoryStorageDriver from "./storage-drivers/memory.js";
-import type { RateLimitData, RequestData, Route } from "./types.js";
-import { StorageDriver } from "./types.js";
+import type {
+	RateLimitData,
+	RequestData,
+	Route,
+	StorageDriver,
+} from "./types.js";
 import { getRouteInformation, getRouteKey } from "./util/routes.js";
 import { OFFSET, ONE_DAY, ONE_SECOND, sleep } from "./util/time.js";
 

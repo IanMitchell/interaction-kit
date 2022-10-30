@@ -1,4 +1,4 @@
-import { StorageDriver } from "../types.js";
+import type { StorageDriver } from "../types.js";
 
 export default class MemoryStorageDriver implements StorageDriver {
 	private data: Map<string, any>;

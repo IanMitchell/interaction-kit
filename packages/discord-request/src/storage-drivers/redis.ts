@@ -1,5 +1,5 @@
 import redis, { RedisClientType } from "redis";
-import { StorageDriver } from "../types.js";
+import type { StorageDriver } from "../types.js";
 
 interface RedisStorageDriverOptions {
 	url: string;
