@@ -1,6 +1,6 @@
 import debug from "debug";
 import { Queue } from "./queue.js";
-import RedisStorageDriver from "./storage-drivers/redis.js";
+import MemoryStorageDriver from "./storage-drivers/memory.js";
 import type { RateLimitData, RequestData, Route } from "./types.js";
 import { StorageDriver } from "./types.js";
 import { getRouteInformation, getRouteKey } from "./util/routes.js";
@@ -103,9 +103,7 @@ export class Manager {
 		this.buckets = new Map();
 		this.queues = new Map();
 
-		this.storage =
-			storageDriver ??
-			new RedisStorageDriver({ url: "redis://localhost:6379" });
+		this.storage = storageDriver ?? new MemoryStorageDriver();
 
 		// this.globalRequestCounter = this.config.globalRequestsPerSecond;
 
