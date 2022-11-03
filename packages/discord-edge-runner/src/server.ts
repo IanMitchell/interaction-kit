@@ -24,6 +24,16 @@ interface ServerOptions {
 	onError?: (error: unknown) => unknown;
 }
 
+/**
+ * Compiles and builds an application to then run in an Edge Runtime VM.
+ * @param options - Options to create the Edge Runtime VM with.
+ * @param options.entrypoint - The entrypoint path for the application.
+ * @param options.port - The port the Edge Runtime VM should listen on.
+ * @param options.env - Environmental Variables to pass to the Edge Runtime VM. Automatically sets `ENV` to Development.
+ * @param options.onReload - A callback to run when the application is reloaded.
+ * @param options.onError - A callback to run when the application errors.
+ * @returns A server handle to shut down the server.
+ */
 export default async function server({
 	entrypoint,
 	port = 3000,
