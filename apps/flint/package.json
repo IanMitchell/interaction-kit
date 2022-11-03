@@ -1,0 +1,16 @@
+{
+	"name": "flint-bot",
+	"main": "./src/app.tsx",
+	"type": "module",
+	"scripts": {
+		"deploy": "ikit deploy",
+		"dev": "DEBUG=* ikit dev"
+	},
+	"engines": {
+		"node": ">=18"
+	},
+	"platform": "node",
+	"dependencies": {
+		"interaction-kit": "file:../../packages/interaction-kit"
+	}
+}
