@@ -6,8 +6,8 @@ import { client } from "../client.js";
 /**
  * Get the Audit Log for a Guild.
  * {@link https://discord.com/developers/docs/resources/audit-log#get-guild-audit-log | Discord Documentation}
- * @param guildId - The Guild ID to get the Audit Log for
- * @returns The Audit Log for the Guild
+ * @param guildId - TThe target Guild to get the Audit Log in.
+ * @returns The Audit Log for the Guild.
  */
 export async function getGuildAuditLog(guildId: Snowflake) {
 	return client.get(

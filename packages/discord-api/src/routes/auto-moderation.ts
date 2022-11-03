@@ -12,7 +12,7 @@ import { client } from "../client.js";
 import { getAuditLogHeaders } from "../headers/audit-log.js";
 
 /**
- * Retrieves a list of all Auto Moderation Rules.
+ * Get a list of all Auto Moderation Rules.
  * {@link https://discord.com/developers/docs/resources/auto-moderation#list-auto-moderation-rules-for-guild | Discord Documentation}
  * @param guildId - The target Guild to view the Rules in.
  * @returns A list of all the Auto Moderation Rules.
@@ -24,7 +24,7 @@ export async function getAutoModerationRules(guildId: Snowflake) {
 }
 
 /**
- * Retrieves an Auto Moderation Rule.
+ * Get an Auto Moderation Rule.
  * {@link https://discord.com/developers/docs/resources/auto-moderation#get-auto-moderation-rule | Discord Documentation}
  * @param guildId - The target Guild to get the Rule in.
  * @param ruleId - The target Rule to view.
