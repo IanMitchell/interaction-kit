@@ -61,7 +61,7 @@ export async function createAutoModerationRule(
 /**
  * Updates an Auto Moderation Rule.
  * {@link https://discord.com/developers/docs/resources/auto-moderation#modify-auto-moderation-rule | Discord Documentation}
- * @param guildId - The target Guild to delete the Rule from.
+ * @param guildId - The target Guild to update the Rule in.
  * @param ruleId - The target Rule to update.
  * @param data - The new data to use for the Rule.
  * @param auditLogReason - An optional Audit Log entry to record this action under.
