@@ -1,10 +1,10 @@
 {
 	"name": "flint-bot",
-	"main": "./src/app.tsx",
+	"main": "./src/app.ts",
 	"type": "module",
 	"scripts": {
 		"deploy": "ikit deploy",
-		"dev": "DEBUG=* ikit dev"
+		"bot": "DEBUG=* ikit dev"
 	},
 	"engines": {
 		"node": ">=18"

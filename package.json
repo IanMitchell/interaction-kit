@@ -11,6 +11,7 @@
 	"scripts": {
 		"cli": "turbo run cli --filter=create-ikit-app",
 		"dev": "turbo run dev --no-cache --parallel --continue",
+		"bot": "turbo run bot --no-cache",
 		"clean": "turbo run clean",
 		"build": "turbo run build",
 		"typecheck": "turbo run typecheck",
