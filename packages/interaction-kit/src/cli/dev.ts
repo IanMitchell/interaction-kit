@@ -92,7 +92,14 @@ export default async function dev(argv?: string[]) {
 	);
 
 	const port = args["--port"] ?? 3000;
-	const entrypoint = await getEdgeEntrypoint();
+	let entrypoint = "";
+
+	try {
+		entrypoint = await getEdgeEntrypoint();
+	} catch (error: unknown) {
+		log(chalk.red((error as Error).message));
+		process.exit(1);
+	}
 
 	const runner = await server({
 		entrypoint,
