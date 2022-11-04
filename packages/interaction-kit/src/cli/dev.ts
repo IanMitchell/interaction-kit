@@ -85,6 +85,8 @@ export default async function dev(argv?: string[]) {
 		{
 			"--port": Number,
 			"-p": "--port",
+			"--entrypoint": String,
+			"-e": "--entrypoint",
 		},
 		{
 			permissive: true,
@@ -92,10 +94,10 @@ export default async function dev(argv?: string[]) {
 	);
 
 	const port = args["--port"] ?? 3000;
-	let entrypoint = "";
+	let entrypoint = args["--entrypoint"] ?? "";
 
 	try {
-		entrypoint = await getEdgeEntrypoint();
+		entrypoint = await getEdgeEntrypoint(entrypoint);
 	} catch (error: unknown) {
 		log(chalk.red((error as Error).message));
 		process.exit(1);
