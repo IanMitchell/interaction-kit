@@ -7,21 +7,57 @@ import type {
 	RESTPostAPIApplicationCommandsJSONBody,
 } from "discord-api-types/v10";
 import type { Snowflake } from "discord-snowflake";
+import esbuild from "esbuild";
+import fs from "node:fs";
 import path from "node:path";
 import type Application from "./application.js";
 
-// TODO: Figure out how to programmatically determine this, idk
-export async function getEdgeEntrypoint() {
-	return path.join(process.cwd(), "/src/server.mjs");
+export async function getEdgeEntrypoint(filepath?: string) {
+	if (filepath != null) {
+		return path.join(process.cwd(), filepath);
+	}
+
+	const presets = ["/src/server.ts", "/src/server.js", "/src/server.mjs"];
+
+	for (const preset of presets) {
+		if (fs.existsSync(path.join(process.cwd(), preset))) {
+			return path.join(process.cwd(), preset);
+		}
+	}
+
+	throw new Error(
+		`Could not find server entrypoint. Please create a server file named one of the following: ${presets
+			.map((name) => `\`${name}\``)
+			.join(", ")}`
+	);
 }
 
 export async function getApplicationEntrypoint(): Promise<Application> {
 	try {
-		const json = await import(path.join(process.cwd(), "package.json"), {
+		const json = (await import(path.join(process.cwd(), "package.json"), {
 			assert: { type: "json" },
-		});
-		const app = await import(path.join(process.cwd(), json?.default?.main));
-		return app?.default as Application;
+		})) as Record<string, any>;
+
+		const appPath = json?.default?.main as string;
+
+		let entrypoint = path.join(process.cwd(), appPath);
+
+		if (entrypoint.endsWith(".ts")) {
+			const build = await esbuild.build({
+				entryPoints: [entrypoint],
+				bundle: true,
+				outdir: path.join(process.cwd(), ".ikit"),
+			});
+
+			entrypoint = path.join(
+				process.cwd(),
+				".ikit",
+				appPath.replace("src/", "").replace(".ts", ".js")
+			);
+		}
+
+		const app = (await import(entrypoint)) as { default: Application };
+		return app?.default;
 	} catch (error: unknown) {
 		console.error("There was an error reading your application file:\n");
 		console.error(error);
