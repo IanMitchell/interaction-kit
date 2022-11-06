@@ -37,7 +37,7 @@ function hexCharToBinary(char: string) {
  * @returns The binary form of a hex string
  */
 export function hexStringToBinary(key: string | null) {
-	if (key == null) {
+	if (key == null || key.length % 2 !== 0) {
 		return new Uint8Array(0).buffer;
 	}
 
