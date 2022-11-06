@@ -38,17 +38,22 @@ export async function getApplicationEntrypoint(): Promise<Application> {
 			assert: { type: "json" },
 		})) as Record<string, any>;
 
-		const entrypoint = path.join(process.cwd(), json?.default?.main);
+		const appPath = json?.default?.main as string;
+
+		let entrypoint = path.join(process.cwd(), appPath);
 
 		if (entrypoint.endsWith(".ts")) {
-			const app = await esbuild.build({
+			const build = await esbuild.build({
 				entryPoints: [entrypoint],
 				bundle: true,
-				write: false,
+				outdir: path.join(process.cwd(), ".ikit"),
 			});
 
-			// TODO: How to get the value of `app.contents` and execute it?
-			return app.outputFiles[0].app.default;
+			entrypoint = path.join(
+				process.cwd(),
+				".ikit",
+				appPath.replace("src/", "").replace(".ts", ".js")
+			);
 		}
 
 		const app = (await import(entrypoint)) as { default: Application };
