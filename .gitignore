@@ -10,7 +10,6 @@ dist
 # We don't want to ignore .env template files
 !packages/create-ikit-app/templates/**/.env
 
-
 # Remix
 apps/interactionkit.dev/.cache
 apps/interactionkit.dev/.env

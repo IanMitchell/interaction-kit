@@ -11,6 +11,7 @@
 	},
 	"platform": "node",
 	"dependencies": {
-		"interaction-kit": "file:../../packages/interaction-kit"
+		"interaction-kit": "file:../../packages/interaction-kit",
+		"esbuild": "0.15.13"
 	}
 }

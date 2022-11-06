@@ -14,7 +14,7 @@ import * as Interaction from "./interactions/index.js";
 import type {
 	InteractionKitCommand,
 	MapValue,
-	SerializableComponent
+	SerializableComponent,
 } from "./interfaces.js";
 import { response, ResponseStatus } from "./requests/response.js";
 
@@ -159,7 +159,7 @@ export default class Application {
 	// two states; one promise should resolve to the current response,
 	// and the second should resolve to "all the work is done, we can end the process".
 	// This will be important for serverless and worker environments
-	async handler(request: Request) {
+	async handler(request: Request): Promise<Response> {
 		log("Handling Incoming Request");
 
 		if (request.method !== "POST") {

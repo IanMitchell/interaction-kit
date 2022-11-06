@@ -37,9 +37,16 @@
 		"discord-snowflake": "2.0.0",
 		"discord-verify": "1.0.1",
 		"dotenv": "^16.0.1",
-		"esbuild": "0.15.13",
 		"ngrok": "^4.3.3",
 		"supports-color": "9.2.2"
+	},
+	"peerDependencies": {
+		"esbuild": "0.15.13"
+	},
+	"peerDependenciesMeta": {
+		"esbuild": {
+			"optional": true
+		}
 	},
 	"repository": {
 		"type": "git",
