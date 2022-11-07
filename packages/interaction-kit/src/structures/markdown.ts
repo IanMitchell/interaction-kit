@@ -25,6 +25,17 @@ export function emoji(emoji: { name: string } & Mentionable, animated = false) {
 	return `<:${emoji.name}:${emoji.id}>`;
 }
 
+export function command({
+	id,
+	command,
+	subgroup,
+	subcommand,
+}: { command: string; subgroup?: string; subcommand?: string } & Mentionable) {
+	return `</${[command, subgroup, subcommand]
+		.filter(Boolean)
+		.join(" ")}:${id}>`;
+}
+
 export enum TimestampStyle {
 	SHORT_TIME = "t",
 	LONG_TIME = "T",
