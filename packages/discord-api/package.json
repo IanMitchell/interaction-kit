@@ -1,6 +1,6 @@
 {
 	"name": "discord-api",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"author": "Ian Mitchell",
 	"description": "A modern Discord HTTP REST API wrapper library",
 	"license": "MIT",
@@ -26,7 +26,7 @@
 	},
 	"dependencies": {
 		"discord-api-types": "^0.37.4",
-		"discord-request": "0.0.4",
+		"discord-request": "0.0.5",
 		"discord-snowflake": "2.0.0",
 		"debug": "^4.3.4"
 	}

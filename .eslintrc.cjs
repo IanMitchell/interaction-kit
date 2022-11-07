@@ -1,6 +1,6 @@
 module.exports = {
 	parser: "@typescript-eslint/parser",
-	plugins: ["@typescript-eslint"],
+	plugins: ["@typescript-eslint", "eslint-plugin-tsdoc"],
 	extends: ["xo", "xo-typescript", "prettier"],
 	ignorePatterns: [".eslintrc.cjs"],
 	rules: {
@@ -21,5 +21,6 @@ module.exports = {
 		"no-await-in-loop": 0,
 		"max-params": 0,
 		"complexity": 0,
+		"tsdoc/syntax": "error",
 	},
 };
