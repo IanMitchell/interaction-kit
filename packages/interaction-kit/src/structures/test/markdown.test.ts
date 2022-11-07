@@ -40,9 +40,24 @@ describe("Markdown Mentions", () => {
 	});
 
 	test("command", () => {
-		expect(command({ id: "123456789012345678", name: "test" })).toBe(
+		expect(command({ id: "123456789012345678", command: "test" })).toBe(
 			`</test:123456789012345678>`
 		);
+		expect(
+			command({
+				id: "123456789012345678",
+				command: "test",
+				subcommand: "subcommand",
+			})
+		).toBe(`</test subcommand:123456789012345678>`);
+		expect(
+			command({
+				id: "123456789012345678",
+				command: "test",
+				subgroup: "group",
+				subcommand: "subcommand",
+			})
+		).toBe(`</test group subcommand:123456789012345678>`);
 	});
 });
 
