@@ -4,6 +4,10 @@
 		"dev": {
 			"cache": false
 		},
+		"bot": {
+			"dependsOn": ["build"],
+			"cache": false
+		},
 		"clean": {
 			"cache": false
 		},

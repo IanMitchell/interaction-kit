@@ -40,6 +40,14 @@
 		"ngrok": "^4.3.3",
 		"supports-color": "9.2.2"
 	},
+	"peerDependencies": {
+		"esbuild": "0.15.13"
+	},
+	"peerDependenciesMeta": {
+		"esbuild": {
+			"optional": true
+		}
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/IanMitchell/interaction-kit.git"
