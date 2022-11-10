@@ -14,7 +14,7 @@ import * as Interaction from "./interactions/index.js";
 import type {
 	InteractionKitCommand,
 	MapValue,
-	SerializableComponent,
+	SerializableComponent
 } from "./interfaces.js";
 import { response, ResponseStatus } from "./requests/response.js";
 
@@ -24,6 +24,8 @@ type ApplicationArgs = {
 	applicationId: string;
 	publicKey: string;
 	token: string;
+	autoDeferApplicationCommands: boolean;
+	autoDeferMessageComponents: boolean;
 };
 
 type CommandMap = {
@@ -44,11 +46,13 @@ export default class Application {
 	#applicationId: Snowflake;
 	#publicKey: string;
 	#token: string;
+	#autoDeferApplicationCommands: boolean = false;
+	#autoDeferMessageComponents: boolean = false;
 	#commands: CommandMap;
 	#components: Map<string, ExecutableComponent> = new Map();
 	#shutdown: AbortController;
 
-	constructor({ applicationId, publicKey, token }: ApplicationArgs) {
+	constructor({ applicationId, publicKey, token, autoDeferApplicationCommands, autoDeferMessageComponents }: ApplicationArgs) {
 		if (!applicationId) {
 			throw new Error(
 				"Please provide an Application ID. You can find this value <here>"
@@ -65,6 +69,14 @@ export default class Application {
 			throw new Error("Please provide a Token. You can find this value <here>");
 		}
 
+		if (autoDeferApplicationCommands) {
+			this.#autoDeferApplicationCommands = autoDeferApplicationCommands as boolean;
+		}
+
+		if (autoDeferMessageComponents) {
+			this.#autoDeferMessageComponents = autoDeferMessageComponents as boolean;
+		}
+
 		this.#applicationId = applicationId as Snowflake;
 		this.#publicKey = publicKey;
 		this.#token = token as Snowflake;
@@ -79,8 +91,18 @@ export default class Application {
 
 		// Configure API Defaults
 		Config.setApplicationId(this.#applicationId);
+		Config.setAutoDeferApplicationCommands(this.#autoDeferApplicationCommands);
+		Config.setAutoDeferMessageComponents(this.#autoDeferMessageComponents);
 		client.setToken(this.#token);
 		client.abortSignal = this.#shutdown.signal;
+	}
+
+	get autoDeferApplicationCommands() {
+		return this.#autoDeferApplicationCommands;
+	}
+
+	get autoDeferMessageComponents() {
+		return this.#autoDeferMessageComponents;
 	}
 
 	get id() {
