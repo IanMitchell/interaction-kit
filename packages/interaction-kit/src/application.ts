@@ -69,14 +69,9 @@ export default class Application {
 			throw new Error("Please provide a Token. You can find this value <here>");
 		}
 
-		if (autoDeferApplicationCommands) {
-			this.#autoDeferApplicationCommands = autoDeferApplicationCommands as boolean;
-		}
+		this.#autoDeferApplicationCommands = !!autoDeferApplicationCommands;
 
-		if (autoDeferMessageComponents) {
-			this.#autoDeferMessageComponents = autoDeferMessageComponents as boolean;
-		}
-
+		this.#autoDeferMessageComponents = !!autoDeferMessageComponents;
 		this.#applicationId = applicationId as Snowflake;
 		this.#publicKey = publicKey;
 		this.#token = token as Snowflake;
