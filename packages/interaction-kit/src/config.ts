@@ -2,8 +2,8 @@ import type { Snowflake } from "discord-snowflake";
 
 export default (() => {
 	let APPLICATION_ID: Snowflake = `${BigInt(0)}`;
-	let AUTO_DEFER_APPLICATION_COMMANDS: boolean = false;
-	let AUTO_DEFER_MESSAGE_COMPONENTS: boolean = false;
+	let AUTO_DEFER_APPLICATION_COMMANDS = false;
+	let AUTO_DEFER_MESSAGE_COMPONENTS = false;
 
 	return {
 		getApplicationId: () => APPLICATION_ID,

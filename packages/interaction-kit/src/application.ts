@@ -14,7 +14,7 @@ import * as Interaction from "./interactions/index.js";
 import type {
 	InteractionKitCommand,
 	MapValue,
-	SerializableComponent
+	SerializableComponent,
 } from "./interfaces.js";
 import { response, ResponseStatus } from "./requests/response.js";
 
@@ -46,13 +46,19 @@ export default class Application {
 	#applicationId: Snowflake;
 	#publicKey: string;
 	#token: string;
-	#autoDeferApplicationCommands: boolean = false;
-	#autoDeferMessageComponents: boolean = false;
+	#autoDeferApplicationCommands = false;
+	#autoDeferMessageComponents = false;
 	#commands: CommandMap;
-	#components: Map<string, ExecutableComponent> = new Map();
+	#components = new Map<string, ExecutableComponent>();
 	#shutdown: AbortController;
 
-	constructor({ applicationId, publicKey, token, autoDeferApplicationCommands, autoDeferMessageComponents }: ApplicationArgs) {
+	constructor({
+		applicationId,
+		publicKey,
+		token,
+		autoDeferApplicationCommands,
+		autoDeferMessageComponents,
+	}: ApplicationArgs) {
 		if (!applicationId) {
 			throw new Error(
 				"Please provide an Application ID. You can find this value <here>"
@@ -69,8 +75,10 @@ export default class Application {
 			throw new Error("Please provide a Token. You can find this value <here>");
 		}
 
+		// eslint-disable-next-line no-implicit-coercion
 		this.#autoDeferApplicationCommands = !!autoDeferApplicationCommands;
 
+		// eslint-disable-next-line no-implicit-coercion
 		this.#autoDeferMessageComponents = !!autoDeferMessageComponents;
 		this.#applicationId = applicationId as Snowflake;
 		this.#publicKey = publicKey;

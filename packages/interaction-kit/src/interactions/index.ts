@@ -2,18 +2,18 @@ import debug from "debug";
 import type {
 	APIApplicationCommandInteraction,
 	APIInteraction,
-	APIMessageComponentInteraction
+	APIMessageComponentInteraction,
 } from "discord-api-types/v10";
 import { InteractionType, Utils } from "discord-api-types/v10";
 import type Application from "../application.js";
 import {
 	IntegerOption,
 	NumberOption,
-	StringOption
+	StringOption,
 } from "../commands/options/index.js";
 import {
 	isAutocompleteOption,
-	type BasicOption
+	type BasicOption,
 } from "../commands/options/option.js";
 import SlashCommand from "../commands/slash-command.js";
 import { Button } from "../components/button.js";
@@ -21,12 +21,12 @@ import type { ExecutableComponent } from "../components/index.js";
 import Select from "../components/select.js";
 import {
 	PingInteraction,
-	type ApplicationCommandInteraction
+	type ApplicationCommandInteraction,
 } from "../index.js";
 import type {
 	InteractionKitCommand,
 	RequestBody,
-	ResponseHandler
+	ResponseHandler,
 } from "../interfaces.js";
 import ContextMenuInteraction from "./application-commands/context-menu-interaction.js";
 import SlashCommandInteraction from "./application-commands/slash-command-interaction.js";
@@ -95,6 +95,7 @@ async function handleApplicationCommandInteraction(
 		if (application.autoDeferApplicationCommands) {
 			await interaction.defer();
 		}
+
 		handler(interaction, application);
 	} else if (isContextMenuApplicationCommandInteraction(json)) {
 		const interaction = new ContextMenuInteraction(
@@ -108,6 +109,7 @@ async function handleApplicationCommandInteraction(
 		if (application.autoDeferApplicationCommands) {
 			await interaction.defer();
 		}
+
 		command.handler(interaction, application);
 	} else {
 		throw new Error(
@@ -139,6 +141,7 @@ async function handleMessageComponentInteraction(
 		if (application.autoDeferMessageComponents) {
 			await interaction.defer();
 		}
+
 		component.handler(interaction, application);
 	} else if (
 		isMessageComponentSelectMenuInteraction(json) &&
@@ -155,6 +158,7 @@ async function handleMessageComponentInteraction(
 		if (application.autoDeferMessageComponents) {
 			await interaction.defer();
 		}
+
 		component.handler(interaction, application);
 	} else {
 		throw new Error(
