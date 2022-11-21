@@ -74,7 +74,7 @@ async function handleRequest(
 If you are using Node 17 or lower, you need to make some changes:
 
 ```diff
-+ import { verify, PlatformAlgorithms } from "discord-verify/node";
++ import { verify, PlatformAlgorithm } from "discord-verify/node";
 
 async function handleRequest(
 	req: FastifyRequest<{
@@ -96,7 +96,7 @@ async function handleRequest(
 		timestamp,
 		this.client.publicKey,
 		crypto.webcrypto.subtle,
-+		PlatformAlgorithms.OldNode
++		PlatformAlgorithm.OldNode
 	);
 
 	if (!isValid) {
