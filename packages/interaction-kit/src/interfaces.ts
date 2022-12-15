@@ -28,6 +28,8 @@ export type ArrayValue<T> = T extends Array<infer U> ? U : T;
 
 export type MapValue<T> = T extends Map<unknown, infer V> ? V : never;
 
+export type ValueOf<T> = T[keyof T];
+
 /**
  * Polyfills and HTTP Definitions
  */
