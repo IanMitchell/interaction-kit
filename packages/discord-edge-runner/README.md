@@ -6,7 +6,7 @@ This package will automatically watch your bot's source files for changes and li
 
 ## Usage
 
-> **Note:** If you are using Interaction Kit, the library handles the usage of this library for you. This package is primarily intended for library authors.
+> **Note:** If you are using [Interaction Kit](https://interactionkit.dev), the library handles the usage of this library for you. This package is primarily intended for library authors.
 
 ```bash
 npm i -D discord-edge-runner

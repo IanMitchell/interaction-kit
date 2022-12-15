@@ -23,12 +23,12 @@ interface ServerOptions {
 	entrypoint: string;
 
 	/**
-	 * The port the Edge Runtime VM should listen on.
+	 * The port the Edge Runtime VM should listen on. Defaults to `3000`
 	 */
 	port?: number;
 
 	/**
-	 * Environmental Variables to pass to the Edge Runtime VM. Automatically sets `ENV` to Development.
+	 * Environmental Variables to pass to the Edge Runtime VM. Automatically sets `NODE_ENV` to `development`.
 	 */
 	env?: Record<string, string>;
 
