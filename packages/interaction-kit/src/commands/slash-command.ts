@@ -118,6 +118,10 @@ export default class SlashCommand
 			return false;
 		}
 
+		if (this.defaultPermissions !== schema.default_member_permissions) {
+			return false;
+		}
+
 		if (this.commands.size > 0) {
 			// This is a parent command
 			return (

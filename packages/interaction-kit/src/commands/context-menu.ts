@@ -40,6 +40,10 @@ export default class ContextMenu<T extends ContextMenuApplicationCommandType>
 			return false;
 		}
 
+		if (this.defaultPermissions !== schema.default_member_permissions) {
+			return false;
+		}
+
 		return true;
 	}
 
