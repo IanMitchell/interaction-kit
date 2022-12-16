@@ -4,6 +4,7 @@ import {
 } from "discord-api";
 import type {
 	APIApplicationCommand,
+	RESTGetAPIApplicationGuildCommandsResult,
 	RESTPostAPIApplicationCommandsJSONBody,
 } from "discord-api-types/v10";
 import type { Snowflake } from "discord-snowflake";
@@ -69,48 +70,48 @@ function getChangeSet(
 	application: Application,
 	commandList: Map<string, APIApplicationCommand>
 ) {
-	const changeSet = {
-		hasChanges: false,
-		newCommands: new Set<RESTPostAPIApplicationCommandsJSONBody>(),
-		updatedCommands: new Set<RESTPostAPIApplicationCommandsJSONBody>(),
-		deletedCommands: new Set<RESTPostAPIApplicationCommandsJSONBody>(),
-		unchangedCommands: new Set<RESTPostAPIApplicationCommandsJSONBody>(),
+	const comparison = {
+		changed: false,
+		new: new Set<RESTPostAPIApplicationCommandsJSONBody>(),
+		updated: new Set<RESTPostAPIApplicationCommandsJSONBody>(),
+		deleted: new Set<RESTPostAPIApplicationCommandsJSONBody>(),
+		unchanged: new Set<RESTPostAPIApplicationCommandsJSONBody>(),
 	};
 
 	// Compare all existing commands against registered ones
 	for (const command of application.commands) {
 		// If the command already exists, we check to see if it's changed or not
 		if (commandList.has(command.name)) {
-			const signature = commandList.get(command.name);
+			const schema = commandList.get(command.name);
 
-			if (signature == null) {
+			if (schema == null) {
 				continue;
 			}
 
-			if (command.equals(signature)) {
-				changeSet.unchangedCommands.add(command.serialize());
+			if (command.equals(schema)) {
+				comparison.unchanged.add(command.serialize());
 			} else {
-				changeSet.updatedCommands.add(command.serialize());
-				changeSet.hasChanges = true;
+				comparison.updated.add(command.serialize());
+				comparison.changed = true;
 			}
 
 			commandList.delete(command.name);
 		}
 		// If the command does not exist, we add it
 		else {
-			changeSet.newCommands.add(command.serialize());
-			changeSet.hasChanges = true;
+			comparison.new.add(command.serialize());
+			comparison.changed = true;
 		}
 	}
 
 	// Any command left in the Discord list no longer exists in the code; eliminate them
-	changeSet.deletedCommands = new Set(Array.from(commandList.values()));
+	comparison.deleted = new Set(Array.from(commandList.values()));
 
-	if (changeSet.deletedCommands.size > 0) {
-		changeSet.hasChanges = true;
+	if (comparison.deleted.size > 0) {
+		comparison.changed = true;
 	}
 
-	return changeSet;
+	return comparison;
 }
 
 export async function getGlobalApplicationCommandChanges(
@@ -123,9 +124,20 @@ export async function getGlobalApplicationCommandChanges(
 
 export async function getGuildApplicationCommandChanges(
 	application: Application,
-	guildId: Snowflake
+	guildId: Snowflake,
+	cachedCommands?: RESTGetAPIApplicationGuildCommandsResult
 ) {
-	const response = await getGuildApplicationCommands(application.id, guildId);
-	const commandList = new Map(response.map((cmd) => [cmd.name, cmd]));
+	const commandList = new Map<
+		string,
+		Omit<APIApplicationCommand, "dm_permission">
+	>();
+
+	if (cachedCommands == null) {
+		const response = await getGuildApplicationCommands(application.id, guildId);
+		response.forEach((cmd) => commandList.set(cmd.name, cmd));
+	} else {
+		cachedCommands.forEach((cmd) => commandList.set(cmd.name, cmd));
+	}
+
 	return getChangeSet(application, commandList);
 }

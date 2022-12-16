@@ -10,6 +10,9 @@
 		"node": ">=18"
 	},
 	"platform": "node",
+	"bin": {
+		"ikit": "../../node_modules/.bin/ikit"
+	},
 	"dependencies": {
 		"interaction-kit": "file:../../packages/interaction-kit",
 		"esbuild": "0.15.13"
