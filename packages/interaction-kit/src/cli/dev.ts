@@ -4,6 +4,7 @@ import chalk from "chalk";
 import debug from "debug";
 import {
 	bulkOverwriteGuildApplicationCommands,
+	client,
 	getGuildApplicationCommands,
 } from "discord-api";
 import type { RESTGetAPIApplicationGuildCommandsResult } from "discord-api-types/v10";
@@ -27,26 +28,26 @@ async function updateCommands(
 	guildId: Snowflake,
 	commands: RESTGetAPIApplicationGuildCommandsResult
 ) {
-	// Start application
-	const application = await getApplicationEntrypoint();
-
-	log("Checking for command updates in Development Server");
-	const comparison = await getGuildApplicationCommandChanges(
-		application,
-		guildId,
-		commands
-	);
-
-	log(
-		listFormatter.format([
-			chalk.green(`${comparison.new.size} new commands`),
-			chalk.yellow(`${comparison.updated.size} updated commands`),
-			chalk.red(`${comparison.deleted.size} deleted commands`),
-			chalk.gray(`${comparison.unchanged.size} unchanged commands`),
-		])
-	);
-
 	try {
+		// Start application
+		const application = await getApplicationEntrypoint();
+
+		log("Checking for command updates in Development Server");
+		const comparison = await getGuildApplicationCommandChanges(
+			application,
+			guildId,
+			commands
+		);
+
+		log(
+			listFormatter.format([
+				chalk.green(`${comparison.new.size} new commands`),
+				chalk.yellow(`${comparison.updated.size} updated commands`),
+				chalk.red(`${comparison.deleted.size} deleted commands`),
+				chalk.gray(`${comparison.unchanged.size} unchanged commands`),
+			])
+		);
+
 		if (comparison.changed) {
 			const serializedCommands = application.commands.map((command) =>
 				command.serialize()
@@ -101,6 +102,7 @@ export default async function dev(argv?: string[]) {
 	}
 
 	const guildId = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
+	client.setToken(process.env.TOKEN);
 
 	// Parse input args
 	const args = arg(
@@ -118,13 +120,14 @@ export default async function dev(argv?: string[]) {
 	const port = args["--port"] ?? 3000;
 	let entrypoint = args["--entrypoint"] ?? "";
 
-	let commands = await getGuildApplicationCommands(
-		process.env.APPLICATION_ID as Snowflake,
-		guildId
-	);
+	let commands: RESTGetAPIApplicationGuildCommandsResult;
 
 	try {
 		entrypoint = await getEdgeEntrypoint(entrypoint);
+		commands = await getGuildApplicationCommands(
+			process.env.APPLICATION_ID as Snowflake,
+			guildId
+		);
 	} catch (error: unknown) {
 		log(chalk.red((error as Error).message));
 		process.exit(1);
