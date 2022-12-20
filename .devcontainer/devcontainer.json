@@ -39,7 +39,7 @@
 			"label": "interactionkit.dev"
 		}
 	},
-	"postCreateCommand": "npm install",
+	"postCreateCommand": "npm install && npm run build",
 	"features": {
 		"git": "latest",
 		"github-cli": "latest",

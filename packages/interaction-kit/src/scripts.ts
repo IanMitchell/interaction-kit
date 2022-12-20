@@ -114,14 +114,6 @@ function getChangeSet(
 	return comparison;
 }
 
-export async function getGlobalApplicationCommandChanges(
-	application: Application
-) {
-	const response = await getGlobalApplicationCommands(application.id);
-	const commandList = new Map(response.map((cmd) => [cmd.name, cmd]));
-	return getChangeSet(application, commandList);
-}
-
 export async function getGuildApplicationCommandChanges(
 	application: Application,
 	guildId: Snowflake,
