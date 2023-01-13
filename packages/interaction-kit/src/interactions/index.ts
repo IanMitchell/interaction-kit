@@ -93,7 +93,7 @@ async function handleApplicationCommandInteraction(
 		const handler = command.getCommandHandler(json);
 
 		log(`Handling ${interaction.name}`);
-		handler(interaction, application, request);
+		await handler(interaction, application, request);
 	} else if (isContextMenuApplicationCommandInteraction(json)) {
 		const interaction = new ContextMenuInteraction(
 			application,
@@ -103,7 +103,7 @@ async function handleApplicationCommandInteraction(
 		);
 
 		log(`Handling ${interaction.name}`);
-		command.handler(interaction, application, request);
+		await command.handler(interaction, application, request);
 	} else {
 		throw new Error(
 			// @ts-expect-error With the current given types, this cannot happen, but Discord may add types at any time
@@ -132,7 +132,7 @@ async function handleMessageComponentInteraction(
 		);
 
 		log(`Handling ${interaction.customId}`);
-		component.handler(interaction, application, request);
+		await component.handler(interaction, application, request);
 	} else if (
 		isMessageComponentSelectMenuInteraction(json) &&
 		isSelectComponent(component)
@@ -145,7 +145,7 @@ async function handleMessageComponentInteraction(
 		);
 
 		log(`Handling ${interaction.customId}`);
-		component.handler(interaction, application, request);
+		await component.handler(interaction, application, request);
 	} else {
 		throw new Error(
 			`Unknown Interaction Component type (${
