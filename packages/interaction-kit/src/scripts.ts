@@ -38,7 +38,9 @@ export async function getApplicationEntrypoint(): Promise<Application> {
 
 		const appPath = json?.default?.main as string;
 
-		let entrypoint = path.join(process.cwd(), appPath);
+		// Prevent ESM Caching
+		const cacheBuster = `?update=${Date.now()}`;
+		let entrypoint = path.join(process.cwd(), appPath + cacheBuster);
 
 		if (entrypoint.endsWith(".ts")) {
 			const build = await esbuild.build({
@@ -51,8 +53,7 @@ export async function getApplicationEntrypoint(): Promise<Application> {
 			entrypoint = path.join(
 				process.cwd(),
 				".ikit",
-				appPath.replace("src/", "").replace(".ts", ".js") +
-					`?update=${Date.now()}` // Prevent caching,
+				appPath.replace("src/", "").replace(".ts", ".js") + cacheBuster
 			);
 		}
 
