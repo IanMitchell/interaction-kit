@@ -2,7 +2,12 @@ import arg from "arg";
 import boxen from "boxen";
 import chalk from "chalk";
 import debug from "debug";
-import { bulkOverwriteGuildApplicationCommands } from "discord-api";
+import {
+	bulkOverwriteGuildApplicationCommands,
+	client,
+	getGuildApplicationCommands,
+} from "discord-api";
+import type { RESTGetAPIApplicationGuildCommandsResult } from "discord-api-types/v10";
 import server from "discord-edge-runner";
 import type { Snowflake } from "discord-snowflake";
 import ngrok from "ngrok";
@@ -14,35 +19,53 @@ import {
 
 const log = debug("cli:dev");
 
-async function updateCommands(guildId: Snowflake) {
-	// Start application
-	const application = await getApplicationEntrypoint();
+const listFormatter = new Intl.ListFormat("en", {
+	style: "long",
+	type: "conjunction",
+});
 
-	log("Checking for command updates in Development Server");
-	const devCommandChangeSet = await getGuildApplicationCommandChanges(
-		application,
-		guildId
-	);
-
-	log(
-		`${devCommandChangeSet.newCommands.size} new commands, ${devCommandChangeSet.updatedCommands.size} changed commands, ${devCommandChangeSet.deletedCommands.size} removed commands, and ${devCommandChangeSet.unchangedCommands.size} unchanged commands.`
-	);
-
-	const serializedCommands = application.commands.map((command) =>
-		command.serialize()
-	);
-
+async function updateCommands(
+	guildId: Snowflake,
+	commands: RESTGetAPIApplicationGuildCommandsResult
+) {
 	try {
-		if (devCommandChangeSet.hasChanges) {
-			await bulkOverwriteGuildApplicationCommands(
+		// Start application
+		const application = await getApplicationEntrypoint();
+
+		log("Checking for command updates in Development Server");
+		const comparison = await getGuildApplicationCommandChanges(
+			application,
+			guildId,
+			commands
+		);
+
+		log(
+			listFormatter.format([
+				chalk.green(`${comparison.new.size} new commands`),
+				chalk.yellow(`${comparison.updated.size} updated commands`),
+				chalk.red(`${comparison.deleted.size} deleted commands`),
+				chalk.gray(`${comparison.unchanged.size} unchanged commands`),
+			])
+		);
+
+		if (comparison.changed) {
+			const serializedCommands = application.commands.map((command) =>
+				command.serialize()
+			);
+
+			const response = await bulkOverwriteGuildApplicationCommands(
 				application.id,
 				guildId,
 				serializedCommands
 			);
+
+			return response;
 		}
 	} catch (error: unknown) {
 		log((error as Error).message);
 	}
+
+	return commands;
 }
 
 export default async function dev(argv?: string[]) {
@@ -79,6 +102,7 @@ export default async function dev(argv?: string[]) {
 	}
 
 	const guildId = process.env.DEVELOPMENT_SERVER_ID as Snowflake;
+	client.setToken(process.env.TOKEN);
 
 	// Parse input args
 	const args = arg(
@@ -96,8 +120,14 @@ export default async function dev(argv?: string[]) {
 	const port = args["--port"] ?? 3000;
 	let entrypoint = args["--entrypoint"] ?? "";
 
+	let commands: RESTGetAPIApplicationGuildCommandsResult;
+
 	try {
 		entrypoint = await getEdgeEntrypoint(entrypoint);
+		commands = await getGuildApplicationCommands(
+			process.env.APPLICATION_ID as Snowflake,
+			guildId
+		);
 	} catch (error: unknown) {
 		log(chalk.red((error as Error).message));
 		process.exit(1);
@@ -117,7 +147,7 @@ export default async function dev(argv?: string[]) {
 			FORCE_COLOR: "1",
 		},
 		onReload: async () => {
-			await updateCommands(guildId);
+			commands = await updateCommands(guildId, commands);
 		},
 		onError: (error: unknown) => {
 			log(chalk.red({ error }));

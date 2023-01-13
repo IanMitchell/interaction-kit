@@ -17,13 +17,37 @@ function getError(error: unknown): Error {
 }
 
 interface ServerOptions {
+	/**
+	 * The entrypoint path for the application.
+	 */
 	entrypoint: string;
+
+	/**
+	 * The port the Edge Runtime VM should listen on. Defaults to `3000`
+	 */
 	port?: number;
+
+	/**
+	 * Environmental Variables to pass to the Edge Runtime VM. Automatically sets `NODE_ENV` to `development`.
+	 */
 	env?: Record<string, string>;
+
+	/**
+	 *  A callback to run when the application is reloaded.
+	 */
 	onReload?: () => unknown;
+
+	/**
+	 * A callback to run when the application errors.
+	 */
 	onError?: (error: unknown) => unknown;
 }
 
+/**
+ * Compiles and builds an application to then run in an Edge Runtime VM.
+ * @param options - Options to create the Edge Runtime VM with.
+ * @returns A server handle to shut down the server.
+ */
 export default async function server({
 	entrypoint,
 	port = 3000,

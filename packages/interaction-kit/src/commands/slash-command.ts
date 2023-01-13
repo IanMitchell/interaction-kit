@@ -4,6 +4,7 @@ import type {
 	APIApplicationCommandSubcommandGroupOption,
 	APIApplicationCommandSubcommandOption,
 	APIChatInputApplicationCommandInteraction,
+	PermissionFlagsBits,
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from "discord-api-types/v10";
 import {
@@ -18,6 +19,7 @@ import type {
 	InteractionKitCommand,
 	Optional,
 	RequestBody,
+	ValueOf,
 } from "../interfaces.js";
 import { SubcommandGroup } from "./options/index.js";
 import type { BasicOption } from "./options/option.js";
@@ -26,6 +28,7 @@ import Subcommand from "./options/subcommand.js";
 export type CommandArgs = {
 	name: string;
 	description: string;
+	defaultPermissions?: Array<ValueOf<typeof PermissionFlagsBits>>;
 	options?: BasicOption[];
 	handler: InteractionKitCommand<SlashCommandInteraction>["handler"];
 	autocomplete?: never;
@@ -36,6 +39,7 @@ export type CommandArgs = {
 export type ParentCommandArgs = {
 	name: string;
 	description: string;
+	defaultPermissions?: never;
 	options?: never;
 	handler?: never;
 	autocomplete?: never;
@@ -57,6 +61,7 @@ export default class SlashCommand
 	name: string;
 	#description: string;
 	options: Map<string, BasicOption>;
+	defaultPermissions: null | bigint;
 
 	handler?: InteractionKitCommand<SlashCommandInteraction>["handler"];
 
@@ -67,6 +72,7 @@ export default class SlashCommand
 		name,
 		description,
 		options,
+		defaultPermissions,
 		handler,
 		autocomplete,
 		commands,
@@ -95,6 +101,12 @@ export default class SlashCommand
 
 			this.options.set(key, option);
 		});
+
+		this.defaultPermissions =
+			defaultPermissions?.reduce(
+				(value, permission) => value | permission,
+				0n
+			) ?? null;
 	}
 
 	equals(schema: APIApplicationCommand): boolean {
@@ -103,6 +115,10 @@ export default class SlashCommand
 		}
 
 		if (this.options.size !== (schema.options?.length ?? 0)) {
+			return false;
+		}
+
+		if (this.defaultPermissions !== schema.default_member_permissions) {
 			return false;
 		}
 
@@ -189,6 +205,10 @@ export default class SlashCommand
 			Array.from(this.options.entries()).forEach(([_, value]) => {
 				payload.options?.push(value.serialize());
 			});
+		}
+
+		if (this.defaultPermissions != null) {
+			payload.default_member_permissions = this.defaultPermissions.toString();
 		}
 
 		if (this.commands.size > 0) {
