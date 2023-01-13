@@ -38,7 +38,7 @@
 		}
 	},
 	"scripts": {
-		"clean": "rimraf dist",
+		"clean": "rimraf dist .turbo",
 		"build": "unbuild",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",

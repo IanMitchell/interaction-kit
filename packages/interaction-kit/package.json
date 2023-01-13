@@ -9,7 +9,7 @@
 	"typings": "dist/src/index.d.ts",
 	"type": "module",
 	"scripts": {
-		"clean": "rimraf dist",
+		"clean": "rimraf dist .turbo",
 		"build": "tsc",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check && prettier bin/*.ts --check",

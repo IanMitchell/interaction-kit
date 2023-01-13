@@ -13,7 +13,7 @@
 	"typings": "dist/src/snowflake.d.ts",
 	"type": "module",
 	"scripts": {
-		"clean": "rimraf dist",
+		"clean": "rimraf dist .turbo",
 		"build": "tsc",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",

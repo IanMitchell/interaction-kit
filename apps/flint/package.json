@@ -3,6 +3,7 @@
 	"main": "./src/app.ts",
 	"type": "module",
 	"scripts": {
+		"clean": "rimraf .turbo .ikit",
 		"deploy": "ikit deploy",
 		"bot": "DEBUG=* ikit dev",
 		"typecheck": "tsc --noEmit",
