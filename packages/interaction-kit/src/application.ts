@@ -45,7 +45,7 @@ export default class Application {
 	#publicKey: string;
 	#token: string;
 	#commands: CommandMap;
-	#components: Map<string, ExecutableComponent> = new Map();
+	#components = new Map<string, ExecutableComponent>();
 	#shutdown: AbortController;
 
 	constructor({ applicationId, publicKey, token }: ApplicationArgs) {

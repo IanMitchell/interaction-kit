@@ -4,7 +4,10 @@
 	"type": "module",
 	"scripts": {
 		"deploy": "ikit deploy",
-		"bot": "DEBUG=* ikit dev"
+		"bot": "DEBUG=* ikit dev",
+		"typecheck": "tsc --noEmit",
+		"prettier": "prettier src/**/*.ts --check",
+		"lint": "eslint ./src/**/*.ts"
 	},
 	"engines": {
 		"node": ">=18"
