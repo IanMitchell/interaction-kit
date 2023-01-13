@@ -51,7 +51,8 @@ export async function getApplicationEntrypoint(): Promise<Application> {
 			entrypoint = path.join(
 				process.cwd(),
 				".ikit",
-				appPath.replace("src/", "").replace(".ts", ".js")
+				appPath.replace("src/", "").replace(".ts", ".js") +
+					`?update=${Date.now()}` // Prevent caching,
 			);
 		}
 
