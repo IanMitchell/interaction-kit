@@ -5,6 +5,7 @@ import type {
 	NumberOption,
 	StringOption,
 } from "../../commands/options/index.js";
+import type { Awaitable } from "../../interfaces.js";
 import type SlashCommandAutocompleteInteraction from "./application-command-autocomplete.js";
 
 // 🥺 selects when, discord?
@@ -24,5 +25,5 @@ export interface Autocomplete<T extends AutocompleteInteractionTypes> {
 		interaction: T,
 		application: Application,
 		request: Request
-	) => Promise<void>;
+	) => Awaitable;
 }

@@ -30,6 +30,8 @@ export type MapValue<T> = T extends Map<unknown, infer V> ? V : never;
 
 export type ValueOf<T> = T[keyof T];
 
+export type Awaitable<T = void> = T | Promise<T>;
+
 /**
  * Polyfills and HTTP Definitions
  */
@@ -99,7 +101,11 @@ export interface Autocomplete<T extends ChoiceType> {
 
 export interface Executable<T extends Interaction = Interaction> {
 	matches?: ((customId: string) => Promise<boolean>) | undefined;
-	handler: (interaction: T, application: Application, request: Request) => void;
+	handler: (
+		interaction: T,
+		application: Application,
+		request: Request
+	) => Awaitable;
 }
 
 export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
@@ -107,6 +113,10 @@ export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
 		Serializable<RESTPostAPIApplicationCommandsJSONBody>,
 		Comparable<APIApplicationCommand> {
 	name: string;
-	handler: (interaction: T, application: Application, request: Request) => void;
+	handler: (
+		interaction: T,
+		application: Application,
+		request: Request
+	) => Awaitable;
 	get type(): ApplicationCommandType;
 }
