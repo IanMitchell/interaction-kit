@@ -74,7 +74,8 @@ async function handleApplicationCommandInteraction(
 	application: Application,
 	command: InteractionKitCommand<ApplicationCommandInteraction>,
 	json: RequestBody<APIApplicationCommandInteraction>,
-	respond: ResponseHandler
+	respond: ResponseHandler,
+	request: Request
 ) {
 	if (isChatInputApplicationCommandInteraction(json)) {
 		if (!(command instanceof SlashCommand)) {
@@ -92,7 +93,7 @@ async function handleApplicationCommandInteraction(
 		const handler = command.getCommandHandler(json);
 
 		log(`Handling ${interaction.name}`);
-		handler(interaction, application);
+		await handler(interaction, application, request);
 	} else if (isContextMenuApplicationCommandInteraction(json)) {
 		const interaction = new ContextMenuInteraction(
 			application,
@@ -102,7 +103,7 @@ async function handleApplicationCommandInteraction(
 		);
 
 		log(`Handling ${interaction.name}`);
-		command.handler(interaction, application);
+		await command.handler(interaction, application, request);
 	} else {
 		throw new Error(
 			// @ts-expect-error With the current given types, this cannot happen, but Discord may add types at any time
@@ -116,7 +117,8 @@ async function handleMessageComponentInteraction(
 	application: Application,
 	component: ExecutableComponent,
 	json: RequestBody<APIMessageComponentInteraction>,
-	respond: ResponseHandler
+	respond: ResponseHandler,
+	request: Request
 ) {
 	if (
 		isMessageComponentButtonInteraction(json) &&
@@ -130,7 +132,7 @@ async function handleMessageComponentInteraction(
 		);
 
 		log(`Handling ${interaction.customId}`);
-		component.handler(interaction, application);
+		await component.handler(interaction, application, request);
 	} else if (
 		isMessageComponentSelectMenuInteraction(json) &&
 		isSelectComponent(component)
@@ -143,7 +145,7 @@ async function handleMessageComponentInteraction(
 		);
 
 		log(`Handling ${interaction.customId}`);
-		component.handler(interaction, application);
+		await component.handler(interaction, application, request);
 	} else {
 		throw new Error(
 			`Unknown Interaction Component type (${
@@ -157,7 +159,8 @@ async function handleMessageComponentInteraction(
 export async function handler(
 	application: Application,
 	json: RequestBody<APIInteraction>,
-	respond: ResponseHandler
+	respond: ResponseHandler,
+	request: Request
 ) {
 	switch (json.type) {
 		case InteractionType.Ping: {
@@ -180,7 +183,8 @@ export async function handler(
 				application,
 				command,
 				json,
-				respond
+				respond,
+				request
 			);
 		}
 
@@ -218,10 +222,10 @@ export async function handler(
 				isAutocompleteExecutableOption(option) &&
 				option.autocomplete != null
 			) {
-				return option.autocomplete(interaction, application);
+				return option.autocomplete(interaction, application, request);
 			}
 
-			return command?.autocomplete?.(interaction, application);
+			return command?.autocomplete?.(interaction, application, request);
 		}
 
 		case InteractionType.MessageComponent: {
@@ -237,7 +241,8 @@ export async function handler(
 				application,
 				component,
 				json,
-				respond
+				respond,
+				request
 			);
 		}
 

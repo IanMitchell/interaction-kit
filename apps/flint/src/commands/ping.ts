@@ -5,7 +5,7 @@ export default new SlashCommand({
 	description: "Get a pong back",
 	handler: async (interaction) => {
 		try {
-			await interaction.reply({ message: "pong reload", ephemeral: true });
+			await interaction.reply({ message: "pong", ephemeral: true });
 		} catch (err: unknown) {
 			console.error("Error!");
 		}

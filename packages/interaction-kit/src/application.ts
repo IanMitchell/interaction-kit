@@ -9,14 +9,9 @@ import type SlashCommand from "./commands/slash-command.js";
 import type { ExecutableComponent } from "./components/index.js";
 import { isExecutableComponent } from "./components/index.js";
 import Config from "./config.js";
-import type ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction.js";
 import * as Interaction from "./interactions/index.js";
-import type {
-	InteractionKitCommand,
-	MapValue,
-	SerializableComponent,
-} from "./interfaces.js";
-import { response, ResponseStatus } from "./requests/response.js";
+import type { MapValue, SerializableComponent } from "./interfaces.js";
+import { ResponseStatus, response } from "./requests/response.js";
 
 const log = debug("ikit:application");
 
@@ -40,12 +35,17 @@ type CommandMap = {
 
 type CommandMapValue<K extends keyof CommandMap> = MapValue<CommandMap[K]>;
 
+export type AllCommands =
+	| SlashCommand
+	| ContextMenu<ApplicationCommandType.User>
+	| ContextMenu<ApplicationCommandType.Message>;
+
 export default class Application {
 	#applicationId: Snowflake;
 	#publicKey: string;
 	#token: string;
 	#commands: CommandMap;
-	#components: Map<string, ExecutableComponent> = new Map();
+	#components = new Map<string, ExecutableComponent>();
 	#shutdown: AbortController;
 
 	constructor({ applicationId, publicKey, token }: ApplicationArgs) {
@@ -93,14 +93,14 @@ export default class Application {
 			.flat();
 	}
 
-	addCommand(command: InteractionKitCommand<ApplicationCommandInteraction>) {
+	addCommand(command: AllCommands) {
 		if (this.#commands[command.type]?.has(command.name.toLowerCase())) {
 			throw new Error(
 				`Error registering ${command.name.toLowerCase()}: Duplicate names are not allowed`
 			);
 		}
 
-		log(`Registering the ${command.name.toLowerCase()} command`);
+		log(`Adding the ${command.name.toLowerCase()} command`);
 
 		this.#commands[command.type].set(
 			command.name.toLowerCase(),
@@ -112,9 +112,7 @@ export default class Application {
 		return this;
 	}
 
-	addCommands(
-		...commands: Array<InteractionKitCommand<ApplicationCommandInteraction>>
-	) {
+	addCommands(...commands: AllCommands[]) {
 		commands.forEach((command) => this.addCommand(command));
 		return this;
 	}
@@ -185,7 +183,8 @@ export default class Application {
 					json,
 					(status: ResponseStatus, json: Record<string, any>) => {
 						resolve(response(status, json));
-					}
+					},
+					request
 				);
 			});
 		} catch (error: unknown) {
