@@ -185,7 +185,8 @@ export default class Application {
 					json,
 					(status: ResponseStatus, json: Record<string, any>) => {
 						resolve(response(status, json));
-					}
+					},
+					request
 				);
 			});
 		} catch (error: unknown) {

@@ -99,12 +99,7 @@ export interface Autocomplete<T extends ChoiceType> {
 
 export interface Executable<T extends Interaction = Interaction> {
 	matches?: ((customId: string) => Promise<boolean>) | undefined;
-	handler: (
-		interaction: T,
-		application: Application
-		// TODO: Add request?
-		// request: Request
-	) => void;
+	handler: (interaction: T, application: Application, request: Request) => void;
 }
 
 export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
@@ -112,11 +107,6 @@ export interface InteractionKitCommand<T extends ApplicationCommandInteraction>
 		Serializable<RESTPostAPIApplicationCommandsJSONBody>,
 		Comparable<APIApplicationCommand> {
 	name: string;
-	handler: (
-		interaction: T,
-		application: Application
-		// TODO: Add request?
-		// request: Request
-	) => void;
+	handler: (interaction: T, application: Application, request: Request) => void;
 	get type(): ApplicationCommandType;
 }
