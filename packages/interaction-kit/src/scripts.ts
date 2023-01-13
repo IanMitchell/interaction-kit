@@ -1,7 +1,4 @@
-import {
-	getGlobalApplicationCommands,
-	getGuildApplicationCommands,
-} from "discord-api";
+import { getGuildApplicationCommands } from "discord-api";
 import type {
 	APIApplicationCommand,
 	RESTGetAPIApplicationGuildCommandsResult,
@@ -47,6 +44,7 @@ export async function getApplicationEntrypoint(): Promise<Application> {
 			const build = await esbuild.build({
 				entryPoints: [entrypoint],
 				bundle: true,
+				format: "esm",
 				outdir: path.join(process.cwd(), ".ikit"),
 			});
 

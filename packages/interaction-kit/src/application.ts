@@ -100,7 +100,7 @@ export default class Application {
 			);
 		}
 
-		log(`Registering the ${command.name.toLowerCase()} command`);
+		log(`Adding the ${command.name.toLowerCase()} command`);
 
 		this.#commands[command.type].set(
 			command.name.toLowerCase(),
