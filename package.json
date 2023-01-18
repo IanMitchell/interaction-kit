@@ -51,6 +51,7 @@
 		"turbo": "^1.4.3",
 		"typescript": "^4.7.4",
 		"unbuild": "^0.8.9",
+		"undici": "^5.15.0",
 		"vitest": "^0.22.1"
 	},
 	"volta": {

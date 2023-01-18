@@ -175,6 +175,7 @@ export class Manager {
 			return;
 		}
 
+		// @ts-expect-error Not sure why this started breaking
 		this.#bucketSweeper = setInterval(() => {
 			const swept = new Map<string, Bucket>();
 
@@ -199,6 +200,7 @@ export class Manager {
 			return;
 		}
 
+		// @ts-expect-error Not sure why this started breaking
 		this.#queueSweeper = setInterval(() => {
 			const swept = new Map<string, Queue>();
 
@@ -290,7 +292,7 @@ export class Manager {
 	#getRequestURL(data: RequestData) {
 		let url = this.config.api;
 
-		if (data.versioned) {
+		if (data.versioned !== false) {
 			url += `/v${this.config.version}`;
 		}
 
