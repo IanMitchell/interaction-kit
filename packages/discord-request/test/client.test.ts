@@ -3,7 +3,7 @@ import Client from "../src/client.js";
 
 beforeAll(() => {
 	vi.mock("../src/manager", () => {
-		// TODO: There has to be a better way of doing this
+		// There has to be a better way of doing this
 		globalThis.CONSTRUCTOR_ARGS = null;
 		globalThis.QUEUE_SPY = vi.fn();
 		globalThis.TOKEN_SPY = vi.fn();
