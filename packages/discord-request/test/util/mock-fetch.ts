@@ -12,7 +12,8 @@ export function setMockResponse(
 		headers?: Record<string, string>;
 		method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
 	},
-	path = ""
+	path = "",
+	times = 1
 ) {
 	const mockAgent = new MockAgent();
 	mockAgent.disableNetConnect();
@@ -22,5 +23,7 @@ export function setMockResponse(
 	const mockPool = mockAgent.get("https://discord.com");
 	mockPool
 		.intercept({ path: `/api/v10/${path}`, method })
-		.reply(status, body, { headers });
+		.reply(status, body, { headers })
+		.times(times);
+	return mockPool;
 }
