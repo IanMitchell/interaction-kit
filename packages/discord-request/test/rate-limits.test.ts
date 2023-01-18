@@ -19,3 +19,5 @@ test.todo("Handles Global Rate Limits");
 test.todo("Updates Global Timeout Flag");
 
 test.todo("Updates Global Limited Flag");
+
+test.todo("Retries rate limited requests");

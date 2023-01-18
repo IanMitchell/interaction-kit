@@ -14,6 +14,8 @@ describe("API URL", () => {
 	test.todo("Handles old API versions");
 
 	test.todo("Handles Query Parameters");
+
+	test.todo("Handles unversioned routes");
 });
 
 describe("Headers", () => {
