@@ -54,8 +54,8 @@ export class Manager {
 	buckets: Map<string, Bucket>;
 	queues: Map<string, Queue>;
 
-	#bucketSweeper = -1;
-	#queueSweeper = -1;
+	#bucketSweeper: number | NodeJS.Timer = -1;
+	#queueSweeper: number | NodeJS.Timer = -1;
 
 	bucketSweepInterval: number;
 	queueSweepInterval: number;
@@ -175,7 +175,6 @@ export class Manager {
 			return;
 		}
 
-		// @ts-expect-error Not sure why this started breaking
 		this.#bucketSweeper = setInterval(() => {
 			const swept = new Map<string, Bucket>();
 
@@ -200,7 +199,6 @@ export class Manager {
 			return;
 		}
 
-		// @ts-expect-error Not sure why this started breaking
 		this.#queueSweeper = setInterval(() => {
 			const swept = new Map<string, Queue>();
 
