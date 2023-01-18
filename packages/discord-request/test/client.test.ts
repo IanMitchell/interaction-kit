@@ -67,9 +67,19 @@ describe("Configuration", () => {
 		expect(client.userAgent).toEqual("test UA");
 	});
 
-	test.todo("abortSignal");
+	test("abortSignal", () => {
+		const client = new Client();
+		const controller = new AbortController();
 
-	test.todo("globalRequestsPerSecond");
+		client.abortSignal = controller.signal;
+		expect(client.abortSignal).toBe(controller.signal);
+	});
+
+	test("globalRequestsPerSecond", () => {
+		const client = new Client();
+		client.globalRequestsPerSecond = 1;
+		expect(client.globalRequestsPerSecond).toEqual(1);
+	});
 
 	test.todo("api");
 
