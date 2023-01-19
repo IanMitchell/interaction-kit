@@ -1,4 +1,4 @@
-import { test } from "vitest";
+import { expect, test } from "vitest";
 import Client from "../src/client.js";
 import { setMockResponse } from "./util/mock-fetch.js";
 
@@ -21,7 +21,14 @@ test("Request errors do not break Queue", async () => {
 	expect(successData.success).toBe(true);
 });
 
-test.todo("Handles Server Errors");
+test("Handles Server Errors", async () => {
+	const client = new Client({ retries: 0 }).setToken("test");
+	setMockResponse({ status: 500, body: { success: false } });
+
+	await expect(async () => {
+		await client.get("/");
+	}).rejects.toThrow();
+});
 
 test.todo("Handles Validation Errors");
 
