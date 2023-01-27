@@ -10,7 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type Application from "./application.js";
 
-export async function getEdgeEntrypoint(filepath?: string) {
+export function getEdgeEntrypoint(filepath?: string) {
 	if (filepath != null) {
 		return path.join(process.cwd(), filepath);
 	}

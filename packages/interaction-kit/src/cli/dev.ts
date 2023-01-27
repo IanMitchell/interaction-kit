@@ -6,6 +6,7 @@ import {
 	bulkOverwriteGuildApplicationCommands,
 	client,
 	getGuildApplicationCommands,
+	updateApplication,
 } from "discord-api";
 import type { RESTGetAPIApplicationGuildCommandsResult } from "discord-api-types/v10";
 import server from "discord-edge-runner";
@@ -39,13 +40,20 @@ async function updateCommands(
 			commands
 		);
 
+		const totalCommands =
+			comparison.new.size +
+			comparison.updated.size +
+			comparison.deleted.size +
+			comparison.unchanged.size;
+
 		log(
-			listFormatter.format([
-				chalk.green(`${comparison.new.size} new commands`),
-				chalk.yellow(`${comparison.updated.size} updated commands`),
-				chalk.red(`${comparison.deleted.size} deleted commands`),
-				chalk.gray(`${comparison.unchanged.size} unchanged commands`),
-			])
+			`Refreshing ${totalCommands} Command${
+				totalCommands > 1 ? "s" : ""
+			}: ${listFormatter.format([
+				chalk.green(`${comparison.new.size} new`),
+				chalk.yellow(`${comparison.updated.size} updated`),
+				chalk.red(`${comparison.deleted.size} deleted`),
+			])}`
 		);
 
 		if (comparison.changed) {
@@ -118,16 +126,14 @@ export default async function dev(argv?: string[]) {
 	);
 
 	const port = args["--port"] ?? 3000;
-	let entrypoint = args["--entrypoint"] ?? "";
+	const applicationId = process.env.APPLICATION_ID as Snowflake;
+	let entrypoint = args["--entrypoint"];
 
 	let commands: RESTGetAPIApplicationGuildCommandsResult;
 
 	try {
-		entrypoint = await getEdgeEntrypoint(entrypoint);
-		commands = await getGuildApplicationCommands(
-			process.env.APPLICATION_ID as Snowflake,
-			guildId
-		);
+		entrypoint = getEdgeEntrypoint(entrypoint);
+		commands = await getGuildApplicationCommands(applicationId, guildId);
 	} catch (error: unknown) {
 		log(chalk.red((error as Error).message));
 		process.exit(1);
@@ -164,15 +170,36 @@ export default async function dev(argv?: string[]) {
 		},
 	});
 
+	// Update interaction URL
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+	try {
+		await updateApplication(applicationId, url);
+	} catch (err: unknown) {
+		log(err);
+	}
+
+	// Some math to make things pretty
+	const onlineText = `Your Application is now running!`;
+	const ngrokUrl = `Interaction URL: ${url}`;
+	const centerPadding = Math.floor((ngrokUrl.length - onlineText.length) / 2);
+
 	console.log(
 		boxen(
-			`Set your Application Interactions URL to:\n${chalk.blue(
-				url
-			)}\n\n${chalk.gray(`Listening on http://localhost:${port}`)}`,
+			`${onlineText.padStart(
+				onlineText.length + centerPadding,
+				" "
+			)}\n\n${chalk.gray(
+				`Interaction URL: ${chalk.blue(
+					url
+				)}\nListening on: http://localhost:${port}`
+			)}`,
 			{
+				title: "Interaction Kit",
+				titleAlignment: "left",
 				padding: 1,
 				margin: 1,
-				align: "center",
+				// align: "center",
+				align: "left",
 				borderColor: "yellow",
 				borderStyle: "round",
 			}

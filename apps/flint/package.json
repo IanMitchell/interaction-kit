@@ -5,7 +5,7 @@
 	"scripts": {
 		"clean": "rimraf .turbo .ikit",
 		"deploy": "ikit deploy",
-		"bot": "DEBUG=* ikit dev",
+		"bot": "DEBUG=* DEBUG_HIDE_DATE=ON ikit dev",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
 		"lint": "eslint ./src/**/*.ts"
