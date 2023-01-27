@@ -21,3 +21,5 @@ test.todo("Updates Global Timeout Flag");
 test.todo("Updates Global Limited Flag");
 
 test.todo("Retries rate limited requests");
+
+test.todo("Interactions ignore global rate limit");
