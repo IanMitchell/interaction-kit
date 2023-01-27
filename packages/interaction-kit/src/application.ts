@@ -11,7 +11,7 @@ import { isExecutableComponent } from "./components/index.js";
 import Config from "./config.js";
 import * as Interaction from "./interactions/index.js";
 import type { MapValue, SerializableComponent } from "./interfaces.js";
-import { ResponseStatus, response } from "./requests/response.js";
+import { response, ResponseStatus } from "./requests/response.js";
 
 const log = debug("ikit:application");
 
@@ -19,6 +19,7 @@ type ApplicationArgs = {
 	applicationId: string;
 	publicKey: string;
 	token: string;
+	platform: SubtleCryptoImportKeyAlgorithm | string;
 };
 
 type CommandMap = {
@@ -47,8 +48,9 @@ export default class Application {
 	#commands: CommandMap;
 	#components = new Map<string, ExecutableComponent>();
 	#shutdown: AbortController;
+	#platform: SubtleCryptoImportKeyAlgorithm | string;
 
-	constructor({ applicationId, publicKey, token }: ApplicationArgs) {
+	constructor({ applicationId, publicKey, token, platform }: ApplicationArgs) {
 		if (!applicationId) {
 			throw new Error(
 				"Please provide an Application ID. You can find this value <here>"
@@ -69,6 +71,7 @@ export default class Application {
 		this.#publicKey = publicKey;
 		this.#token = token as Snowflake;
 		this.#shutdown = new AbortController();
+		this.#platform = platform;
 
 		// Set up internal data structures
 		this.#commands = {
@@ -166,8 +169,11 @@ export default class Application {
 			});
 		}
 
-		// TODO: Handle different platforms
-		const valid = await isValidRequest(request, this.#publicKey);
+		const valid = await isValidRequest(
+			request,
+			this.#publicKey,
+			this.#platform
+		);
 		if (!valid) {
 			return response(ResponseStatus.Unauthorized, {
 				error: "Invalid Request",
