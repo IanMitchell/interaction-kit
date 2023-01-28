@@ -1,0 +1,12 @@
+name: Documentation or Example
+description: Request an example for something or Documentation related issues
+labels:
+  - Documentation
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Give us a description of what you're looking for!
+    validations:
+      required: true
