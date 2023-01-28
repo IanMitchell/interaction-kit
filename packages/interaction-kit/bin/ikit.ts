@@ -67,5 +67,4 @@ if (args["--help"]) {
 
 process.env.NODE_ENV ??= command === "dev" ? "development" : "production";
 
-// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
 commands[command]?.(forwardedArgs);

@@ -39,6 +39,7 @@ export interface RequestOptions {
 	query?: URLSearchParams;
 	reason?: string;
 	versioned?: boolean;
+	ignoreGlobalLimit?: boolean;
 }
 
 export interface RequestData extends RequestOptions {

@@ -129,9 +129,9 @@ export class Manager {
 		const bucket = this.#getBucket(key);
 		const queue = this.#getBucketQueue(bucket, route.identifier);
 
-		const { resource, init } = this.#resolve(data);
+		const { resource, init, ignoreGlobalLimit } = this.#resolve(data);
 
-		return queue.add(route, resource, init);
+		return queue.add(route, resource, init, ignoreGlobalLimit);
 	}
 
 	setToken(token: string | null) {
@@ -284,6 +284,7 @@ export class Manager {
 		return {
 			resource: url,
 			init: fetchOptions,
+			ignoreGlobalLimit: data.ignoreGlobalLimit ?? false,
 		};
 	}
 

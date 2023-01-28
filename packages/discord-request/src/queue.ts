@@ -45,11 +45,21 @@ export class Queue {
 		return this.reset + OFFSET - Date.now();
 	}
 
-	async add(route: Route, resource: string, init: RequestInit) {
+	async add(
+		route: Route,
+		resource: string,
+		init: RequestInit,
+		ignoreGlobalLimit: boolean
+	) {
 		return new Promise((resolve, reject) => {
 			void this.#queue.then(async () => {
 				try {
-					const value = await this.#process(route, resource, init);
+					const value = await this.#process(
+						route,
+						resource,
+						init,
+						ignoreGlobalLimit
+					);
 					resolve(value);
 				} catch (error: unknown) {
 					reject(error);
@@ -62,6 +72,7 @@ export class Queue {
 		route: Route,
 		resource: string,
 		init: RequestInit,
+		ignoreGlobalLimit: boolean,
 		retries = 0
 	): Promise<unknown> {
 		await this.#rateLimitThrottle();
@@ -73,7 +84,9 @@ export class Queue {
 				this.manager.config.globalRequestsPerSecond;
 		}
 
-		this.manager.globalRequestCounter -= 1;
+		if (!ignoreGlobalLimit) {
+			this.manager.globalRequestCounter -= 1;
+		}
 
 		// Setup the timeout signal
 		const signal = new AbortController();
@@ -102,7 +115,13 @@ export class Queue {
 				error.name === "AbortError" &&
 				retries < this.manager.config.retries
 			) {
-				return await this.#process(route, resource, init, retries + 1);
+				return await this.#process(
+					route,
+					resource,
+					init,
+					ignoreGlobalLimit,
+					retries + 1
+				);
 			}
 
 			throw error;
@@ -179,13 +198,19 @@ export class Queue {
 			await sleep(retryAfter, this.#shutdownSignal);
 
 			// Don't bump retries for a non-server issue (the request is expected to succeed)
-			return this.#process(route, resource, init, retries);
+			return this.#process(route, resource, init, ignoreGlobalLimit, retries);
 		}
 
 		// If given a server error, retry the request
 		if (response.status >= 500 && response.status < 600) {
 			if (retries < this.manager.config.retries) {
-				return this.#process(route, resource, init, retries + 1);
+				return this.#process(
+					route,
+					resource,
+					init,
+					ignoreGlobalLimit,
+					retries + 1
+				);
 			}
 
 			throw new RequestError(

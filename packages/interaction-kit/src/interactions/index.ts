@@ -107,7 +107,7 @@ async function handleApplicationCommandInteraction(
 	} else {
 		throw new Error(
 			// @ts-expect-error With the current given types, this cannot happen, but Discord may add types at any time
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			`Unknown Application Command type: ${json.data.type ?? "[unknown]"}`
 		);
 	}
@@ -149,7 +149,6 @@ async function handleMessageComponentInteraction(
 	} else {
 		throw new Error(
 			`Unknown Interaction Component type (${
-				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-unsafe-member-access
 				json.data.component_type ?? "[unknown]"
 			}) or component mismatch. `
 		);

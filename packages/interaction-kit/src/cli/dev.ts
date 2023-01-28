@@ -171,7 +171,6 @@ export default async function dev(argv?: string[]) {
 	});
 
 	// Update interaction URL
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 	try {
 		await updateApplication(applicationId, url);
 	} catch (err: unknown) {
