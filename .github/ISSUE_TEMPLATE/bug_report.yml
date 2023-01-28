@@ -1,6 +1,5 @@
 name: Bug report
 description: Report a bug with Interaction Kit
-title: '[Bug]: '
 labels:
   - Bug
 body:
