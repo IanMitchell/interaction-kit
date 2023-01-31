@@ -8,20 +8,28 @@ describe("Attachment Requests", () => {
 
 		intercept("/basic-attachment", { method: "POST" }).reply(
 			200,
-			(request) => ({ name: request.body.get("files[0]").name }),
+			(request) => {
+				const body = request.body as FormData;
+				const { name } = body.get("files[0]") as File;
+
+				return { name };
+			},
 			{
 				headers: { "Content-Type": "application/json" },
 			}
 		);
 
-		const response = await client.post("/basic-attachment", {
+		const response = (await client.post("/basic-attachment", {
 			files: [
-				new File(["I learned to code on notepad++"], "test.txt", {
-					type: "text/plain",
-				}),
+				{
+					name: "test.txt",
+					data: new File(["I learned to code on notepad++"], "test.txt", {
+						type: "text/plain",
+					}),
+				},
 			],
 			headers: { "Content-Type": "multipart/form-data" },
-		});
+		})) as Record<string, unknown>;
 
 		expect(response.name).toBe("test.txt");
 	});
@@ -31,11 +39,19 @@ describe("Attachment Requests", () => {
 
 		intercept("/attachment-metadata", { method: "POST" }).reply(
 			200,
-			(request) => ({
-				name: JSON.parse(request.body.getAll("files[10]")[1]).filename,
-				description: JSON.parse(request.body.getAll("files[10]")[1])
-					.description,
-			}),
+			(request) => {
+				const body = request.body as FormData;
+				const input = body.getAll("files[10]");
+				const { filename, description } = JSON.parse(input[1] as string) as {
+					filename: string;
+					description: string;
+				};
+
+				return {
+					filename,
+					description,
+				};
+			},
 			{
 				headers: { "Content-Type": "application/json" },
 			}
@@ -50,10 +66,11 @@ describe("Attachment Requests", () => {
 			})
 		);
 
-		const response = await client.post("/attachment-metadata", {
+		const response = (await client.post("/attachment-metadata", {
 			files: [
 				{
-					id: 10,
+					id: "10",
+					name: "test.txt",
 					data: new File(["I learned to code on notepad++"], "test.txt", {
 						type: "text/plain",
 					}),
@@ -61,9 +78,9 @@ describe("Attachment Requests", () => {
 			],
 			formData,
 			headers: { "Content-Type": "multipart/form-data" },
-		});
+		})) as Record<string, unknown>;
 
-		expect(response.name).toBe("secrets.txt");
+		expect(response.filename).toBe("secrets.txt");
 		expect(response.description).toBe("This is a text file with many secrets");
 	});
 });
@@ -87,7 +104,10 @@ describe("Content Types", () => {
 			{ headers: { "Content-Type": "application/json" } }
 		);
 
-		const response = await client.get("/json-request-body");
+		const response = (await client.get("/json-request-body")) as Record<
+			string,
+			unknown
+		>;
 		expect(response).toBeInstanceOf(Object);
 		expect(response.success).toBe(true);
 	});

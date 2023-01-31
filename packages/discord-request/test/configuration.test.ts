@@ -23,7 +23,10 @@ describe("API URL", () => {
 				{ headers: { "Content-Type": "application/json" } }
 			);
 
-		const response = await client.get("/oldie-but-still-slaps");
+		const response = (await client.get("/oldie-but-still-slaps")) as Record<
+			string,
+			unknown
+		>;
 		expect(response.success).toBe(true);
 	});
 
@@ -45,9 +48,9 @@ describe("API URL", () => {
 			{ headers: { "Content-Type": "application/json" } }
 		);
 
-		const response = await client.get("/params", {
+		const response = (await client.get("/params", {
 			query: new URLSearchParams({ key: "value" }),
-		});
+		})) as Record<string, unknown>;
 		expect(response.params).toEqual({ key: "value" });
 	});
 
@@ -62,7 +65,9 @@ describe("API URL", () => {
 				{ headers: { "Content-Type": "application/json" } }
 			);
 
-		const response = await client.get("/concise", { versioned: false });
+		const response = (await client.get("/concise", {
+			versioned: false,
+		})) as Record<string, unknown>;
 		expect(response.success).toBe(true);
 	});
 });
@@ -72,18 +77,28 @@ describe("Headers", () => {
 		const client = new Client().setToken("test");
 
 		intercept("/authorization")
-			.reply(200, (request) => ({ success: request.headers.authorization }), {
-				headers: { "Content-Type": "application/json" },
-			})
+			.reply(
+				200,
+				(request) => {
+					const value = (request.headers as Record<string, unknown>)
+						.authorization;
+					return { success: value };
+				},
+				{
+					headers: { "Content-Type": "application/json" },
+				}
+			)
 			.times(2);
 
-		let response = await client.get("/authorization", { auth: true });
+		let response = (await client.get("/authorization", {
+			auth: true,
+		})) as Record<string, unknown>;
 		expect(response.success).toBe("Bot test");
 
-		response = await client.get("/authorization", {
+		response = (await client.get("/authorization", {
 			auth: true,
 			authPrefix: "Bearer",
-		});
+		})) as Record<string, unknown>;
 		expect(response.success).toBe("Bearer test");
 	});
 

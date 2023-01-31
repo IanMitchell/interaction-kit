@@ -1,4 +1,5 @@
 import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
+import pkg from "../package.json";
 import Client from "../src/client.js";
 
 beforeAll(() => {
@@ -64,7 +65,9 @@ describe("Configuration", () => {
 	test("userAgent", () => {
 		const client = new Client();
 		client.userAgent = "test UA";
-		expect(client.userAgent).toEqual("test UA");
+		expect(client.userAgent).toEqual(
+			`DiscordBot test UA, discord-request v${pkg.version}`
+		);
 	});
 
 	test("abortSignal", () => {

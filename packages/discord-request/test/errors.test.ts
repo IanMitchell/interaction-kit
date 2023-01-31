@@ -20,7 +20,10 @@ test("Retries Timeouts", async () => {
 		{ headers: { "Content-Type": "application/json" } }
 	);
 
-	const response = await client.get("/retry-timeout");
+	const response = (await client.get("/retry-timeout")) as Record<
+		string,
+		unknown
+	>;
 	expect(response.success).toBe(true);
 });
 
@@ -42,8 +45,12 @@ test("Request errors do not break Queue", async () => {
 	);
 
 	const [failure, success] = await Promise.all([
-		client.get("/request-error-queue").catch((error) => ({ success: false })),
-		client.get("/request-error-queue"),
+		client
+			.get("/request-error-queue")
+			.catch((error) => ({ success: false })) as Promise<
+			Record<string, unknown>
+		>,
+		client.get("/request-error-queue") as Promise<Record<string, unknown>>,
 	]);
 
 	expect(failure.success).toBe(false);
