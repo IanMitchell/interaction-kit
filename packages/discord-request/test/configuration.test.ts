@@ -29,7 +29,21 @@ describe("API URL", () => {
 
 	test.todo("Handles Query Parameters");
 
-	test.todo("Handles unversioned routes");
+	test("Handles unversioned routes", async () => {
+		const client = new Client({ version: 13 }).setToken("test");
+
+		const mock = getMockClient();
+		mock
+			.intercept({ path: "/api/" })
+			.reply(
+				200,
+				{ success: true },
+				{ headers: { "Content-Type": "application/json" } }
+			);
+
+		const response = await client.get("/", { versioned: false });
+		expect(response.success).toBe(true);
+	});
 });
 
 describe("Headers", () => {
