@@ -173,7 +173,7 @@ export default class Client {
 	}
 
 	/**
-	 * Set the client callbacks.
+	 * Sets the client callbacks.
 	 */
 	set callbacks({
 		onBucketSweep,
