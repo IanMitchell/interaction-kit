@@ -1,5 +1,14 @@
 import { MockAgent, setGlobalDispatcher } from "undici";
 
+export function getMockClient() {
+	const mockAgent = new MockAgent();
+	mockAgent.disableNetConnect();
+
+	setGlobalDispatcher(mockAgent);
+
+	return mockAgent.get("https://discord.com");
+}
+
 export function setMockResponse({
 	status,
 	body,
@@ -15,16 +24,12 @@ export function setMockResponse({
 	path?: string;
 	times?: number;
 }) {
-	const mockAgent = new MockAgent();
-	mockAgent.disableNetConnect();
+	const client = getMockClient();
 
-	setGlobalDispatcher(mockAgent);
-
-	const mockPool = mockAgent.get("https://discord.com");
-	mockPool
+	client
 		.intercept({ path: `/api/v10/${path}`, method })
 		.reply(status, body, { headers })
 		.times(times);
 
-	return mockPool;
+	return client;
 }

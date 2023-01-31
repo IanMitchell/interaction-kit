@@ -1,24 +1,38 @@
 import { expect, test } from "vitest";
 import Client from "../src/client.js";
-import { setMockResponse } from "./util/mock-fetch.js";
+import { getMockClient, setMockResponse } from "./util/mock-fetch.js";
 
 test.todo("Retries Timeouts");
 
 test("Request errors do not break Queue", async () => {
 	const client = new Client({ retries: 0 }).setToken("test");
 
-	setMockResponse({ status: 500, body: { success: false } })
+	const mock = getMockClient();
+
+	mock
 		.intercept({ path: "/api/v10/" })
-		.reply(200, { success: true });
+		.reply(
+			500,
+			{ success: false },
+			{ headers: { "Content-Type": "application/json" } }
+		)
+		.delay(1000);
 
-	const failureResponse = await client.get("/");
-	const successResponse = await client.get("/");
+	mock
+		.intercept({ path: "/api/v10/" })
+		.reply(
+			200,
+			{ success: true },
+			{ headers: { "Content-Type": "application/json" } }
+		);
 
-	const failureData = await failureResponse.json();
-	const successData = await successResponse.json();
+	const [failure, success] = await Promise.all([
+		client.get("/").catch((error) => ({ success: false })),
+		client.get("/"),
+	]);
 
-	expect(failureData.success).toBe(false);
-	expect(successData.success).toBe(true);
+	expect(failure.success).toBe(false);
+	expect(success.success).toBe(true);
 });
 
 test("Handles Server Errors", async () => {
