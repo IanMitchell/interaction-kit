@@ -5,13 +5,17 @@ export function getRouteKey(method: RequestMethod | undefined, route: Route) {
 }
 
 export function getRouteInformation(route: string): Route {
-	const match = /^\/(?:channels|guilds|webhooks)\/(?<snowflake>\d{16,19})/.exec(
-		route
-	);
-	const identifier = match?.groups?.snowflake ?? "global";
+	const match =
+		/^\/(?:channels|guilds|webhooks|interactions)\/(?<snowflake>\d{16,19})(?:\/(?<token>aW50ZXJhY3Rpb24\w+))?/.exec(
+			route
+		);
+	const identifier =
+		match?.groups?.token ?? match?.groups?.snowflake ?? "global";
 	const path = route
 		// Replace Snowflake IDs
 		.replace(/\d{16,19}/g, ":id")
+		// Replace Interaction Tokens
+		.replace(/aW50ZXJhY3Rpb24\w+/g, ":token")
 		// Reactions share a bucket
 		.replace(/\/reactions\/(.*)/, "/reactions/:reaction");
 
