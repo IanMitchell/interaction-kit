@@ -1,14 +1,29 @@
 import { URLSearchParams } from "url";
 import { describe, expect, test, vi } from "vitest";
 import Client from "../src/client.js";
+import { sleep } from "../src/util/time.js";
 import { intercept, mockPool } from "./util/mock-fetch.js";
 
 describe("Sweeps", () => {
 	test.todo("Sweeps don't start with Interval 0");
 
 	test.todo("Old buckets are removed and returned");
+	test("Sweeps run when configured", async () => {
+		const onBucketSweep = vi.fn();
+
+		const client = new Client({
+			bucketSweepInterval: 100,
+			onBucketSweep,
+		}).setToken("test");
+
+		await sleep(300);
+
+		expect(onBucketSweep).toHaveBeenCalledTimes(3);
+	});
 
 	test.todo("Sweeps can be cleared");
+
+	test.todo("Abort signal clears sweeps");
 });
 
 describe("API URL", () => {
