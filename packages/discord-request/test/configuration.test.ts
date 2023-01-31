@@ -1,3 +1,4 @@
+import { URLSearchParams } from "url";
 import { describe, expect, test, vi } from "vitest";
 import Client from "../src/client.js";
 import { getMockClient, setMockResponse } from "./util/mock-fetch.js";
@@ -27,7 +28,30 @@ describe("API URL", () => {
 		expect(response.success).toBe(true);
 	});
 
-	test.todo("Handles Query Parameters");
+	test("Handles Query Parameters", async () => {
+		const client = new Client().setToken("test");
+
+		const mock = getMockClient();
+		mock.intercept({ path: "/api/v10/?key=value" }).reply(
+			200,
+			(input) => {
+				const params = new URLSearchParams(input.path.split("?")[1]);
+
+				return {
+					params: [...params.entries()].reduce((acc, [key, value]) => {
+						acc[key] = value;
+						return acc;
+					}, {}),
+				};
+			},
+			{ headers: { "Content-Type": "application/json" } }
+		);
+
+		const response = await client.get("/", {
+			query: new URLSearchParams({ key: "value" }),
+		});
+		expect(response.params).toEqual({ key: "value" });
+	});
 
 	test("Handles unversioned routes", async () => {
 		const client = new Client({ version: 13 }).setToken("test");
