@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import Client from "../src/client.js";
-import { setMockResponse } from "./util/mock-fetch.js";
+import { getMockClient, setMockResponse } from "./util/mock-fetch.js";
 
 describe("Attachment Requests", () => {
 	test.todo("Handles Basic Attachments");
@@ -11,9 +11,32 @@ describe("Attachment Requests", () => {
 });
 
 describe("Content Types", () => {
-	test.todo("Handles Raw Request Bodies");
+	test("Handles Raw Request Bodies", async () => {
+		const client = new Client().setToken("test");
+		const mock = getMockClient();
 
-	test.todo("Handles JSON Request Bodies");
+		mock.intercept({ path: "/api/v10/" }).reply(200, { success: true });
+
+		const response = await client.get("/");
+		expect(response).toBeInstanceOf(ArrayBuffer);
+	});
+
+	test("Handles JSON Request Bodies", async () => {
+		const client = new Client().setToken("test");
+		const mock = getMockClient();
+
+		mock
+			.intercept({ path: "/api/v10/" })
+			.reply(
+				200,
+				{ success: true },
+				{ headers: { "Content-Type": "application/json" } }
+			);
+
+		const response = await client.get("/");
+		expect(response).toBeInstanceOf(Object);
+		expect(response.success).toBe(true);
+	});
 });
 
 describe("Chaining", () => {

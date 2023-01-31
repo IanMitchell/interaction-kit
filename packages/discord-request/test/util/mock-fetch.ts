@@ -12,7 +12,7 @@ export function getMockClient() {
 export function setMockResponse({
 	status,
 	body,
-	headers,
+	headers = { "Content-Type": "application/json" },
 	method = "GET",
 	path = "",
 	times = 1,
