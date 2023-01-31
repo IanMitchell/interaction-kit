@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import Client from "../src/client.js";
-import { setMockResponse } from "./util/mock-fetch.js";
+import { getMockClient, setMockResponse } from "./util/mock-fetch.js";
 
 describe("Sweeps", () => {
 	test.todo("Sweeps don't start with Interval 0");
@@ -11,7 +11,21 @@ describe("Sweeps", () => {
 });
 
 describe("API URL", () => {
-	test.todo("Handles old API versions");
+	test("Handles old API versions", async () => {
+		const client = new Client({ version: 6 }).setToken("test");
+
+		const mock = getMockClient();
+		mock
+			.intercept({ path: "/api/v6/" })
+			.reply(
+				200,
+				{ success: true },
+				{ headers: { "Content-Type": "application/json" } }
+			);
+
+		const response = await client.get("/");
+		expect(response.success).toBe(true);
+	});
 
 	test.todo("Handles Query Parameters");
 
