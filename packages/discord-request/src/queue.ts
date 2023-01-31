@@ -224,16 +224,10 @@ export class Queue {
 
 		// Handle non-ratelimited bad requests
 		if (response.status >= 400 && response.status < 500) {
-			// If we receive a 401 status code, it means the token we had is no longer valid.
-			const isAuthRequest = new Headers(init.headers).has("Authorization");
-			if (response.status === 401 && isAuthRequest) {
-				this.manager.setToken(null);
-			}
-
-			// Handle unknown API errors
 			const data: ErrorBody = await response.json();
 			const label = isDiscordError(data) ? data.code : data.error;
 
+			// Handle unknown API errors
 			throw new DiscordError(request, response, label, data);
 		}
 
