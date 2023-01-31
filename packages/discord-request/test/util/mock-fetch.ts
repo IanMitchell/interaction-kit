@@ -1,35 +1,18 @@
 import { MockAgent, setGlobalDispatcher } from "undici";
+import type { MockInterceptor } from "undici/types/mock-interceptor";
 
-export function getMockClient() {
-	const mockAgent = new MockAgent();
-	mockAgent.disableNetConnect();
+const agent = new MockAgent();
+agent.disableNetConnect();
+setGlobalDispatcher(agent);
 
-	setGlobalDispatcher(mockAgent);
+export const mockPool = agent.get("https://discord.com");
 
-	return mockAgent.get("https://discord.com");
-}
-
-export function setMockResponse({
-	status,
-	body,
-	headers = { "Content-Type": "application/json" },
-	method = "GET",
-	path = "",
-	times = 1,
-}: {
-	status: number;
-	body: Record<string, unknown>;
-	headers?: Record<string, string>;
-	method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
-	path?: string;
-	times?: number;
-}) {
-	const client = getMockClient();
-
-	client
-		.intercept({ path: `/api/v10/${path}`, method })
-		.reply(status, body, { headers })
-		.times(times);
-
-	return client;
+export function intercept(
+	path: string,
+	options: Omit<MockInterceptor.Options, "path"> = {}
+) {
+	return mockPool.intercept({
+		...options,
+		path: `/api/v10${path}`,
+	});
 }

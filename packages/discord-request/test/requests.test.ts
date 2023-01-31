@@ -1,19 +1,20 @@
 import { describe, expect, test, vi } from "vitest";
 import Client from "../src/client.js";
-import { getMockClient, setMockResponse } from "./util/mock-fetch.js";
+import { intercept } from "./util/mock-fetch.js";
 
 describe("Attachment Requests", () => {
 	test("Handles Basic Attachments", async () => {
 		const client = new Client({ retries: 0 }).setToken("test");
-		const mock = getMockClient();
 
-		mock
-			.intercept({ path: "/api/v10/", method: "POST" })
-			.reply(200, (request) => ({ name: request.body.get("files[0]").name }), {
+		intercept("/basic-attachment", { method: "POST" }).reply(
+			200,
+			(request) => ({ name: request.body.get("files[0]").name }),
+			{
 				headers: { "Content-Type": "application/json" },
-			});
+			}
+		);
 
-		const response = await client.post("/", {
+		const response = await client.post("/basic-attachment", {
 			files: [
 				new File(["I learned to code on notepad++"], "test.txt", {
 					type: "text/plain",
@@ -27,9 +28,8 @@ describe("Attachment Requests", () => {
 
 	test("Handles Attachments with Metadata", async () => {
 		const client = new Client({ retries: 0 }).setToken("test");
-		const mock = getMockClient();
 
-		mock.intercept({ path: "/api/v10/", method: "POST" }).reply(
+		intercept("/attachment-metadata", { method: "POST" }).reply(
 			200,
 			(request) => ({
 				name: JSON.parse(request.body.getAll("files[10]")[1]).filename,
@@ -50,7 +50,7 @@ describe("Attachment Requests", () => {
 			})
 		);
 
-		const response = await client.post("/", {
+		const response = await client.post("/attachment-metadata", {
 			files: [
 				{
 					id: 10,
@@ -71,27 +71,23 @@ describe("Attachment Requests", () => {
 describe("Content Types", () => {
 	test("Handles Raw Request Bodies", async () => {
 		const client = new Client().setToken("test");
-		const mock = getMockClient();
 
-		mock.intercept({ path: "/api/v10/" }).reply(200, { success: true });
+		intercept("/raw-request-body").reply(200, { success: true });
 
-		const response = await client.get("/");
+		const response = await client.get("/raw-request-body");
 		expect(response).toBeInstanceOf(ArrayBuffer);
 	});
 
 	test("Handles JSON Request Bodies", async () => {
 		const client = new Client().setToken("test");
-		const mock = getMockClient();
 
-		mock
-			.intercept({ path: "/api/v10/" })
-			.reply(
-				200,
-				{ success: true },
-				{ headers: { "Content-Type": "application/json" } }
-			);
+		intercept("/json-request-body").reply(
+			200,
+			{ success: true },
+			{ headers: { "Content-Type": "application/json" } }
+		);
 
-		const response = await client.get("/");
+		const response = await client.get("/json-request-body");
 		expect(response).toBeInstanceOf(Object);
 		expect(response.success).toBe(true);
 	});
@@ -109,20 +105,40 @@ test("Fetches Data with correct HTTP Method", async () => {
 	const onRequest = vi.fn();
 	const client = new Client({ onRequest }).setToken("test");
 
-	setMockResponse({ status: 200, body: { success: true } });
-	await client.get("/");
+	intercept("/get").reply(
+		200,
+		{ success: true },
+		{ headers: { "Content-Type": "application/json" } }
+	);
+	await client.get("/get");
 
-	setMockResponse({ status: 200, body: { success: true }, method: "POST" });
-	await client.post("/");
+	intercept("/post", { method: "POST" }).reply(
+		200,
+		{ success: true },
+		{ headers: { "Content-Type": "application/json" } }
+	);
+	await client.post("/post");
 
-	setMockResponse({ status: 200, body: { success: true }, method: "PUT" });
-	await client.put("/");
+	intercept("/put", { method: "PUT" }).reply(
+		200,
+		{ success: true },
+		{ headers: { "Content-Type": "application/json" } }
+	);
+	await client.put("/put");
 
-	setMockResponse({ status: 200, body: { success: true }, method: "PATCH" });
-	await client.patch("/");
+	intercept("/patch", { method: "PATCH" }).reply(
+		200,
+		{ success: true },
+		{ headers: { "Content-Type": "application/json" } }
+	);
+	await client.patch("/patch");
 
-	setMockResponse({ status: 200, body: { success: true }, method: "DELETE" });
-	await client.delete("/");
+	intercept("/delete", { method: "DELETE" }).reply(
+		200,
+		{ success: true },
+		{ headers: { "Content-Type": "application/json" } }
+	);
+	await client.delete("/delete");
 
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 	const methods = onRequest.mock.calls.map(([, , options]) => options.method);
@@ -133,12 +149,10 @@ test("Returns JSON Response", async () => {
 	const client = new Client().setToken("test");
 	const body = { success: true, json: { key: "value " } };
 
-	setMockResponse({
-		status: 200,
-		body,
+	intercept("/json-request").reply(200, body, {
 		headers: { "Content-Type": "application/json" },
 	});
-	const response = await client.get("/");
+	const response = await client.get("/json-request");
 
 	expect(response).toEqual(body);
 });

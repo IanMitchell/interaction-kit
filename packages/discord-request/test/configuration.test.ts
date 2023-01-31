@@ -1,7 +1,7 @@
 import { URLSearchParams } from "url";
 import { describe, expect, test, vi } from "vitest";
 import Client from "../src/client.js";
-import { getMockClient, setMockResponse } from "./util/mock-fetch.js";
+import { intercept, mockPool } from "./util/mock-fetch.js";
 
 describe("Sweeps", () => {
 	test.todo("Sweeps don't start with Interval 0");
@@ -15,24 +15,22 @@ describe("API URL", () => {
 	test("Handles old API versions", async () => {
 		const client = new Client({ version: 6 }).setToken("test");
 
-		const mock = getMockClient();
-		mock
-			.intercept({ path: "/api/v6/" })
+		mockPool
+			.intercept({ path: "/api/v6/oldie-but-still-slaps" })
 			.reply(
 				200,
 				{ success: true },
 				{ headers: { "Content-Type": "application/json" } }
 			);
 
-		const response = await client.get("/");
+		const response = await client.get("/oldie-but-still-slaps");
 		expect(response.success).toBe(true);
 	});
 
 	test("Handles Query Parameters", async () => {
 		const client = new Client().setToken("test");
 
-		const mock = getMockClient();
-		mock.intercept({ path: "/api/v10/?key=value" }).reply(
+		intercept("/params?key=value").reply(
 			200,
 			(request) => {
 				const params = new URLSearchParams(request.path.split("?")[1]);
@@ -47,7 +45,7 @@ describe("API URL", () => {
 			{ headers: { "Content-Type": "application/json" } }
 		);
 
-		const response = await client.get("/", {
+		const response = await client.get("/params", {
 			query: new URLSearchParams({ key: "value" }),
 		});
 		expect(response.params).toEqual({ key: "value" });
@@ -56,16 +54,15 @@ describe("API URL", () => {
 	test("Handles unversioned routes", async () => {
 		const client = new Client({ version: 13 }).setToken("test");
 
-		const mock = getMockClient();
-		mock
-			.intercept({ path: "/api/" })
+		mockPool
+			.intercept({ path: "/api/concise" })
 			.reply(
 				200,
 				{ success: true },
 				{ headers: { "Content-Type": "application/json" } }
 			);
 
-		const response = await client.get("/", { versioned: false });
+		const response = await client.get("/concise", { versioned: false });
 		expect(response.success).toBe(true);
 	});
 });
@@ -74,18 +71,16 @@ describe("Headers", () => {
 	test("Handles Authorization", async () => {
 		const client = new Client().setToken("test");
 
-		const mock = getMockClient();
-		mock
-			.intercept({ path: "/api/v10/" })
+		intercept("/authorization")
 			.reply(200, (request) => ({ success: request.headers.authorization }), {
 				headers: { "Content-Type": "application/json" },
 			})
 			.times(2);
 
-		let response = await client.get("/", { auth: true });
+		let response = await client.get("/authorization", { auth: true });
 		expect(response.success).toBe("Bot test");
 
-		response = await client.get("/", {
+		response = await client.get("/authorization", {
 			auth: true,
 			authPrefix: "Bearer",
 		});
@@ -96,8 +91,13 @@ describe("Headers", () => {
 		const onRequest = vi.fn();
 		const client = new Client({ onRequest }).setToken("test");
 
-		setMockResponse({ status: 200, body: { success: true }, method: "POST" });
-		await client.post("/", { reason: "Mods, ban this user" });
+		intercept("/audit-log", { method: "POST" }).reply(
+			200,
+			{ success: true },
+			{ headers: { "Content-Type": "application/json" } }
+		);
+
+		await client.post("/audit-log", { reason: "Mods, ban this user" });
 
 		const headers = new Headers(onRequest.mock.calls[0][2].headers);
 		expect(headers.get("X-Audit-Log-Reason")).toEqual(

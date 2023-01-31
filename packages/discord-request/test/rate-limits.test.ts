@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import Client from "../src/client.js";
-import { getMockClient } from "./util/mock-fetch.js";
+import { intercept } from "./util/mock-fetch.js";
 
 describe("Buckets", () => {
 	test.todo("Matches bucket if one exists");
@@ -32,13 +32,12 @@ test("Can ignore global rate limit", async () => {
 		onRateLimit,
 	}).setToken("test");
 
-	const mock = getMockClient();
-	mock.intercept({ path: "/api/v10/" }).reply(200, { success: true }).times(3);
+	intercept("/ignore-global-rl").reply(200, { success: true }).times(3);
 
 	const [first, second, third] = await Promise.all([
-		client.get("/", { ignoreGlobalLimit: true }),
-		client.get("/", { ignoreGlobalLimit: true }),
-		client.get("/", { ignoreGlobalLimit: true }),
+		client.get("/ignore-global-rl", { ignoreGlobalLimit: true }),
+		client.get("/ignore-global-rl", { ignoreGlobalLimit: true }),
+		client.get("/ignore-global-rl", { ignoreGlobalLimit: true }),
 	]);
 
 	expect(onRateLimit).not.toHaveBeenCalled();
