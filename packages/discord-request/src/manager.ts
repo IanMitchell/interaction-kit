@@ -1,4 +1,5 @@
 import debug from "debug";
+import pkg from "../package.json" assert { type: "json" };
 import { Queue } from "./queue.js";
 import type { RateLimitData, RequestData, Route } from "./types.js";
 import { getRouteInformation, getRouteKey } from "./util/routes.js";
@@ -89,7 +90,7 @@ export class Manager {
 			version: version ?? 10,
 			cdn: cdn ?? "https://cdn.discordapp.com",
 			headers: headers ?? {},
-			userAgent: userAgent ?? `Discord Request v0`,
+			userAgent: userAgent ?? `DiscordBot discord-request v${pkg.version}`,
 			retries: retries ?? 3,
 			timeout: timeout ?? 15 * ONE_SECOND,
 			globalRequestsPerSecond: globalRequestsPerSecond ?? 50,

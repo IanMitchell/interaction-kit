@@ -1,3 +1,4 @@
+import pkg from "../package.json" assert { type: "json" };
 import type { Callbacks, ManagerArgs } from "./manager.js";
 import { Manager } from "./manager.js";
 import type { RequestData, RequestOptions } from "./types.js";
@@ -38,7 +39,7 @@ export default class Client {
 	 * the library and version being used to access the Discord API.
 	 */
 	set userAgent(value: string) {
-		this.#manager.config.userAgent = value;
+		this.#manager.config.userAgent = `DiscordBot ${value}, discord-request v${pkg.version}`;
 	}
 
 	/**
