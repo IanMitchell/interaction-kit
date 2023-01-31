@@ -145,7 +145,7 @@ export default class Client {
 	}
 
 	/**
-	 * Get the Client sweep intervals. These help prevent memory leaks by
+	 * Sets the Client sweep intervals. These help prevent memory leaks by
 	 * periodically cleaning out unused, stored buckets and queues. In Edge and
 	 * Serverless runtimes, these are not needed and should not be configured.
 	 */
