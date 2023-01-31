@@ -2,7 +2,31 @@ import { expect, test } from "vitest";
 import Client from "../src/client.js";
 import { getMockClient, setMockResponse } from "./util/mock-fetch.js";
 
-test.todo("Retries Timeouts");
+test("Retries Timeouts", async () => {
+	const client = new Client({ retries: 3, timeout: 1000 }).setToken("test");
+
+	const mock = getMockClient();
+
+	mock
+		.intercept({ path: "/api/v10/" })
+		.reply(
+			200,
+			{ success: false },
+			{ headers: { "Content-Type": "application/json" } }
+		)
+		.delay(1000);
+
+	mock
+		.intercept({ path: "/api/v10/" })
+		.reply(
+			200,
+			{ success: true },
+			{ headers: { "Content-Type": "application/json" } }
+		);
+
+	const response = await client.get("/");
+	expect(response.success).toBe(true);
+});
 
 test("Request errors do not break Queue", async () => {
 	const client = new Client({ retries: 0 }).setToken("test");
