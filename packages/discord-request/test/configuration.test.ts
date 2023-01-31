@@ -71,7 +71,26 @@ describe("API URL", () => {
 });
 
 describe("Headers", () => {
-	test.todo("Handles Authorization");
+	test("Handles Authorization", async () => {
+		const client = new Client().setToken("test");
+
+		const mock = getMockClient();
+		mock
+			.intercept({ path: "/api/v10/" })
+			.reply(200, (input) => ({ success: input.headers.authorization }), {
+				headers: { "Content-Type": "application/json" },
+			})
+			.times(2);
+
+		let response = await client.get("/", { auth: true });
+		expect(response.success).toBe("Bot test");
+
+		response = await client.get("/", {
+			auth: true,
+			authPrefix: "Bearer",
+		});
+		expect(response.success).toBe("Bearer test");
+	});
 
 	test("Handles Audit Log", async () => {
 		const onRequest = vi.fn();
