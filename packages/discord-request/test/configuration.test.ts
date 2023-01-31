@@ -34,8 +34,8 @@ describe("API URL", () => {
 		const mock = getMockClient();
 		mock.intercept({ path: "/api/v10/?key=value" }).reply(
 			200,
-			(input) => {
-				const params = new URLSearchParams(input.path.split("?")[1]);
+			(request) => {
+				const params = new URLSearchParams(request.path.split("?")[1]);
 
 				return {
 					params: [...params.entries()].reduce((acc, [key, value]) => {
@@ -77,7 +77,7 @@ describe("Headers", () => {
 		const mock = getMockClient();
 		mock
 			.intercept({ path: "/api/v10/" })
-			.reply(200, (input) => ({ success: input.headers.authorization }), {
+			.reply(200, (request) => ({ success: request.headers.authorization }), {
 				headers: { "Content-Type": "application/json" },
 			})
 			.times(2);

@@ -252,7 +252,13 @@ export class Manager {
 			const formData = new FormData();
 
 			for (const [index, file] of data.files.entries()) {
-				formData.append(`files[${file.id ?? index}]`, file.data, file.name);
+				let { data } = file;
+
+				if (!(data instanceof Blob)) {
+					data = new Blob(data);
+				}
+
+				formData.append(`files[${file.id ?? index}]`, data, file.name);
 			}
 
 			if (data.formData != null) {

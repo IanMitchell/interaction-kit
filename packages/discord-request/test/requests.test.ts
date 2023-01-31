@@ -3,7 +3,27 @@ import Client from "../src/client.js";
 import { getMockClient, setMockResponse } from "./util/mock-fetch.js";
 
 describe("Attachment Requests", () => {
-	test.todo("Handles Basic Attachments");
+	test("Handles Basic Attachments", async () => {
+		const client = new Client({ retries: 0 }).setToken("test");
+		const mock = getMockClient();
+
+		mock
+			.intercept({ path: "/api/v10/", method: "POST" })
+			.reply(200, (request) => ({ name: request.body.get("files[0]").name }), {
+				headers: { "Content-Type": "application/json" },
+			});
+
+		const response = await client.post("/", {
+			files: [
+				new File(["I learned to code on notepad++"], "test.txt", {
+					type: "text/plain",
+				}),
+			],
+			headers: { "Content-Type": "multipart/form-data" },
+		});
+
+		expect(response.name).toBe("test.txt");
+	});
 
 	test.todo("Handles Attachments with Metadata");
 
