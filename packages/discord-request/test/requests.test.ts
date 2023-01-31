@@ -25,7 +25,47 @@ describe("Attachment Requests", () => {
 		expect(response.name).toBe("test.txt");
 	});
 
-	test.todo("Handles Attachments with Metadata");
+	test("Handles Attachments with Metadata", async () => {
+		const client = new Client({ retries: 0 }).setToken("test");
+		const mock = getMockClient();
+
+		mock.intercept({ path: "/api/v10/", method: "POST" }).reply(
+			200,
+			(request) => ({
+				name: JSON.parse(request.body.getAll("files[10]")[1]).filename,
+				description: JSON.parse(request.body.getAll("files[10]")[1])
+					.description,
+			}),
+			{
+				headers: { "Content-Type": "application/json" },
+			}
+		);
+
+		const formData = new FormData();
+		formData.append(
+			"files[10]",
+			JSON.stringify({
+				filename: "secrets.txt",
+				description: "This is a text file with many secrets",
+			})
+		);
+
+		const response = await client.post("/", {
+			files: [
+				{
+					id: 10,
+					data: new File(["I learned to code on notepad++"], "test.txt", {
+						type: "text/plain",
+					}),
+				},
+			],
+			formData,
+			headers: { "Content-Type": "multipart/form-data" },
+		});
+
+		expect(response.name).toBe("secrets.txt");
+		expect(response.description).toBe("This is a text file with many secrets");
+	});
 
 	test.todo("Handles Attachments with extra FormData");
 });

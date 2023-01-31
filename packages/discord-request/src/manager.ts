@@ -262,8 +262,12 @@ export class Manager {
 			}
 
 			if (data.formData != null) {
-				for (const [key, value] of Object.entries(data.formData)) {
-					formData.append(key, value);
+				for (const [key, value] of data.formData.entries()) {
+					if (typeof value === "string") {
+						formData.append(key, value);
+					} else {
+						formData.append(key, value, value.name);
+					}
 				}
 			}
 
