@@ -17,7 +17,7 @@
 		"typecheck": "cross-env FORCE_COLOR=1 turbo run typecheck",
 		"prettier": "cross-env FORCE_COLOR=1 turbo run prettier",
 		"lint": "cross-env FORCE_COLOR=1 turbo run lint",
-		"pretest": "npm run clean && npm run build",
+		"pretest": "npm run build",
 		"test": "vitest run",
 		"version": "npx changeset version",
 		"changeset": "npx changeset add",
