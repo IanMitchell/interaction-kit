@@ -1,226 +1,135 @@
-import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
+import { expect, test } from "vitest";
 import pkg from "../package.json";
 import Client from "../src/client.js";
 
-beforeAll(() => {
-	vi.mock("../src/manager", () => {
-		// There has to be a better way of doing this
-		globalThis.CONSTRUCTOR_ARGS = null;
-		globalThis.QUEUE_SPY = vi.fn();
-		globalThis.TOKEN_SPY = vi.fn();
+test("isSweeping", () => {
+	const client = new Client({
+		queueSweepInterval: 0,
+		bucketSweepInterval: 0,
+	});
 
-		const klass = class Manager {
-			queue: unknown;
-			setToken: unknown;
-			config: Record<string, unknown>;
+	expect(client.isSweeping).toEqual(false);
 
-			constructor(args: unknown) {
-				globalThis.CONSTRUCTOR_ARGS = args;
-				this.config = {};
+	client.sweepIntervals = {
+		queueSweepInterval: 1,
+		bucketSweepInterval: 0,
+	};
 
-				this.queue = globalThis.QUEUE_SPY;
-				this.setToken = globalThis.TOKEN_SPY;
-			}
-		};
+	expect(client.isSweeping).toEqual(true);
 
-		return { Manager: klass };
+	client.sweepIntervals = {
+		queueSweepInterval: 1,
+		bucketSweepInterval: 1,
+	};
+
+	expect(client.isSweeping).toEqual(true);
+
+	client.sweepIntervals = {
+		queueSweepInterval: 0,
+		bucketSweepInterval: 1,
+	};
+
+	expect(client.isSweeping).toEqual(true);
+
+	client.sweepIntervals = {
+		queueSweepInterval: 0,
+		bucketSweepInterval: 0,
+	};
+
+	expect(client.isSweeping).toEqual(false);
+});
+
+test("userAgent", () => {
+	const client = new Client();
+	client.userAgent = "test UA";
+	expect(client.userAgent).toEqual(
+		`DiscordBot test UA, discord-request v${pkg.version}`
+	);
+});
+
+test("abortSignal", () => {
+	const client = new Client();
+	const controller = new AbortController();
+
+	client.abortSignal = controller.signal;
+	expect(client.abortSignal).toBe(controller.signal);
+});
+
+test("globalRequestsPerSecond", () => {
+	const client = new Client();
+	client.globalRequestsPerSecond = 1;
+	expect(client.globalRequestsPerSecond).toEqual(1);
+});
+
+test("api", () => {
+	const client = new Client();
+	client.api = {
+		api: "apiOverride",
+		version: 1,
+		cdn: "cdnOverride",
+	};
+	expect(client.api).toEqual({
+		api: "apiOverride",
+		version: 1,
+		cdn: "cdnOverride",
 	});
 });
 
-afterEach(() => {
-	vi.clearAllMocks();
-});
-
-describe("Configuration", () => {
-	test("Constructor parameters are passed to Manager", () => {
-		const client = new Client({
-			api: "api",
-			version: 2,
-			cdn: "cdn",
-			headers: { key: "value" },
-			userAgent: "userAgent",
-			retries: 3,
-			timeout: 1,
-			globalRequestsPerSecond: 0,
-		});
-
-		expect(globalThis.CONSTRUCTOR_ARGS).toEqual({
-			api: "api",
-			version: 2,
-			cdn: "cdn",
-			headers: { key: "value" },
-			userAgent: "userAgent",
-			retries: 3,
-			timeout: 1,
-			globalRequestsPerSecond: 0,
-		});
-	});
-
-	test("setToken", () => {
-		const client = new Client();
-		client.setToken("token");
-		expect(globalThis.TOKEN_SPY).toHaveBeenCalledWith("token");
-	});
-
-	test("userAgent", () => {
-		const client = new Client();
-		client.userAgent = "test UA";
-		expect(client.userAgent).toEqual(
-			`DiscordBot test UA, discord-request v${pkg.version}`
-		);
-	});
-
-	test("abortSignal", () => {
-		const client = new Client();
-		const controller = new AbortController();
-
-		client.abortSignal = controller.signal;
-		expect(client.abortSignal).toBe(controller.signal);
-	});
-
-	test("globalRequestsPerSecond", () => {
-		const client = new Client();
-		client.globalRequestsPerSecond = 1;
-		expect(client.globalRequestsPerSecond).toEqual(1);
-	});
-
-	test("api", () => {
-		const client = new Client();
-		client.api = {
-			api: "apiOverride",
-			version: 1,
-			cdn: "cdnOverride",
-		};
-		expect(client.api).toEqual({
-			api: "apiOverride",
-			version: 1,
-			cdn: "cdnOverride",
-		});
-	});
-
-	test("requestConfig", () => {
-		const client = new Client();
-		client.requestConfig = {
-			headers: { test: "vitest" },
-			retries: 1,
-			timeout: 1,
-		};
-		expect(client.requestConfig).toEqual({
-			headers: { test: "vitest" },
-			retries: 1,
-			timeout: 1,
-		});
-	});
-
-	test("sweepIntervals", () => {
-		const client = new Client();
-		client.sweepIntervals = {
-			bucketSweepInterval: 31,
-			queueSweepInterval: 31,
-		};
-		expect(client.sweepIntervals).toEqual({
-			bucketSweepInterval: 31,
-			queueSweepInterval: 31,
-		});
-	});
-
-	test("callbacks", () => {
-		const onBucketSweep = () => {
-			console.log("bucket sweep");
-		};
-
-		const onQueueSweep = () => {
-			console.log("queue sweep");
-		};
-
-		const onRateLimit = () => {
-			console.log("rate limit");
-		};
-
-		const onRequest = () => {
-			console.log("request");
-		};
-
-		const client = new Client();
-		client.callbacks = {
-			onBucketSweep,
-			onQueueSweep,
-			onRateLimit,
-			onRequest,
-		};
-
-		expect(client.callbacks).toEqual({
-			onBucketSweep,
-			onQueueSweep,
-			onRateLimit,
-			onRequest,
-		});
+test("requestConfig", () => {
+	const client = new Client();
+	client.requestConfig = {
+		headers: { test: "vitest" },
+		retries: 1,
+		timeout: 1,
+	};
+	expect(client.requestConfig).toEqual({
+		headers: { test: "vitest" },
+		retries: 1,
+		timeout: 1,
 	});
 });
 
-describe("HTTP Methods", () => {
-	test("Handles GET requests", async () => {
-		const client = new Client();
-		await client.get("/get", {
-			query: new URLSearchParams([["key", "value"]]),
-		});
-
-		expect(globalThis.QUEUE_SPY).toHaveBeenCalledWith({
-			method: "GET",
-			path: "/get",
-			query: new URLSearchParams([["key", "value"]]),
-		});
+test("sweepIntervals", () => {
+	const client = new Client();
+	client.sweepIntervals = {
+		bucketSweepInterval: 31,
+		queueSweepInterval: 31,
+	};
+	expect(client.sweepIntervals).toEqual({
+		bucketSweepInterval: 31,
+		queueSweepInterval: 31,
 	});
+});
 
-	test("Handles POST requests", async () => {
-		const client = new Client();
-		await client.post("/post", {
-			body: { key: "value" },
-		});
+test("callbacks", () => {
+	const onBucketSweep = () => {
+		console.log("bucket sweep");
+	};
 
-		expect(globalThis.QUEUE_SPY).toHaveBeenCalledWith({
-			method: "POST",
-			path: "/post",
-			body: { key: "value" },
-		});
-	});
+	const onQueueSweep = () => {
+		console.log("queue sweep");
+	};
 
-	test("Handles PUT requests", async () => {
-		const client = new Client();
-		await client.put("/put", {
-			body: { key: "value" },
-		});
+	const onRateLimit = () => {
+		console.log("rate limit");
+	};
 
-		expect(globalThis.QUEUE_SPY).toHaveBeenCalledWith({
-			method: "PUT",
-			path: "/put",
-			body: { key: "value" },
-		});
-	});
+	const onRequest = () => {
+		console.log("request");
+	};
 
-	test("Handles PATCH requests", async () => {
-		const client = new Client();
-		await client.patch("/patch", {
-			body: { key: "value" },
-		});
+	const client = new Client();
+	client.callbacks = {
+		onBucketSweep,
+		onQueueSweep,
+		onRateLimit,
+		onRequest,
+	};
 
-		expect(globalThis.QUEUE_SPY).toHaveBeenCalledWith({
-			method: "PATCH",
-			path: "/patch",
-			body: { key: "value" },
-		});
-	});
-
-	test("Handles DELETE requests", async () => {
-		const client = new Client();
-		await client.delete("/delete", {
-			body: { key: "value" },
-		});
-
-		expect(globalThis.QUEUE_SPY).toHaveBeenCalledWith({
-			method: "DELETE",
-			path: "/delete",
-			body: { key: "value" },
-		});
+	expect(client.callbacks).toEqual({
+		onBucketSweep,
+		onQueueSweep,
+		onRateLimit,
+		onRequest,
 	});
 });

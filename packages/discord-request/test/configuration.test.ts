@@ -5,25 +5,113 @@ import { sleep } from "../src/util/time.js";
 import { intercept, mockPool } from "./util/mock-fetch.js";
 
 describe("Sweeps", () => {
-	test.todo("Sweeps don't start with Interval 0");
+	test.todo("Can sweep without callbacks");
 
-	test.todo("Old buckets are removed and returned");
+	// This test is not great, but I'm not quite sure how to test this in a better way
+	test("Sweeps don't start with Interval 0", async () => {
+		const onBucketSweep = vi.fn();
+		const onQueueSweep = vi.fn();
+
+		const client = new Client({
+			bucketSweepInterval: 0,
+			onBucketSweep,
+			queueSweepInterval: 0,
+			onQueueSweep,
+		}).setToken("test");
+
+		await sleep(50);
+		expect(client.isSweeping).toBe(false);
+	});
+
 	test("Sweeps run when configured", async () => {
 		const onBucketSweep = vi.fn();
+		const onQueueSweep = vi.fn();
 
 		const client = new Client({
 			bucketSweepInterval: 100,
 			onBucketSweep,
+			queueSweepInterval: 100,
+			onQueueSweep,
 		}).setToken("test");
+
+		await sleep(350);
+
+		expect(onBucketSweep).toHaveBeenCalledTimes(3);
+		expect(onQueueSweep).toHaveBeenCalledTimes(3);
+	});
+
+	test("Old buckets are removed and returned", async () => {
+		// vi.mock("../src/util/time.ts");
+		// const timeModule = await import("../src/util/time.ts");
+		// timeModule.ONE_DAY = vi.fn().mockResolvedValue(50);
+
+		const onBucketSweep = vi.fn();
+		const onQueueSweep = vi.fn();
+
+		const client = new Client({
+			bucketSweepInterval: 100,
+			onBucketSweep,
+			queueSweepInterval: 100,
+			onQueueSweep,
+		}).setToken("test");
+
+		// Three requests to different buckets
+		intercept("/webhooks/1234567890123456").reply(
+			200,
+			{ success: true },
+			{ headers: { "Content-Type": "application/json" } }
+		);
+		intercept("/webhooks/1234567890123457")
+			.reply(
+				200,
+				{ success: true },
+				{ headers: { "Content-Type": "application/json" } }
+			)
+			.times(2);
+		intercept("/channels/1234567890123456")
+			.reply(
+				200,
+				{ success: true },
+				{ headers: { "Content-Type": "application/json" } }
+			)
+			// delay 3rd so that it's not going to be swept
+			.delay(70);
+
+		await client.get("/webhooks/1234567890123456");
+		await client.get("/webhooks/1234567890123457");
+		await client.get("/webhooks/1234567890123457");
+		await client.get("/channels/1234567890123456");
 
 		await sleep(300);
 
-		expect(onBucketSweep).toHaveBeenCalledTimes(3);
+		expect(onBucketSweep).toHaveBeenCalledWith(
+			new Map([
+				["Global(1)", "234"],
+				["Global(2)", "456"],
+			])
+		);
+		expect(onQueueSweep).toHaveBeenCalledWith();
 	});
 
-	test.todo("Sweeps can be cleared");
+	test("Abort signal clears sweeps", async () => {
+		const onBucketSweep = vi.fn();
+		const onQueueSweep = vi.fn();
+		const abort = new AbortController();
 
-	test.todo("Abort signal clears sweeps");
+		const client = new Client({
+			bucketSweepInterval: 100,
+			queueSweepInterval: 100,
+			onBucketSweep,
+			onQueueSweep,
+			shutdownSignal: abort.signal,
+		}).setToken("test");
+
+		abort.abort();
+		await sleep(250);
+
+		expect(onBucketSweep).not.toHaveBeenCalled();
+		expect(onQueueSweep).not.toHaveBeenCalled();
+	});
 });
 
 describe("API URL", () => {

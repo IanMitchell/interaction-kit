@@ -28,6 +28,13 @@ export default class Client {
 	}
 
 	/**
+	 * Get whether the Client is currently sweeping buckets and queues.
+	 */
+	get isSweeping() {
+		return this.#manager.isSweeping;
+	}
+
+	/**
 	 * Get the Client's current User Agent.
 	 */
 	get userAgent() {

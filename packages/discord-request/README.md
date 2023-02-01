@@ -21,6 +21,7 @@ import {
 } from "discord-api-types/v10";
 
 const instance = new Client();
+client.setToken(process.env.DISCORD_TOKEN);
 
 const guildCommands = client.get(
 	Routes.applicationGuildCommands(applicationId, guildId)
@@ -37,7 +38,7 @@ const instance = new Client({
 	timeout: 1000,
 	globalRequestsPerSecond: 100,
 	onRateLimit: (data) => console.log({ data }),
-});
+}).setToken(process.env.DISCORD_TOKEN);
 ```
 
 Every parameter listed below is optional.
@@ -75,6 +76,38 @@ Runs when a rate limit is encountered. Returns information about the rate limit.
 ###### `onRequest?: (parameters: Route, resource: string, init: RequestInit, options: RequestOptions, retries: number) => void;`
 
 Runs when a request is sent to the Discord API. Returns information used to send the request.
+
+## Client Configuration
+
+You can configure the client with the following accessors:
+
+- `userAgent`:
+- `abortSignal`:
+- `globalRequestsPerSecond`:
+- `api`:
+- `requestConfig`
+- `sweepIntervals`:
+- `callbacks`:
+
+In addition, the follow accessors are availble to read current configuration with:
+
+- `isSweeping`:
+- `userAgent`:
+- `abortSignal`:
+- `globalRequestsPerSecond`:
+- `api`:
+- `requestConfig`
+- `sweepIntervals`:
+- `callbacks`:
+
+## Setting Token
+
+To set an application token for the client to use, call `setToken` after you instantiate it.
+
+```ts
+const instance = new Client();
+instance.setToken(process.env.DISCORD_TOKEN);
+```
 
 ## Credits
 

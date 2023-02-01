@@ -58,8 +58,8 @@ export class Manager {
 	#bucketSweeper: number | NodeJS.Timer = -1;
 	#queueSweeper: number | NodeJS.Timer = -1;
 
-	bucketSweepInterval: number;
-	queueSweepInterval: number;
+	#bucketSweepInterval: number;
+	#queueSweepInterval: number;
 
 	onBucketSweep: Callbacks["onBucketSweep"] | undefined;
 	onQueueSweep: Callbacks["onQueueSweep"] | undefined;
@@ -101,8 +101,8 @@ export class Manager {
 
 		this.globalRequestCounter = this.config.globalRequestsPerSecond;
 
-		this.bucketSweepInterval = bucketSweepInterval ?? 0;
-		this.queueSweepInterval = queueSweepInterval ?? 0;
+		this.#bucketSweepInterval = bucketSweepInterval ?? 0;
+		this.#queueSweepInterval = queueSweepInterval ?? 0;
 		this.onBucketSweep = onBucketSweep;
 		this.onQueueSweep = onQueueSweep;
 		this.onRateLimit = onRateLimit;
@@ -116,6 +116,28 @@ export class Manager {
 
 	get globalTimeout() {
 		return this.globalReset + OFFSET - Date.now();
+	}
+
+	get isSweeping() {
+		return this.#bucketSweeper !== 0 || this.#queueSweeper !== 0;
+	}
+
+	get bucketSweepInterval() {
+		return this.#bucketSweepInterval;
+	}
+
+	set bucketSweepInterval(interval: number) {
+		this.#bucketSweepInterval = interval;
+		this.#startBucketSweep();
+	}
+
+	get queueSweepInterval() {
+		return this.#queueSweepInterval;
+	}
+
+	set queueSweepInterval(interval: number) {
+		this.#queueSweepInterval = interval;
+		this.#startQueueSweep();
 	}
 
 	startSweepers() {
@@ -173,6 +195,8 @@ export class Manager {
 
 	#startBucketSweep() {
 		if (this.bucketSweepInterval === 0) {
+			clearInterval(this.#bucketSweeper);
+			this.#bucketSweeper = 0;
 			return;
 		}
 
@@ -197,6 +221,8 @@ export class Manager {
 
 	#startQueueSweep() {
 		if (this.queueSweepInterval === 0) {
+			clearInterval(this.#queueSweeper);
+			this.#queueSweeper = 0;
 			return;
 		}
 
