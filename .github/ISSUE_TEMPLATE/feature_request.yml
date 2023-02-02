@@ -31,5 +31,3 @@ body:
     attributes:
       label: Does this increase our chances of an iCrawl Acquisition?
       description: If this increases our chance of acquisition, explain how!
-    validations:
-      required: true
