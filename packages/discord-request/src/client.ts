@@ -5,6 +5,8 @@ import type { RequestData, RequestOptions } from "./types.js";
 import { RequestMethod } from "./types.js";
 
 // FIXME: Consider just one sweeper, and firing an empty event (or only sending the keys)
+// FIXME: Clearer key names
+// FIXME: Fix route naming confusion
 
 export default class Client {
 	#manager: Manager;

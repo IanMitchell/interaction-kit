@@ -19,26 +19,18 @@ export interface Attachment {
 	data: Blob;
 }
 
-type JSONValue =
-	| string
-	| number
-	| boolean
-	| { [x: string]: JSONValue }
-	| undefined
-	| null
-	| JSONValue[];
-
 export interface RequestOptions {
 	auth?: boolean;
 	authPrefix?: "Bot" | "Bearer";
 	formData?: FormData;
-	body?: BodyInit | unknown;
+	body?: BodyInit | object;
 	files?: Attachment[] | undefined;
 	headers?: HeadersInit;
 	rawBody?: boolean;
 	query?: URLSearchParams;
 	reason?: string;
 	versioned?: boolean;
+	// FIXME: Infer or calculate this based on route, don't let users define
 	ignoreGlobalLimit?: boolean;
 }
 

@@ -43,6 +43,7 @@ type Cache = {
 
 export type ManagerArgs = Partial<Config> & Cache & Callbacks;
 
+// FIXME: Document more of this, heavily referencing the Discord API rate limit docs
 export class Manager {
 	#token: string | null = null;
 	shutdownSignal: AbortSignal | null | undefined;

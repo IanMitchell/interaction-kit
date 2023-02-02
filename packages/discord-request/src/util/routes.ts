@@ -20,7 +20,9 @@ export function getRouteInformation(route: string): Route {
 		.replace(/\/reactions\/(.*)/, "/reactions/:reaction");
 
 	return {
+		// FIXME: This is not a path, but a route identifier
 		path,
+		// FIXME: This is a route major identifier
 		identifier,
 	};
 }

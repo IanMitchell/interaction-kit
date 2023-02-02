@@ -247,7 +247,6 @@ export class Queue {
 		while (this.manager.isGlobalLimited() || this.isLocalLimited()) {
 			const isGlobal = this.manager.isGlobalLimited();
 
-			// TODO: Make this use retryAfter
 			const timeout = isGlobal
 				? this.manager.globalTimeout
 				: this.getResetDelay();
