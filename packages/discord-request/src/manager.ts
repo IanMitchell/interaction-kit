@@ -25,7 +25,7 @@ export type Config = {
 
 export type Callbacks = {
 	onBucketSweep?: (swept: Map<string, Bucket>) => void;
-	onQueueSweep?: (swept: Map<string, Queue>) => void;
+	onQueueSweep?: (swept: Set<string>) => void;
 	onRateLimit?: (data: RateLimitData) => void;
 	onRequest?: (
 		parameters: Route,
@@ -147,9 +147,19 @@ export class Manager {
 
 	async queue(data: RequestData) {
 		const route = getRouteInformation(data.path);
+		const routeKey = getRouteKey(data.method, route);
+		const bucket = this.#getBucket(routeKey);
 
-		const key = getRouteKey(data.method, route);
-		const bucket = this.#getBucket(key);
+		// FIXME: add a mapping of method, route path, and route id to a queue
+		// this should start without caring about method if no queue exists
+		// when a request returns with a different bucket, then the method matters
+		//
+		// right now, I am not checking the method, so requests made with different
+		// methods are all grouped into the same queue, when they could potentially
+		// be separated for better throughput
+		//
+		// New system should be:
+		// Map<{constructed key of method||global, route path, route id}, hash> -> Map<hash, Queue>
 		const queue = this.#getBucketQueue(bucket, route.identifier);
 
 		const { resource, init, ignoreGlobalLimit } = this.#resolve(data);
@@ -227,12 +237,12 @@ export class Manager {
 		}
 
 		this.#queueSweeper = setInterval(() => {
-			const swept = new Map<string, Queue>();
+			const swept = new Set<string>();
 
 			for (const [key, queue] of this.queues.entries()) {
 				if (queue.inactive) {
 					log(`Swept the ${key} queue`);
-					swept.set(key, queue);
+					swept.add(key);
 					this.queues.delete(key);
 				}
 			}
@@ -241,13 +251,13 @@ export class Manager {
 		}, this.queueSweepInterval);
 	}
 
-	#getBucket(key: string) {
-		if (this.buckets.has(key)) {
-			return this.buckets.get(key)!;
+	#getBucket(routeKey: string) {
+		if (this.buckets.has(routeKey)) {
+			return this.buckets.get(routeKey)!;
 		}
 
 		return {
-			key: `Global(${key})`,
+			key: `Global(${routeKey})`,
 			lastRequest: -1,
 		};
 	}

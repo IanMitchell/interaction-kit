@@ -1,4 +1,4 @@
-import { URLSearchParams } from "url";
+import { URLSearchParams } from "node:url";
 import { describe, expect, test, vi } from "vitest";
 import Client from "../src/client.js";
 import { intercept, mockPool } from "./util/mock-fetch.js";
@@ -55,14 +55,14 @@ describe("Sweeps", () => {
 		expect(onQueueSweep).toHaveBeenCalledTimes(3);
 	});
 
-	test("Old buckets are removed and returned", async () => {
+	test("Old buckets and queues are removed and returned", async () => {
 		const onBucketSweep = vi.fn();
 		const onQueueSweep = vi.fn();
 
 		const client = new Client({
-			bucketSweepInterval: 450,
+			bucketSweepInterval: 400,
 			onBucketSweep,
-			queueSweepInterval: 450,
+			queueSweepInterval: 400,
 			onQueueSweep,
 		}).setToken("test");
 
@@ -70,37 +70,52 @@ describe("Sweeps", () => {
 		intercept("/webhooks/1234567890123456").reply(
 			200,
 			{ success: true },
-			{ headers: { "Content-Type": "application/json" } }
+			{
+				headers: {
+					"Content-Type": "application/json",
+					"X-RateLimit-Bucket": "bucket1",
+				},
+			}
 		);
-		intercept("/webhooks/1234567890123457")
+		intercept("/channels/1234567890123457")
 			.reply(
 				200,
 				{ success: true },
-				{ headers: { "Content-Type": "application/json" } }
+				{
+					headers: {
+						"Content-Type": "application/json",
+						"X-RateLimit-Bucket": "bucket2",
+					},
+				}
 			)
 			.times(2);
-		intercept("/channels/1234567890123456").reply(
-			200,
-			{ success: true },
-			{ headers: { "Content-Type": "application/json" } }
-		);
 
 		await client.get("/webhooks/1234567890123456");
-		await client.get("/webhooks/1234567890123457");
-		await client.get("/webhooks/1234567890123457");
-		// delay 3rd so that it's not going to be swept
-		await wait(200);
-		await client.get("/channels/1234567890123456");
+		await client.get("/channels/1234567890123457");
 
-		await wait(300);
-		console.log({ calls: onBucketSweep.mock.calls });
+		// Delay to avoid sweep
+		await wait(200);
+		await client.get("/channels/1234567890123457");
+
+		await wait(250);
+
+		console.log({ onQueueSweep: onQueueSweep.mock.calls });
+
 		expect(onBucketSweep).toHaveBeenLastCalledWith(
 			new Map([
-				["Global(1)", "234"],
-				["Global(2)", "456"],
+				[
+					"GET:/webhooks/:id",
+					{ key: "bucket1", lastRequest: expect.any(Number) },
+				],
 			])
 		);
-		expect(onQueueSweep).toHaveBeenLastCalledWith();
+		expect(onQueueSweep).toHaveBeenLastCalledWith(
+			new Set([
+				"Global(GET:/webhooks/:id):1234567890123456",
+				"Global(GET:/channels/:id):1234567890123457",
+				"bucket1:1234567890123456",
+			])
+		);
 	});
 
 	test("Abort signal clears sweeps", async () => {
@@ -121,6 +136,89 @@ describe("Sweeps", () => {
 
 		expect(onBucketSweep).not.toHaveBeenCalled();
 		expect(onQueueSweep).not.toHaveBeenCalled();
+	});
+});
+
+describe("Buckets", () => {
+	test("Matches bucket if one exists", async () => {
+		const onBucketSweep = vi.fn();
+
+		const client = new Client({
+			bucketSweepInterval: 400,
+			onBucketSweep,
+		}).setToken("test");
+
+		intercept("/webhooks/1234567890123456").reply(
+			200,
+			{ success: true },
+			{
+				headers: {
+					"Content-Type": "application/json",
+					"X-RateLimit-Bucket": "bucket1",
+				},
+			}
+		);
+		intercept("/webhooks/1234567890123457").reply(
+			200,
+			{ success: true },
+			{
+				headers: {
+					"Content-Type": "application/json",
+					"X-RateLimit-Bucket": "bucket1",
+				},
+			}
+		);
+
+		await client.get("/webhooks/1234567890123456");
+		await client.get("/webhooks/1234567890123457");
+		await wait(450);
+
+		expect(onBucketSweep).toHaveBeenCalledWith(
+			new Map([
+				[
+					"GET:/webhooks/:id",
+					{ key: "bucket1", lastRequest: expect.any(Number) },
+				],
+			])
+		);
+	});
+
+	test("Handles changed bucket hashes", async () => {
+		const onBucketSweep = vi.fn();
+
+		const client = new Client({
+			bucketSweepInterval: 400,
+			onBucketSweep,
+		}).setToken("test");
+
+		intercept("/webhooks/1234567890123456").reply(
+			200,
+			{ success: true },
+			{
+				headers: {
+					"Content-Type": "application/json",
+					"X-RateLimit-Bucket": "bucket1",
+				},
+			}
+		);
+		intercept("/webhooks/1234567890123456").reply(
+			200,
+			{ success: true },
+			{
+				headers: {
+					"Content-Type": "application/json",
+					"X-RateLimit-Bucket": "bucket2",
+				},
+			}
+		);
+
+		await client.get("/webhooks/1234567890123456");
+		await wait(100);
+		await client.get("/webhooks/1234567890123456");
+		await wait(350);
+
+		// Buckets are an in place swap, so we don't expect cleanup
+		expect(onBucketSweep).toHaveBeenCalledWith(new Map());
 	});
 });
 

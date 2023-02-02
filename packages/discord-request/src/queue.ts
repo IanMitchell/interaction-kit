@@ -6,18 +6,18 @@ import type { Manager } from "./manager.js";
 import type { RequestMethod, Route } from "./types.js";
 import { parse } from "./util/response.js";
 import { getRouteKey } from "./util/routes.js";
-import { OFFSET, ONE_HOUR, sleep } from "./util/time.js";
+import { OFFSET, ONE_DAY, sleep } from "./util/time.js";
 
 const log = debug("discord-request:queue");
 
 export class Queue {
-	lastRequest = -1;
 	reset = -1;
 	remaining = 1;
 	limit = Infinity;
 	manager: Manager;
 	id: string;
 
+	#lastProcess = -1;
 	#queue: Promise<void>;
 	#shutdownSignal: AbortSignal | null | undefined;
 
@@ -31,10 +31,15 @@ export class Queue {
 
 		this.#queue = Promise.resolve();
 		this.#shutdownSignal = shutdownSignal;
+		this.#lastProcess = Date.now();
 	}
 
 	get inactive() {
-		return Date.now() > this.lastRequest + 2 * ONE_HOUR;
+		return (
+			!this.isLocalLimited() &&
+			!this.manager.isGlobalLimited() &&
+			Date.now() > this.#lastProcess + ONE_DAY
+		);
 	}
 
 	isLocalLimited() {
@@ -75,6 +80,7 @@ export class Queue {
 		ignoreGlobalLimit: boolean,
 		retries = 0
 	): Promise<unknown> {
+		this.#lastProcess = Date.now();
 		await this.#rateLimitThrottle();
 
 		// As the request goes out, update the global request counter
@@ -134,7 +140,7 @@ export class Queue {
 		let retryAfter = 0;
 
 		const global = Boolean(response.headers.get("X-RateLimit-Global"));
-		const key = response.headers.get("X-RateLimit-Bucket");
+		const bucketKey = response.headers.get("X-RateLimit-Bucket");
 
 		const retry = response.headers.get("Retry-After");
 		const reset = response.headers.get("X-RateLimit-Reset-After");
@@ -160,16 +166,13 @@ export class Queue {
 		// Update bucket hashes as needed
 		const identifier = getRouteKey(init.method as RequestMethod, route);
 
-		if (key != null && key !== this.id) {
-			log(`Received new bucket hash. ${this.id} -> ${key}`);
+		if (bucketKey != null && bucketKey !== this.id) {
+			log(`Received new bucket hash. ${this.id} -> ${bucketKey}`);
+		}
 
+		if (bucketKey != null) {
 			this.manager.buckets.set(identifier, {
-				key,
-				lastRequest: Date.now(),
-			});
-		} else if (key != null && this.manager.buckets.has(identifier)) {
-			this.manager.buckets.set(identifier, {
-				key,
+				key: `${bucketKey}:${route.identifier}`,
 				lastRequest: Date.now(),
 			});
 		}

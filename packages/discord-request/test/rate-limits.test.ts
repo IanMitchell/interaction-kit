@@ -1,13 +1,7 @@
 import { performance } from "node:perf_hooks";
-import { describe, expect, test, vi } from "vitest";
+import { expect, test, vi } from "vitest";
 import Client from "../src/client.js";
 import { intercept } from "./util/mock-fetch.js";
-
-describe("Buckets", () => {
-	test.todo("Matches bucket if one exists");
-
-	test.todo("Handles changed bucket hashes");
-});
 
 test.todo("Throttles Global Rate Limited requests");
 
