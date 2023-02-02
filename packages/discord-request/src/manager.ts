@@ -55,8 +55,8 @@ export class Manager {
 	buckets: Map<string, Bucket>;
 	queues: Map<string, Queue>;
 
-	#bucketSweeper: number | NodeJS.Timer = -1;
-	#queueSweeper: number | NodeJS.Timer = -1;
+	#bucketSweeper = -1;
+	#queueSweeper = -1;
 
 	#bucketSweepInterval: number;
 	#queueSweepInterval: number;

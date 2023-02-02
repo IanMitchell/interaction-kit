@@ -1,11 +1,26 @@
 import { URLSearchParams } from "url";
 import { describe, expect, test, vi } from "vitest";
 import Client from "../src/client.js";
-import { sleep } from "../src/util/time.js";
 import { intercept, mockPool } from "./util/mock-fetch.js";
+import { wait } from "./util/wait.js";
+
+vi.mock("../src/util/time", () => ({
+	OFFSET: 50,
+	ONE_HOUR: 200,
+	ONE_DAY: 300,
+}));
 
 describe("Sweeps", () => {
-	test.todo("Can sweep without callbacks");
+	test("Can sweep without callbacks", async () => {
+		const client = new Client({
+			bucketSweepInterval: 100,
+			queueSweepInterval: 100,
+		}).setToken("test");
+
+		await wait(350);
+
+		// TODO: Somehow measure dead queues and see that they've been removed
+	});
 
 	// This test is not great, but I'm not quite sure how to test this in a better way
 	test("Sweeps don't start with Interval 0", async () => {
@@ -19,7 +34,7 @@ describe("Sweeps", () => {
 			onQueueSweep,
 		}).setToken("test");
 
-		await sleep(50);
+		await wait(50);
 		expect(client.isSweeping).toBe(false);
 	});
 
@@ -34,24 +49,20 @@ describe("Sweeps", () => {
 			onQueueSweep,
 		}).setToken("test");
 
-		await sleep(350);
+		await wait(350);
 
 		expect(onBucketSweep).toHaveBeenCalledTimes(3);
 		expect(onQueueSweep).toHaveBeenCalledTimes(3);
 	});
 
 	test("Old buckets are removed and returned", async () => {
-		// vi.mock("../src/util/time.ts");
-		// const timeModule = await import("../src/util/time.ts");
-		// timeModule.ONE_DAY = vi.fn().mockResolvedValue(50);
-
 		const onBucketSweep = vi.fn();
 		const onQueueSweep = vi.fn();
 
 		const client = new Client({
-			bucketSweepInterval: 100,
+			bucketSweepInterval: 450,
 			onBucketSweep,
-			queueSweepInterval: 100,
+			queueSweepInterval: 450,
 			onQueueSweep,
 		}).setToken("test");
 
@@ -68,29 +79,28 @@ describe("Sweeps", () => {
 				{ headers: { "Content-Type": "application/json" } }
 			)
 			.times(2);
-		intercept("/channels/1234567890123456")
-			.reply(
-				200,
-				{ success: true },
-				{ headers: { "Content-Type": "application/json" } }
-			)
-			// delay 3rd so that it's not going to be swept
-			.delay(70);
+		intercept("/channels/1234567890123456").reply(
+			200,
+			{ success: true },
+			{ headers: { "Content-Type": "application/json" } }
+		);
 
 		await client.get("/webhooks/1234567890123456");
 		await client.get("/webhooks/1234567890123457");
 		await client.get("/webhooks/1234567890123457");
+		// delay 3rd so that it's not going to be swept
+		await wait(200);
 		await client.get("/channels/1234567890123456");
 
-		await sleep(300);
-
-		expect(onBucketSweep).toHaveBeenCalledWith(
+		await wait(300);
+		console.log({ calls: onBucketSweep.mock.calls });
+		expect(onBucketSweep).toHaveBeenLastCalledWith(
 			new Map([
 				["Global(1)", "234"],
 				["Global(2)", "456"],
 			])
 		);
-		expect(onQueueSweep).toHaveBeenCalledWith();
+		expect(onQueueSweep).toHaveBeenLastCalledWith();
 	});
 
 	test("Abort signal clears sweeps", async () => {
@@ -107,7 +117,7 @@ describe("Sweeps", () => {
 		}).setToken("test");
 
 		abort.abort();
-		await sleep(250);
+		await wait(350);
 
 		expect(onBucketSweep).not.toHaveBeenCalled();
 		expect(onQueueSweep).not.toHaveBeenCalled();
