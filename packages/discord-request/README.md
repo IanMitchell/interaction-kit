@@ -14,7 +14,7 @@ This package works best in conjuction with [`discord-api-types`](https://www.npm
 Then you can combine the two (with or without typing the results):
 
 ```ts
-import Client from "discord-request";
+import { Client } from "discord-request";
 import {
 	Routes,
 	RESTGetAPIApplicationGuildCommandsResult,
@@ -108,6 +108,10 @@ To set an application token for the client to use, call `setToken` after you ins
 const instance = new Client();
 instance.setToken(process.env.DISCORD_TOKEN);
 ```
+
+## Request Errors
+
+TODO!
 
 ## Credits
 

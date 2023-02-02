@@ -8,7 +8,7 @@ import { RequestMethod } from "./types.js";
 // FIXME: Clearer key names
 // FIXME: Fix route naming confusion
 
-export default class Client {
+export class Client {
 	#manager: Manager;
 
 	/**
