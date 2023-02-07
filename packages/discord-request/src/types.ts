@@ -1,5 +1,9 @@
 import type { Snowflake } from "discord-snowflake";
 
+export type Condense<T> = {
+	[K in keyof T]: T[K];
+} & {};
+
 export enum RequestMethod {
 	Delete = "DELETE",
 	Get = "GET",

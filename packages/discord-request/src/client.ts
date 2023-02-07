@@ -1,7 +1,7 @@
 import pkg from "../package.json" assert { type: "json" };
 import type { Callbacks, ManagerArgs } from "./manager.js";
 import { Manager } from "./manager.js";
-import type { RequestData, RequestOptions } from "./types.js";
+import type { Condense, RequestData, RequestOptions } from "./types.js";
 import { RequestMethod } from "./types.js";
 
 // FIXME: Consider just one sweeper, and firing an empty event (or only sending the keys)
@@ -17,7 +17,7 @@ export class Client {
 	 * @param options - Configuration options for the Client.
 	 * @returns The Client instance.
 	 */
-	constructor(options: ManagerArgs = {}) {
+	constructor(options: Condense<ManagerArgs> = {}) {
 		this.#manager = new Manager(options);
 	}
 
@@ -26,7 +26,7 @@ export class Client {
 	 * @param token - The Discord Bot Token.
 	 * @returns The Client instance
 	 */
-	setToken(token: string) {
+	setToken(token: string): this {
 		this.#manager.setToken(token);
 		return this;
 	}
@@ -34,14 +34,14 @@ export class Client {
 	/**
 	 * Get whether the Client is currently sweeping buckets and queues.
 	 */
-	get isSweeping() {
+	get isSweeping(): boolean {
 		return this.#manager.isSweeping;
 	}
 
 	/**
 	 * Get the Client's current User Agent.
 	 */
-	get userAgent() {
+	get userAgent(): string {
 		return this.#manager.config.userAgent;
 	}
 
@@ -57,7 +57,7 @@ export class Client {
 	 * Get the Client's current abort signal. If this signal triggers, all
 	 * pending requests will be aborted.
 	 */
-	get abortSignal() {
+	get abortSignal(): AbortSignal | null | undefined {
 		return this.#manager.shutdownSignal;
 	}
 
@@ -72,7 +72,7 @@ export class Client {
 	/**
 	 * Returns the Client's current global requests per second.
 	 */
-	get globalRequestsPerSecond() {
+	get globalRequestsPerSecond(): number {
 		return this.#manager.config.globalRequestsPerSecond;
 	}
 
@@ -90,7 +90,7 @@ export class Client {
 	 * Get the Client's current Discord API configuration. This includes the API
 	 * URL, the API Version, and the CDN URL.
 	 */
-	get api() {
+	get api(): { api: string; version: number; cdn: string } {
 		return {
 			api: this.#manager.config.api,
 			version: this.#manager.config.version,
@@ -118,7 +118,11 @@ export class Client {
 	/**
 	 * Get the Client's current request configuration.
 	 */
-	get requestConfig() {
+	get requestConfig(): {
+		headers: Record<string, string>;
+		retries: number;
+		timeout: number;
+	} {
 		return {
 			headers: this.#manager.config.headers,
 			retries: this.#manager.config.retries,
@@ -149,7 +153,10 @@ export class Client {
 	 * periodically cleaning out unused, stored buckets and queues. In Edge and
 	 * Serverless runtimes, these are not needed and should not be configured.
 	 */
-	get sweepIntervals() {
+	get sweepIntervals(): {
+		bucketSweepInterval: number;
+		queueSweepInterval: number;
+	} {
 		return {
 			bucketSweepInterval: this.#manager.bucketSweepInterval,
 			queueSweepInterval: this.#manager.queueSweepInterval,
@@ -175,7 +182,12 @@ export class Client {
 	/**
 	 * Get the current client callbacks.
 	 */
-	get callbacks() {
+	get callbacks(): {
+		onBucketSweep?: Callbacks["onBucketSweep"] | undefined;
+		onQueueSweep?: Callbacks["onQueueSweep"] | undefined;
+		onRateLimit?: Callbacks["onRateLimit"] | undefined;
+		onRequest?: Callbacks["onRequest"] | undefined;
+	} {
 		return {
 			onBucketSweep: this.#manager.onBucketSweep,
 			onQueueSweep: this.#manager.onQueueSweep,
@@ -210,7 +222,10 @@ export class Client {
 	 * @param options - Request configuration options.
 	 * @returns The Discord API response.
 	 */
-	async get(path: string, options: RequestOptions = {}) {
+	async get(
+		path: string,
+		options: Condense<RequestOptions> = {}
+	): Promise<unknown> {
 		return this.#request({
 			path,
 			method: RequestMethod.Get,
@@ -224,7 +239,10 @@ export class Client {
 	 * @param options - Request configuration options.
 	 * @returns The Discord API response.
 	 */
-	async post(path: string, options: RequestOptions = {}) {
+	async post(
+		path: string,
+		options: Condense<RequestOptions> = {}
+	): Promise<unknown> {
 		return this.#request({
 			path,
 			method: RequestMethod.Post,
@@ -238,7 +256,10 @@ export class Client {
 	 * @param options - Request configuration options.
 	 * @returns The Discord API response.
 	 */
-	async put(path: string, options: RequestOptions = {}) {
+	async put(
+		path: string,
+		options: Condense<RequestOptions> = {}
+	): Promise<unknown> {
 		return this.#request({
 			path,
 			method: RequestMethod.Put,
@@ -252,7 +273,10 @@ export class Client {
 	 * @param options - Request configuration options.
 	 * @returns The Discord API response.
 	 */
-	async patch(path: string, options: RequestOptions = {}) {
+	async patch(
+		path: string,
+		options: Condense<RequestOptions> = {}
+	): Promise<unknown> {
 		return this.#request({
 			path,
 			method: RequestMethod.Patch,
@@ -266,7 +290,10 @@ export class Client {
 	 * @param options - Request configuration options.
 	 * @returns The Discord API response.
 	 */
-	async delete(path: string, options: RequestOptions = {}) {
+	async delete(
+		path: string,
+		options: Condense<RequestOptions> = {}
+	): Promise<unknown> {
 		return this.#request({
 			path,
 			method: RequestMethod.Delete,
