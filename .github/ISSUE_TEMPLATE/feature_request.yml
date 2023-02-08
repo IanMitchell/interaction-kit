@@ -1,0 +1,33 @@
+name: Feature Request
+description: Request a new feature for Interaction Kit alphas, betas, or final release
+labels:
+  - Feature
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the request
+      description: >-
+        A quick description of the request - give us a one or two sentence
+        summary.
+    validations:
+      required: true
+  - type: textarea
+    id: usage
+    attributes:
+      label: Example Usage
+      description: >-
+        Give us a quick code demo, command, or another example that couldn't be
+        solved without this feature (or could more easily be solved).
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add any other context about the request here!
+  - type: textarea
+    id: icrawl
+    attributes:
+      label: Does this increase our chances of an iCrawl Acquisition?
+      description: If this increases our chance of acquisition, explain how!

@@ -1,0 +1,26 @@
+name: Bug report
+description: Report a bug with Interaction Kit
+labels:
+  - Bug
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A quick description of the bug - give us a one or two sentence summary.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: To Reproduce
+      description: Include steps (or better yet, code!) that reproduces the behavior
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: >-
+        Add any other context about the problem here! The more you give, the
+        faster it will be for us to help.

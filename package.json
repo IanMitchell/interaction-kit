@@ -27,7 +27,11 @@
 		"npm": ">=8.0.0",
 		"node": ">=18.0.0"
 	},
+	"volta": {
+		"node": "18.13.0"
+	},
 	"devDependencies": {
+		"@types/react": "18.0.27",
 		"@changesets/cli": "^2.24.3",
 		"@cloudflare/workers-types": "^3.14.1",
 		"@edge-runtime/types": "^1.1.0-beta.31",
@@ -37,9 +41,10 @@
 		"@typescript-eslint/eslint-plugin": "^5.33.1",
 		"@typescript-eslint/parser": "^5.33.1",
 		"cross-env": "^7.0.3",
-		"eslint": "^8.22.0",
+		"eslint": "^8.33.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-config-xo": "^0.41.0",
+		"eslint-config-next": "13.1.6",
 		"eslint-config-xo-typescript": "^0.52.0",
 		"eslint-plugin-tsdoc": "^0.2.17",
 		"express": "^4.18.2",
@@ -52,9 +57,11 @@
 		"typescript": "^4.7.4",
 		"unbuild": "^0.8.9",
 		"undici": "^5.15.0",
-		"vitest": "^0.23.4"
-	},
-	"volta": {
-		"node": "18.13.0"
+		"vitest": "^0.23.4",
+		"@types/react-dom": "18.0.6",
+		"autoprefixer": "^10.4.7",
+		"postcss": "^8.4.14",
+		"prettier-plugin-tailwindcss": "^0.1.12",
+		"tailwindcss": "^3.1.6"
 	}
 }
