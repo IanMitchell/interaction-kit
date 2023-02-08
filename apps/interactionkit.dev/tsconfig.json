@@ -1,22 +1,32 @@
 {
-  "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx"],
   "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2019"],
-    "isolatedModules": true,
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
     "esModuleInterop": true,
-    "jsx": "react-jsx",
+    "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "target": "ES2019",
-    "strict": true,
-    "allowJs": true,
-    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./app/*"]
+      "@/components/*": ["components/*"],
+      "@/hooks/*": ["hooks/*"],
+      "@/lib/*": ["lib/*"],
+      "@/styles/*": ["styles/*"]
     },
-
-    // Remix takes care of building everything in `remix build`.
-    "noEmit": true
-  }
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }
