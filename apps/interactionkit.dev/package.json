@@ -9,8 +9,9 @@
 	},
 	"dependencies": {
 		"@vercel/analytics": "0.1.8",
+		"@next/font": "13.1.6",
 		"clsx": "1.2.1",
-		"next": "latest",
+		"next": "13.1.6",
 		"next-themes": "0.2.1",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
