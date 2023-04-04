@@ -12,7 +12,5 @@ export class DiscordApiClient extends Client {
 }
 
 export const client = new DiscordApiClient({
-	bucketSweepInterval: 0,
-	queueSweepInterval: 0,
 	userAgent: `discord-api ${pkg.version}`,
 });

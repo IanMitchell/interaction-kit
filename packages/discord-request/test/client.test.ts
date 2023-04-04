@@ -1,42 +1,33 @@
 import { expect, test } from "vitest";
 import pkg from "../package.json";
-import Client from "../src/client.js";
+import { Client } from "../src/client.js";
 
-test("isSweeping", () => {
+/**
+ * This file is mostly testing our API for backwards compatibility
+ */
+
+test("constructor", () => {
 	const client = new Client({
-		queueSweepInterval: 0,
-		bucketSweepInterval: 0,
+		api: "api",
+		version: 1,
+		cdn: "cdn",
+		headers: {
+			"test-header": "test",
+		},
+		userAgent: "test UA",
+		timeout: 1000,
+		// Manager Options
+		abortSignal: new AbortController().signal,
+		onRequest: () => {
+			console.log("request");
+		},
 	});
+	expect(client).toBeDefined();
+});
 
-	expect(client.isSweeping).toEqual(false);
-
-	client.sweepIntervals = {
-		queueSweepInterval: 1,
-		bucketSweepInterval: 0,
-	};
-
-	expect(client.isSweeping).toEqual(true);
-
-	client.sweepIntervals = {
-		queueSweepInterval: 1,
-		bucketSweepInterval: 1,
-	};
-
-	expect(client.isSweeping).toEqual(true);
-
-	client.sweepIntervals = {
-		queueSweepInterval: 0,
-		bucketSweepInterval: 1,
-	};
-
-	expect(client.isSweeping).toEqual(true);
-
-	client.sweepIntervals = {
-		queueSweepInterval: 0,
-		bucketSweepInterval: 0,
-	};
-
-	expect(client.isSweeping).toEqual(false);
+test("setToken", () => {
+	const client = new Client();
+	expect(client.setToken).toBeDefined();
 });
 
 test("userAgent", () => {
@@ -55,12 +46,6 @@ test("abortSignal", () => {
 	expect(client.abortSignal).toBe(controller.signal);
 });
 
-test("globalRequestsPerSecond", () => {
-	const client = new Client();
-	client.globalRequestsPerSecond = 1;
-	expect(client.globalRequestsPerSecond).toEqual(1);
-});
-
 test("api", () => {
 	const client = new Client();
 	client.api = {
@@ -75,61 +60,38 @@ test("api", () => {
 	});
 });
 
-test("requestConfig", () => {
+test("headers", () => {
 	const client = new Client();
-	client.requestConfig = {
-		headers: { test: "vitest" },
-		retries: 1,
-		timeout: 1,
+	client.headers = {
+		"test-header": "test",
 	};
-	expect(client.requestConfig).toEqual({
-		headers: { test: "vitest" },
-		retries: 1,
-		timeout: 1,
+	expect(client.headers).toEqual({
+		"test-header": "test",
 	});
 });
 
-test("sweepIntervals", () => {
+test("timeout", () => {
 	const client = new Client();
-	client.sweepIntervals = {
-		bucketSweepInterval: 31,
-		queueSweepInterval: 31,
-	};
-	expect(client.sweepIntervals).toEqual({
-		bucketSweepInterval: 31,
-		queueSweepInterval: 31,
-	});
+	client.timeout = 1000;
+	expect(client.timeout).toEqual(1000);
 });
 
 test("callbacks", () => {
-	const onBucketSweep = () => {
-		console.log("bucket sweep");
-	};
-
-	const onQueueSweep = () => {
-		console.log("queue sweep");
-	};
-
-	const onRateLimit = () => {
-		console.log("rate limit");
-	};
-
 	const onRequest = () => {
 		console.log("request");
 	};
 
 	const client = new Client();
-	client.callbacks = {
-		onBucketSweep,
-		onQueueSweep,
-		onRateLimit,
-		onRequest,
-	};
+	client.onRequest = onRequest;
 
-	expect(client.callbacks).toEqual({
-		onBucketSweep,
-		onQueueSweep,
-		onRateLimit,
-		onRequest,
-	});
+	expect(client.onRequest).toEqual(onRequest);
+});
+
+test("HTTP Methods", () => {
+	const client = new Client();
+	expect(client.get).toBeDefined();
+	expect(client.post).toBeDefined();
+	expect(client.patch).toBeDefined();
+	expect(client.put).toBeDefined();
+	expect(client.delete).toBeDefined();
 });

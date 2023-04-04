@@ -1,8 +1,21 @@
 import type { Snowflake } from "discord-snowflake";
 
+/**
+ * @see https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object
+ */
+export const AUDIT_LOG_LIMIT = 512;
+
+/**
+ * Helpers
+ */
+
 export type Condense<T> = {
 	[K in keyof T]: T[K];
 } & {};
+
+/**
+ * Request Structures
+ */
 
 export enum RequestMethod {
 	Delete = "DELETE",
@@ -12,20 +25,16 @@ export enum RequestMethod {
 	Put = "PUT",
 }
 
-export interface Route {
-	identifier: string;
-	path: string;
-}
-
 export interface Attachment {
 	id?: Snowflake;
 	name: string;
 	data: Blob;
 }
 
+// TODO: Document and refine
 export interface RequestOptions {
-	auth?: boolean;
-	authPrefix?: "Bot" | "Bearer";
+	authorization?: boolean;
+	authorizationPrefix?: "Bot" | "Bearer";
 	formData?: FormData;
 	body?: BodyInit | object;
 	files?: Attachment[] | undefined;
@@ -34,22 +43,9 @@ export interface RequestOptions {
 	query?: URLSearchParams;
 	reason?: string;
 	versioned?: boolean;
-	// FIXME: Infer or calculate this based on route, don't let users define
-	ignoreGlobalLimit?: boolean;
 }
 
 export interface RequestData extends RequestOptions {
 	path: string;
-	method: RequestMethod;
-}
-
-export interface RateLimitData {
-	retryAfter: number;
-	limit: number | null;
-	bucket: string;
-	url: string;
-	route: string;
-	identifier: string;
-	global: boolean;
 	method: RequestMethod;
 }

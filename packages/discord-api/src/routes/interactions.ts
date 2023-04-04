@@ -17,7 +17,6 @@ export async function createInteractionFollowup(
 ) {
 	return client.post(Routes.webhook(applicationId, interactionToken), {
 		body: data,
-		ignoreGlobalLimit: true,
 	}) as Promise<RESTPostAPIInteractionFollowupResult>;
 }
 
@@ -42,7 +41,6 @@ export async function editInteractionFollowup(
 		Routes.webhookMessage(applicationId, interactionToken, id),
 		{
 			body: data,
-			ignoreGlobalLimit: true,
 		}
 	) as Promise<RESTPatchAPIInteractionFollowupResult>;
 }
@@ -54,7 +52,6 @@ export async function deleteInteractionFollowup(
 	id: string
 ) {
 	return client.delete(
-		Routes.webhookMessage(applicationId, interactionToken, id),
-		{ ignoreGlobalLimit: true }
+		Routes.webhookMessage(applicationId, interactionToken, id)
 	) as Promise<RESTDeleteAPIInteractionFollowupResult>;
 }

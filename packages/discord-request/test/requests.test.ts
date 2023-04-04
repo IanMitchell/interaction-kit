@@ -1,10 +1,11 @@
 import { describe, expect, test, vi } from "vitest";
-import Client from "../src/client.js";
+import { Client } from "../src/client.js";
 import { intercept } from "./util/mock-fetch.js";
 
 describe("Attachment Requests", () => {
 	test("Handles Basic Attachments", async () => {
-		const client = new Client({ retries: 0 }).setToken("test");
+		const client = new Client();
+		client.setToken("test");
 
 		intercept("/basic-attachment", { method: "POST" }).reply(
 			200,
@@ -35,7 +36,8 @@ describe("Attachment Requests", () => {
 	});
 
 	test("Handles Attachments with Metadata", async () => {
-		const client = new Client({ retries: 0 }).setToken("test");
+		const client = new Client();
+		client.setToken("test");
 
 		intercept("/attachment-metadata", { method: "POST" }).reply(
 			200,
@@ -87,7 +89,8 @@ describe("Attachment Requests", () => {
 
 describe("Content Types", () => {
 	test("Handles Raw Request Bodies", async () => {
-		const client = new Client().setToken("test");
+		const client = new Client();
+		client.setToken("test");
 
 		intercept("/raw-request-body").reply(200, { success: true });
 
@@ -96,7 +99,8 @@ describe("Content Types", () => {
 	});
 
 	test("Handles JSON Request Bodies", async () => {
-		const client = new Client().setToken("test");
+		const client = new Client();
+		client.setToken("test");
 
 		intercept("/json-request-body").reply(
 			200,
@@ -113,17 +117,10 @@ describe("Content Types", () => {
 	});
 });
 
-describe("Chaining", () => {
-	test.todo("Can chain requests");
-
-	test.todo("Queues automatically run");
-
-	test.todo("Tracks Global Request Counter");
-});
-
 test("Fetches Data with correct HTTP Method", async () => {
 	const onRequest = vi.fn();
-	const client = new Client({ onRequest }).setToken("test");
+	const client = new Client({ onRequest });
+	client.setToken("test");
 
 	intercept("/get").reply(
 		200,
@@ -166,7 +163,8 @@ test("Fetches Data with correct HTTP Method", async () => {
 });
 
 test("Returns JSON Response", async () => {
-	const client = new Client().setToken("test");
+	const client = new Client();
+	client.setToken("test");
 	const body = { success: true, json: { key: "value " } };
 
 	intercept("/json-request").reply(200, body, {

@@ -1,3 +1,24 @@
+# notes:
+
+- On request
+  - Read retry-after
+  - If we aren't there yet, throw RateLimitError immediately
+  - Otherwise, send request
+- On 429, die
+  - set retry-after value
+  - throw RateLimitError
+  - let user handle
+
+do but not listed
+
+- set remaining
+- read remaining
+
+Add stragies for rate limits
+
+- Throw immediately (serverless)
+- sleep and queue requests (server)
+
 # discord-request
 
 > **Looking for an API Wrapper?**

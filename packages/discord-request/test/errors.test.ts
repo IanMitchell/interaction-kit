@@ -1,64 +1,12 @@
 import { DiscordError } from "discord-error";
 import { expect, test } from "vitest";
-import Client from "../src/client.js";
+import { Client } from "../src/client.js";
+import { RateLimitError } from "../src/errors/rate-limit-error.js";
 import { intercept } from "./util/mock-fetch.js";
 
-test("Retries Timeouts", async () => {
-	const client = new Client({ retries: 3, timeout: 1000 }).setToken("test");
-
-	intercept("/retry-timeout")
-		.reply(
-			200,
-			{ success: false },
-			{ headers: { "Content-Type": "application/json" } }
-		)
-		.delay(1000);
-
-	intercept("/retry-timeout").reply(
-		200,
-		{ success: true },
-		{ headers: { "Content-Type": "application/json" } }
-	);
-
-	const response = (await client.get("/retry-timeout")) as Record<
-		string,
-		unknown
-	>;
-	expect(response.success).toBe(true);
-});
-
-test("Request errors do not break Queue", async () => {
-	const client = new Client({ retries: 0 }).setToken("test");
-
-	intercept("/request-error-queue")
-		.reply(
-			500,
-			{ success: false },
-			{ headers: { "Content-Type": "application/json" } }
-		)
-		.delay(1000);
-
-	intercept("/request-error-queue").reply(
-		200,
-		{ success: true },
-		{ headers: { "Content-Type": "application/json" } }
-	);
-
-	const [failure, success] = await Promise.all([
-		client
-			.get("/request-error-queue")
-			.catch((error) => ({ success: false })) as Promise<
-			Record<string, unknown>
-		>,
-		client.get("/request-error-queue") as Promise<Record<string, unknown>>,
-	]);
-
-	expect(failure.success).toBe(false);
-	expect(success.success).toBe(true);
-});
-
 test("Handles Server Errors", async () => {
-	const client = new Client({ retries: 0 }).setToken("test");
+	const client = new Client();
+	client.setToken("test");
 
 	intercept("/server-error").reply(
 		500,
@@ -72,7 +20,8 @@ test("Handles Server Errors", async () => {
 });
 
 test("Handles Validation Errors", async () => {
-	const client = new Client({ retries: 0 }).setToken("test");
+	const client = new Client();
+	client.setToken("test");
 
 	intercept("/validation-error").reply(
 		400,
@@ -83,4 +32,19 @@ test("Handles Validation Errors", async () => {
 	await expect(async () => {
 		await client.get("/validation-error");
 	}).rejects.toThrow(DiscordError);
+});
+
+test("Handles Rate Limit Errors", async () => {
+	const client = new Client();
+	client.setToken("test");
+
+	intercept("/rate-limit-error").reply(
+		429,
+		{ success: false },
+		{ headers: { "Content-Type": "application/json", "retry-after": "429" } }
+	);
+
+	await expect(async () => {
+		await client.get("/validation-error");
+	}).rejects.toThrow(RateLimitError);
 });

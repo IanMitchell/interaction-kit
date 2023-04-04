@@ -1,16 +1,21 @@
+/**
+ * Represents a failed Request. This should not be used for requests that are
+ * successful but have a non-200 status code. Those should throw a DiscordError
+ * instead.
+ */
 export class RequestError extends Error {
-	resource: string;
+	path: string;
 	init: RequestInit;
 	response: Response;
 
 	constructor(
-		resource: string,
+		path: string,
 		init: RequestInit,
 		response: Response,
 		message: string
 	) {
 		super(message);
-		this.resource = resource;
+		this.path = path;
 		this.init = init;
 		this.response = response;
 	}

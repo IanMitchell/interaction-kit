@@ -1,0 +1,34 @@
+{
+	"name": "discord-webhook",
+	"version": "0.0.3",
+	"contributors": [
+		"joebanks13",
+		"Ian Mitchell"
+	],
+	"description": "TODO",
+	"license": "MIT",
+	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/discord-webhook",
+	"exports": "./dist/src/webhook.js",
+	"main": "./dist/src/webhook.js",
+	"typings": "dist/src/webhook.d.ts",
+	"type": "module",
+	"scripts": {
+		"clean": "rimraf dist .turbo",
+		"build": "tsc",
+		"typecheck": "tsc --noEmit",
+		"prettier": "prettier src/**/*.ts --check",
+		"lint": "eslint ./src/**/*.ts",
+		"prepublish": "npm run clean && npm run build"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"engines": {
+		"node": ">=18"
+	},
+	"dependencies": {
+		"discord-api-types": "^0.37.4",
+		"discord-request": "0.0.5"
+	}
+}

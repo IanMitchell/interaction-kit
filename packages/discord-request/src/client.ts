@@ -1,24 +1,61 @@
 import pkg from "../package.json" assert { type: "json" };
-import type { Callbacks, ManagerArgs } from "./manager.js";
-import { Manager } from "./manager.js";
-import type { Condense, RequestData, RequestOptions } from "./types.js";
-import { RequestMethod } from "./types.js";
+import type { Condense, RequestData, RequestOptions } from "./definitions.js";
+import { AUDIT_LOG_LIMIT, RequestMethod } from "./definitions.js";
+import { request } from "./request.js";
 
-// FIXME: Consider just one sweeper, and firing an empty event (or only sending the keys)
-// FIXME: Clearer key names
-// FIXME: Fix route naming confusion
+export type ClientConfig = {
+	api: string;
+	cdn: string;
+	headers: Record<string, string>;
+	timeout: number;
+	userAgent: string;
+	version: number;
+};
+
+export type Callbacks = {
+	abortSignal: AbortSignal | null | undefined;
+	onRequest: ((path: string, init: RequestInit) => void) | undefined;
+};
 
 export class Client {
-	#manager: Manager;
+	#token: string | null = null;
+	#abortSignal: AbortSignal | null | undefined;
+	#config: ClientConfig;
+	#callbacks: Partial<Callbacks>;
 
 	/**
 	 * Creates a new Client for accessing the Discord API. This will
-	 * automatically queue requests and handle rate limits.
+	 * automatically queue requests and handle rate limits. You **should not**
+	 * create multiple instances of this class.
 	 * @param options - Configuration options for the Client.
 	 * @returns The Client instance.
 	 */
-	constructor(options: Condense<ManagerArgs> = {}) {
-		this.#manager = new Manager(options);
+	constructor({
+		// Request Config
+		api,
+		version,
+		cdn,
+		headers,
+		userAgent,
+		timeout,
+		// Manager Options
+		abortSignal,
+		onRequest,
+	}: Partial<ClientConfig> & Partial<Callbacks> = {}) {
+		this.#config = {
+			api: api ?? "https://discord.com/api",
+			version: version ?? 10,
+			cdn: cdn ?? "https://cdn.discordapp.com",
+			headers: headers ?? {},
+			userAgent: userAgent ?? `DiscordBot discord-request v${pkg.version}`,
+			timeout: timeout ?? 15 * 1000,
+		};
+
+		this.#callbacks = {
+			onRequest,
+		};
+
+		this.#abortSignal = abortSignal;
 	}
 
 	/**
@@ -26,23 +63,16 @@ export class Client {
 	 * @param token - The Discord Bot Token.
 	 * @returns The Client instance
 	 */
-	setToken(token: string): this {
-		this.#manager.setToken(token);
+	setToken(token: string | null): this {
+		this.#token = token;
 		return this;
-	}
-
-	/**
-	 * Get whether the Client is currently sweeping buckets and queues.
-	 */
-	get isSweeping(): boolean {
-		return this.#manager.isSweeping;
 	}
 
 	/**
 	 * Get the Client's current User Agent.
 	 */
 	get userAgent(): string {
-		return this.#manager.config.userAgent;
+		return this.#config.userAgent;
 	}
 
 	/**
@@ -50,7 +80,7 @@ export class Client {
 	 * the library and version being used to access the Discord API.
 	 */
 	set userAgent(value: string) {
-		this.#manager.config.userAgent = `DiscordBot ${value}, discord-request v${pkg.version}`;
+		this.#config.userAgent = `DiscordBot ${value}, discord-request v${pkg.version}`;
 	}
 
 	/**
@@ -58,7 +88,7 @@ export class Client {
 	 * pending requests will be aborted.
 	 */
 	get abortSignal(): AbortSignal | null | undefined {
-		return this.#manager.shutdownSignal;
+		return this.#abortSignal;
 	}
 
 	/**
@@ -66,24 +96,7 @@ export class Client {
 	 * requests will be aborted.
 	 */
 	set abortSignal(signal: AbortSignal | null | undefined) {
-		this.#manager.shutdownSignal = signal;
-	}
-
-	/**
-	 * Returns the Client's current global requests per second.
-	 */
-	get globalRequestsPerSecond(): number {
-		return this.#manager.config.globalRequestsPerSecond;
-	}
-
-	/**
-	 * Sets the Client's global requests per second. You should not modify this
-	 * unless you are a very large bot and have been approved for a higher rate
-	 * limit by Discord. If you set this without Discord granting your bot a
-	 * higher rate limit, you risk your bot being banned.
-	 */
-	set globalRequestsPerSecond(value: number) {
-		this.#manager.config.globalRequestsPerSecond = value;
+		this.#abortSignal = signal;
 	}
 
 	/**
@@ -92,9 +105,9 @@ export class Client {
 	 */
 	get api(): { api: string; version: number; cdn: string } {
 		return {
-			api: this.#manager.config.api,
-			version: this.#manager.config.version,
-			cdn: this.#manager.config.cdn,
+			api: this.#config.api,
+			version: this.#config.version,
+			cdn: this.#config.cdn,
 		};
 	}
 
@@ -110,110 +123,51 @@ export class Client {
 		version: number;
 		cdn: string;
 	}) {
-		this.#manager.config.api = api;
-		this.#manager.config.version = version;
-		this.#manager.config.cdn = cdn;
+		this.#config.api = api;
+		this.#config.version = version;
+		this.#config.cdn = cdn;
 	}
 
 	/**
-	 * Get the Client's current request configuration.
+	 * TODO: Write
 	 */
-	get requestConfig(): {
-		headers: Record<string, string>;
-		retries: number;
-		timeout: number;
-	} {
-		return {
-			headers: this.#manager.config.headers,
-			retries: this.#manager.config.retries,
-			timeout: this.#manager.config.timeout,
-		};
+	get headers(): Record<string, string> {
+		return this.#config.headers;
 	}
 
 	/**
-	 * Sets the Client's current request configuration. This allows setting
-	 * global headers, request timeouts, and the retry count for a failed request.
+	 * TODO: Write
 	 */
-	set requestConfig({
-		headers,
-		retries,
-		timeout,
-	}: {
-		headers: Record<string, string>;
-		retries: number;
-		timeout: number;
-	}) {
-		this.#manager.config.headers = headers;
-		this.#manager.config.retries = retries;
-		this.#manager.config.timeout = timeout;
+	set headers(headers: Record<string, string>) {
+		this.#config.headers = headers;
 	}
 
 	/**
-	 * Get the Client sweep intervals. These help prevent memory leaks by
-	 * periodically cleaning out unused, stored buckets and queues. In Edge and
-	 * Serverless runtimes, these are not needed and should not be configured.
+	 * TODO: Write
 	 */
-	get sweepIntervals(): {
-		bucketSweepInterval: number;
-		queueSweepInterval: number;
-	} {
-		return {
-			bucketSweepInterval: this.#manager.bucketSweepInterval,
-			queueSweepInterval: this.#manager.queueSweepInterval,
-		};
+	get timeout(): number {
+		return this.#config.timeout;
 	}
 
 	/**
-	 * Sets the Client sweep intervals. These help prevent memory leaks by
-	 * periodically cleaning out unused, stored buckets and queues. In Edge and
-	 * Serverless runtimes, these are not needed and should not be configured.
+	 * TODO: Write
 	 */
-	set sweepIntervals({
-		bucketSweepInterval,
-		queueSweepInterval,
-	}: {
-		bucketSweepInterval: number;
-		queueSweepInterval: number;
-	}) {
-		this.#manager.bucketSweepInterval = bucketSweepInterval;
-		this.#manager.queueSweepInterval = queueSweepInterval;
+	set timeout(value: number) {
+		this.#config.timeout = value;
 	}
 
 	/**
-	 * Get the current client callbacks.
+	 * TODO: Write
 	 */
-	get callbacks(): {
-		onBucketSweep?: Callbacks["onBucketSweep"] | undefined;
-		onQueueSweep?: Callbacks["onQueueSweep"] | undefined;
-		onRateLimit?: Callbacks["onRateLimit"] | undefined;
-		onRequest?: Callbacks["onRequest"] | undefined;
-	} {
-		return {
-			onBucketSweep: this.#manager.onBucketSweep,
-			onQueueSweep: this.#manager.onQueueSweep,
-			onRateLimit: this.#manager.onRateLimit,
-			onRequest: this.#manager.onRequest,
-		};
+	get onRequest(): Callbacks["onRequest"] | undefined {
+		return this.#callbacks.onRequest;
 	}
 
 	/**
-	 * Sets the client callbacks.
+	 * TODO: Write
 	 */
-	set callbacks({
-		onBucketSweep,
-		onQueueSweep,
-		onRateLimit,
-		onRequest,
-	}: {
-		onBucketSweep?: Callbacks["onBucketSweep"] | undefined;
-		onQueueSweep?: Callbacks["onQueueSweep"] | undefined;
-		onRateLimit?: Callbacks["onRateLimit"] | undefined;
-		onRequest?: Callbacks["onRequest"] | undefined;
-	}) {
-		this.#manager.onBucketSweep = onBucketSweep;
-		this.#manager.onQueueSweep = onQueueSweep;
-		this.#manager.onRateLimit = onRateLimit;
-		this.#manager.onRequest = onRequest;
+	set onRequest(callback: Callbacks["onRequest"] | undefined) {
+		this.#callbacks.onRequest = callback;
 	}
 
 	/**
@@ -227,8 +181,8 @@ export class Client {
 		options: Condense<RequestOptions> = {}
 	): Promise<unknown> {
 		return this.#request({
-			path,
 			method: RequestMethod.Get,
+			path,
 			...options,
 		});
 	}
@@ -244,8 +198,8 @@ export class Client {
 		options: Condense<RequestOptions> = {}
 	): Promise<unknown> {
 		return this.#request({
-			path,
 			method: RequestMethod.Post,
+			path,
 			...options,
 		});
 	}
@@ -261,8 +215,8 @@ export class Client {
 		options: Condense<RequestOptions> = {}
 	): Promise<unknown> {
 		return this.#request({
-			path,
 			method: RequestMethod.Put,
+			path,
 			...options,
 		});
 	}
@@ -278,8 +232,8 @@ export class Client {
 		options: Condense<RequestOptions> = {}
 	): Promise<unknown> {
 		return this.#request({
-			path,
 			method: RequestMethod.Patch,
+			path,
 			...options,
 		});
 	}
@@ -295,13 +249,113 @@ export class Client {
 		options: Condense<RequestOptions> = {}
 	): Promise<unknown> {
 		return this.#request({
-			path,
 			method: RequestMethod.Delete,
+			path,
 			...options,
 		});
 	}
 
 	async #request(data: RequestData) {
-		return this.#manager.queue(data);
+		const { path, init } = this.#getRequest(data);
+		return request(this, path, init, this.#abortSignal);
+	}
+
+	#getRequest(data: RequestData) {
+		const url = this.#getRequestURL(data);
+		const headers = this.#getRequestHeaders(data);
+		let body: RequestInit["body"];
+
+		if (data.files != null) {
+			headers.set("Content-Type", "multipart/form-data");
+			const formData = new FormData();
+
+			for (const [index, file] of data.files.entries()) {
+				let { data } = file;
+
+				if (!(data instanceof Blob)) {
+					data = new Blob(data);
+				}
+
+				formData.append(`files[${file.id ?? index}]`, data, file.name);
+			}
+
+			if (data.formData != null) {
+				for (const [key, value] of data.formData.entries()) {
+					if (typeof value === "string") {
+						formData.append(key, value);
+					} else {
+						formData.append(key, value, value.name);
+					}
+				}
+			}
+
+			if (data.body != null) {
+				formData.append("payload_json", JSON.stringify(data.body));
+			}
+
+			body = formData;
+		} else if (data.body != null) {
+			if (data.rawBody) {
+				body = data.body as BodyInit;
+			} else {
+				headers.set("Content-Type", "application/json");
+				body = JSON.stringify(data.body);
+			}
+		}
+
+		const fetchOptions: RequestInit = {
+			method: data.method,
+			headers,
+			body: body ?? null,
+		};
+
+		return {
+			path: url,
+			init: fetchOptions,
+		};
+	}
+
+	#getRequestURL(data: RequestData) {
+		let url = this.#config.api;
+
+		if (data.versioned !== false) {
+			url += `/v${this.#config.version}`;
+		}
+
+		url += data.path;
+
+		const query = data.query?.toString();
+		if (query && query !== "") {
+			url += `?${query}`;
+		}
+
+		return url;
+	}
+
+	#getRequestHeaders(data: RequestData) {
+		const headers = new Headers(this.#config.headers);
+		headers.set("User-Agent", this.#config.userAgent.trim());
+
+		if (data.authorization !== false) {
+			if (!this.#token) {
+				throw new Error(
+					"Expected token to be set for this request, but none was present"
+				);
+			}
+
+			headers.set(
+				"Authorization",
+				`${data.authorizationPrefix ?? "Bot"} ${this.#token}`
+			);
+		}
+
+		if (data.reason != null) {
+			headers.set(
+				"X-Audit-Log-Reason",
+				encodeURIComponent(data.reason.substring(0, AUDIT_LOG_LIMIT))
+			);
+		}
+
+		return headers;
 	}
 }
