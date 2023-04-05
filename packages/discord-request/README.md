@@ -52,9 +52,9 @@ Every parameter listed below is optional.
 
 #### Callbacks
 
-###### `onRequest?: (parameters: Route, resource: string, init: RequestInit, options: RequestOptions, retries: number) => void;`
+###### `onRequest?: (path: string, init: RequestInit) => void;`
 
-Runs when a request is sent to the Discord API. Returns information used to send the request.
+Runs when a request is sent to the Discord API. Passes information used to send the request.
 
 ## Client Configuration
 
