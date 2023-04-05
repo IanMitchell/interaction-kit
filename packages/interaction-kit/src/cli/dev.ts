@@ -197,7 +197,6 @@ export default async function dev(argv?: string[]) {
 				titleAlignment: "left",
 				padding: 1,
 				margin: 1,
-				// align: "center",
 				align: "left",
 				borderColor: "yellow",
 				borderStyle: "round",
