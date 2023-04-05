@@ -79,9 +79,9 @@ instance.setToken(process.env.DISCORD_TOKEN);
 
 This library will throw several different errors based on the response.
 
-- `DiscordRequestError` - If Discord's API returns an error with an error key, this error will be thrown with the parsed information.
 - `RequestError` - If the request fails for any reason, this error will be thrown with the error message.
 - `RateLimitError` - If your application is currently being Rate Limited by Discord, this error will be thrown with the parsed information.
+- `DiscordRequestError` - If Discord's API returns an error with an error key, this error will be thrown with the parsed information.
 
 ## Credits
 
