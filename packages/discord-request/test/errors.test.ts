@@ -45,6 +45,6 @@ test("Handles Rate Limit Errors", async () => {
 	);
 
 	await expect(async () => {
-		await client.get("/validation-error");
+		await client.get("/rate-limit-error");
 	}).rejects.toThrow(RateLimitError);
 });

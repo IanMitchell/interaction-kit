@@ -28,7 +28,9 @@ export default class IntegerOption
 {
 	public readonly choices: SlashChoiceList<number> | undefined;
 
-	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
+	autocomplete:
+		| Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"]
+		| undefined;
 
 	constructor({
 		choices,

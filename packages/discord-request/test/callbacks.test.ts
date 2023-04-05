@@ -23,7 +23,6 @@ test("Executes onRequest", async () => {
 		expect.objectContaining({
 			body: null,
 			method: "GET",
-		}),
-		0
+		})
 	);
 });

@@ -28,7 +28,9 @@ export default class StringOption
 {
 	public readonly choices: SlashChoiceList<string> | undefined;
 
-	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
+	autocomplete:
+		| Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"]
+		| undefined;
 
 	constructor({
 		choices,

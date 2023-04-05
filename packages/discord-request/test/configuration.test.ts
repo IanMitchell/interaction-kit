@@ -111,7 +111,7 @@ describe("Headers", () => {
 
 		await client.post("/audit-log", { reason: "Mods, ban this user" });
 
-		const headers = new Headers(onRequest.mock.calls[0][2].headers);
+		const headers = new Headers(onRequest.mock.calls[0][1].headers);
 		expect(headers.get("X-Audit-Log-Reason")).toEqual(
 			"Mods%2C%20ban%20this%20user"
 		);

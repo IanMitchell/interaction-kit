@@ -56,6 +56,6 @@
 		"node": ">=16"
 	},
 	"dependencies": {
-		"@types/express": "^4.17.14"
+		"@types/express": "^4.17.17"
 	}
 }

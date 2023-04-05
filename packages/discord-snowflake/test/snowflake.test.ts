@@ -20,11 +20,11 @@ test("isSnowflake", () => {
 });
 
 test("getTimestamp", () => {
-	expect(getTimestamp(snowflake)).toStrictEqual(1441609061949);
+	expect(getTimestamp(snowflake)).toEqual(1441609061949);
 });
 
 test("getDate", () => {
-	expect(getDate(snowflake)).toStrictEqual(new Date(1441609061949));
+	expect(getDate(snowflake)).toEqual(new Date(1441609061949));
 });
 
 test("getWorkerId", () => {

@@ -13,14 +13,16 @@ export async function request(
 ) {
 	// Setup the timeout signal
 	const signal = new AbortController();
-	const abortTimeout = setTimeout(() => {
+	const abortRequest = () => {
 		signal.abort();
-	}, client.timeout);
+	};
+
+	const abortTimeout = setTimeout(abortRequest, client.timeout);
 	const clearAbort = () => {
 		clearTimeout(abortTimeout);
 	};
 
-	abortSignal?.addEventListener("signal", clearAbort);
+	abortSignal?.addEventListener("abort", abortRequest);
 
 	// Callbacks
 	client.onRequest?.(path, init);
@@ -33,7 +35,7 @@ export async function request(
 	try {
 		response = await fetch(request, { signal: signal.signal });
 	} finally {
-		abortSignal?.removeEventListener("signal", clearAbort);
+		abortSignal?.removeEventListener("abort", abortRequest);
 		clearAbort();
 	}
 

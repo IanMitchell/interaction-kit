@@ -40,7 +40,7 @@ interface ServerOptions {
 	/**
 	 * A callback to run when the application errors.
 	 */
-	onError?: (error: unknown) => unknown;
+	onError?: (error: Error | esbuild.Message[]) => unknown;
 }
 
 /**
@@ -86,30 +86,37 @@ export default async function server({
 		}
 	};
 
-	const compiler = await esbuild.build({
+	const context = await esbuild.context({
 		entryPoints: [entrypoint],
 		bundle: true,
 		write: false,
-		watch: {
-			async onRebuild(error, result) {
-				if (error) {
-					log(`Error compiling application: ${error.message}`);
-					onError?.(error);
-					return;
-				}
+		plugins: [
+			{
+				name: "build-finished",
+				setup({ onEnd }) {
+					onEnd((result) => {
+						if (result.errors.length > 0) {
+							const messages = result.errors
+								.map((error) => error.text)
+								.join("\n\n");
+							log(`Error compiling application: ${messages}`);
+							onError?.(result.errors);
+							return;
+						}
 
-				void handler(result?.outputFiles?.[0].text ?? "");
+						handler(result?.outputFiles?.[0].text ?? "");
+					});
+				},
 			},
-		},
+		],
 	});
 
-	// Initial Compile
-	await handler(compiler.outputFiles[0].text ?? "");
+	const compiler = await context.watch();
 
 	return {
 		async close() {
 			await server.close();
-			compiler.stop?.();
+			context.dispose();
 		},
 	};
 }

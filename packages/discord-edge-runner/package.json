@@ -25,8 +25,8 @@
 		"node": ">=18"
 	},
 	"dependencies": {
-		"esbuild": "0.15.12",
-		"edge-runtime": "2.0.1",
+		"esbuild": "0.17.15",
+		"edge-runtime": "2.1.2",
 		"debug": "^4.3.4"
 	}
 }

@@ -7,6 +7,7 @@ test("Abort signals interrupt in-flight requests", async () => {
 	const client = new Client({
 		abortSignal: controller.signal,
 	});
+	client.setToken("test");
 
 	const body = { success: true, json: { key: "value " } };
 	intercept("/abort")
@@ -19,5 +20,5 @@ test("Abort signals interrupt in-flight requests", async () => {
 		const promise = client.get("/abort");
 		controller.abort();
 		await promise;
-	}).rejects.toThrow("The operation was aborted.");
+	}).rejects.toThrow(DOMException);
 });

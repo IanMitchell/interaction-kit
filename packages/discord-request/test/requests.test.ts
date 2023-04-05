@@ -158,7 +158,7 @@ test("Fetches Data with correct HTTP Method", async () => {
 	await client.delete("/delete");
 
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-	const methods = onRequest.mock.calls.map(([, , options]) => options.method);
+	const methods = onRequest.mock.calls.map(([, options]) => options.method);
 	expect(methods).toEqual(["GET", "POST", "PUT", "PATCH", "DELETE"]);
 });
 

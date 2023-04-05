@@ -28,7 +28,7 @@
 		"node": ">=18"
 	},
 	"dependencies": {
-		"discord-api-types": "^0.37.4",
+		"discord-api-types": "^0.37.37",
 		"discord-request": "0.0.5"
 	}
 }
