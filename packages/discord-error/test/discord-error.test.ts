@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { DiscordError, isDiscordError } from "../src/discord-error.js";
+import { DiscordError, isDiscordError } from "../src/errors/discord-error.js";
 import arrayError from "./fixtures/array.json";
 import objectError from "./fixtures/object.json";
 import requestError from "./fixtures/request.json";
