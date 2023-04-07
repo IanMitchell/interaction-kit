@@ -1,6 +1,6 @@
 {
 	"name": "discord-error",
-	"version": "2.0.0",
+	"version": "3.0.0",
 	"author": "Ian Mitchell",
 	"description": "Creates a JavaScript Error from the body response of a Discord API JSON error message",
 	"license": "Apache-2.0",

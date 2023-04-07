@@ -1,6 +1,6 @@
 {
 	"name": "discord-request",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"author": "Ian Mitchell",
 	"description": "A Discord HTTP client that handles global and resource rate limits automatically",
 	"license": "Apache-2.0",
@@ -25,7 +25,7 @@
 		"node": ">=18"
 	},
 	"dependencies": {
-		"discord-error": "2.0.0",
+		"discord-error": "3.0.0",
 		"discord-snowflake": "2.0.0",
 		"debug": "^4.3.4"
 	}
