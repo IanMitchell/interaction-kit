@@ -2,6 +2,10 @@ import { Client } from "discord-request";
 import pkg from "../package.json" assert { type: "json" };
 
 class DiscordWebhookClient extends Client {
+	constructor(...args: ConstructorParameters<typeof Client>) {
+		super(args);
+	}
+
 	get userAgent() {
 		return super.userAgent;
 	}
