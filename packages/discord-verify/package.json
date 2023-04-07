@@ -1,6 +1,6 @@
 {
 	"name": "discord-verify",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"author": "Ian Mitchell",
 	"description": "A library for verifying the authenticity of requests coming from the Discord Interactions API",
 	"license": "MIT",
