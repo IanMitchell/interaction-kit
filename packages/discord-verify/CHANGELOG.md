@@ -1,5 +1,11 @@
 # discord-verify
 
+## 1.0.2
+
+### Patch Changes
+
+- e655233: Fixed a typo in the README
+
 ## 1.0.1
 
 ### Patch Changes

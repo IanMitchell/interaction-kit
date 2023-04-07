@@ -1,6 +1,6 @@
 {
 	"name": "discord-api",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"author": "Ian Mitchell",
 	"description": "A modern Discord HTTP REST API wrapper library",
 	"license": "MIT",
