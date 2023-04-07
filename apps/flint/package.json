@@ -2,6 +2,7 @@
 	"name": "flint-bot",
 	"main": "./src/app.ts",
 	"type": "module",
+	"private": true,
 	"scripts": {
 		"clean": "rimraf .turbo .ikit",
 		"deploy": "ikit deploy",
