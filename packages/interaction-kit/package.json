@@ -1,6 +1,6 @@
 {
 	"name": "interaction-kit",
-	"version": "0.2.3",
+	"version": "0.2.4",
 	"author": "Ian Mitchell",
 	"description": "Interaction Kit is a Discord HTTP API Framework",
 	"license": "MIT",
@@ -32,7 +32,7 @@
 		"chalk": "^5.2.0",
 		"discord-api": "0.0.4",
 		"discord-api-types": "^0.37.37",
-		"discord-edge-runner": "1.0.0",
+		"discord-edge-runner": "1.0.1",
 		"discord-request": "0.0.6",
 		"discord-snowflake": "2.0.0",
 		"discord-verify": "1.0.2",

@@ -1,8 +1,8 @@
 {
 	"name": "discord-edge-runner",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"author": "Ian Mitchell",
-	"description": "TODO",
+	"description": "Compile and run a Discord HTTP interactions bot from an Edge VM",
 	"license": "MIT",
 	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/discord-edge-runner",
 	"exports": "./dist/src/server.js",
