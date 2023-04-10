@@ -129,42 +129,43 @@ export class Client {
 	}
 
 	/**
-	 * TODO: Write
+	 * Get the current default headers that are sent with every request.
 	 */
 	get headers(): Record<string, string> {
 		return this.#config.headers;
 	}
 
 	/**
-	 * TODO: Write
+	 * Sets the default headers to be sent with every request.
 	 */
 	set headers(headers: Record<string, string>) {
 		this.#config.headers = headers;
 	}
 
 	/**
-	 * TODO: Write
+	 * Get the current default timeout for requests.
 	 */
 	get timeout(): number {
 		return this.#config.timeout;
 	}
 
 	/**
-	 * TODO: Write
+	 * Sets the default timeout for requests.
 	 */
 	set timeout(value: number) {
 		this.#config.timeout = value;
 	}
 
 	/**
-	 * TODO: Write
+	 * Get the current onRequest callback.
 	 */
 	get onRequest(): Callbacks["onRequest"] | undefined {
 		return this.#callbacks.onRequest;
 	}
 
 	/**
-	 * TODO: Write
+	 * Sets the onRequest callback. This callback will be called before every
+	 * request is sent.
 	 */
 	set onRequest(callback: Callbacks["onRequest"] | undefined) {
 		this.#callbacks.onRequest = callback;

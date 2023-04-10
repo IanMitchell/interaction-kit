@@ -31,17 +31,57 @@ export interface Attachment {
 	data: Blob;
 }
 
-// TODO: Document and refine
 export interface RequestOptions {
+	/**
+	 * Whether to use the authorization header.
+	 */
 	authorization?: boolean;
+
+	/**
+	 * The authorization prefix to use. Defaults to `Bot`.
+	 */
 	authorizationPrefix?: "Bot" | "Bearer";
+
+	/**
+	 * The body to send as form data.
+	 */
 	formData?: FormData;
+
+	/**
+	 * The body to send with the request. If you have defined `formData` or
+	 * `files` this will be sent as `payload_json` in the form data.
+	 */
 	body?: BodyInit | object;
+
+	/**
+	 * A list of up to 10 files to upload and send as part of the request
+	 */
 	files?: Attachment[] | undefined;
+
+	/**
+	 * Headers to add to the request.
+	 */
 	headers?: HeadersInit;
+
+	/**
+	 * If true, the body will not be processed before sending to Discord.
+	 * Defaults to false.
+	 */
 	rawBody?: boolean;
+
+	/**
+	 * Query parameters to add to the request.
+	 */
 	query?: URLSearchParams;
+
+	/**
+	 * An optional entry to add to the audit log.
+	 */
 	reason?: string;
+
+	/**
+	 * Whether to use the versioned API.
+	 */
 	versioned?: boolean;
 }
 
