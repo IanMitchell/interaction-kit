@@ -1,7 +1,7 @@
 # discord-request
 
 > **Looking for an API Wrapper?**
-> Check out [`discord-api`](https://www.npmjs.com/package/discord-api) instead. This package is low level, and works best in libraries as opposed to applications.
+> Check out [`discord-api-methods`](https://www.npmjs.com/package/discord-api-methods) instead. This package is low level, and works best in libraries as opposed to applications.
 
 A Discord HTTP client that handles global and resource rate limits automatically.
 

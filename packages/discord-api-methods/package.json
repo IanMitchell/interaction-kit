@@ -1,10 +1,10 @@
 {
-	"name": "discord-api",
+	"name": "discord-api-methods",
 	"version": "0.0.4",
 	"author": "Ian Mitchell",
 	"description": "A modern Discord HTTP REST API wrapper library",
 	"license": "MIT",
-	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/discord-api",
+	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/discord-api-methods",
 	"exports": "./dist/src/index.js",
 	"main": "./dist/src/index.js",
 	"typings": "dist/src/index.d.ts",

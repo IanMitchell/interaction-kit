@@ -1,7 +1,7 @@
 import type {
 	deleteInteractionFollowup,
 	editInteractionFollowup,
-} from "discord-api";
+} from "discord-api-methods";
 import type {
 	APIApplicationCommand,
 	APIMessageComponent,
@@ -13,7 +13,7 @@ import type {
 } from "discord-api-types/v10";
 import type { Snowflake } from "discord-snowflake";
 import type Application from "./application.js";
-import type { Choices, ChoiceType } from "./commands/options/choices.js";
+import type { ChoiceType, Choices } from "./commands/options/choices.js";
 import type ActionRow from "./components/action-row.js";
 import type ApplicationCommandInteraction from "./interactions/application-commands/application-command-interaction.js";
 import type { ResponseStatus } from "./requests/response.js";

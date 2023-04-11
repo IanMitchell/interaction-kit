@@ -6,7 +6,7 @@ import {
 	bulkOverwriteGuildApplicationCommands,
 	client,
 	getGuildApplicationCommands,
-} from "discord-api";
+} from "discord-api-methods";
 import type { RESTGetAPIApplicationGuildCommandsResult } from "discord-api-types/v10";
 import server from "discord-edge-runner";
 import type { Snowflake } from "discord-snowflake";
