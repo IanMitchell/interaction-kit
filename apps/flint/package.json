@@ -16,7 +16,7 @@
 	},
 	"platform": "node",
 	"dependencies": {
-		"interaction-kit": "0.2.2",
+		"interaction-kit": "0.2.4",
 		"esbuild": "0.15.13"
 	}
 }

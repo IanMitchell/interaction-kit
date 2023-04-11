@@ -29,6 +29,6 @@
 	},
 	"dependencies": {
 		"discord-api-types": "^0.37.37",
-		"discord-request": "0.0.5"
+		"discord-request": "0.0.6"
 	}
 }
