@@ -1,4 +1,4 @@
-import { bulkOverwriteGlobalApplicationCommands } from "discord-api";
+import { bulkOverwriteGlobalApplicationCommands } from "discord-api-methods";
 import type { RESTPutAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 import { getApplicationEntrypoint } from "../scripts.js";
 

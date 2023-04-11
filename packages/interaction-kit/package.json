@@ -30,7 +30,7 @@
 		"arg": "^5.0.2",
 		"boxen": "7.0.2",
 		"chalk": "^5.2.0",
-		"discord-api": "0.0.4",
+		"discord-api-methods": "0.0.4",
 		"discord-api-types": "^0.37.37",
 		"discord-edge-runner": "1.0.1",
 		"discord-request": "0.0.6",

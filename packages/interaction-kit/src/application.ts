@@ -1,5 +1,5 @@
 import debug from "debug";
-import { client } from "discord-api";
+import { client } from "discord-api-methods";
 import type { APIInteraction } from "discord-api-types/v10";
 import { ApplicationCommandType } from "discord-api-types/v10";
 import type { Snowflake } from "discord-snowflake";

@@ -1,4 +1,4 @@
-import { getGuildApplicationCommands } from "discord-api";
+import { getGuildApplicationCommands } from "discord-api-methods";
 import type {
 	APIApplicationCommand,
 	RESTGetAPIApplicationGuildCommandsResult,

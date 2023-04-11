@@ -1,4 +1,4 @@
-# discord-api
+# discord-api-methods
 
 ## 0.0.4
 

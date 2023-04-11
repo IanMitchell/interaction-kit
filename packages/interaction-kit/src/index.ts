@@ -1,5 +1,5 @@
 import * as SnowflakeUtils from "discord-snowflake";
-import * as API from "discord-api";
+import * as API from "discord-api-methods";
 
 // Application level exports
 export { default as Application } from "./application.js";

@@ -1,4 +1,4 @@
-# discord-api
+# discord-api-methods
 
 A wrapper around the Discord REST API. This package is built on top of [`discord-request`](https://www.npmjs.com/package/discord-request) and [`discord-api-types`](https://www.npmjs.com/package/discord-api-types) - it is fully typed and handles rate limits appropriately.
 
@@ -8,12 +8,12 @@ A wrapper around the Discord REST API. This package is built on top of [`discord
 
 Install the package by running
 
-    npm install discord-api
+    npm install discord-api-methods
 
 ## Example Usage
 
 ```ts
-import { client } from "discord-api";
+import { client } from "discord-api-methods";
 
 try {
 	const response = await client.postGlobalApplicationCommand(

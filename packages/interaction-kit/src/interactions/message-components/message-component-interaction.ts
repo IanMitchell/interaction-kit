@@ -2,7 +2,7 @@ import {
 	createInteractionFollowup,
 	deleteInteractionFollowup,
 	editInteractionFollowup,
-} from "discord-api";
+} from "discord-api-methods";
 import type {
 	APIInteractionGuildMember,
 	APIInteractionResponse,
