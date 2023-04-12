@@ -7,13 +7,10 @@ import { hexStringToBinary, isValidRequest } from "../src/node.js";
 import { encode, getKeyPair, getMockRequest } from "./helpers.js";
 
 test("Uses Ed25519 by default", async () => {
-	// @ts-expect-error Crypto types are not defined yet
 	const importSpy = vi.spyOn(crypto.subtle, "importKey");
-	importSpy.mockImplementationOnce(async () =>
-		Promise.resolve({} as CryptoKey)
-	);
+	// @ts-expect-error Problem for future me
+	importSpy.mockImplementationOnce(async () => Promise.resolve({}));
 
-	// @ts-expect-error Crypto types are not defined yet
 	const verifySpy = vi.spyOn(crypto.subtle, "verify");
 	verifySpy.mockImplementationOnce(async () => Promise.resolve(true));
 
