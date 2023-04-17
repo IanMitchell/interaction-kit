@@ -2,10 +2,10 @@ name: Setup
 runs:
   using: "composite"
   steps:
-    - name: Install Node.js 18.x
+    - name: Install Node.js 18.16.0
       uses: actions/setup-node@v2
       with:
-        node-version: 18.x
+        node-version: 18.16.0
         cache: npm
         registry-url: "https://registry.npmjs.org"
 
