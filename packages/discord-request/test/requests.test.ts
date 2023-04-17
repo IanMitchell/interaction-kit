@@ -1,6 +1,19 @@
+/**
+ * @vitest-environment node
+ */
 import { describe, expect, test, vi } from "vitest";
 import { Client } from "../src/client.js";
 import { intercept } from "./util/mock-fetch.js";
+
+// Temporary cuz of ArrayBuffer bug with Vitest and Edge Runtime
+class File extends Blob {
+	name: string;
+	constructor(chunks: BlobPart[], filename: string, options?: BlobPropertyBag) {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+		super(chunks, options);
+		this.name = filename;
+	}
+}
 
 describe("Attachment Requests", () => {
 	test("Handles Basic Attachments", async () => {
@@ -92,15 +105,15 @@ describe("Content Types", () => {
 	 * FIXME: This test is failing because of an `edge-runtime` issue. See:
 	 * https://github.com/vercel/edge-runtime/pull/80#issuecomment-1504349243
 	 */
-	// test("Handles Raw Request Bodies", async () => {
-	// 	const client = new Client();
-	// 	client.setToken("test");
+	test("Handles Raw Request Bodies", async () => {
+		const client = new Client();
+		client.setToken("test");
 
-	// 	intercept("/raw-request-body").reply(200, { success: true });
+		intercept("/raw-request-body").reply(200, { success: true });
 
-	// 	const response = await client.get("/raw-request-body");
-	// 	expect(response).toBeInstanceOf(ArrayBuffer);
-	// });
+		const response = await client.get("/raw-request-body");
+		expect(response).toBeInstanceOf(ArrayBuffer);
+	});
 
 	test("Handles JSON Request Bodies", async () => {
 		const client = new Client();
