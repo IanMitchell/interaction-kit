@@ -26,8 +26,8 @@ describe("Error parsing", () => {
 
 		expect(error.message).toMatchInlineSnapshot(`
 			"Invalid Form Body
-			activities[0].platform[BASE_TYPE_CHOICES]: Value must be one of ('desktop', 'android', 'ios').
-			activities[0].type[BASE_TYPE_CHOICES]: Value must be one of (0, 1, 2, 3, 4, 5)."
+			activities[0].platform[0][BASE_TYPE_CHOICES]: Value must be one of ('desktop', 'android', 'ios').
+			activities[0].type[0][BASE_TYPE_CHOICES]: Value must be one of (0, 1, 2, 3, 4, 5)."
 		`);
 	});
 
@@ -47,7 +47,7 @@ describe("Error parsing", () => {
 
 		expect(error.message).toMatchInlineSnapshot(`
 			"Invalid Form Body
-			access_token[BASE_TYPE_REQUIRED]: This field is required"
+			access_token[0][BASE_TYPE_REQUIRED]: This field is required"
 		`);
 	});
 

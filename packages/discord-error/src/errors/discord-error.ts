@@ -107,7 +107,7 @@ function* parse(
 	if (isErrorGroup(value)) {
 		for (let i = 0; i < value._errors.length; i++) {
 			const error = value._errors[i];
-			const nextKey = getNextKey(i.toString(), "_errors");
+			const nextKey = getNextKey(key, i.toString());
 			yield* parse(error, nextKey);
 		}
 	} else {
