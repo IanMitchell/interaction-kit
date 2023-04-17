@@ -8,6 +8,7 @@ module.exports = {
 		"@typescript-eslint/prefer-literal-enum-member": 0,
 		"@typescript-eslint/naming-convention": 0,
 		"@typescript-eslint/parameter-properties": 0,
+		"@typescript-eslint/member-ordering": 0,
 		"@typescript-eslint/consistent-type-imports": [
 			"error",
 			{ prefer: "type-imports" },

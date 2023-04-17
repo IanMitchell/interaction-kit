@@ -68,6 +68,7 @@ export default class SlashCommand
 	autocomplete:
 		| Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"]
 		| undefined;
+
 	commands: Map<string, ArrayValue<ParentCommandArgs["commands"]>>;
 
 	constructor({

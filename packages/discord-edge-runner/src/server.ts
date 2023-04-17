@@ -94,7 +94,7 @@ export default async function server({
 			{
 				name: "build-finished",
 				setup({ onEnd }) {
-					onEnd((result) => {
+					onEnd(async (result) => {
 						if (result.errors.length > 0) {
 							const messages = result.errors
 								.map((error) => error.text)
@@ -104,19 +104,30 @@ export default async function server({
 							return;
 						}
 
-						handler(result?.outputFiles?.[0].text ?? "");
+						try {
+							await handler(result?.outputFiles?.[0].text ?? "");
+						} catch (err: unknown) {
+							const error = getError(err);
+							log(`Error running application: ${error.message}`);
+							onError?.(error);
+						}
 					});
 				},
 			},
 		],
 	});
 
-	const compiler = await context.watch();
+	try {
+		await context.watch();
+	} catch (err: unknown) {
+		const error = getError(err);
+		log(`Error watching application: ${error.message}`);
+	}
 
 	return {
 		async close() {
 			await server.close();
-			context.dispose();
+			void context.dispose();
 		},
 	};
 }
