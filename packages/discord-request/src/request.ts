@@ -15,6 +15,7 @@ export async function request(
 	const signal = new AbortController();
 	const abortRequest = () => {
 		signal.abort();
+		clearAbort();
 	};
 
 	const abortTimeout = setTimeout(abortRequest, client.timeout);
@@ -46,7 +47,7 @@ export async function request(
 
 	// Rate Limited Requests
 	if (response.status === 429) {
-		throw new RateLimitError("Your bot is currently rate limited", response);
+		throw new RateLimitError(response);
 	}
 
 	// If given a server error, retry the request
@@ -55,8 +56,7 @@ export async function request(
 			path,
 			init,
 			// `response` has not yet been consumed by this point, it is safe to pass an uncloned version
-			response,
-			`Discord Server Error encountered: ${response.statusText}`
+			response
 		);
 	}
 

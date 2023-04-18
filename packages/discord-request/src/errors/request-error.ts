@@ -8,13 +8,8 @@ export class RequestError extends Error {
 	init: RequestInit;
 	response: Response;
 
-	constructor(
-		path: string,
-		init: RequestInit,
-		response: Response,
-		message: string
-	) {
-		super(message);
+	constructor(path: string, init: RequestInit, response: Response) {
+		super(`Discord Server Error encountered: ${response.statusText}`);
 		this.path = path;
 		this.init = init;
 		this.response = response;

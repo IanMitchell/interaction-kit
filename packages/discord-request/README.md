@@ -20,7 +20,7 @@ import {
 	RESTGetAPIApplicationGuildCommandsResult,
 } from "discord-api-types/v10";
 
-const instance = new Client();
+const client = new Client();
 client.setToken(process.env.DISCORD_TOKEN);
 
 const guildCommands = client.get(
