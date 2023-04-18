@@ -1,5 +1,5 @@
 import pkg from "../package.json" assert { type: "json" };
-import type { Condense, RequestData, RequestOptions } from "./definitions.js";
+import type { Prettify, RequestData, RequestOptions } from "./definitions.js";
 import { AUDIT_LOG_LIMIT, RequestMethod } from "./definitions.js";
 import { request } from "./request.js";
 
@@ -179,7 +179,7 @@ export class Client {
 	 */
 	async get(
 		path: string,
-		options: Condense<RequestOptions> = {}
+		options: Prettify<RequestOptions> = {}
 	): Promise<unknown> {
 		return this.#request({
 			method: RequestMethod.Get,
@@ -196,7 +196,7 @@ export class Client {
 	 */
 	async post(
 		path: string,
-		options: Condense<RequestOptions> = {}
+		options: Prettify<RequestOptions> = {}
 	): Promise<unknown> {
 		return this.#request({
 			method: RequestMethod.Post,
@@ -213,7 +213,7 @@ export class Client {
 	 */
 	async put(
 		path: string,
-		options: Condense<RequestOptions> = {}
+		options: Prettify<RequestOptions> = {}
 	): Promise<unknown> {
 		return this.#request({
 			method: RequestMethod.Put,
@@ -230,7 +230,7 @@ export class Client {
 	 */
 	async patch(
 		path: string,
-		options: Condense<RequestOptions> = {}
+		options: Prettify<RequestOptions> = {}
 	): Promise<unknown> {
 		return this.#request({
 			method: RequestMethod.Patch,
@@ -247,7 +247,7 @@ export class Client {
 	 */
 	async delete(
 		path: string,
-		options: Condense<RequestOptions> = {}
+		options: Prettify<RequestOptions> = {}
 	): Promise<unknown> {
 		return this.#request({
 			method: RequestMethod.Delete,

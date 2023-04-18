@@ -10,7 +10,7 @@ export async function request(
 	path: string,
 	init: RequestInit,
 	abortSignal: AbortSignal | null | undefined
-) {
+): Promise<ArrayBuffer | JSON | Response> {
 	// Setup the timeout signal
 	const signal = new AbortController();
 	const abortRequest = () => {

@@ -9,7 +9,7 @@ export const AUDIT_LOG_LIMIT = 512;
  * Helpers
  */
 
-export type Condense<T> = {
+export type Prettify<T> = {
 	[K in keyof T]: T[K];
 } & {};
 
