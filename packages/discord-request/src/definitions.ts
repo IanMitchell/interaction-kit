@@ -1,7 +1,7 @@
 import type { Snowflake } from "discord-snowflake";
 
 /**
- * @see https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object
+ * @see {@link https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object}
  */
 export const AUDIT_LOG_LIMIT = 512;
 

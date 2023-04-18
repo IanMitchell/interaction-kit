@@ -4,8 +4,17 @@
  * instead.
  */
 export class RequestError extends Error {
+	/**
+	 * The request path
+	 */
 	path: string;
+	/**
+	 * The request parameters
+	 */
 	init: RequestInit;
+	/**
+	 * The Discord API Server Response
+	 */
 	response: Response;
 
 	constructor(path: string, init: RequestInit, response: Response) {
