@@ -13,7 +13,7 @@ export class RequestError extends Error {
 	 */
 	init: RequestInit;
 	/**
-	 * The Discord API Server Response
+	 * The Discord API Server response
 	 */
 	response: Response;
 

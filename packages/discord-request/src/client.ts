@@ -1,6 +1,14 @@
-import pkg from "../package.json" assert { type: "json" };
-import type { Prettify, RequestData, RequestOptions } from "./definitions.js";
-import { AUDIT_LOG_LIMIT, RequestMethod } from "./definitions.js";
+import type {
+	Prettify,
+	RequestData,
+	RequestOptions,
+	UserAgent,
+} from "./definitions.js";
+import {
+	AUDIT_LOG_LIMIT,
+	DEFAULT_USER_AGENT,
+	RequestMethod,
+} from "./definitions.js";
 import { request } from "./request.js";
 
 export type ClientConfig = {
@@ -8,7 +16,7 @@ export type ClientConfig = {
 	cdn: string;
 	headers: Record<string, string>;
 	timeout: number;
-	userAgent: `DiscordBot (${string}, ${string})${string}`;
+	userAgent: string;
 	version: number;
 };
 
@@ -20,7 +28,7 @@ export type Callbacks = {
 export class Client {
 	#token: string | null = null;
 	#abortSignal: AbortSignal | null | undefined;
-	#config: ClientConfig;
+	#config: Omit<ClientConfig, "userAgent"> & { userAgent: UserAgent };
 	#callbacks: Partial<Callbacks>;
 
 	/**
@@ -47,8 +55,8 @@ export class Client {
 			version: version ?? 10,
 			cdn: cdn ?? "https://cdn.discordapp.com",
 			headers: headers ?? {},
-			userAgent: userAgent ?? `DiscordBot discord-request v${pkg.version}`,
 			timeout: timeout ?? 15 * 1000,
+			userAgent: DEFAULT_USER_AGENT,
 		};
 
 		this.#callbacks = {
@@ -56,6 +64,8 @@ export class Client {
 		};
 
 		this.#abortSignal = abortSignal;
+
+		this.userAgent = userAgent;
 	}
 
 	/**
@@ -71,7 +81,7 @@ export class Client {
 	/**
 	 * Get the Client's current User Agent.
 	 */
-	get userAgent(): string {
+	get userAgent(): UserAgent {
 		return this.#config.userAgent;
 	}
 
@@ -79,8 +89,12 @@ export class Client {
 	 * Sets the Client's User Agent. This needs to include information about
 	 * the library and version being used to access the Discord API.
 	 */
-	set userAgent(value: string) {
-		this.#config.userAgent = `DiscordBot ${value}, discord-request v${pkg.version}`;
+	set userAgent(value: string | undefined | null) {
+		this.#config.userAgent = DEFAULT_USER_AGENT;
+
+		if (value) {
+			this.#config.userAgent += ` ${value}`;
+		}
 	}
 
 	/**

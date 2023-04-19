@@ -1,9 +1,17 @@
 import type { Snowflake } from "discord-snowflake";
+import pkg from "../package.json" assert { type: "json" };
 
 /**
  * @see {@link https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object}
  */
 export const AUDIT_LOG_LIMIT = 512;
+
+/**
+ * @see {@link https://discord.com/developers/docs/reference#user-agent}
+ */
+export type UserAgent = `DiscordBot (${string}, ${string})${string}`;
+
+export const DEFAULT_USER_AGENT: UserAgent = `DiscordBot (https://github.com/ianmitchell/interaction-kit, v${pkg.version})`;
 
 /**
  * Helpers
@@ -38,7 +46,8 @@ export interface RequestOptions {
 	authorization?: boolean;
 
 	/**
-	 * The authorization prefix to use. Defaults to `Bot`.
+	 * The authorization prefix to use.
+	 * @defaultValue "Bot"
 	 */
 	authorizationPrefix?: "Bot" | "Bearer";
 
@@ -65,7 +74,7 @@ export interface RequestOptions {
 
 	/**
 	 * If true, the body will not be processed before sending to Discord.
-	 * Defaults to false.
+	 * @defaultValue false
 	 */
 	rawBody?: boolean;
 

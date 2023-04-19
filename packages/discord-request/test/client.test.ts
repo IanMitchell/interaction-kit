@@ -34,7 +34,7 @@ test("userAgent", () => {
 	const client = new Client();
 	client.userAgent = "test UA";
 	expect(client.userAgent).toEqual(
-		`DiscordBot test UA, discord-request v${pkg.version}`
+		`DiscordBot (https://github.com/ianmitchell/interaction-kit, v${pkg.version}) test UA`
 	);
 });
 
