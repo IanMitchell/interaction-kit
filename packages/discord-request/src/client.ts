@@ -8,7 +8,7 @@ export type ClientConfig = {
 	cdn: string;
 	headers: Record<string, string>;
 	timeout: number;
-	userAgent: string;
+	userAgent: `DiscordBot (${string}, ${string})${string}`;
 	version: number;
 };
 
