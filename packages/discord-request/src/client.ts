@@ -86,8 +86,10 @@ export class Client {
 	}
 
 	/**
-	 * Sets the Client's User Agent. This needs to include information about
-	 * the library and version being used to access the Discord API.
+	 * Sets the Client's User Agent. The UA is required to include information
+	 * about the library and version being used to access the Discord API.
+	 * In order to adhere to the spec, `discord-request` will prepend
+	 * information about itself to the provided value.
 	 */
 	set userAgent(value: string | undefined | null) {
 		this.#config.userAgent = DEFAULT_USER_AGENT;

@@ -50,7 +50,7 @@ export async function request(
 		throw new RateLimitError(response);
 	}
 
-	// If given a server error, retry the request
+	// Throw on server errors
 	if (response.status >= 500 && response.status < 600) {
 		throw new RequestError(
 			path,
@@ -69,9 +69,17 @@ export async function request(
 		}
 
 		// Handle unknown API errors
-		const data: ErrorBody = await response.json();
-		const label = isDiscordError(data) ? data.code : data.error;
+		const clone = response.clone();
+		let data: ErrorBody;
 
+		try {
+			data = await clone.json();
+		} catch (err: unknown) {
+			// Handle Cloudflare HTML Error Responses
+			throw new RequestError(path, init, response);
+		}
+
+		const label = isDiscordError(data) ? data.code : data.error;
 		throw new DiscordError(request, response, label, data);
 	}
 
