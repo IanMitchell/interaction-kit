@@ -1,6 +1,6 @@
 {
 	"name": "discord-webhook",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"contributors": [
 		"joebanks13",
 		"Ian Mitchell"
@@ -29,6 +29,6 @@
 	},
 	"dependencies": {
 		"discord-api-types": "^0.37.37",
-		"discord-request": "1.0.0"
+		"discord-request": "1.0.1"
 	}
 }

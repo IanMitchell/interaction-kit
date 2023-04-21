@@ -1,5 +1,12 @@
 # discord-api-methods
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies [671ca06]
+  - discord-request@1.0.1
+
 ## 0.0.5
 
 ### Patch Changes
