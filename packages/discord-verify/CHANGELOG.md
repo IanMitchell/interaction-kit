@@ -1,5 +1,11 @@
 # discord-verify
 
+## 1.0.3
+
+### Patch Changes
+
+- 7c11b85: Corrects documentation style errors
+
 ## 1.0.2
 
 ### Patch Changes

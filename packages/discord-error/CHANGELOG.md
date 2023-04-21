@@ -1,5 +1,11 @@
 # discord-error
 
+## 3.0.1
+
+### Patch Changes
+
+- 7c11b85: Corrects a bug when parsing Error Groups
+
 ## 3.0.0
 
 ### Major Changes

@@ -1,5 +1,11 @@
 # discord-edge-runner
 
+## 1.0.2
+
+### Patch Changes
+
+- 7c11b85: Updates package to run on the new esbuild API
+
 ## 1.0.1
 
 ### Patch Changes
