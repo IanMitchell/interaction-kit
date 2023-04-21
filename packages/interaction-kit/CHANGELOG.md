@@ -1,5 +1,13 @@
 # interaction-kit
 
+## 0.2.6
+
+### Patch Changes
+
+- Updated dependencies [671ca06]
+  - discord-request@1.0.1
+  - discord-api-methods@0.0.6
+
 ## 0.2.5
 
 ### Patch Changes

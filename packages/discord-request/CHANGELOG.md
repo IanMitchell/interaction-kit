@@ -1,5 +1,11 @@
 # discord-request
 
+## 1.0.1
+
+### Patch Changes
+
+- 671ca06: Added additional documentation on usage
+
 ## 1.0.0
 
 ### Major Changes
