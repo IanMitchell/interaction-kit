@@ -9,7 +9,7 @@ A Discord HTTP client that handles formatting and parsing requests.
 
 This package works best in conjuction with [`discord-api-types`](https://www.npmjs.com/package/discord-api-types). To begin, install both:
 
-    npm install discord-api discord-api-types
+    npm install discord-request discord-api-types
 
 Then you can combine the two (with or without typing the results):
 
@@ -74,6 +74,61 @@ To set an application token for the client to use, call `setToken` after you ins
 const instance = new Client();
 instance.setToken(process.env.DISCORD_TOKEN);
 ```
+
+## Sending Requests
+
+To send a request, use the `get`, `post`, `patch`, `put`, or `delete` methods.
+
+```ts
+import { Client } from "discord-request";
+
+const instance = new Client().setToken(process.env.DISCORD_TOKEN);
+const route = "...";
+let result;
+
+// GET
+result = await instance.get(route);
+
+// POST
+result = await instance.post(route, {
+	body: {
+		key: "value",
+	},
+});
+
+// PUT
+result = await instance.put(route, {
+	body: {
+		key: "value",
+	},
+});
+
+// PATCH
+result = await instance.patch(route, {
+	body: {
+		key: "value",
+	},
+});
+
+// DELETE
+result = await instance.delete(route);
+```
+
+## Request Options
+
+You can pass these options to each HTTP request method. Every parameter listed below is optional.
+
+- `authorization` (boolean): Whether to use the authorization header.
+- `authorizationPrefix` (string): The authorization prefix to use. Defaults to "Bot".
+- `formData` (FormData): The body to send as form data.
+- `body` (BodyInit | object): The body to send with the request. If you have defined `formData` or `files` this will be sent as `payload_json` in the form data.
+- `files` (Attachment[] | undefined): A list of up to 10 files to upload and send as part of the request.
+  - `Attachment` objects should consist of an optional `id` snowflake (for editing existing attachments), a `name` string, and a `data` Blob.
+- `headers` (HeadersInit): Headers to add to the request.
+- `rawBody` (boolean, defaults to false): If true, the body will not be processed before sending to Discord.
+- `query` (URLSearchParams): Query parameters to add to the request.
+- `reason` (string): If provided, an audit log entry will be made with this value.
+- `versioned` (boolean): A boolean on whether to use the versioned API. By default, requests will set a specific API version.
 
 ## Request Errors
 
