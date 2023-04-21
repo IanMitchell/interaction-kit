@@ -40,7 +40,7 @@ interface ServerOptions {
 	/**
 	 * A callback to run when the application errors.
 	 */
-	onError?: (error: unknown) => unknown;
+	onError?: (error: Error | esbuild.Message[]) => unknown;
 }
 
 /**
@@ -86,31 +86,48 @@ export default async function server({
 		}
 	};
 
-	// TODO: Switch to swc
-	const compiler = await esbuild.build({
+	const context = await esbuild.context({
 		entryPoints: [entrypoint],
 		bundle: true,
 		write: false,
-		watch: {
-			async onRebuild(error, result) {
-				if (error) {
-					log(`Error compiling application: ${error.message}`);
-					onError?.(error);
-					return;
-				}
+		plugins: [
+			{
+				name: "build-finished",
+				setup({ onEnd }) {
+					onEnd(async (result) => {
+						if (result.errors.length > 0) {
+							const messages = result.errors
+								.map((error) => error.text)
+								.join("\n\n");
+							log(`Error compiling application: ${messages}`);
+							onError?.(result.errors);
+							return;
+						}
 
-				void handler(result?.outputFiles?.[0].text ?? "");
+						try {
+							await handler(result?.outputFiles?.[0].text ?? "");
+						} catch (err: unknown) {
+							const error = getError(err);
+							log(`Error running application: ${error.message}`);
+							onError?.(error);
+						}
+					});
+				},
 			},
-		},
+		],
 	});
 
-	// Initial Compile
-	await handler(compiler.outputFiles[0].text ?? "");
+	try {
+		await context.watch();
+	} catch (err: unknown) {
+		const error = getError(err);
+		log(`Error watching application: ${error.message}`);
+	}
 
 	return {
 		async close() {
 			await server.close();
-			compiler.stop?.();
+			void context.dispose();
 		},
 	};
 }

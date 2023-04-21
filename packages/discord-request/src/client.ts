@@ -1,52 +1,135 @@
-import type { Callbacks, ManagerArgs } from "./manager.js";
-import { Manager } from "./manager.js";
-import type { RequestData, RequestOptions } from "./types.js";
-import { RequestMethod } from "./types.js";
+import type {
+	Prettify,
+	RequestData,
+	RequestOptions,
+	UserAgent,
+} from "./definitions.js";
+import {
+	AUDIT_LOG_LIMIT,
+	DEFAULT_USER_AGENT,
+	RequestMethod,
+} from "./definitions.js";
+import { request } from "./request.js";
 
-export default class Client {
-	#manager: Manager;
+export type ClientConfig = {
+	api: string;
+	cdn: string;
+	headers: Record<string, string>;
+	timeout: number;
+	userAgent: string;
+	version: number;
+};
 
-	constructor(options: ManagerArgs = {}) {
-		this.#manager = new Manager(options);
+export type Callbacks = {
+	abortSignal: AbortSignal | null | undefined;
+	onRequest: ((path: string, init: RequestInit) => void) | undefined;
+};
+
+export class Client {
+	#token: string | null = null;
+	#abortSignal: AbortSignal | null | undefined;
+	#config: Omit<ClientConfig, "userAgent"> & { userAgent: UserAgent };
+	#callbacks: Partial<Callbacks>;
+
+	/**
+	 * Creates a new Client for accessing the Discord API. This will
+	 * automatically queue requests and handle rate limits. You **should not**
+	 * create multiple instances of this class.
+	 * @param options - Configuration options for the Client.
+	 * @returns The Client instance.
+	 */
+	constructor({
+		// Request Config
+		api,
+		version,
+		cdn,
+		headers,
+		userAgent,
+		timeout,
+		// Manager Options
+		abortSignal,
+		onRequest,
+	}: Partial<ClientConfig> & Partial<Callbacks> = {}) {
+		this.#config = {
+			api: api ?? "https://discord.com/api",
+			version: version ?? 10,
+			cdn: cdn ?? "https://cdn.discordapp.com",
+			headers: headers ?? {},
+			timeout: timeout ?? 15 * 1000,
+			userAgent: DEFAULT_USER_AGENT,
+		};
+
+		this.#callbacks = {
+			onRequest,
+		};
+
+		this.#abortSignal = abortSignal;
+
+		this.userAgent = userAgent;
 	}
 
-	setToken(token: string) {
-		this.#manager.setToken(token);
+	/**
+	 * Sets the Client's Bot Token.
+	 * @param token - The Discord Bot Token.
+	 * @returns The Client instance
+	 */
+	setToken(token: string | null): this {
+		this.#token = token;
 		return this;
 	}
 
-	get userAgent() {
-		return this.#manager.config.userAgent;
+	/**
+	 * Get the Client's current User Agent.
+	 */
+	get userAgent(): UserAgent {
+		return this.#config.userAgent;
 	}
 
-	set userAgent(value: string) {
-		this.#manager.config.userAgent = value;
+	/**
+	 * Sets the Client's User Agent. The UA is required to include information
+	 * about the library and version being used to access the Discord API.
+	 * In order to adhere to the spec, `discord-request` will prepend
+	 * information about itself to the provided value.
+	 */
+	set userAgent(value: string | undefined | null) {
+		this.#config.userAgent = DEFAULT_USER_AGENT;
+
+		if (value) {
+			this.#config.userAgent += ` ${value}`;
+		}
 	}
 
-	get abortSignal() {
-		return this.#manager.shutdownSignal;
+	/**
+	 * Get the Client's current abort signal. If this signal triggers, all
+	 * pending requests will be aborted.
+	 */
+	get abortSignal(): AbortSignal | null | undefined {
+		return this.#abortSignal;
 	}
 
+	/**
+	 * Sets the Client's abort signal. If this signal triggers, all pending
+	 * requests will be aborted.
+	 */
 	set abortSignal(signal: AbortSignal | null | undefined) {
-		this.#manager.shutdownSignal = signal;
+		this.#abortSignal = signal;
 	}
 
-	get globalRequestsPerSecond() {
-		return this.#manager.config.globalRequestsPerSecond;
-	}
-
-	set globalRequestsPerSecond(value: number) {
-		this.#manager.config.globalRequestsPerSecond = value;
-	}
-
-	get api() {
+	/**
+	 * Get the Client's current Discord API configuration. This includes the API
+	 * URL, the API Version, and the CDN URL.
+	 */
+	get api(): { api: string; version: number; cdn: string } {
 		return {
-			api: this.#manager.config.api,
-			version: this.#manager.config.version,
-			cdn: this.#manager.config.cdn,
+			api: this.#config.api,
+			version: this.#config.version,
+			cdn: this.#config.cdn,
 		};
 	}
 
+	/**
+	 * Sets the Client's Discord API configuration.
+	 */
 	set api({
 		api,
 		version,
@@ -56,118 +139,240 @@ export default class Client {
 		version: number;
 		cdn: string;
 	}) {
-		this.#manager.config.api = api;
-		this.#manager.config.version = version;
-		this.#manager.config.cdn = cdn;
+		this.#config.api = api;
+		this.#config.version = version;
+		this.#config.cdn = cdn;
 	}
 
-	get requestConfig() {
-		return {
-			headers: this.#manager.config.headers,
-			retries: this.#manager.config.retries,
-			timeout: this.#manager.config.timeout,
-		};
+	/**
+	 * Get the current default headers that are sent with every request.
+	 */
+	get headers(): Record<string, string> {
+		return this.#config.headers;
 	}
 
-	set requestConfig({
-		headers,
-		retries,
-		timeout,
-	}: {
-		headers: Record<string, string>;
-		retries: number;
-		timeout: number;
-	}) {
-		this.#manager.config.headers = headers;
-		this.#manager.config.retries = retries;
-		this.#manager.config.timeout = timeout;
+	/**
+	 * Sets the default headers to be sent with every request.
+	 */
+	set headers(headers: Record<string, string>) {
+		this.#config.headers = headers;
 	}
 
-	get sweepIntervals() {
-		return {
-			bucketSweepInterval: this.#manager.bucketSweepInterval,
-			queueSweepInterval: this.#manager.queueSweepInterval,
-		};
+	/**
+	 * Get the current default timeout for requests.
+	 */
+	get timeout(): number {
+		return this.#config.timeout;
 	}
 
-	set sweepIntervals({
-		bucketSweepInterval,
-		queueSweepInterval,
-	}: {
-		bucketSweepInterval: number;
-		queueSweepInterval: number;
-	}) {
-		this.#manager.bucketSweepInterval = bucketSweepInterval;
-		this.#manager.queueSweepInterval = queueSweepInterval;
+	/**
+	 * Sets the default timeout for requests.
+	 */
+	set timeout(value: number) {
+		this.#config.timeout = value;
 	}
 
-	get callbacks() {
-		return {
-			onBucketSweep: this.#manager.onBucketSweep,
-			onQueueSweep: this.#manager.onQueueSweep,
-			onRateLimit: this.#manager.onRateLimit,
-			onRequest: this.#manager.onRequest,
-		};
+	/**
+	 * Get the current onRequest callback.
+	 */
+	get onRequest(): Callbacks["onRequest"] | undefined {
+		return this.#callbacks.onRequest;
 	}
 
-	set callbacks({
-		onBucketSweep,
-		onQueueSweep,
-		onRateLimit,
-		onRequest,
-	}: {
-		onBucketSweep?: Callbacks["onBucketSweep"] | undefined;
-		onQueueSweep?: Callbacks["onQueueSweep"] | undefined;
-		onRateLimit?: Callbacks["onRateLimit"] | undefined;
-		onRequest?: Callbacks["onRequest"] | undefined;
-	}) {
-		this.#manager.onBucketSweep = onBucketSweep;
-		this.#manager.onQueueSweep = onQueueSweep;
-		this.#manager.onRateLimit = onRateLimit;
-		this.#manager.onRequest = onRequest;
+	/**
+	 * Sets the onRequest callback. This callback will be called before every
+	 * request is sent.
+	 */
+	set onRequest(callback: Callbacks["onRequest"] | undefined) {
+		this.#callbacks.onRequest = callback;
 	}
 
-	async get(path: string, options: RequestOptions = {}) {
+	/**
+	 * Sends an HTTP GET request to the Discord API.
+	 * @param path - The Discord API path to send a request to.
+	 * @param options - Request configuration options.
+	 * @returns The Discord API response.
+	 */
+	async get(
+		path: string,
+		options: Prettify<RequestOptions> = {}
+	): Promise<unknown> {
 		return this.#request({
-			path,
 			method: RequestMethod.Get,
+			path,
 			...options,
 		});
 	}
 
-	async post(path: string, options: RequestOptions = {}) {
+	/**
+	 * Sends an HTTP POST request to the Discord API.
+	 * @param path - The Discord API path to send a request to.
+	 * @param options - Request configuration options.
+	 * @returns The Discord API response.
+	 */
+	async post(
+		path: string,
+		options: Prettify<RequestOptions> = {}
+	): Promise<unknown> {
 		return this.#request({
-			path,
 			method: RequestMethod.Post,
+			path,
 			...options,
 		});
 	}
 
-	async put(path: string, options: RequestOptions = {}) {
+	/**
+	 * Sends an HTTP PUT request to the Discord API.
+	 * @param path - The Discord API path to send a request to.
+	 * @param options - Request configuration options.
+	 * @returns The Discord API response.
+	 */
+	async put(
+		path: string,
+		options: Prettify<RequestOptions> = {}
+	): Promise<unknown> {
 		return this.#request({
-			path,
 			method: RequestMethod.Put,
+			path,
 			...options,
 		});
 	}
 
-	async patch(path: string, options: RequestOptions = {}) {
+	/**
+	 * Sends an HTTP PATCH request to the Discord API.
+	 * @param path - The Discord API path to send a request to.
+	 * @param options - Request configuration options.
+	 * @returns The Discord API response.
+	 */
+	async patch(
+		path: string,
+		options: Prettify<RequestOptions> = {}
+	): Promise<unknown> {
 		return this.#request({
-			path,
 			method: RequestMethod.Patch,
+			path,
 			...options,
 		});
 	}
 
-	async delete(path: string, options: RequestOptions = {}) {
+	/**
+	 * Sends an HTTP DELETE request to the Discord API.
+	 * @param path - The Discord API path to send a request to.
+	 * @param options - Request configuration options.
+	 * @returns The Discord API response.
+	 */
+	async delete(
+		path: string,
+		options: Prettify<RequestOptions> = {}
+	): Promise<unknown> {
 		return this.#request({
-			path,
 			method: RequestMethod.Delete,
+			path,
 			...options,
 		});
 	}
 
 	async #request(data: RequestData) {
-		return this.#manager.queue(data);
+		const { path, init } = this.#getRequest(data);
+		return request(this, path, init, this.#abortSignal);
+	}
+
+	#getRequest(data: RequestData) {
+		const url = this.#getRequestURL(data);
+		const headers = this.#getRequestHeaders(data);
+		let body: RequestInit["body"];
+
+		if (data.files != null) {
+			headers.set("Content-Type", "multipart/form-data");
+			const formData = new FormData();
+
+			for (const [index, file] of data.files.entries()) {
+				let { data } = file;
+
+				if (!(data instanceof Blob)) {
+					data = new Blob(data);
+				}
+
+				formData.append(`files[${file.id ?? index}]`, data, file.name);
+			}
+
+			if (data.formData != null) {
+				for (const [key, value] of data.formData.entries()) {
+					if (typeof value === "string") {
+						formData.append(key, value);
+					} else {
+						formData.append(key, value, value.name);
+					}
+				}
+			}
+
+			if (data.body != null) {
+				formData.append("payload_json", JSON.stringify(data.body));
+			}
+
+			body = formData;
+		} else if (data.body != null) {
+			if (data.rawBody) {
+				body = data.body as BodyInit;
+			} else {
+				headers.set("Content-Type", "application/json");
+				body = JSON.stringify(data.body);
+			}
+		}
+
+		const fetchOptions: RequestInit = {
+			method: data.method,
+			headers,
+			body: body ?? null,
+		};
+
+		return {
+			path: url,
+			init: fetchOptions,
+		};
+	}
+
+	#getRequestURL(data: RequestData) {
+		let url = this.#config.api;
+
+		if (data.versioned !== false) {
+			url += `/v${this.#config.version}`;
+		}
+
+		url += data.path;
+
+		const query = data.query?.toString();
+		if (query && query !== "") {
+			url += `?${query}`;
+		}
+
+		return url;
+	}
+
+	#getRequestHeaders(data: RequestData) {
+		const headers = new Headers(this.#config.headers);
+		headers.set("User-Agent", this.#config.userAgent.trim());
+
+		if (data.authorization !== false) {
+			if (!this.#token) {
+				throw new Error(
+					"Expected token to be set for this request, but none was present"
+				);
+			}
+
+			headers.set(
+				"Authorization",
+				`${data.authorizationPrefix ?? "Bot"} ${this.#token}`
+			);
+		}
+
+		if (data.reason != null) {
+			headers.set(
+				"X-Audit-Log-Reason",
+				encodeURIComponent(data.reason.substring(0, AUDIT_LOG_LIMIT))
+			);
+		}
+
+		return headers;
 	}
 }

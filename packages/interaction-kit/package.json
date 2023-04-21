@@ -9,7 +9,7 @@
 	"typings": "dist/src/index.d.ts",
 	"type": "module",
 	"scripts": {
-		"clean": "rimraf dist",
+		"clean": "rimraf dist .turbo",
 		"build": "tsc",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check && prettier bin/*.ts --check",
@@ -28,20 +28,20 @@
 	},
 	"dependencies": {
 		"arg": "^5.0.2",
-		"boxen": "7.0.0",
-		"chalk": "^5.0.1",
+		"boxen": "7.0.2",
+		"chalk": "^5.2.0",
 		"discord-api-methods": "0.0.4",
-		"discord-api-types": "^0.37.4",
+		"discord-api-types": "^0.37.37",
 		"discord-edge-runner": "1.0.1",
 		"discord-request": "0.0.6",
 		"discord-snowflake": "2.0.0",
 		"discord-verify": "1.0.2",
-		"dotenv": "^16.0.1",
+		"dotenv": "^16.0.3",
 		"ngrok": "^4.3.3",
-		"supports-color": "9.2.2"
+		"supports-color": "9.3.1"
 	},
 	"peerDependencies": {
-		"esbuild": "0.15.13"
+		"esbuild": "0.17.15"
 	},
 	"peerDependenciesMeta": {
 		"esbuild": {

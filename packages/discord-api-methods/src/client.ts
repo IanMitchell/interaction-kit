@@ -1,18 +1,23 @@
-import Client from "discord-request";
+import type { UserAgent } from "discord-request";
+import { Client } from "discord-request";
 import pkg from "../package.json" assert { type: "json" };
 
 export class DiscordApiClient extends Client {
-	get userAgent() {
+	get userAgent(): UserAgent {
 		return super.userAgent;
 	}
 
-	set userAgent(value: string) {
-		super.userAgent = `${value}, discord-api ${pkg.version}`;
+	set userAgent(value: string | undefined | null) {
+		let str = `discord-api ${pkg.version}`;
+
+		if (value) {
+			str += ` ${value}`;
+		}
+
+		super.userAgent = str;
 	}
 }
 
 export const client = new DiscordApiClient({
-	bucketSweepInterval: 0,
-	queueSweepInterval: 0,
 	userAgent: `discord-api ${pkg.version}`,
 });

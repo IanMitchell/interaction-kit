@@ -2,9 +2,11 @@
 	"name": "flint-bot",
 	"main": "./src/app.ts",
 	"type": "module",
+	"private": true,
 	"scripts": {
+		"clean": "rimraf .turbo .ikit",
 		"deploy": "ikit deploy",
-		"bot": "DEBUG=* ikit dev",
+		"bot": "DEBUG=* DEBUG_HIDE_DATE=ON ikit dev",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
 		"lint": "eslint ./src/**/*.ts"
@@ -14,7 +16,7 @@
 	},
 	"platform": "node",
 	"dependencies": {
-		"interaction-kit": "file:../../packages/interaction-kit",
+		"interaction-kit": "0.2.4",
 		"esbuild": "0.15.13"
 	}
 }

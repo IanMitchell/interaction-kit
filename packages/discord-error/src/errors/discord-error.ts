@@ -104,18 +104,22 @@ function* parse(
 		return yield `${prefix}: ${value.message.trim()}`;
 	}
 
-	// Handle nested fields
-	for (const [label, item] of Object.entries(value)) {
-		const nextKey = getNextKey(key, label);
+	if (isErrorGroup(value)) {
+		for (let i = 0; i < value._errors.length; i++) {
+			const error = value._errors[i];
+			const nextKey = getNextKey(key, i.toString());
+			yield* parse(error, nextKey);
+		}
+	} else {
+		// Handle nested fields
+		for (const [label, item] of Object.entries(value)) {
+			const nextKey = getNextKey(key, label);
 
-		if (typeof item === "string") {
-			yield item;
-		} else if (isErrorGroup(item)) {
-			for (const error of item._errors) {
-				yield* parse(error, nextKey);
+			if (typeof item === "string") {
+				yield item;
+			} else {
+				yield* parse(item, nextKey);
 			}
-		} else {
-			yield* parse(item, nextKey);
 		}
 	}
 }

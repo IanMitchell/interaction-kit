@@ -10,7 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type Application from "./application.js";
 
-export async function getEdgeEntrypoint(filepath?: string) {
+export function getEdgeEntrypoint(filepath?: string) {
 	if (filepath != null) {
 		return path.join(process.cwd(), filepath);
 	}
@@ -39,8 +39,7 @@ export async function getApplicationEntrypoint(): Promise<Application> {
 		const appPath = json?.default?.main as string;
 
 		// Prevent ESM Caching
-		const cacheBuster = `?update=${Date.now()}`;
-		let entrypoint = path.join(process.cwd(), appPath + cacheBuster);
+		let entrypoint = path.join(process.cwd(), appPath);
 
 		if (entrypoint.endsWith(".ts")) {
 			const build = await esbuild.build({
@@ -53,11 +52,14 @@ export async function getApplicationEntrypoint(): Promise<Application> {
 			entrypoint = path.join(
 				process.cwd(),
 				".ikit",
-				appPath.replace("src/", "").replace(".ts", ".js") + cacheBuster
+				appPath.replace("src/", "").replace(".ts", ".js")
 			);
 		}
 
-		const app = (await import(entrypoint)) as { default: Application };
+		const cacheBuster = `?update=${Date.now()}`;
+		const app = (await import(entrypoint + cacheBuster)) as {
+			default: Application;
+		};
 		return app?.default;
 	} catch (error: unknown) {
 		console.error("There was an error reading your application file:\n");

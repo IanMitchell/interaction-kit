@@ -3,7 +3,7 @@
 > **Looking for an API Wrapper?**
 > Check out [`discord-api-methods`](https://www.npmjs.com/package/discord-api-methods) instead. This package is low level, and works best in libraries as opposed to applications.
 
-A Discord HTTP client that handles global and resource rate limits automatically.
+A Discord HTTP client that handles formatting and parsing requests.
 
 ## Usage
 
@@ -14,13 +14,14 @@ This package works best in conjuction with [`discord-api-types`](https://www.npm
 Then you can combine the two (with or without typing the results):
 
 ```ts
-import Client from "discord-request";
+import { Client } from "discord-request";
 import {
 	Routes,
 	RESTGetAPIApplicationGuildCommandsResult,
 } from "discord-api-types/v10";
 
-const instance = new Client();
+const client = new Client();
+client.setToken(process.env.DISCORD_TOKEN);
 
 const guildCommands = client.get(
 	Routes.applicationGuildCommands(applicationId, guildId)
@@ -33,11 +34,9 @@ When creating a new client, you can configure it by passing in optional argument
 
 ```ts
 const instance = new Client({
-	retries: 0,
 	timeout: 1000,
-	globalRequestsPerSecond: 100,
-	onRateLimit: (data) => console.log({ data }),
-});
+	userAgent: "My Discord Bot",
+}).setToken(process.env.DISCORD_TOKEN);
 ```
 
 Every parameter listed below is optional.
@@ -47,34 +46,42 @@ Every parameter listed below is optional.
 - `cdn`: The CDN URL to use. Defaults to `https://cdn.discordapp.com`.
 - `headers`: An object of additional headers to send with each request.
 - `userAgent`: The user agent to use. Defaults to `Discord Request v0`.
-- `retries`: The number of times to retry a request if it fails. Defaults to `3`.
 - `timeout`: The number of milliseconds to wait before timing out a request. Defaults to `15000` (15 seconds).
-- `globalRequestsPerSecond`: The number of global requests per second to allow. Defaults to `50`.
-- `shutdownSignal`: An AbortSignal to use when you need to cancel all unfinished requests to shut down the application.
-- `queueSweepInterval`: The number of milliseconds to wait between sweeping the queue. Defaults to `0` (no sweeping). **If you use discord-request in a persistent environment, you should set this value.**
-- `bucketSweepInterval`: The number of milliseconds to wait between sweeping the buckets. Defaults to `0` (no sweeping). **If you use discord-request in a persistent environment, you should set this value.**
-- `onBucketSweep`: See callbacks below.
-- `onQueueSweep`: See callbacks below.
-- `onRateLimit`: See callbacks below.
+- `abortSignal`: An AbortSignal to use when you need to cancel all unfinished requests to shut down the application.
 - `onRequest`: See callbacks below.
 
 #### Callbacks
 
-###### `onBucketSweep?: (swept: Map<string, Bucket>) => void;`
+###### `onRequest?: (path: string, init: RequestInit) => void;`
 
-Runs when a bucket sweep finishes. Returns a Map of removed buckets.
+Runs when a request is sent to the Discord API. Passes information used to send the request.
 
-###### `onQueueSweep?: (swept: Map<string, Queue>) => void;`
+## Client Configuration
 
-Runs when a queue sweep finishes. Returns a Map of removed queues.
+There are various getters and setters you can use to configure the client once instantiated.
 
-###### `onRateLimit?: (data: RateLimitData) => void;`
+```ts
+const instance = new Client();
+instance.userAgent = "My Discord Bot";
+console.log(instance.userAgent);
+```
 
-Runs when a rate limit is encountered. Returns information about the rate limit.
+## Setting Token
 
-###### `onRequest?: (parameters: Route, resource: string, init: RequestInit, options: RequestOptions, retries: number) => void;`
+To set an application token for the client to use, call `setToken` after you instantiate it.
 
-Runs when a request is sent to the Discord API. Returns information used to send the request.
+```ts
+const instance = new Client();
+instance.setToken(process.env.DISCORD_TOKEN);
+```
+
+## Request Errors
+
+This library will throw several different errors based on the response.
+
+- `RequestError` - If the request fails for any reason, this error will be thrown with the error message.
+- `RateLimitError` - If your application is currently being Rate Limited by Discord, this error will be thrown with the parsed information.
+- `DiscordRequestError` - If Discord's API returns an error with an error key, this error will be thrown with the parsed information.
 
 ## Credits
 

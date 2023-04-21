@@ -21,9 +21,11 @@ export type SlashCommandAutocompleteType =
 	| NumberOption;
 
 export interface Autocomplete<T extends AutocompleteInteractionTypes> {
-	autocomplete?: (
-		interaction: T,
-		application: Application,
-		request: Request
-	) => Awaitable;
+	autocomplete:
+		| ((
+				interaction: T,
+				application: Application,
+				request: Request
+		  ) => Awaitable)
+		| undefined;
 }

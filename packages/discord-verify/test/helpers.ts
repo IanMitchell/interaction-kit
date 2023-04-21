@@ -1,9 +1,16 @@
 import * as ed from "@noble/ed25519";
+import { webcrypto } from "node:crypto";
+
+// Compat fix: https://github.com/paulmillr/noble-ed25519/blob/main/index.js#L303-L308
+if (!globalThis.crypto) {
+	// @ts-expect-error package compatibility fix
+	globalThis.crypto = webcrypto;
+}
 
 async function* keyGenerator() {
 	while (true) {
 		const privateKey = ed.utils.randomPrivateKey();
-		const publicKey = await ed.getPublicKey(privateKey);
+		const publicKey = await ed.getPublicKeyAsync(privateKey);
 		yield {
 			privateKey,
 			publicKey: Buffer.from(publicKey).toString("hex"),
@@ -29,7 +36,7 @@ export async function getSignature(privateKey: Uint8Array, body: string) {
 		Buffer.concat([Buffer.from(timestamp), Buffer.from(body)])
 	);
 
-	const signature = await ed.sign(value, privateKey);
+	const signature = await ed.signAsync(value, privateKey);
 	return { timestamp, signature: Buffer.from(signature).toString("hex") };
 }
 

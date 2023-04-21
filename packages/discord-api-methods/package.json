@@ -10,7 +10,7 @@
 	"typings": "dist/src/index.d.ts",
 	"type": "module",
 	"scripts": {
-		"clean": "rimraf dist",
+		"clean": "rimraf dist .turbo",
 		"build": "tsc",
 		"typecheck": "tsc --noEmit",
 		"prettier": "prettier src/**/*.ts --check",
@@ -25,9 +25,8 @@
 		"node": ">=18"
 	},
 	"dependencies": {
-		"discord-api-types": "^0.37.4",
+		"discord-api-types": "^0.37.37",
 		"discord-request": "0.0.6",
-		"discord-snowflake": "2.0.0",
-		"debug": "^4.3.4"
+		"discord-snowflake": "2.0.0"
 	}
 }

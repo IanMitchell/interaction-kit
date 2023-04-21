@@ -65,7 +65,10 @@ export default class SlashCommand
 
 	handler?: InteractionKitCommand<SlashCommandInteraction>["handler"];
 
-	autocomplete?: Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"];
+	autocomplete:
+		| Autocomplete<SlashCommandAutocompleteInteraction>["autocomplete"]
+		| undefined;
+
 	commands: Map<string, ArrayValue<ParentCommandArgs["commands"]>>;
 
 	constructor({

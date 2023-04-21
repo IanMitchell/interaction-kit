@@ -35,5 +35,8 @@ export { default as Select } from "./components/select.js";
 // Export discord-api-types enums
 export { ButtonStyle, ChannelType } from "discord-api-types/v10";
 
+// Export Platforms
+export { PlatformAlgorithm } from "discord-verify";
+
 // Message Helpers
 export * as Markdown from "./structures/markdown.js";
