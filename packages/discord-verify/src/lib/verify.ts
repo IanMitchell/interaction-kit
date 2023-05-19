@@ -116,20 +116,32 @@ export const PlatformAlgorithm = {
  * @param publicKey - The application's public key
  * @param subtleCrypto - The crypto engine to use
  * @param algorithm - The name of the crypto algorithm to use
+ * @param expirationTime - The time range in which the request is valid
  * @returns Whether the request is valid or not
  */
 export async function isValidRequest(
 	request: Request,
 	publicKey: string,
 	subtleCrypto: SubtleCrypto,
-	algorithm: SubtleCryptoImportKeyAlgorithm | string = PlatformAlgorithm.NewNode
+	algorithm:
+		| SubtleCryptoImportKeyAlgorithm
+		| string = PlatformAlgorithm.NewNode,
+	expirationTime: number = 15 * 60_000
 ) {
 	const clone = request.clone();
 	const timestamp = clone.headers.get("X-Signature-Timestamp");
 	const signature = clone.headers.get("X-Signature-Ed25519");
 	const body = await clone.text();
 
-	return verify(body, signature, timestamp, publicKey, subtleCrypto, algorithm);
+	return verify(
+		body,
+		signature,
+		timestamp,
+		publicKey,
+		subtleCrypto,
+		algorithm,
+		expirationTime
+	);
 }
 
 /**
@@ -140,6 +152,7 @@ export async function isValidRequest(
  * @param publicKey - The application's public key
  * @param subtleCrypto - The crypto engine to use
  * @param algorithm - The name of the crypto algorithm to use
+ * @param expirationTime - The time range in which the request is valid
  * @returns Whether the request is valid or not
  */
 export async function verify(
@@ -148,9 +161,16 @@ export async function verify(
 	timestamp: string | null | undefined,
 	publicKey: string,
 	subtleCrypto: SubtleCrypto,
-	algorithm: SubtleCryptoImportKeyAlgorithm | string = PlatformAlgorithm.NewNode
+	algorithm:
+		| SubtleCryptoImportKeyAlgorithm
+		| string = PlatformAlgorithm.NewNode,
+	expirationTime: number = 15 * 60_000
 ) {
 	if (timestamp == null || signature == null || rawBody == null) {
+		return false;
+	}
+
+	if (Math.abs(Date.now() / 1000 - parseInt(timestamp, 10)) > expirationTime) {
 		return false;
 	}
 

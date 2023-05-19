@@ -1,8 +1,8 @@
 import { describe, expect, test, vi } from "vitest";
 import {
+	PlatformAlgorithm,
 	hexStringToBinary,
 	isValidRequest,
-	PlatformAlgorithm,
 	verify,
 } from "../src/web.js";
 import { encode, getKeyPair, getMockRequest, getSignature } from "./helpers.js";
@@ -103,6 +103,24 @@ describe("Invalid Requests", () => {
 
 		const request = await getMockRequest(privateKey, { hello: "world" });
 		request.headers.set("X-Signature-Ed25519", signature);
+
+		const valid = await isValidRequest(
+			request,
+			publicKey,
+			PlatformAlgorithm.VercelDev
+		);
+		expect(valid).toBe(false);
+	});
+
+	test("Rejects replay attacks", async () => {
+		const { privateKey, publicKey } = await getKeyPair();
+		const request = await getMockRequest(privateKey, { hello: "world" });
+
+		const oldDate = Date.now() - 16 * 60_000;
+		request.headers.set(
+			"X-Signature-Timestamp",
+			Math.round(oldDate / 1000).toString()
+		);
 
 		const valid = await isValidRequest(
 			request,
