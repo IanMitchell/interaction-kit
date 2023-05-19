@@ -1,5 +1,11 @@
 # discord-verify
 
+## 1.1.0
+
+### Minor Changes
+
+- aa60435: Adds Replay Attack Protection
+
 ## 1.0.3
 
 ### Patch Changes
