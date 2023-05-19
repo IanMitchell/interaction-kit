@@ -1,5 +1,12 @@
 # interaction-kit
 
+## 0.2.7
+
+### Patch Changes
+
+- Updated dependencies [aa60435]
+  - discord-verify@1.1.0
+
 ## 0.2.6
 
 ### Patch Changes
