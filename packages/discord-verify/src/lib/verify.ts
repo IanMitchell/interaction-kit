@@ -123,7 +123,9 @@ export async function isValidRequest(
 	request: Request,
 	publicKey: string,
 	subtleCrypto: SubtleCrypto,
-	algorithm: SubtleCryptoImportKeyAlgorithm | string = PlatformAlgorithm.NewNode,
+	algorithm:
+		| SubtleCryptoImportKeyAlgorithm
+		| string = PlatformAlgorithm.NewNode,
 	expirationTime: number = 15 * 60_000
 ) {
 	const clone = request.clone();
@@ -131,7 +133,15 @@ export async function isValidRequest(
 	const signature = clone.headers.get("X-Signature-Ed25519");
 	const body = await clone.text();
 
-	return verify(body, signature, timestamp, publicKey, subtleCrypto, algorithm, expirationTime);
+	return verify(
+		body,
+		signature,
+		timestamp,
+		publicKey,
+		subtleCrypto,
+		algorithm,
+		expirationTime
+	);
 }
 
 /**
@@ -151,15 +161,17 @@ export async function verify(
 	timestamp: string | null | undefined,
 	publicKey: string,
 	subtleCrypto: SubtleCrypto,
-	algorithm: SubtleCryptoImportKeyAlgorithm | string = PlatformAlgorithm.NewNode,
+	algorithm:
+		| SubtleCryptoImportKeyAlgorithm
+		| string = PlatformAlgorithm.NewNode,
 	expirationTime: number = 15 * 60_000
 ) {
 	if (timestamp == null || signature == null || rawBody == null) {
 		return false;
 	}
 
-	if (Math.abs(Date.now() - parseInt(timestamp, 10)) > expirationTime) {
-		return false
+	if (Math.abs(Date.now() / 1000 - parseInt(timestamp, 10)) > expirationTime) {
+		return false;
 	}
 
 	const key = await getCryptoKey(publicKey, subtleCrypto, algorithm);
