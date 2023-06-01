@@ -20,6 +20,11 @@
 			"import": "./dist/node.mjs",
 			"require": "./dist/node.cjs",
 			"types": "./dist/node.d.ts"
+		},
+		"./aws": {
+			"import": "./dist/aws.mjs",
+			"require": "./dist/aws.cjs",
+			"types": "./dist/aws.d.ts"
 		}
 	},
 	"main": "./dist/web.mjs",
