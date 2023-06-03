@@ -1,5 +1,6 @@
 // AWS lambda requires an explicit crypto import.
-// @ts-expect-error We can't use Node types since we aren't fully in a Node environment
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
+// @ts-ignore-error We can't use Node types since we aren't fully in a Node environment
 import crypto from "crypto";
 import { PlatformAlgorithm, verify } from "./lib/verify.js";
 
