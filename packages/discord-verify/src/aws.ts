@@ -1,4 +1,5 @@
 // AWS lambda requires an explicit crypto import.
+// @ts-expect-error We can't use Node types since we aren't fully in a Node environment
 import crypto from "crypto";
 import { PlatformAlgorithm, verify } from "./lib/verify.js";
 
@@ -21,7 +22,7 @@ export async function isValid(
 ) {
 	const signature = event.headers["X-Signature-Ed25519"];
 	const timestamp = event.headers["X-Signature-Timestamp"];
-	const body = event.body;
+	const { body } = event;
 	if (!signature || !timestamp || !body) return false;
 
 	try {
