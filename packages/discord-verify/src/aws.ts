@@ -10,7 +10,7 @@ export interface AWSGatewayEvent {
 
 /**
  * Validates a request from Discord received via AWS lambda.
- * @param event The AWS Gateway event to verify
+ * @param event - The AWS Gateway event to verify
  * @param publicKey - The application's public key
  * @param algorithm - The name of the crypto algorithm to use
  * @returns Whether the request is valid or not
