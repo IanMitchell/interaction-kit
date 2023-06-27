@@ -21,14 +21,12 @@ export async function isValid(
 	publicKey: string,
 	algorithm?: string
 ) {
-	const signature = event.headers["X-Signature-Ed25519"];
-	const timestamp = event.headers["X-Signature-Timestamp"];
-	const { body } = event;
-	if (!signature || !timestamp || !body) return false;
+	const signature = event?.headers?.["X-Signature-Ed25519"];
+	const timestamp = event?.headers?.["X-Signature-Timestamp"];
 
 	try {
 		await verify(
-			event.body,
+			event?.body,
 			signature,
 			timestamp,
 			publicKey,
@@ -38,7 +36,7 @@ export async function isValid(
 	} catch (error: unknown) {
 		if (error instanceof Error && error.constructor.name === "DOMException") {
 			return verify(
-				event.body,
+				event?.body,
 				signature,
 				timestamp,
 				publicKey,
