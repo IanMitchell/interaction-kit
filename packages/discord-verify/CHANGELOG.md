@@ -1,5 +1,11 @@
 # discord-verify
 
+## 1.2.0
+
+### Minor Changes
+
+- 9e2c8ac: Adds AWS Verify Export
+
 ## 1.1.0
 
 ### Minor Changes
