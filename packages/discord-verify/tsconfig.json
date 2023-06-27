@@ -18,6 +18,13 @@
 		"target": "ES2021",
 		"moduleResolution": "NodeNext"
 	},
-	"include": ["src/**/*.ts", "node.ts", "node.cts", "web.ts"],
+	"include": [
+		"src/**/*.ts",
+		"node.ts",
+		"node.cts",
+		"web.ts",
+		"aws.ts",
+		"aws.cts"
+	],
 	"exclude": ["node_modules", "dist", "*.js"]
 }

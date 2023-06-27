@@ -1,7 +1,7 @@
 import { defineBuildConfig } from "unbuild";
 
 export default defineBuildConfig({
-	entries: ["./node", "./web"],
+	entries: ["./node", "./web", "./aws"],
 	rollup: {
 		emitCJS: true,
 	},
