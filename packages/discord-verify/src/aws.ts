@@ -1,7 +1,7 @@
 // AWS lambda requires an explicit crypto import.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment, @typescript-eslint/prefer-ts-expect-error
 // @ts-ignore-error We can't use Node types since we aren't fully in a Node environment
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { PlatformAlgorithm, verify } from "./lib/verify.js";
 
 export interface AWSGatewayEvent {
@@ -33,7 +33,7 @@ export async function isValid(
 			timestamp,
 			publicKey,
 			crypto.webcrypto.subtle,
-			algorithm ?? PlatformAlgorithm.OldNode
+			algorithm ?? PlatformAlgorithm.NewNode
 		);
 	} catch (error: unknown) {
 		if (error instanceof Error && error.constructor.name === "DOMException") {
