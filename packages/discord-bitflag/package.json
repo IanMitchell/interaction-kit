@@ -1,0 +1,30 @@
+{
+	"name": "discord-bitflag",
+	"version": "0.0.1",
+	"author": "Ian Mitchell",
+	"description": "A Discord bitfield library",
+	"license": "MIT",
+	"homepage": "https://github.com/ianmitchell/interaction-kit/tree/main/packages/discord-bitfield",
+	"exports": "./dist/src/index.js",
+	"main": "./dist/src/index.js",
+	"typings": "dist/src/index.d.ts",
+	"type": "module",
+	"scripts": {
+		"clean": "rimraf dist .turbo",
+		"build": "tsc",
+		"typecheck": "tsc --noEmit",
+		"prettier": "prettier src/**/*.ts --check",
+		"lint": "eslint ./src/**/*.ts",
+		"prepublish": "npm run clean && npm run build"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"engines": {
+		"node": ">=18"
+	},
+	"dependencies": {
+		"bitflag-js": "^0.0.1"
+	}
+}
