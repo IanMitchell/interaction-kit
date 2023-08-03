@@ -6,6 +6,9 @@ export { ApplicationFlagsBitField } from "./wrappers/applications.js";
 export { ChannelFlags } from "./flags/channel.js";
 export { ChannelFlagsBitField } from "./wrappers/channels.js";
 
+export { GuildMemberFlags } from "./flags/guild-member.js";
+export { GuildMemberFlagsBitField } from "./wrappers/guild-members.js";
+
 export { IntentFlags } from "./flags/intents.js";
 export { IntentFlagsBitField } from "./wrappers/intents.js";
 
