@@ -1,5 +1,5 @@
 import { BitField } from "bitflag-js";
-import { ApplicationFlags } from "discord-api-types/v10";
+import { ApplicationFlags } from "../flags/application.js";
 
 export class ApplicationFlagsBitField extends BitField {
 	static ALL = Object.values(ApplicationFlags).reduce(
