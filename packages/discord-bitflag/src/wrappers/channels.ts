@@ -3,7 +3,7 @@ import { ChannelFlags } from "../flags/channel.js";
 
 export class ChannelFlagsBitField extends BitField {
 	static ALL = Object.values(ChannelFlags).reduce(
-		(total, flag) => total | BigInt(flag),
+		(total, flag) => total | flag,
 		0n
 	);
 }

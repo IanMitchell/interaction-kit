@@ -3,7 +3,7 @@ import { ApplicationFlags } from "../flags/application.js";
 
 export class ApplicationFlagsBitField extends BitField {
 	static ALL = Object.values(ApplicationFlags).reduce(
-		(total, flag) => total | BigInt(flag),
+		(total, flag) => total | flag,
 		0n
 	);
 }
