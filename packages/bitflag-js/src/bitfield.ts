@@ -92,7 +92,7 @@ export class BitField {
 				case "number":
 					return resolved | BigInt(item);
 				case "object":
-					if (item.constructor.name === "BitField") {
+					if (item instanceof BitField) {
 						return item.value;
 					}
 
