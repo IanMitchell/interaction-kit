@@ -3,10 +3,7 @@ import { BitField } from "bitflag-js";
 import { PermissionFlags } from "../flags/permissions.js";
 
 export class PermissionsBitField extends BitField {
-	static ALL = Object.values(PermissionFlags).reduce(
-		(total, permission) => total | permission,
-		0n
-	);
+	static ALL = BitField.resolve(Object.values(PermissionFlags));
 
 	has(...flags: BitFlagResolvable[]) {
 		return super.has(flags, PermissionFlags.Administrator);

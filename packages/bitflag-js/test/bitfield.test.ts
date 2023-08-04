@@ -12,8 +12,8 @@ const Flags: BitFlags = {
 
 describe("resolve", () => {
 	test("Handles numbers", () => {
-		expect(BitField.resolve(Flags.FIRST)).toEqual(Flags.FIRST);
-		expect(BitField.resolve(Flags.FIFTH)).toEqual(Flags.FIFTH);
+		expect(BitField.resolve(1 << 1)).toEqual(Flags.FIRST);
+		expect(BitField.resolve(1 << 5)).toEqual(Flags.FIFTH);
 	});
 
 	test("Handles bigints", () => {
@@ -75,7 +75,6 @@ describe("constructor", () => {
 		const bf = new BitField(Flags.FIRST, Flags.SECOND);
 		expect(bf.value).toEqual(6n);
 	});
-	test.todo("thing");
 });
 
 test("get value", () => {
