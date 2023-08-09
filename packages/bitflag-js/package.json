@@ -1,6 +1,6 @@
 {
 	"name": "bitflag-js",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"author": "Ian Mitchell",
 	"description": "A bitflag library for JavaScript",
 	"license": "MIT",
