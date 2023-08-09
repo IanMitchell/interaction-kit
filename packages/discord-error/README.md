@@ -4,6 +4,14 @@ Creates a JavaScript Error from the body response of a Discord API JSON error me
 
 ## Usage
 
+Install the library by running
+
+```
+npm i discord-error
+```
+
+Then import and use it in your code like this:
+
 ```js
 import { DiscordError, isDiscordError } from "discord-error";
 
