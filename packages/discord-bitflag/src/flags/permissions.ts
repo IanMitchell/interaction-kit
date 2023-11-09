@@ -1,6 +1,4 @@
-import type { BitFlags } from "bitflag-js";
-
-export const PermissionFlags: BitFlags = Object.freeze({
+export const PermissionFlags = Object.freeze({
 	CreateInstantInvite: 1n << 0n,
 	KickMembers: 1n << 1n,
 	BanMembers: 1n << 2n,

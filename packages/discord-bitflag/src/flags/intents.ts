@@ -1,6 +1,4 @@
-import type { BitFlags } from "bitflag-js";
-
-export const IntentFlags: BitFlags = Object.freeze({
+export const IntentFlags = Object.freeze({
 	Guilds: 1n << 0n,
 	GuildMembers: 1n << 1n,
 	GuildModeration: 1n << 2n,

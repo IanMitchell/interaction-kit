@@ -1,6 +1,4 @@
-import type { BitFlags } from "bitflag-js";
-
-export const ApplicationFlags: BitFlags = Object.freeze({
+export const ApplicationFlags = Object.freeze({
 	ApplicationAutoModerationRuleCreateBadge: 1n << 6n,
 	GatewayPresence: 1n << 12n,
 	GatewayPresenceLimited: 1n << 13n,
