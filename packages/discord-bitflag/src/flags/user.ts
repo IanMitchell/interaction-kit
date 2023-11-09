@@ -1,6 +1,4 @@
-import type { BitFlags } from "bitflag-js";
-
-export const UserFlags: BitFlags = Object.freeze({
+export const UserFlags = Object.freeze({
 	Staff: 1n << 0n,
 	Partner: 1n << 1n,
 	HypeSquad: 1n << 2n,

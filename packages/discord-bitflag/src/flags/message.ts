@@ -1,6 +1,4 @@
-import type { BitFlags } from "bitflag-js";
-
-export const MessageFlags: BitFlags = Object.freeze({
+export const MessageFlags = Object.freeze({
 	Crossposted: 1n << 0n,
 	IsCrosspost: 1n << 1n,
 	SuppressEmbeds: 1n << 2n,
