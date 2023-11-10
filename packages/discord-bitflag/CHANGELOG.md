@@ -1,5 +1,11 @@
 # discord-bitflag
 
+## 1.0.1
+
+### Patch Changes
+
+- a2c74f1: Corrects flag typings to fix Autocomplete
+
 ## 1.0.0
 
 ### Major Changes
