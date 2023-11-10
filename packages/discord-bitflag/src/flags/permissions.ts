@@ -1,3 +1,5 @@
+import type { BitFlags } from "bitflag-js";
+
 export const PermissionFlags = Object.freeze({
 	CreateInstantInvite: 1n << 0n,
 	KickMembers: 1n << 1n,
@@ -44,4 +46,4 @@ export const PermissionFlags = Object.freeze({
 	UseSoundboard: 1n << 42n,
 	UseExternalSounds: 1n << 45n,
 	SendVoiceMessages: 1n << 46n,
-});
+}) satisfies BitFlags;

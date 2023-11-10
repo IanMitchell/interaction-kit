@@ -1,3 +1,5 @@
+import type { BitFlags } from "bitflag-js";
+
 export const ApplicationFlags = Object.freeze({
 	ApplicationAutoModerationRuleCreateBadge: 1n << 6n,
 	GatewayPresence: 1n << 12n,
@@ -9,4 +11,4 @@ export const ApplicationFlags = Object.freeze({
 	GatewayMessageContent: 1n << 18n,
 	GatewayMessageContentLimited: 1n << 19n,
 	ApplicationCommandBadge: 1n << 23n,
-});
+}) satisfies BitFlags;

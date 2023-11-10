@@ -1,3 +1,5 @@
+import type { BitFlags } from "bitflag-js";
+
 export const UserFlags = Object.freeze({
 	Staff: 1n << 0n,
 	Partner: 1n << 1n,
@@ -14,4 +16,4 @@ export const UserFlags = Object.freeze({
 	CertifiedModerator: 1n << 18n,
 	BotHttpInteractions: 1n << 19n,
 	ActiveDeveloper: 1n << 22n,
-});
+}) satisfies BitFlags;

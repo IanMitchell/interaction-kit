@@ -1,3 +1,5 @@
+import type { BitFlags } from "bitflag-js";
+
 export const IntentFlags = Object.freeze({
 	Guilds: 1n << 0n,
 	GuildMembers: 1n << 1n,
@@ -18,4 +20,4 @@ export const IntentFlags = Object.freeze({
 	GuildScheduledEvents: 1n << 16n,
 	AutoModerationConfiguration: 1n << 20n,
 	AutoModerationExecution: 1n << 21n,
-});
+}) satisfies BitFlags;

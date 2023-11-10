@@ -1,3 +1,5 @@
+import type { BitFlags } from "bitflag-js";
+
 export const MessageFlags = Object.freeze({
 	Crossposted: 1n << 0n,
 	IsCrosspost: 1n << 1n,
@@ -10,4 +12,4 @@ export const MessageFlags = Object.freeze({
 	FailedToMentionSomeRolesInThread: 1n << 8n,
 	SuppressNotifications: 1n << 12n,
 	IsVoiceMessage: 1n << 13n,
-});
+}) satisfies BitFlags;
