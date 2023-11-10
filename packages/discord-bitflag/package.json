@@ -1,6 +1,6 @@
 {
 	"name": "discord-bitflag",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"author": "Ian Mitchell",
 	"description": "A Discord bitfield library",
 	"license": "MIT",
