@@ -1,5 +1,11 @@
 # discord-bitflag
 
+## 1.0.2
+
+### Patch Changes
+
+- 0238568: Fixes a bug checking the admin permission
+
 ## 1.0.1
 
 ### Patch Changes
