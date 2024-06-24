@@ -6,7 +6,7 @@ export class PermissionsBitField extends BitField {
 	static ALL = BitField.resolve(Object.values(PermissionFlags));
 
 	has(...flags: BitFlagResolvable[]) {
-		return super.has(flags, PermissionFlags.Administrator);
+		return super.has(flags) || super.has(PermissionFlags.Administrator);
 	}
 
 	hasWithoutAdmin(...flags: BitFlagResolvable[]) {
