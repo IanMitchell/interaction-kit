@@ -10,6 +10,9 @@ The following graphs show the real world metrics of [Truth or Dare](https://trut
 
 By using native WebCrypto instead of `tweetnacl` discord-verify achieves significantly better performance compared to discord-interactions.
 
+> [!IMPORTANT]  
+> These performance comparisons were made against version 3 of the `discord-interactions` library. As of [version 4](https://github.com/discord/discord-interactions-js/releases/tag/4.0.0) `discord-interactions` has moved to native crypto checks, which should result in similar performance to this package.
+
 ## Installation
 
 ```bash
