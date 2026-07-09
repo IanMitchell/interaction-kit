@@ -3,6 +3,9 @@ export { BitField, type BitFlagResolvable, type BitFlags } from "bitflag-js";
 export { ApplicationFlags } from "./flags/application.js";
 export { ApplicationFlagsBitField } from "./wrappers/applications.js";
 
+export { AttachmentFlags } from "./flags/attachment.js";
+export { AttachmentFlagsBitField } from "./wrappers/attachments.js";
+
 export { ChannelFlags } from "./flags/channel.js";
 export { ChannelFlagsBitField } from "./wrappers/channels.js";
 
