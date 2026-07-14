@@ -3,7 +3,7 @@ runs:
   using: "composite"
   steps:
     - name: Install Node.js 18.16.0
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: 18.16.0
         cache: npm
@@ -11,7 +11,7 @@ runs:
 
     - name: Turbo Cache
       id: turbo-cache
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: .turbo
         key: turbo-${{ github.job }}-${{ github.ref_name }}-${{ github.sha }}
