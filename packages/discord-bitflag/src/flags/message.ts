@@ -12,4 +12,6 @@ export const MessageFlags = Object.freeze({
 	FailedToMentionSomeRolesInThread: 1n << 8n,
 	SuppressNotifications: 1n << 12n,
 	IsVoiceMessage: 1n << 13n,
+	HasSnapshot: 1n << 14n,
+	IsComponentsV2: 1n << 15n,
 }) satisfies BitFlags;

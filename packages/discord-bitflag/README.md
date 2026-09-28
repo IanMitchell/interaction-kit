@@ -39,10 +39,13 @@ The Permissions BitField class checks for the Admin permission by default when y
 
 Each bit field class extends the `BitField` class from [bitflag-js](https://www.npmjs.com/package/bitflag-js).
 
-- [Application Flags](https://discord.com/developers/docs/resources/application#application-object-application-flags): `ApplicationFlagsBitField` and `ApplicationFlags`
-- [Channel Flags](https://discord.com/developers/docs/resources/channel#channel-object-channel-flags): `ChannelFlagsBitField` and `ChannelFlags`
-- [Guild Member Flags](https://discord.com/developers/docs/resources/guild#guild-member-object-guild-member-flags): `GuildMemberFlagsBitField` and `GuildMemberFlags`
-- [Intent Flags](https://discord.com/developers/docs/topics/gateway#list-of-intents): `IntentFlagsBitField` and `IntentFlags`
-- [Message Flags](https://discord.com/developers/docs/resources/channel#message-object-message-flags): `MessageFlagsBitField` and `MessageFlags`
-- [Permission Flags](https://discord.com/developers/docs/topics/permissions#permissions-bitwise-permission-flags): `PermissionsBitField` and `PermissionFlags`
-- [User Flags](https://discord.com/developers/docs/resources/user#user-object-user-flags): `UserFlagsBitField` and `UserFlags`
+- [Application Flags](https://docs.discord.com/developers/resources/application#application-object-application-flags): `ApplicationFlagsBitField` and `ApplicationFlags`
+- [Attachment Flags](https://docs.discord.com/developers/resources/message#attachment-object-attachment-flags): `AttachmentFlagsBitField` and `AttachmentFlags`
+- [Channel Flags](https://docs.discord.com/developers/resources/channel#channel-object-channel-flags): `ChannelFlagsBitField` and `ChannelFlags`
+- [Guild Member Flags](https://docs.discord.com/developers/resources/guild#guild-member-object-guild-member-flags): `GuildMemberFlagsBitField` and `GuildMemberFlags`
+- [Intent Flags](https://docs.discord.com/developers/topics/gateway#list-of-intents): `IntentFlagsBitField` and `IntentFlags`
+- [Message Flags](https://docs.discord.com/developers/resources/channel#message-object-message-flags): `MessageFlagsBitField` and `MessageFlags`
+- [Permission Flags](https://docs.discord.com/developers/topics/permissions#permissions-bitwise-permission-flags): `PermissionsBitField` and `PermissionFlags`
+- [SKU Flags](https://docs.discord.com/developers/resources/sku#sku-object-sku-flags): `SKUFlagsBitField` and `SKUFlags`
+- [System Channel Flags](https://docs.discord.com/developers/resources/guild#guild-object-system-channel-flags): `SystemChannelFlagsBitField` and `SystemChannelFlags`
+- [User Flags](https://docs.discord.com/developers/resources/user#user-object-user-flags): `UserFlagsBitField` and `UserFlags`

@@ -21,5 +21,11 @@ export { MessageFlagsBitField } from "./wrappers/messages.js";
 export { PermissionFlags } from "./flags/permissions.js";
 export { PermissionsBitField } from "./wrappers/permissions.js";
 
+export { SKUFlags } from "./flags/sku.js";
+export { SKUFlagsBitField } from "./wrappers/skus.js";
+
+export { SystemChannelFlags } from "./flags/system-channel.js";
+export { SystemChannelFlagsBitField } from "./wrappers/system-channels.js";
+
 export { UserFlags } from "./flags/user.js";
 export { UserFlagsBitField } from "./wrappers/users.js";
